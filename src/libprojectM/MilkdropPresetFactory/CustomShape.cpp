@@ -72,9 +72,9 @@ CustomShape::CustomShape(int _id)
     ParamUtils::insert(Param::new_param_float(
         "a2", P_FLAG_NONE, &this->a2, nullptr, 1.0, 0.0, .5), &this->param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "x", P_FLAG_NONE, &this->x, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, .5), &this->param_tree);
+        "x", P_FLAG_NONE, &this->x, nullptr, maxDoubleSize, -maxDoubleSize, .5), &this->param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "y", P_FLAG_NONE, &this->y, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, .5), &this->param_tree);
+        "y", P_FLAG_NONE, &this->y, nullptr, maxDoubleSize, -maxDoubleSize, .5), &this->param_tree);
     ParamUtils::insert(Param::new_param_bool(
         "thickoutline", P_FLAG_NONE, &this->thickOutline, 1, 0, 0), &this->param_tree);
     ParamUtils::insert(Param::new_param_bool(
@@ -90,37 +90,37 @@ CustomShape::CustomShape(int _id)
     ParamUtils::insert(Param::new_param_int(
         "instance", P_FLAG_READONLY, &this->instance, 999, 0, 0), &this->param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "rad", P_FLAG_NONE, &this->radius, nullptr, MAX_DOUBLE_SIZE, 0, 0.0), &this->param_tree);
+        "rad", P_FLAG_NONE, &this->radius, nullptr, maxDoubleSize, 0, 0.0), &this->param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "ang", P_FLAG_NONE, &this->ang, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &this->param_tree);
+        "ang", P_FLAG_NONE, &this->ang, nullptr, maxDoubleSize, -maxDoubleSize, 0.0), &this->param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "tex_zoom", P_FLAG_NONE, &this->tex_zoom, nullptr, MAX_DOUBLE_SIZE, .00000000001, 0.0), &this->param_tree);
+        "tex_zoom", P_FLAG_NONE, &this->tex_zoom, nullptr, maxDoubleSize, .00000000001, 0.0), &this->param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "tex_ang", P_FLAG_NONE, &this->tex_ang, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &this->param_tree);
+        "tex_ang", P_FLAG_NONE, &this->tex_ang, nullptr, maxDoubleSize, -maxDoubleSize, 0.0), &this->param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "t1", P_FLAG_TVAR, &this->t1, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &this->param_tree);
+        "t1", P_FLAG_TVAR, &this->t1, nullptr, maxDoubleSize, -maxDoubleSize, 0.0), &this->param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "t2", P_FLAG_TVAR, &this->t2, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &this->param_tree);
+        "t2", P_FLAG_TVAR, &this->t2, nullptr, maxDoubleSize, -maxDoubleSize, 0.0), &this->param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "t3", P_FLAG_TVAR, &this->t3, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &this->param_tree);
+        "t3", P_FLAG_TVAR, &this->t3, nullptr, maxDoubleSize, -maxDoubleSize, 0.0), &this->param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "t4", P_FLAG_TVAR, &this->t4, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &this->param_tree);
+        "t4", P_FLAG_TVAR, &this->t4, nullptr, maxDoubleSize, -maxDoubleSize, 0.0), &this->param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "t5", P_FLAG_TVAR, &this->t5, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &this->param_tree);
+        "t5", P_FLAG_TVAR, &this->t5, nullptr, maxDoubleSize, -maxDoubleSize, 0.0), &this->param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "t6", P_FLAG_TVAR, &this->t6, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &this->param_tree);
+        "t6", P_FLAG_TVAR, &this->t6, nullptr, maxDoubleSize, -maxDoubleSize, 0.0), &this->param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "t7", P_FLAG_TVAR, &this->t7, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &this->param_tree);
+        "t7", P_FLAG_TVAR, &this->t7, nullptr, maxDoubleSize, -maxDoubleSize, 0.0), &this->param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "t8", P_FLAG_TVAR, &this->t8, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &this->param_tree);
+        "t8", P_FLAG_TVAR, &this->t8, nullptr, maxDoubleSize, -maxDoubleSize, 0.0), &this->param_tree);
 
-    for (unsigned int i = 0; i < NUM_Q_VARIABLES; i++)
+    for (unsigned int i = 0; i < numQVariables; i++)
     {
         std::ostringstream os;
         os << "q" << i + 1;
         ParamUtils::insert(Param::new_param_float(
             os.str().c_str(), P_FLAG_QVAR, &this->q[i], nullptr,
-            MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &this->param_tree);
+            maxDoubleSize, -maxDoubleSize, 0.0), &this->param_tree);
     }
 
     // projectM custom addition: Specify a texture file for use on shapes!

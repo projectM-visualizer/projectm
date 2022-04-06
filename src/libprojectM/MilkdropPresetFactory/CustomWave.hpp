@@ -97,7 +97,7 @@ public:
 
 
     /* stupider q variables */
-    float q[NUM_Q_VARIABLES]{};
+    float q[numQVariables]{};
 
     float v2{ 0.0f};
     float v1{ 0.0f};

@@ -82,30 +82,30 @@ CustomWave::CustomWave(int _id)
     ParamUtils::insert(Param::new_param_float(
         "smoothing", P_FLAG_NONE, &this->smoothing, nullptr, 1.0, 0.0, 0.0), &param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "scaling", P_FLAG_NONE, &this->scaling, nullptr, MAX_DOUBLE_SIZE, 0.0, 1.0), &param_tree);
+        "scaling", P_FLAG_NONE, &this->scaling, nullptr, maxDoubleSize, 0.0, 1.0), &param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "t1", P_FLAG_TVAR, &this->t1, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &param_tree);
+        "t1", P_FLAG_TVAR, &this->t1, nullptr, maxDoubleSize, -maxDoubleSize, 0.0), &param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "t2", P_FLAG_TVAR, &this->t2, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &param_tree);
+        "t2", P_FLAG_TVAR, &this->t2, nullptr, maxDoubleSize, -maxDoubleSize, 0.0), &param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "t3", P_FLAG_TVAR, &this->t3, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &param_tree);
+        "t3", P_FLAG_TVAR, &this->t3, nullptr, maxDoubleSize, -maxDoubleSize, 0.0), &param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "t4", P_FLAG_TVAR, &this->t4, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &param_tree);
+        "t4", P_FLAG_TVAR, &this->t4, nullptr, maxDoubleSize, -maxDoubleSize, 0.0), &param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "t5", P_FLAG_TVAR, &this->t5, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &param_tree);
+        "t5", P_FLAG_TVAR, &this->t5, nullptr, maxDoubleSize, -maxDoubleSize, 0.0), &param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "t6", P_FLAG_TVAR, &this->t6, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0),&param_tree);
+        "t6", P_FLAG_TVAR, &this->t6, nullptr, maxDoubleSize, -maxDoubleSize, 0.0),&param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "t7", P_FLAG_TVAR, &this->t7, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &param_tree);
+        "t7", P_FLAG_TVAR, &this->t7, nullptr, maxDoubleSize, -maxDoubleSize, 0.0), &param_tree);
     ParamUtils::insert(Param::new_param_float(
-        "t8", P_FLAG_TVAR, &this->t8, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &param_tree);
+        "t8", P_FLAG_TVAR, &this->t8, nullptr, maxDoubleSize, -maxDoubleSize, 0.0), &param_tree);
 
-    for (unsigned int i = 0; i < NUM_Q_VARIABLES; i++)
+    for (unsigned int i = 0; i < numQVariables; i++)
     {
         std::ostringstream os;
         os << "q" << i + 1;
         ParamUtils::insert(Param::new_param_float(
-            os.str().c_str(), P_FLAG_QVAR, &this->q[i], nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE,0.0), &this->param_tree);
+            os.str().c_str(), P_FLAG_QVAR, &this->q[i], nullptr, maxDoubleSize, -maxDoubleSize,0.0), &this->param_tree);
     }
 
      /* End of parameter loading. Note that the read only parameters associated

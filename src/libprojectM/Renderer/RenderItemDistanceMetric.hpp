@@ -109,7 +109,7 @@ public:
 protected:
 
 	virtual inline double computeDistance(const Shape * lhs, const Shape * rhs) const {
-			return (meanSquaredError(lhs->x, rhs->x) + meanSquaredError(lhs->y, rhs->y)) / 2;
+			return (MeanSquaredError(lhs->x, rhs->x) + MeanSquaredError(lhs->y, rhs->y)) / 2;
 	}
 
 };

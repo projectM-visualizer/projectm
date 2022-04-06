@@ -71,7 +71,7 @@ MilkdropPreset::MilkdropPreset(MilkdropPresetFactory* factory, const std::string
     : Preset(presetName)
     , builtinParams(_presetInputs, presetOutputs)
     , per_pixel_program(nullptr)
-    , _filename(parseFilename(absoluteFilePath))
+    , _filename(ParseFilename(absoluteFilePath))
     , _absoluteFilePath(absoluteFilePath)
     , _factory(factory)
     , _presetOutputs(presetOutputs)
@@ -545,7 +545,7 @@ int MilkdropPreset::readIn(std::istream& fs)
     if (Parser::parse_top_comment(fs) == PROJECTM_SUCCESS)
     {
         /* Parse the preset name and a left bracket */
-        char tmp_name[MAX_TOKEN_SIZE];
+        char tmp_name[maxTokenSize];
 
         if (Parser::parse_preset_name(fs, tmp_name) < 0)
         {
