@@ -597,7 +597,7 @@ float TreeExpr::eval ( int mesh_i, int mesh_j )
         case INFIX_DIV:
             if ( right_arg == 0 )
             {
-                return MAX_DOUBLE_SIZE;
+                return maxDoubleSize;
             }
             return ( left_arg / right_arg );
         default:

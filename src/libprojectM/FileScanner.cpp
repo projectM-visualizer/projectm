@@ -107,7 +107,7 @@ void FileScanner::scanGeneric(ScanCallback cb, const char *currentDir) {
         if (filename.length() == 0 || filename[0] == '.')
             continue;
 
-        std::string fullPath = std::string(currentDir) + PATH_SEPARATOR + filename;
+        std::string fullPath = std::string(currentDir) + pathSeparator + filename;
 
 #ifndef WIN32
         // filesystems are free to return DT_UNKNOWN

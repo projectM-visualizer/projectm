@@ -45,7 +45,7 @@ public:
     Param *param;
     CValue init_val;
 
-    static char init_cond_string_buffer[STRING_BUFFER_SIZE];
+    static char init_cond_string_buffer[stringBufferSize];
     static int init_cond_string_buffer_index;
 
     InitCond( Param * param, CValue init_val);

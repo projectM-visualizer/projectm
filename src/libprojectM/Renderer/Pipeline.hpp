@@ -29,7 +29,7 @@ public:
 	 float screenDecay;
 
 	 //variables passed to pixel shaders
-	 float q[NUM_Q_VARIABLES];
+	 float q[numQVariables];
 
 	 //blur settings n=bias x=scale
 	 float blur1n;

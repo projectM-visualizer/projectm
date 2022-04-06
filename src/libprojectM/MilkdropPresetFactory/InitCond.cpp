@@ -35,7 +35,7 @@
 #include <cassert>
 #include <iostream>
 
-char InitCond::init_cond_string_buffer[STRING_BUFFER_SIZE];
+char InitCond::init_cond_string_buffer[stringBufferSize];
 int InitCond::init_cond_string_buffer_index = 0;
 
 /* Creates a new initial condition */
@@ -71,7 +71,7 @@ void InitCond::evaluate(bool evalUser)
 void InitCond::init_cond_to_string()
 {
 	unsigned long string_length;
-	char string[MAX_TOKEN_SIZE];
+	char string[maxTokenSize];
 	
 	/* Create a string "param_name=val" */
 	switch (param->type) {
@@ -93,7 +93,7 @@ void InitCond::init_cond_to_string()
 	string_length = strlen(string);
 	
 	/* Buffer overflow check */
-	if ((init_cond_string_buffer_index + string_length + 1)  > (STRING_BUFFER_SIZE - 1))
+	if ((init_cond_string_buffer_index + string_length + 1)  > (stringBufferSize - 1))
 		return;
 	
 	/* Copy the string into the initial condition string buffer */	

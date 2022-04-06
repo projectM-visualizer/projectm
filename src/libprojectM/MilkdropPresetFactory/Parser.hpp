@@ -136,13 +136,13 @@ public:
     static CustomWave *current_wave;
     static CustomShape *current_shape;
     static int string_line_buffer_index;
-    static char string_line_buffer[STRING_LINE_SIZE];
+    static char string_line_buffer[stringLineSize];
     static unsigned int line_count;
     static int per_frame_eqn_count;
     static int per_frame_init_eqn_count;
     static int last_custom_wave_id;
     static int last_custom_shape_id;
-    static char last_eqn_type[MAX_TOKEN_SIZE+1];
+    static char last_eqn_type[maxTokenSize+1];
     static int last_token_size;
     static bool tokenWrapAroundEnabled;
 

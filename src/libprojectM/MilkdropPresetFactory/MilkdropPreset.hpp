@@ -222,7 +222,7 @@ void MilkdropPreset::transfer_q_variables(std::vector<CustomObject*>& customObje
     {
 
         custom_object = *pos;
-        for (unsigned int i = 0; i < NUM_Q_VARIABLES; i++)
+        for (unsigned int i = 0; i < numQVariables; i++)
         {
             custom_object->q[i] = _presetOutputs->q[i];
         }

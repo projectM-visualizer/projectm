@@ -78,7 +78,7 @@ public:
     float t8Init{ 0.0f };
 
     /* stupider q variables */
-    float q[NUM_Q_VARIABLES]{};
+    float q[numQVariables]{};
 
     // Data structure to hold per frame  / per frame init equations
     std::map<std::string, InitCond*> init_cond_tree;
