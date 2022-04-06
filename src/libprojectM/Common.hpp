@@ -47,7 +47,8 @@ char constexpr defaultFontPath[]{"/home/carm/fonts/courier1.glf"};
 size_t constexpr maxTokenSize{512};
 size_t constexpr maxPathSize{4096};
 
-size_t constexpr stringBufferSize{1024 * 150};
+//CPP23: uz suffix (https://en.cppreference.com/w/cpp/language/integer_literal)
+size_t constexpr stringBufferSize{static_cast<size_t>(1024 * 150)};
 size_t constexpr stringLineSize{1024};
 
 double constexpr maxDoubleSize{10000000.0};
@@ -72,31 +73,33 @@ std::string const projectmModuleExtension("so");
 
 
 //CPP17: std::filesystem::path::extension
-inline std::string ParseExtension(const std::string& filename)
+inline auto ParseExtension(const std::string& filename) -> std::string
 {
 
     const std::size_t start = filename.find_last_of('.');
 
-    if (start == std::string::npos || start >= (filename.length() - 1))
+    if (start == std::string::npos || start >= (filename.length() - 1)) {
         return "";
+    }
     std::string ext = filename.substr(start + 1, filename.length());
     std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
     return ext;
 }
 
 //CPP17: std::filesystem::path::filename
-inline std::string ParseFilename(const std::string& filename)
+inline auto ParseFilename(const std::string& filename) -> std::string
 {
 
     const std::size_t start = filename.find_last_of('/');
 
-    if (start == std::string::npos || start >= (filename.length() - 1))
+    if (start == std::string::npos || start >= (filename.length() - 1)) {
         return "";
-    else
-        return filename.substr(start + 1, filename.length());
+    }
+
+    return filename.substr(start + 1, filename.length());
 }
 
-inline double MeanSquaredError(const double& x, const double& y)
+inline auto MeanSquaredError(const double& x, const double& y) -> double
 {
     return (x - y) * (x - y);
 }
@@ -130,6 +133,6 @@ enum PresetRatingType
 };
 
 
-typedef std::vector<int> RatingList;
+using RatingList = std::vector<int>;
 
 #endif
