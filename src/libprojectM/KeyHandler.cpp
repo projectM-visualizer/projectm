@@ -72,7 +72,7 @@ void refreshConsole() {
 }
 
 void ProjectM::KeyHandler(projectMEvent event,
-                           projectMKeycode keycode, projectMModifier modifier ) {
+                           projectMKeycode keyCode, projectMModifier modifier ) {
 
 	switch( event ) {
 
@@ -96,10 +96,10 @@ void ProjectM::KeyHandler(projectMEvent event,
 //	      browser_key_handler(event,keycode,modifier);
 	      break;
 	    case DEFAULT_INTERFACE:
-            DefaultKeyHandler(event, keycode);
+            DefaultKeyHandler(event, keyCode);
 	      break;
 	    default:
-            DefaultKeyHandler(event, keycode);
+            DefaultKeyHandler(event, keyCode);
 	      break;
 
 	    }
