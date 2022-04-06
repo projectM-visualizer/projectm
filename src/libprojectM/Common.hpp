@@ -117,15 +117,14 @@ inline double meanSquaredError(const double& x, const double& y)
     return (x - y) * (x - y);
 }
 
-template<typename T>
-auto CaseInsensitiveSubstringFind(const T& haystack, const T& needle, const std::locale& loc = std::locale()) -> size_t
+inline auto CaseInsensitiveSubstringFind(std::string const& haystack, std::string const& needle, const std::locale& loc = std::locale()) -> size_t
 {
     auto const it = std::search(
         haystack.cbegin(),
         haystack.cend(),
         needle.cbegin(),
         needle.cend(),
-        [&loc](typename T::value_type ch1, typename T::value_type ch2) {
+        [&loc](char ch1, char ch2) {
             return std::toupper(ch1, loc) == std::toupper(ch2, loc);
         });
 
