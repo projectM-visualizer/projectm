@@ -43,7 +43,6 @@ char constexpr pathSeparator{'\\'};
 char constexpr pathSeparator{'/'};
 #endif /** WIN32 */
 
-char constexpr defaultFontPath[]{"/home/carm/fonts/courier1.glf"};
 size_t constexpr maxTokenSize{512};
 size_t constexpr maxPathSize{4096};
 
