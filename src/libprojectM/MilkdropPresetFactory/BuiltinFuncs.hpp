@@ -13,7 +13,6 @@
 #ifndef _BUILTIN_FUNCS_HPP
 #define _BUILTIN_FUNCS_HPP
 
-#include "Common.hpp"
 #include "Func.hpp"
 #include <cmath>
 #include <cstdlib>

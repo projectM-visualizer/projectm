@@ -34,6 +34,7 @@
 #define INIT_COND_DEBUG 0
 
 #include "Param.hpp"
+#include "Common.hpp"
 
 class InitCond;
 class Param;

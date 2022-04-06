@@ -23,7 +23,6 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "Common.hpp"
 #include "fatal.h"
 
 #include "Eval.hpp"

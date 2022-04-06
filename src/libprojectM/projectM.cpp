@@ -23,7 +23,6 @@
 #include "RenderItemMatcher.hpp"
 #include "RenderItemMergeFunction.hpp"
 #include "fatal.h"
-#include "Common.hpp"
 
 #ifdef WIN32
 #include "dirent.h"

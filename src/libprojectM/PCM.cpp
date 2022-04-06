@@ -28,7 +28,6 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "Common.hpp"
 #include "PCM.hpp"
 #include "fftsg.h"
 #include "wipemalloc.h"
