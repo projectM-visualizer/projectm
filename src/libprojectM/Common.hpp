@@ -117,20 +117,20 @@ inline double meanSquaredError(const double& x, const double& y)
     return (x - y) * (x - y);
 }
 
-inline auto CaseInsensitiveSubstringFind(std::string const& haystack, std::string const& needle, const std::locale& loc = std::locale()) -> size_t
+inline auto CaseInsensitiveSubstringFind(std::string const& haystack, std::string const& needle) -> size_t
 {
     auto const it = std::search(
         haystack.cbegin(),
         haystack.cend(),
         needle.cbegin(),
         needle.cend(),
-        [&loc](char ch1, char ch2) {
-            return std::toupper(ch1, loc) == std::toupper(ch2, loc);
+        [](char ch1, char ch2) {
+            return std::toupper(ch1) == std::toupper(ch2);
         });
 
     if (it != haystack.end())
     {
-        return it - haystack.begin();
+        return std::distance(haystack.begin(), it);
     }
 
     return std::string::npos;
