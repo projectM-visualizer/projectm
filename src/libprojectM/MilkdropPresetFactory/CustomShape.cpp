@@ -132,10 +132,18 @@ CustomShape::CustomShape(int _id)
 CustomShape::~CustomShape()
 {
     traverseVector<TraverseFunctors::Delete<PerFrameEqn> >(per_frame_eqn_tree);
-    traverse<TraverseFunctors::Delete<InitCond> >(init_cond_tree);
-    traverse<TraverseFunctors::Delete<Param> >(param_tree);
-    traverse<TraverseFunctors::Delete<InitCond> >(per_frame_init_eqn_tree);
-    traverse<TraverseFunctors::Delete<Param> >(text_properties_tree);
+    for(auto const& it : init_cond_tree) {
+        delete it.second;
+    }
+    for(auto const& it : param_tree) {
+        delete it.second;
+    }
+    for(auto const& it : per_frame_init_eqn_tree) {
+        delete it.second;
+    }
+    for(auto const& it : text_properties_tree) {
+        delete it.second;
+    }
 }
 
 void CustomShape::loadUnspecInitConds()
