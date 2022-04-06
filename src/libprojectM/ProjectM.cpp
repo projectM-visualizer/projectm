@@ -69,18 +69,18 @@ void ProjectM::ResetTextures()
 }
 
 
-ProjectM::ProjectM(std::string config_file, Flags flags)
+ProjectM::ProjectM(const std::string& configurationFilename, Flags flags)
     : m_flags(flags)
     , m_pipelineContext(std::make_unique<class PipelineContext>())
     , m_pipelineContext2(std::make_unique<class PipelineContext>())
 {
-    ReadConfig(config_file);
+    ReadConfig(configurationFilename);
     Reset();
     ResetOpenGL(m_settings.windowWidth, m_settings.windowHeight);
 
 }
 
-ProjectM::ProjectM(class Settings settings, Flags flags)
+ProjectM::ProjectM(const class Settings& settings, Flags flags)
     : m_flags(flags)
     , m_pipelineContext(std::make_unique<class PipelineContext>())
     , m_pipelineContext2(std::make_unique<class PipelineContext>())
@@ -91,10 +91,10 @@ ProjectM::ProjectM(class Settings settings, Flags flags)
 }
 
 
-auto ProjectM::WriteConfig(const std::string& configFile, const class Settings& settings) -> bool
+auto ProjectM::WriteConfig(const std::string& configurationFilename, const class Settings& settings) -> bool
 {
 
-    ConfigFile config(configFile);
+    ConfigFile config(configurationFilename);
 
     config.add("Mesh X", settings.meshX);
     config.add("Mesh Y", settings.meshY);
@@ -112,7 +112,7 @@ auto ProjectM::WriteConfig(const std::string& configFile, const class Settings& 
     config.add("Easter Egg Parameter", settings.easterEgg);
     config.add("Shuffle Enabled", settings.shuffleEnabled);
     config.add("Soft Cut Ratings Enabled", settings.softCutRatingsEnabled);
-    std::fstream file(configFile.c_str(), std::ios_base::trunc | std::ios_base::out);
+    std::fstream file(configurationFilename.c_str(), std::ios_base::trunc | std::ios_base::out);
     if (file)
     {
         file << config;
@@ -125,11 +125,11 @@ auto ProjectM::WriteConfig(const std::string& configFile, const class Settings& 
 }
 
 
-void ProjectM::ReadConfig(const std::string& configFile)
+void ProjectM::ReadConfig(const std::string& configurationFilename)
 {
-    std::cout << "[projectM] config file: " << configFile << std::endl;
+    std::cout << "[projectM] config file: " << configurationFilename << std::endl;
 
-    ConfigFile config(configFile);
+    ConfigFile config(configurationFilename);
     m_settings.meshX = config.read<int>("Mesh X", 32);
     m_settings.meshY = config.read<int>("Mesh Y", 24);
     m_settings.textureSize = config.read<int>("Texture Size", 512);
@@ -194,7 +194,7 @@ void ProjectM::ReadConfig(const std::string& configFile)
 
 
     Initialize(m_settings.meshX, m_settings.meshY, m_settings.fps,
-               m_settings.textureSize, m_settings.windowWidth, m_settings.windowHeight);
+               m_settings.windowWidth, m_settings.windowHeight);
 
     if (config.read("Aspect Correction", true))
     {
@@ -238,7 +238,7 @@ void ProjectM::ReadSettings(const class Settings& settings)
     m_settings.beatSensitivity = settings.beatSensitivity;
 
     Initialize(m_settings.meshX, m_settings.meshY, m_settings.fps,
-               m_settings.textureSize, m_settings.windowWidth, m_settings.windowHeight);
+               m_settings.windowWidth, m_settings.windowHeight);
 
 
     m_settings.aspectCorrection = settings.aspectCorrection;
@@ -278,14 +278,14 @@ void ProjectM::RenderFrame()
 
     comboPipeline = RenderFrameOnlyPass1(&pipeline);
 
-    RenderFrameOnlyPass2(comboPipeline, 0, 0, 0);
+    RenderFrameOnlyPass2(comboPipeline, 0, 0);
 
     ProjectM::RenderFrameEndOnSeparatePasses(comboPipeline);
 }
 
 
 auto ProjectM::RenderFrameOnlyPass1(
-    Pipeline* pPipeline) -> Pipeline* /*pPipeline is a pointer to a Pipeline for use in pass 2. returns the pointer if it was used, else returns NULL */
+    Pipeline* pipeline) -> Pipeline* /*pPipeline is a pointer to a Pipeline for use in pass 2. returns the pointer if it was used, else returns NULL */
 {
 #if USE_THREADS
     std::lock_guard<std::recursive_mutex> guard(m_presetSwitchMutex);
@@ -360,18 +360,18 @@ auto ProjectM::RenderFrameOnlyPass1(
         evaluateSecondPreset();
 #endif
 
-        pPipeline->setStaticPerPixel(Settings().meshX, Settings().meshY);
+        pipeline->setStaticPerPixel(Settings().meshX, Settings().meshY);
 
         assert(m_matcher);
         PipelineMerger::mergePipelines(m_activePreset->pipeline(),
-                                       m_activePreset2->pipeline(), *pPipeline,
+                                       m_activePreset2->pipeline(), *pipeline,
                                        m_matcher->matchResults(),
                                        *m_merger, m_timeKeeper->SmoothRatio());
 
-        m_renderer->RenderFrameOnlyPass1(*pPipeline, PipelineContext());
+        m_renderer->RenderFrameOnlyPass1(*pipeline, PipelineContext());
 
 
-        return pPipeline;
+        return pipeline;
 
     }
     else
@@ -402,12 +402,10 @@ auto ProjectM::RenderFrameOnlyPass1(
 
 
 /* eye is 0,or 1, or who knows?*/
-void ProjectM::RenderFrameOnlyPass2(Pipeline* pPipeline, int xoffset, int yoffset,
-                                    int eye) /*pPipeline can be null if we re not in transition */
+void ProjectM::RenderFrameOnlyPass2(Pipeline* pipeline,
+                                    int offsetX,
+                                    int offsetY) /*pipeline can be null if we re not in transition */
 {
-/* eye is currently ignored */
-
-
 #ifdef DEBUG
     char fname[1024];
     FILE* f = NULL;
@@ -415,7 +413,7 @@ void ProjectM::RenderFrameOnlyPass2(Pipeline* pPipeline, int xoffset, int yoffse
     int x, y;
 #endif
 
-    if (pPipeline)
+    if (pipeline)
 //    if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty() )
     {
         //	 printf("start thread\n");
@@ -424,14 +422,14 @@ void ProjectM::RenderFrameOnlyPass2(Pipeline* pPipeline, int xoffset, int yoffse
 
         /* was other stuff */
 
-        m_renderer->RenderFrameOnlyPass2(*pPipeline, PipelineContext(), xoffset, yoffset, eye);
+        m_renderer->RenderFrameOnlyPass2(*pipeline, PipelineContext(), offsetX, offsetY, 0);
 
     }
     else
     {
 
 
-        m_renderer->RenderFrameOnlyPass2(m_activePreset->pipeline(), PipelineContext(), xoffset, yoffset, eye);
+        m_renderer->RenderFrameOnlyPass2(m_activePreset->pipeline(), PipelineContext(), offsetX, offsetY, 0);
 
 
     }
@@ -439,17 +437,17 @@ void ProjectM::RenderFrameOnlyPass2(Pipeline* pPipeline, int xoffset, int yoffse
 }
 
 
-void ProjectM::RenderFrameEndOnSeparatePasses(Pipeline* pPipeline)
+void ProjectM::RenderFrameEndOnSeparatePasses(Pipeline* pipeline)
 {
 
-    if (pPipeline)
+    if (pipeline)
     {
         // mergePipelines() sets masterAlpha for each RenderItem, reset it before we forget
-        for (RenderItem* drawable: pPipeline->drawables)
+        for (RenderItem* drawable: pipeline->drawables)
         {
             drawable->masterAlpha = 1.0;
         }
-        pPipeline->drawables.clear();
+        pipeline->drawables.clear();
     }
 
     m_count++;
@@ -462,7 +460,7 @@ void ProjectM::Reset()
     ResetEngine();
 }
 
-void ProjectM::Initialize(int gx, int gy, int fps, int texsize, int width, int height)
+void ProjectM::Initialize(int meshResolutionX, int meshResolutionY, int targetFps, int width, int height)
 {
     /** Initialise start time */
     m_timeKeeper = std::make_unique<TimeKeeper>(m_settings.presetDuration, m_settings.softCutDuration, m_settings.hardCutDuration,
@@ -476,10 +474,10 @@ void ProjectM::Initialize(int gx, int gy, int fps, int texsize, int width, int h
 
     m_beatDetect = std::make_unique<BeatDetect>(m_pcm);
 
-    this->m_renderer = std::make_unique<Renderer>(width, height, gx, gy, m_beatDetect.get(), Settings().presetURL, Settings().titleFontURL,
+    this->m_renderer = std::make_unique<Renderer>(width, height, meshResolutionX, meshResolutionY, m_beatDetect.get(), Settings().presetURL, Settings().titleFontURL,
                                                   Settings().menuFontURL, Settings().datadir);
 
-    InitializePresetTools(gx, gy);
+    InitializePresetTools(meshResolutionX, meshResolutionY);
 
 #if USE_THREADS
     m_workerSync.Reset();
@@ -491,8 +489,8 @@ void ProjectM::Initialize(int gx, int gy, int fps, int texsize, int width, int h
     m_timeKeeper->StartPreset();
 
     // ToDo: Calculate the real FPS instead
-    PipelineContext().fps = fps;
-    PipelineContext2().fps = fps;
+    PipelineContext().fps = targetFps;
+    PipelineContext2().fps = targetFps;
 
 }
 
@@ -534,7 +532,7 @@ void ProjectM::SetTitle(const std::string& title)
 }
 
 
-auto ProjectM::InitializePresetTools(int gx, int gy) -> int
+auto ProjectM::InitializePresetTools(int meshResolutionX, int meshResolutionY) -> int
 {
 
     /* Set the seed to the current time in seconds */
@@ -546,7 +544,7 @@ auto ProjectM::InitializePresetTools(int gx, int gy) -> int
         url = Settings().presetURL;
     }
 
-    if ((m_presetLoader = std::make_unique<PresetLoader>(gx, gy, url)) == 0)
+    if ((m_presetLoader = std::make_unique<PresetLoader>(meshResolutionX, meshResolutionY, url)) == 0)
     {
         m_presetLoader = 0;
         std::cerr << "[projectM] error allocating preset loader" << std::endl;
@@ -656,7 +654,7 @@ void ProjectM::RemovePreset(unsigned int index)
 }
 
 auto
-ProjectM::AddPresetURL(const std::string& presetURL, const std::string& presetName, const RatingList& ratingList) -> unsigned int
+ProjectM::AddPresetURL(const std::string& presetFilename, const std::string& presetName, const RatingList& ratingList) -> unsigned int
 {
     bool restorePosition = false;
 
@@ -665,7 +663,7 @@ ProjectM::AddPresetURL(const std::string& presetURL, const std::string& presetNa
         restorePosition = true;
     }
 
-    int index = m_presetLoader->addPresetURL(presetURL, presetName, ratingList);
+    int index = m_presetLoader->addPresetURL(presetFilename, presetName, ratingList);
 
     if (restorePosition)
     {
@@ -758,18 +756,18 @@ void ProjectM::PopulatePresetMenu()
     }
 }
 
-bool ProjectM::StartPresetTransition(bool hard_cut)
+bool ProjectM::StartPresetTransition(bool hardCut)
 {
     std::unique_ptr<Preset> new_preset = SwitchToCurrentPreset();
     if (new_preset == nullptr)
     {
-        PresetSwitchFailedEvent(hard_cut, **m_presetPos, "fake error");
+        PresetSwitchFailedEvent(hardCut, **m_presetPos, "fake error");
         m_errorLoadingCurrentPreset = true;
         PopulatePresetMenu();
         return false;
     }
 
-    if (hard_cut)
+    if (hardCut)
     {
         m_activePreset = std::move(new_preset);
         m_timeKeeper->StartPreset();
@@ -781,7 +779,7 @@ bool ProjectM::StartPresetTransition(bool hard_cut)
         m_timeKeeper->StartSmoothing();
     }
 
-    PresetSwitchedEvent(hard_cut, **m_presetPos);
+    PresetSwitchedEvent(hardCut, **m_presetPos);
     m_errorLoadingCurrentPreset = false;
 
     PopulatePresetMenu();
@@ -939,9 +937,9 @@ auto ProjectM::SwitchToCurrentPreset() -> std::unique_ptr<Preset>
     return new_preset;
 }
 
-void ProjectM::SetPresetLocked(bool isLocked)
+void ProjectM::SetPresetLocked(bool locked)
 {
-    m_renderer->noSwitch = isLocked;
+    m_renderer->noSwitch = locked;
     if (PresetLocked())
     {
         m_renderer->setToastMessage("Preset Locked");
@@ -953,9 +951,9 @@ void ProjectM::SetPresetLocked(bool isLocked)
 }
 
 // check if search menu is up and you have search terms (2 chars). nomin means you don't care about search terms.
-auto ProjectM::TextInputActive(bool nomin) const -> bool
+auto ProjectM::TextInputActive(bool noMinimumCharacters) const -> bool
 {
-    if (m_renderer->showsearch && (m_renderer->searchText().length() >= 2 || nomin))
+    if (m_renderer->showsearch && (m_renderer->searchText().length() >= 2 || noMinimumCharacters))
     {
         return true;
     }
@@ -1026,7 +1024,7 @@ void ProjectM::ChangePresetRating(unsigned int index, int rating, const PresetRa
     PresetRatingChanged(index, rating, ratingType);
 }
 
-void ProjectM::InsertPresetURL(unsigned int index, const std::string& presetURL, const std::string& presetName,
+void ProjectM::InsertPresetURL(unsigned int index, const std::string& presetFilename, const std::string& presetName,
                                const RatingList& ratingList)
 {
     bool atEndPosition = false;
@@ -1054,7 +1052,7 @@ void ProjectM::InsertPresetURL(unsigned int index, const std::string& presetURL,
         newSelectedIndex++;
     }
 
-    m_presetLoader->insertPresetURL(index, presetURL, presetName, ratingList);
+    m_presetLoader->insertPresetURL(index, presetFilename, presetName, ratingList);
 
     if (atEndPosition)
     {
@@ -1068,9 +1066,9 @@ void ProjectM::InsertPresetURL(unsigned int index, const std::string& presetURL,
 
 }
 
-void ProjectM::ChangePresetName(unsigned int index, std::string name)
+void ProjectM::ChangePresetName(unsigned int index, std::string presetName)
 {
-    m_presetLoader->setPresetName(index, name);
+    m_presetLoader->setPresetName(index, presetName);
 }
 
 
@@ -1172,16 +1170,16 @@ void ProjectM::SetEasterEgg(float value)
     m_timeKeeper->ChangeEasterEgg(value);
 }
 
-void ProjectM::MeshSize(size_t& w, size_t& h) const
+void ProjectM::MeshSize(size_t& meshResolutionX, size_t& meshResolutionY) const
 {
-    w = m_settings.meshX;
-    h = m_settings.meshY;
+    meshResolutionX = m_settings.meshX;
+    meshResolutionY = m_settings.meshY;
 }
 
-void ProjectM::SetMeshSize(size_t w, size_t h)
+void ProjectM::SetMeshSize(size_t meshResolutionX, size_t meshResolutionY)
 {
-    m_settings.meshX = w;
-    m_settings.meshY = h;
+    m_settings.meshX = meshResolutionX;
+    m_settings.meshY = meshResolutionY;
 
     RecreateRenderer();
 }
@@ -1196,11 +1194,11 @@ void ProjectM::ToggleSearchText()
 }
 
 // get index from search results based on preset name
-auto ProjectM::SearchIndex(const std::string& name) const -> unsigned int
+auto ProjectM::SearchIndex(const std::string& presetName) const -> unsigned int
 {
     for (auto& it: m_renderer->m_presetList)
     {
-        if (it.name == name)
+        if (it.name == presetName)
         {
             return it.id;
         }
@@ -1209,19 +1207,19 @@ auto ProjectM::SearchIndex(const std::string& name) const -> unsigned int
 }
 
 // get preset index based on preset name
-auto ProjectM::PresetIndex(const std::string& url) const -> unsigned int
+auto ProjectM::PresetIndex(const std::string& presetFilename) const -> unsigned int
 {
-    return m_presetLoader->getPresetIndex(url);
+    return m_presetLoader->getPresetIndex(presetFilename);
 }
 
 // load preset based on name
-void ProjectM::SelectPresetByName(std::string name, bool hardCut)
+void ProjectM::SelectPresetByName(std::string presetName, bool hardCut)
 {
-    if (name == "")
+    if (presetName == "")
     {
         return;
     }
-    unsigned int index = PresetIndex(name);
+    unsigned int index = PresetIndex(presetName);
     if (m_presetChooser->empty())
     {
         return;
@@ -1290,28 +1288,28 @@ void ProjectM::SetToastMessage(const std::string& toastMessage)
     }
 }
 
-void ProjectM::Touch(float x, float y, int pressure, int touchtype)
+void ProjectM::Touch(float touchX, float touchY, int pressure, int touchType)
 {
     if (m_renderer)
     {
-        m_renderer->touch(x, y, pressure, touchtype);
+        m_renderer->touch(touchX, touchY, pressure, touchType);
     }
 }
 
-void ProjectM::TouchDrag(float x, float y, int pressure)
+void ProjectM::TouchDrag(float touchX, float touchY, int pressure)
 {
     if (m_renderer)
     {
-        m_renderer->touchDrag(x, y, pressure);
+        m_renderer->touchDrag(touchX, touchY, pressure);
     }
 }
 
 
-void ProjectM::TouchDestroy(float x, float y)
+void ProjectM::TouchDestroy(float touchX, float touchY)
 {
     if (m_renderer)
     {
-        m_renderer->touchDestroy(x, y);
+        m_renderer->touchDestroy(touchX, touchY);
     }
 }
 
