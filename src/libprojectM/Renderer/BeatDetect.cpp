@@ -63,14 +63,14 @@ void BeatDetect::calculateBeatStatistics()
 {
     vol_old = vol;
 
-    size_t constexpr fft_length = fftLength;
     float vdataL[fftLength];
     float vdataR[fftLength];
     pcm.GetSpectrum(vdataL, CHANNEL_0, fftLength);
     pcm.GetSpectrum(vdataR, CHANNEL_1, fftLength);
 
 
-    static_assert(fft_length >= 256, "fft_length too small");
+    static_assert(fftLength >= 256, "fft_length too small");
+
     unsigned ranges[4] = {0, 3, 23, 255};
 
     bass_instant = 0;
