@@ -70,35 +70,34 @@ void BeatDetect::calculateBeatStatistics()
 
     static_assert(fftLength >= 256, "fft_length too small");
 
-    unsigned ranges[4] = {0, 3, 23, 255};
+    size_t constexpr ranges[4] = {0, 3, 23, 255};
 
-    bass_instant = 0;
-    for (unsigned i = ranges[0]; i < ranges[1]; i++)
-        bass_instant += vdataL[i] + vdataR[i];
-    bass_history -= bass_buffer[beat_buffer_pos] * (1.0 / bass_buffer.size());
-    bass_buffer[beat_buffer_pos] = bass_instant;
-    bass_history += bass_instant * (1.0 / bass_buffer.size());
+    auto const updateFrequency =
+        [&vdataL, &vdataR, this](
+            size_t const from,
+            size_t const to,
+            float& instant,
+            float& history,
+            std::array<float, BEAT_HISTORY_LENGTH>& buffer) {
+            instant = 0.f;
 
-    mid_instant = 0;
-    for (unsigned i = ranges[1]; i < ranges[2]; i++)
-        mid_instant += vdataL[i] + vdataR[i];
-    mid_history -= mid_buffer[beat_buffer_pos] * (1.0 / mid_buffer.size());
-    mid_buffer[beat_buffer_pos] = mid_instant;
-    mid_history += mid_instant * (1.0 / mid_buffer.size());
+            for (unsigned i = from; i < to; i++)
+            {
+                instant += vdataL[i] + vdataR[i];
+            }
 
-    treb_instant = 0;
-    for (unsigned i = ranges[2]; i < ranges[3]; i++)
-        treb_instant += vdataL[i] + vdataR[i];
-    treb_history -= treb_buffer[beat_buffer_pos] * (1.0 / treb_buffer.size());
-    treb_buffer[beat_buffer_pos] = treb_instant;
-    treb_history += treb_instant * (1.0 / treb_buffer.size());
+            history -= buffer[beat_buffer_pos] / static_cast<float>(buffer.size());
+            history += instant / static_cast<float>(buffer.size());
+            buffer[beat_buffer_pos] = instant;
+        };
+
+    updateFrequency(ranges[0], ranges[1], bass_instant, bass_history, bass_buffer);
+    updateFrequency(ranges[1], ranges[2], mid_instant, mid_history, mid_buffer);
+    updateFrequency(ranges[2], ranges[3], treb_instant, treb_history, treb_buffer);
 
     vol_instant = (bass_instant + mid_instant + treb_instant) / 3.0f;
-    vol_history -= (vol_buffer[beat_buffer_pos]) * (1.0 / vol_buffer.size());
-    vol_buffer[beat_buffer_pos] = vol_instant;
-    vol_history += vol_instant * (1.0 / vol_buffer.size());
+    vol_history = (bass_history + mid_history + treb_history) / 3.0f;
 
-    //    fprintf(stderr, "%6.3f %6.2f %6.3f\n", bass_history/vol_history, mid_history/vol_history, treb_history/vol_history);
     bass = bass_instant / std::max(0.0001f, bass_history);
     mid = mid_instant / std::max(0.0001f, mid_history);
     treb = treb_instant / std::max(0.0001f, treb_history);
