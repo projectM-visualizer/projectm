@@ -61,6 +61,8 @@ void BeatDetect::reset()
 
 void BeatDetect::calculateBeatStatistics()
 {
+    vol_old = vol;
+
     size_t constexpr fft_length = fftLength;
     float vdataL[fftLength];
     float vdataR[fftLength];
