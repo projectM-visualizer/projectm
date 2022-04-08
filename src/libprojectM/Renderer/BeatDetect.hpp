@@ -69,26 +69,45 @@ public:
     Pcm& pcm;
 
 private:
-    // this is the size of the buffer used to determine avg levels of the input audio
-    // the actual time represented in the history depends on FPS
-    static size_t constexpr BEAT_HISTORY_LENGTH{80};
+    class LowPassFilter
+    {
+    public:
+        auto
+        Update(float nextValue) noexcept -> void
+        {
+            m_current -= m_buffer[m_bufferPos] / bufferLength;
+            m_current += nextValue / bufferLength;
+            m_buffer[m_bufferPos] = nextValue;
+
+            ++m_bufferPos;
+            m_bufferPos %= bufferLength;
+        }
+
+        [[nodiscard]] auto
+        Get() const noexcept -> float
+        {
+            return m_current;
+        }
+
+    private:
+        static size_t constexpr bufferLength{80};
+        size_t m_bufferPos{0};
+        std::array<float, bufferLength> m_buffer{0.f};
+        float m_current{0.f};
+    };
 
     size_t beat_buffer_pos{0};
 
-    std::array<float, BEAT_HISTORY_LENGTH> bass_buffer{0.f};
-    float bass_history{0.f};
+    LowPassFilter bass_history;
     float bass_instant{0.f};
 
-    std::array<float, BEAT_HISTORY_LENGTH> mid_buffer{0.f};
-    float mid_history{0.f};
+    LowPassFilter mid_history;
     float mid_instant{0.f};
 
-    std::array<float, BEAT_HISTORY_LENGTH> treb_buffer{0.f};
-    float treb_history{0.f};
+    LowPassFilter treb_history;
     float treb_instant{0.f};
 
-    std::array<float, BEAT_HISTORY_LENGTH> vol_buffer{0.f};
-    float vol_history{0.f};
+    LowPassFilter vol_history;
     float vol_instant{0.f};
 };
 

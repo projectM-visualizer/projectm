@@ -77,8 +77,7 @@ void BeatDetect::calculateBeatStatistics()
             size_t const from,
             size_t const to,
             float& instant,
-            float& history,
-            std::array<float, BEAT_HISTORY_LENGTH>& buffer) {
+            LowPassFilter& history) {
             instant = 0.f;
 
             for (unsigned i = from; i < to; i++)
@@ -86,22 +85,20 @@ void BeatDetect::calculateBeatStatistics()
                 instant += vdataL[i] + vdataR[i];
             }
 
-            history -= buffer[beat_buffer_pos] / static_cast<float>(buffer.size());
-            history += instant / static_cast<float>(buffer.size());
-            buffer[beat_buffer_pos] = instant;
+            history.Update(instant);
         };
 
-    updateFrequency(ranges[0], ranges[1], bass_instant, bass_history, bass_buffer);
-    updateFrequency(ranges[1], ranges[2], mid_instant, mid_history, mid_buffer);
-    updateFrequency(ranges[2], ranges[3], treb_instant, treb_history, treb_buffer);
+    updateFrequency(ranges[0], ranges[1], bass_instant, bass_history);
+    updateFrequency(ranges[1], ranges[2], mid_instant, mid_history);
+    updateFrequency(ranges[2], ranges[3], treb_instant, treb_history);
 
     vol_instant = (bass_instant + mid_instant + treb_instant) / 3.0f;
-    vol_history = (bass_history + mid_history + treb_history) / 3.0f;
+    vol_history.Update(vol_instant);
 
-    bass = bass_instant / std::max(0.0001f, bass_history);
-    mid = mid_instant / std::max(0.0001f, mid_history);
-    treb = treb_instant / std::max(0.0001f, treb_history);
-    vol = vol_instant / std::max(0.0001f, vol_history);
+    bass = bass_instant / std::max(0.0001f, bass_history.Get());
+    mid = mid_instant / std::max(0.0001f, mid_history.Get());
+    treb = treb_instant / std::max(0.0001f, treb_history.Get());
+    vol = vol_instant / std::max(0.0001f, vol_history.Get());
 
     if (std::isnan(treb))
     {
@@ -129,8 +126,4 @@ void BeatDetect::calculateBeatStatistics()
     treb = std::min(treb, 100.f);
     vol_att = std::min(vol_att, 100.f);
     vol = std::min(vol, 100.f);
-
-    beat_buffer_pos++;
-    if (beat_buffer_pos > 79)
-        beat_buffer_pos = 0;
 }
