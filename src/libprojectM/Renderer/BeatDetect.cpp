@@ -55,7 +55,6 @@ void BeatDetect::reset()
     this->bass_att = 0;
     this->vol_att = 0;
     this->vol_old = 0;
-    this->vol_instant = 0;
 }
 
 

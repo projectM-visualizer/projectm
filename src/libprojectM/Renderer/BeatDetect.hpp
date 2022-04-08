@@ -96,19 +96,10 @@ private:
         float m_current{0.f};
     };
 
-    size_t beat_buffer_pos{0};
-
     LowPassFilter bass_history;
-    float bass_instant{0.f};
-
     LowPassFilter mid_history;
-    float mid_instant{0.f};
-
     LowPassFilter treb_history;
-    float treb_instant{0.f};
-
     LowPassFilter vol_history;
-    float vol_instant{0.f};
 };
 
 #endif /** !_BEAT_DETECT_H */
