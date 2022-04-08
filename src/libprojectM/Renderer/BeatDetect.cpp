@@ -26,6 +26,7 @@
  * you'll find it online
  */
 
+#include <numeric>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -68,32 +69,23 @@ void BeatDetect::calculateBeatStatistics()
     pcm.GetSpectrum(vdataL, CHANNEL_0, fftLength);
     pcm.GetSpectrum(vdataR, CHANNEL_1, fftLength);
 
-
-    static_assert(fftLength >= 256, "fft_length too small");
-
-    size_t constexpr ranges[4] = {0, 3, 23, 255};
-
-    auto const updateFrequency =
-        [&vdataL, &vdataR, this](
-            size_t const from,
-            size_t const to,
-            float& instant,
-            LowPassFilter& history) {
-            instant = 0.f;
-
-            for (unsigned i = from; i < to; i++)
-            {
-                instant += vdataL[i] + vdataR[i];
-            }
-
-            history.Update(instant);
+    auto const intensityBetween =
+        [&vdataL, &vdataR](size_t const from, size_t const to) {
+            return std::accumulate(&vdataL[from], &vdataL[to], 0.f) +
+                   std::accumulate(&vdataR[from], &vdataR[to], 0.f);
         };
 
-    updateFrequency(ranges[0], ranges[1], bass_instant, bass_history);
-    updateFrequency(ranges[1], ranges[2], mid_instant, mid_history);
-    updateFrequency(ranges[2], ranges[3], treb_instant, treb_history);
+    static_assert(fftLength >= 256, "fftLength too small");
+    size_t constexpr ranges[4] = {0, 3, 23, 255};
 
-    vol_instant = (bass_instant + mid_instant + treb_instant) / 3.0f;
+    float const bass_instant = intensityBetween(ranges[0], ranges[1]);
+    float const mid_instant = intensityBetween(ranges[1], ranges[2]);
+    float const treb_instant = intensityBetween(ranges[2], ranges[3]);
+    float const vol_instant = (bass_instant + mid_instant + treb_instant) / 3.0f;
+
+    bass_history.Update(bass_instant);
+    mid_history.Update(mid_instant);
+    treb_history.Update(treb_instant);
     vol_history.Update(vol_instant);
 
     bass = bass_instant / std::max(0.0001f, bass_history.Get());
