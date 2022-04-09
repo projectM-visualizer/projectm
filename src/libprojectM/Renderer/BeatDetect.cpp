@@ -73,35 +73,27 @@ void BeatDetect::CalculateBeatStatistics()
                    std::accumulate(&vdataR[from], &vdataR[to], 0.f);
         };
 
+    auto const& updateBand =
+        [](float& band, float& bandAtt, LowPassFilter& bandSmoothed, float const bandIntensity) {
+            bandSmoothed.Update(bandIntensity);
+            band = bandIntensity / std::max(0.0001f, bandSmoothed.Get());
+            bandAtt = .6f * bandAtt + .4f * band;
+            bandAtt = std::min(bandAtt, 100.f);
+            band = std::min(band, 100.f);
+        };
+
     static_assert(fftLength >= 256, "fftLength too small");
     std::array<size_t, 4> constexpr ranges{0, 3, 23, 255};
 
-    float const bassInstant = intensityBetween(ranges[0], ranges[1]);
-    float const midInstant = intensityBetween(ranges[1], ranges[2]);
-    float const trebInstant = intensityBetween(ranges[2], ranges[3]);
-    float const volInstant = (bassInstant + midInstant + trebInstant) / 3.0f;
+    float const bassIntensity = intensityBetween(ranges[0], ranges[1]);
+    updateBand(bass, bassAtt, bassSmoothed, bassIntensity);
 
-    bassSmoothed.Update(bassInstant);
-    midSmoothed.Update(midInstant);
-    trebSmoothed.Update(trebInstant);
-    volSmoothed.Update(volInstant);
+    float const midIntensity = intensityBetween(ranges[1], ranges[2]);
+    updateBand(mid, midAtt, midSmoothed, midIntensity);
 
-    bass = bassInstant / std::max(0.0001f, bassSmoothed.Get());
-    mid = midInstant / std::max(0.0001f, midSmoothed.Get());
-    treb = trebInstant / std::max(0.0001f, trebSmoothed.Get());
-    vol = volInstant / std::max(0.0001f, volSmoothed.Get());
+    float const trebIntensity = intensityBetween(ranges[2], ranges[3]);
+    updateBand(treb, trebAtt, trebSmoothed, trebIntensity);
 
-    trebAtt = .6f * trebAtt + .4f * treb;
-    midAtt = .6f * midAtt + .4f * mid;
-    bassAtt = .6f * bassAtt + .4f * bass;
-    volAtt = .6f * volAtt + .4f * vol;
-
-    bassAtt = std::min(bassAtt, 100.f);
-    bass = std::min(bass, 100.f);
-    midAtt = std::min(midAtt, 100.f);
-    mid = std::min(mid, 100.f);
-    trebAtt = std::min(trebAtt, 100.f);
-    treb = std::min(treb, 100.f);
-    volAtt = std::min(volAtt, 100.f);
-    vol = std::min(vol, 100.f);
+    float const volIntensity = bassIntensity + midIntensity + trebIntensity;
+    updateBand(vol, volAtt, volSmoothed, volIntensity);
 }
