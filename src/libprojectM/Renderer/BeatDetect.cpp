@@ -62,10 +62,10 @@ void BeatDetect::calculateBeatStatistics()
 {
     vol_old = vol;
 
-    float vdataL[fftLength];
-    float vdataR[fftLength];
-    pcm.GetSpectrum(vdataL, CHANNEL_0, fftLength);
-    pcm.GetSpectrum(vdataR, CHANNEL_1, fftLength);
+    std::array<float, fftLength> vdataL{};
+    std::array<float, fftLength> vdataR{};
+    pcm.GetSpectrum(vdataL.data(), CHANNEL_0, fftLength);
+    pcm.GetSpectrum(vdataR.data(), CHANNEL_1, fftLength);
 
     auto const intensityBetween =
         [&vdataL, &vdataR](size_t const from, size_t const to) {
@@ -74,7 +74,7 @@ void BeatDetect::calculateBeatStatistics()
         };
 
     static_assert(fftLength >= 256, "fftLength too small");
-    size_t constexpr ranges[4] = {0, 3, 23, 255};
+    std::array<size_t, 4> constexpr ranges{0, 3, 23, 255};
 
     float const bass_instant = intensityBetween(ranges[0], ranges[1]);
     float const mid_instant = intensityBetween(ranges[1], ranges[2]);
