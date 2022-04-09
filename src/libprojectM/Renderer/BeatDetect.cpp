@@ -45,7 +45,7 @@ BeatDetect::BeatDetect(Pcm& _pcm)
 }
 
 
-void BeatDetect::Reset()
+auto BeatDetect::Reset() noexcept -> void
 {
     this->treb = 0;
     this->mid = 0;
@@ -58,26 +58,33 @@ void BeatDetect::Reset()
 }
 
 
-float BeatDetect::GetPCMScale()
+auto BeatDetect::GetPCMScale() const noexcept -> float
 {
     return beatSensitivity;
 }
 
 
-void BeatDetect::CalculateBeatStatistics()
+auto BeatDetect::CalculateBeatStatistics() -> void
 {
     volOld = vol;
 
-    std::array<float, fftLength> vdataL{};
-    std::array<float, fftLength> vdataR{};
-    pcm.GetSpectrum(vdataL.data(), CHANNEL_0, fftLength);
-    pcm.GetSpectrum(vdataR.data(), CHANNEL_1, fftLength);
+    std::array<float, fftLength> const vdataL =
+        [this]() {
+            std::array<float, fftLength> vdataL{};
+            pcm.GetSpectrum(vdataL.data(), CHANNEL_0, fftLength);
+            return vdataL;
+        }();
+    std::array<float, fftLength> const vdataR =
+        [this]() {
+            std::array<float, fftLength> vdataR{};
+            pcm.GetSpectrum(vdataR.data(), CHANNEL_1, fftLength);
+            return vdataR;
+        }();
 
-    auto const intensityBetween =
-        [&vdataL, &vdataR](size_t const from, size_t const to) {
-            return std::accumulate(&vdataL[from], &vdataL[to], 0.f) +
-                   std::accumulate(&vdataR[from], &vdataR[to], 0.f);
-        };
+    auto const intensityBetween = [&vdataL, &vdataR](size_t const from, size_t const to) {
+        return std::accumulate(&vdataL[from], &vdataL[to], 0.f) +
+               std::accumulate(&vdataR[from], &vdataR[to], 0.f);
+    };
 
     auto const& updateBand =
         [](float& band, float& bandAtt, LowPassFilter& bandSmoothed, float const bandIntensity) {
