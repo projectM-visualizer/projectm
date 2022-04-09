@@ -68,22 +68,22 @@ auto BeatDetect::CalculateBeatStatistics() -> void
 {
     volOld = vol;
 
-    std::array<float, fftLength> const vdataL =
+    std::array<float, fftLength> const freqL =
         [this]() {
-            std::array<float, fftLength> vdataL{};
-            pcm.GetSpectrum(vdataL.data(), CHANNEL_0, fftLength);
-            return vdataL;
+            std::array<float, fftLength> freqL{};
+            pcm.GetSpectrum(freqL.data(), CHANNEL_L, fftLength);
+            return freqL;
         }();
-    std::array<float, fftLength> const vdataR =
+    std::array<float, fftLength> const freqR =
         [this]() {
-            std::array<float, fftLength> vdataR{};
-            pcm.GetSpectrum(vdataR.data(), CHANNEL_1, fftLength);
-            return vdataR;
+            std::array<float, fftLength> freqR{};
+            pcm.GetSpectrum(freqR.data(), CHANNEL_R, fftLength);
+            return freqR;
         }();
 
-    auto const intensityBetween = [&vdataL, &vdataR](size_t const from, size_t const to) {
-        return std::accumulate(&vdataL[from], &vdataL[to], 0.f) +
-               std::accumulate(&vdataR[from], &vdataR[to], 0.f);
+    auto const intensityBetween = [&freqL, &freqR](size_t const from, size_t const to) {
+        return std::accumulate(&freqL[from], &freqL[to], 0.f) +
+               std::accumulate(&freqR[from], &freqR[to], 0.f);
     };
 
     auto const& updateBand =
