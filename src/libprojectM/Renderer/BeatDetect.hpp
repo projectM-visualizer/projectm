@@ -37,6 +37,8 @@
 class BeatDetect
 {
 public:
+    // We should probably remove pcm from the constructor,
+    // and just pass it as an argument to CalculateBeatStatistics.
     explicit BeatDetect(Pcm& pcm);
 
     auto Reset() noexcept -> void;
