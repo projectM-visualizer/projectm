@@ -48,10 +48,7 @@ public:
     // getPCMScale() was added to address https://github.com/projectM-visualizer/projectm/issues/161
     // Returning 1.0 results in using the raw PCM data, which can make the presets look pretty unresponsive
     // if the application volume is low.
-    float GetPCMScale()
-    {
-        return beatSensitivity;
-    }
+    float GetPCMScale();
 
     float beatSensitivity{1.f};
 
@@ -73,21 +70,10 @@ private:
     {
     public:
         auto
-        Update(float nextValue) noexcept -> void
-        {
-            m_current -= m_buffer[m_bufferPos] / bufferLength;
-            m_current += nextValue / bufferLength;
-            m_buffer[m_bufferPos] = nextValue;
-
-            ++m_bufferPos;
-            m_bufferPos %= bufferLength;
-        }
+        Update(float nextValue) noexcept -> void;
 
         [[nodiscard]] auto
-        Get() const noexcept -> float
-        {
-            return m_current;
-        }
+        Get() const noexcept -> float;
 
     private:
         static size_t constexpr bufferLength{80};

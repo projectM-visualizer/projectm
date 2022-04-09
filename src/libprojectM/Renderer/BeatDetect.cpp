@@ -59,6 +59,12 @@ void BeatDetect::Reset()
 }
 
 
+float BeatDetect::GetPCMScale()
+{
+    return beatSensitivity;
+}
+
+
 void BeatDetect::CalculateBeatStatistics()
 {
     volOld = vol;
@@ -97,4 +103,21 @@ void BeatDetect::CalculateBeatStatistics()
 
     float const volIntensity = bassIntensity + midIntensity + trebIntensity;
     updateBand(vol, volAtt, volSmoothed, volIntensity);
+}
+
+
+auto BeatDetect::LowPassFilter::Update(float nextValue) noexcept -> void
+{
+    m_current -= m_buffer[m_bufferPos] / bufferLength;
+    m_current += nextValue / bufferLength;
+    m_buffer[m_bufferPos] = nextValue;
+
+    ++m_bufferPos;
+    m_bufferPos %= bufferLength;
+}
+
+
+auto BeatDetect::LowPassFilter::Get() const noexcept -> float
+{
+    return m_current;
 }
