@@ -24,9 +24,9 @@ void PresetInputs::update(const BeatDetect & music, const PipelineContext & cont
     this->bass = music.bass * music.beatSensitivity;
     this->mid = music.mid * music.beatSensitivity;
     this->treb = music.treb * music.beatSensitivity;
-    this->bass_att = music.bass_att * music.beatSensitivity;
-    this->mid_att = music.mid_att * music.beatSensitivity;
-    this->treb_att = music.treb_att * music.beatSensitivity;
+    this->bass_att = music.bassAtt * music.beatSensitivity;
+    this->mid_att = music.midAtt * music.beatSensitivity;
+    this->treb_att = music.trebAtt * music.beatSensitivity;
 
     // Reflect new values from the pipeline context
     this->fps = context.fps;

@@ -38,17 +38,17 @@ class BeatDetect
 {
 public:
     explicit BeatDetect(Pcm& pcm);
-    void reset();
+    void Reset();
 
     /**
      * Calculates and updates information about the beat
      */
-    void calculateBeatStatistics();
+    void CalculateBeatStatistics();
 
     // getPCMScale() was added to address https://github.com/projectM-visualizer/projectm/issues/161
     // Returning 1.0 results in using the raw PCM data, which can make the presets look pretty unresponsive
     // if the application volume is low.
-    float getPCMScale()
+    float GetPCMScale()
     {
         return beatSensitivity;
     }
@@ -58,13 +58,13 @@ public:
     float treb{0.f};
     float mid{0.f};
     float bass{0.f};
-    float vol_old{0.f};
+    float volOld{0.f};
 
-    float treb_att{0.f};
-    float mid_att{0.f};
-    float bass_att{0.f};
+    float trebAtt{0.f};
+    float midAtt{0.f};
+    float bassAtt{0.f};
     float vol{0.f};
-    float vol_att{0.f};
+    float volAtt{0.f};
 
     Pcm& pcm;
 
@@ -96,10 +96,10 @@ private:
         float m_current{0.f};
     };
 
-    LowPassFilter bass_history;
-    LowPassFilter mid_history;
-    LowPassFilter treb_history;
-    LowPassFilter vol_history;
+    LowPassFilter bassSmoothed;
+    LowPassFilter midSmoothed;
+    LowPassFilter trebSmoothed;
+    LowPassFilter volSmoothed;
 };
 
 #endif /** !_BEAT_DETECT_H */

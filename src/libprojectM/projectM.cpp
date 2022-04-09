@@ -359,7 +359,7 @@ Pipeline* projectM::renderFrameOnlyPass1(
     context.progress = timeKeeper->PresetProgressA();
     renderer->UpdateContext(context);
 
-    beatDetect->calculateBeatStatistics();
+    beatDetect->CalculateBeatStatistics();
 
     //m_activePreset->evaluateFrame();
 
@@ -378,7 +378,7 @@ Pipeline* projectM::renderFrameOnlyPass1(
                 selectNext(false);
             }
         }
-        else if (settings().hardCutEnabled && (beatDetect->vol - beatDetect->vol_old > settings().hardCutSensitivity) &&
+        else if (settings().hardCutEnabled && (beatDetect->vol - beatDetect->volOld > settings().hardCutSensitivity) &&
                  timeKeeper->CanHardCut())
         {
             // Hard Cuts must be enabled, must have passed the hardcut duration, and the volume must be a greater difference than the hardcut sensitivity.
@@ -598,7 +598,7 @@ void projectM::projectM_resetengine()
 
     if (beatDetect != NULL)
     {
-        beatDetect->reset();
+        beatDetect->Reset();
         beatDetect->beatSensitivity = _settings.beatSensitivity;
     }
 
