@@ -38,17 +38,19 @@ class BeatDetect
 {
 public:
     explicit BeatDetect(Pcm& pcm);
-    void Reset();
+
+    auto Reset() noexcept -> void;
 
     /**
      * Calculates and updates information about the beat
      */
-    void CalculateBeatStatistics();
+    auto CalculateBeatStatistics() -> void;
 
     // getPCMScale() was added to address https://github.com/projectM-visualizer/projectm/issues/161
     // Returning 1.0 results in using the raw PCM data, which can make the presets look pretty unresponsive
     // if the application volume is low.
-    float GetPCMScale();
+    [[nodiscard]]
+    auto GetPCMScale() const noexcept -> float;
 
     float beatSensitivity{1.f};
 
