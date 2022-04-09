@@ -440,7 +440,7 @@ void ShaderEngine::SetupShaderVariables(GLuint program, const Pipeline &pipeline
     glUniform4f(glGetUniformLocation(program, "_c1"), 0.0, 0.0, 0.0, 0.0);
     glUniform4f(glGetUniformLocation(program, "_c2"), time_since_preset_start_wrapped, context.fps,  context.frame, context.progress);
     glUniform4f(glGetUniformLocation(program, "_c3"), beatDetect->bass/100, beatDetect->mid/100, beatDetect->treb/100, beatDetect->vol/100);
-    glUniform4f(glGetUniformLocation(program, "_c4"), beatDetect->bass_att/100, beatDetect->mid_att/100, beatDetect->treb_att/100, beatDetect->vol_att/100);
+    glUniform4f(glGetUniformLocation(program, "_c4"), beatDetect->bassAtt/100, beatDetect->midAtt/100, beatDetect->trebAtt/100, beatDetect->volAtt/100);
     glUniform4f(glGetUniformLocation(program, "_c5"), pipeline.blur1x-pipeline.blur1n, pipeline.blur1n, pipeline.blur2x-pipeline.blur2n, pipeline.blur2n);
     glUniform4f(glGetUniformLocation(program, "_c6"), pipeline.blur3x-pipeline.blur3n, pipeline.blur3n, pipeline.blur1n, pipeline.blur1x);
     glUniform4f(glGetUniformLocation(program, "_c7"), texsizeX, texsizeY, 1 / (float) texsizeX, 1 / (float) texsizeY);

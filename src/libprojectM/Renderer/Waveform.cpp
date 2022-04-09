@@ -29,7 +29,7 @@ void Waveform::InitVertexAttrib() {
 void Waveform::Draw(RenderContext &context)
 {
     // scale PCM data based on vol_history to make it more or less independent of the application output volume
-    const float vol_scale = context.beatDetect->getPCMScale();
+    const float vol_scale = context.beatDetect->GetPCMScale();
 
 	// Make sure samples<=points.size().  We could reallocate points, but 512 is probably big enough.
     int sampleCount{ std::min(this->samples, static_cast<int>(this->points.size())) };
