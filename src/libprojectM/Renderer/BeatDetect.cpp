@@ -46,22 +46,22 @@ BeatDetect::BeatDetect(Pcm& _pcm)
 }
 
 
-void BeatDetect::reset()
+void BeatDetect::Reset()
 {
     this->treb = 0;
     this->mid = 0;
     this->bass = 0;
-    this->treb_att = 0;
-    this->mid_att = 0;
-    this->bass_att = 0;
-    this->vol_att = 0;
-    this->vol_old = 0;
+    this->trebAtt = 0;
+    this->midAtt = 0;
+    this->bassAtt = 0;
+    this->volAtt = 0;
+    this->volOld = 0;
 }
 
 
-void BeatDetect::calculateBeatStatistics()
+void BeatDetect::CalculateBeatStatistics()
 {
-    vol_old = vol;
+    volOld = vol;
 
     std::array<float, fftLength> vdataL{};
     std::array<float, fftLength> vdataR{};
@@ -77,20 +77,20 @@ void BeatDetect::calculateBeatStatistics()
     static_assert(fftLength >= 256, "fftLength too small");
     std::array<size_t, 4> constexpr ranges{0, 3, 23, 255};
 
-    float const bass_instant = intensityBetween(ranges[0], ranges[1]);
-    float const mid_instant = intensityBetween(ranges[1], ranges[2]);
-    float const treb_instant = intensityBetween(ranges[2], ranges[3]);
-    float const vol_instant = (bass_instant + mid_instant + treb_instant) / 3.0f;
+    float const bassInstant = intensityBetween(ranges[0], ranges[1]);
+    float const midInstant = intensityBetween(ranges[1], ranges[2]);
+    float const trebInstant = intensityBetween(ranges[2], ranges[3]);
+    float const volInstant = (bassInstant + midInstant + trebInstant) / 3.0f;
 
-    bass_history.Update(bass_instant);
-    mid_history.Update(mid_instant);
-    treb_history.Update(treb_instant);
-    vol_history.Update(vol_instant);
+    bassSmoothed.Update(bassInstant);
+    midSmoothed.Update(midInstant);
+    trebSmoothed.Update(trebInstant);
+    volSmoothed.Update(volInstant);
 
-    bass = bass_instant / std::max(0.0001f, bass_history.Get());
-    mid = mid_instant / std::max(0.0001f, mid_history.Get());
-    treb = treb_instant / std::max(0.0001f, treb_history.Get());
-    vol = vol_instant / std::max(0.0001f, vol_history.Get());
+    bass = bassInstant / std::max(0.0001f, bassSmoothed.Get());
+    mid = midInstant / std::max(0.0001f, midSmoothed.Get());
+    treb = trebInstant / std::max(0.0001f, trebSmoothed.Get());
+    vol = volInstant / std::max(0.0001f, volSmoothed.Get());
 
     if (std::isnan(treb))
     {
@@ -105,17 +105,17 @@ void BeatDetect::calculateBeatStatistics()
         bass = 0.0;
     }
 
-    treb_att = .6f * treb_att + .4f * treb;
-    mid_att = .6f * mid_att + .4f * mid;
-    bass_att = .6f * bass_att + .4f * bass;
-    vol_att = .6f * vol_att + .4f * vol;
+    trebAtt = .6f * trebAtt + .4f * treb;
+    midAtt = .6f * midAtt + .4f * mid;
+    bassAtt = .6f * bassAtt + .4f * bass;
+    volAtt = .6f * volAtt + .4f * vol;
 
-    bass_att = std::min(bass_att, 100.f);
+    bassAtt = std::min(bassAtt, 100.f);
     bass = std::min(bass, 100.f);
-    mid_att = std::min(mid_att, 100.f);
+    midAtt = std::min(midAtt, 100.f);
     mid = std::min(mid, 100.f);
-    treb_att = std::min(treb_att, 100.f);
+    trebAtt = std::min(trebAtt, 100.f);
     treb = std::min(treb, 100.f);
-    vol_att = std::min(vol_att, 100.f);
+    volAtt = std::min(volAtt, 100.f);
     vol = std::min(vol, 100.f);
 }

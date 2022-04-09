@@ -264,7 +264,7 @@ void MilkdropWaveform::WaveformMath(RenderContext& context)
     }
 
     // tie size of waveform to beatSensitivity
-    const float vol_scale = context.beatDetect->getPCMScale();
+    const float vol_scale = context.beatDetect->GetPCMScale();
     if (vol_scale != 1.0)
     {
         for (int i = 0; i < pcmDataL.size(); i++)
