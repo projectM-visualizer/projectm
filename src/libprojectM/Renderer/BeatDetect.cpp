@@ -92,19 +92,6 @@ void BeatDetect::CalculateBeatStatistics()
     treb = trebInstant / std::max(0.0001f, trebSmoothed.Get());
     vol = volInstant / std::max(0.0001f, volSmoothed.Get());
 
-    if (std::isnan(treb))
-    {
-        treb = 0.0;
-    }
-    if (std::isnan(mid))
-    {
-        mid = 0.0;
-    }
-    if (std::isnan(bass))
-    {
-        bass = 0.0;
-    }
-
     trebAtt = .6f * trebAtt + .4f * treb;
     midAtt = .6f * midAtt + .4f * mid;
     bassAtt = .6f * bassAtt + .4f * bass;
