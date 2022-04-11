@@ -37,7 +37,6 @@
 // FFT_LENGTH is number of magnitude values available from getSpectrum().
 // Internally this is generated using 2xFFT_LENGTH samples per channel.
 size_t constexpr fftLength = 512;
-class Test;
 
 enum CHANNEL
 {
@@ -83,9 +82,13 @@ public:
      */
     void GetSpectrum(float* data, CHANNEL channel, size_t samples);
 
-    static auto MakeTest() -> Test*;
+    /**
+     * @brief Resets the auto leveler state.
+     * Makes sense after pausing/resuming audio or other interruptions.
+     */
+    void ResetAutoLevel();
 
-private:
+protected:
     // CPP20: Could use a struct for the first 5 params to clarify on call site
     // together with designated initializers
     template<
@@ -97,6 +100,16 @@ private:
         class SampleType>
     void AddPcm(const SampleType* samples, size_t count);
 
+    // copy data out of the circular PCM buffer
+    void CopyPcm(float* to, size_t channel, size_t count) const;
+    void CopyPcm(double* to, size_t channel, size_t count) const;
+
+    // update FFT data if new samples are available.
+    void UpdateFFT();
+    void UpdateFftChannel(size_t channel);
+
+
+private:
     // mem-usage:
     // pcmd 2x2048*4b    = 16K
     // vdata 2x512x2*8b  = 16K
@@ -120,16 +133,6 @@ private:
 
     std::array<double, fftLength> m_w{0.0};
     std::array<int, 34> m_ip{0};
-
-    // copy data out of the circular PCM buffer
-    void CopyPcm(float* to, size_t channel, size_t count) const;
-    void CopyPcm(double* to, size_t channel, size_t count) const;
-
-    // update FFT data if new samples are available.
-    void UpdateFFT();
-    void UpdateFftChannel(size_t channel);
-
-    friend class PCMTest;
 
     // see https://github.com/projectM-visualizer/projectm/issues/161
     class AutoLevel
