@@ -1,11 +1,7 @@
 find_package(GTest 1.10 REQUIRED NO_MODULE)
 
 add_executable(projectM-unittest
-        ConfigFile.cpp
-        ConfigFile.h
-        getConfigFilename.cpp
-        getConfigFilename.h
-        projectM-unittest.cpp
+        PCMTest.cpp
         )
 
 target_compile_definitions(projectM-unittest
