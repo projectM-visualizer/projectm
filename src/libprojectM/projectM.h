@@ -234,7 +234,7 @@ typedef void(* projectm_preset_rating_changed_event)(unsigned int index, int rat
 PROJECTM_EXPORT projectm_handle projectm_create(const char* setting_file_path, int flags);
 
 /**
- * @brief Creates a new projectM instance, reading settings from the given file.
+ * @brief Creates a new projectM instance with given settings.
  * @param settings A pointer to a projectm_settings_t with the settings to be used by the new instance.
  *                 If this pointer is NULL, default settings will be used.
  * @param flags Any combination of values from the projectm_flags enumeration.
