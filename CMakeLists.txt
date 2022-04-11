@@ -49,7 +49,7 @@ option(ENABLE_DOXYGEN "Build and install Doxygen source code documentation in PR
 option(ENABLE_CXX_INTERFACE "Enable exporting all C++ symbols, not only the C API, in the shared library. Warning: This is not very portable." OFF)
 option(ENABLE_PRESETS "Build and install bundled presets" ON)
 option(ENABLE_NATIVE_PRESETS "Build and install native preset loading support and preset libraries written in C/C++" OFF)
-option(ENABLE_TESTING "Build the libprojectM test suite" OFF)
+option(BUILD_TESTING "Build the libprojectM test suite" OFF)
 cmake_dependent_option(ENABLE_SDL_UI "Build the SDL2-based developer test UI" OFF "NOT ENABLE_EMSCRIPTEN" OFF)
 cmake_dependent_option(ENABLE_GLES "Enable OpenGL ES support" OFF "NOT ENABLE_EMSCRIPTEN" ON)
 option(ENABLE_THREADING "Enable multithreading support. Use with care with emscripten." ON)
@@ -65,7 +65,7 @@ endif()
 
 find_package(GLM)
 if(NOT TARGET GLM::GLM)
-    add_library(GLM::GLM INTERFACE IMPORTED)
+    add_library(GLM::GLM INTERFACE IMPORTED tests/FileParserTest.cpp)
     set_target_properties(GLM::GLM PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/vendor"
             )
@@ -175,7 +175,11 @@ include(features.cmake)
 
 add_subdirectory(presets)
 add_subdirectory(src)
-add_subdirectory(tests)
+
+if(BUILD_TESTING)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
 
 message(STATUS "")
 message(STATUS "libprojectM v${PROJECT_VERSION}")
@@ -217,7 +221,7 @@ message(STATUS "    libprojectM static:      ${ENABLE_STATIC_LIB}")
 message(STATUS "    libprojectM shared:      ${ENABLE_SHARED_LIB}")
 message(STATUS "    SDL2 Test UI:            ${ENABLE_SDL_UI}")
 message(STATUS "    Doxygen API docs:        ${ENABLE_DOXYGEN}")
-message(STATUS "    Tests:                   ${ENABLE_TESTING}")
+message(STATUS "    Tests:                   ${BUILD_TESTING}")
 message(STATUS "")
 
 if(ENABLE_CXX_INTERFACE)

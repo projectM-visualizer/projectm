@@ -1,6 +1,4 @@
-if(NOT ENABLE_TESTING)
-    return()
-endif()
+find_package(GTest 1.10 REQUIRED NO_MODULE)
 
 add_executable(projectM-unittest
         ConfigFile.cpp
@@ -12,7 +10,7 @@ add_executable(projectM-unittest
 
 target_compile_definitions(projectM-unittest
         PRIVATE
-        PROJECTM_PREFIX="${CMAKE_INSTALL_PREFIX}"
+        PROJECTM_TEST_DATA_DIR="${CMAKE_CURRENT_LIST_DIR}/data"
         )
 
 # Test includes a header file from libprojectM with its full path in the source dir.
@@ -24,14 +22,8 @@ target_include_directories(projectM-unittest
 target_link_libraries(projectM-unittest
         PRIVATE
         projectM_static
-        SDL2::SDL2
-        SDL2::SDL2main
-        ${CMAKE_DL_LIBS}
+        GTest::gtest
+        GTest::gtest_main
         )
 
-# Normally there's no need to install test applications, but will
-# keep it for now to resemble the autotools package structure.
-install(TARGETS projectM-unittest
-        RUNTIME DESTINATION "${PROJECTM_BIN_DIR}"
-        COMPONENT Tests
-        )
+add_test(NAME projectM-unittest COMMAND projectM-unittest)
