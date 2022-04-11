@@ -27,7 +27,6 @@ bool TestRunner::run()
         tests.push_back(Param::test());
         tests.push_back(Parser::test());
         tests.push_back(Expr::test());
-        tests.push_back(Pcm::MakeTest());
     }
 
     int count = 0;
