@@ -36,8 +36,6 @@ target_include_directories(projectM_static
         )
 
 target_link_libraries(projectM_static
-        PRIVATE
-        GLM::GLM
         PUBLIC
         ${PROJECTM_OPENGL_LIBRARIES}
         )

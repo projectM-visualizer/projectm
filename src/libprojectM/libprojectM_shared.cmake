@@ -38,8 +38,6 @@ target_include_directories(projectM_shared
         )
 
 target_link_libraries(projectM_shared
-        PRIVATE
-        GLM::GLM
         PUBLIC
         ${PROJECTM_OPENGL_LIBRARIES}
         ${CMAKE_DL_LIBS}
