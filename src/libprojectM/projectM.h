@@ -24,14 +24,16 @@
 #include "projectM_export.h"
 #include "event.h"
 
+#include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 struct projectm; //!< Opaque projectM instance type.
-typedef projectm* projectm_handle; //!< A pointer to the opaque projectM instance.
+typedef struct projectm* projectm_handle; //!< A pointer to the opaque projectM instance.
 
 /**
  * @brief projectM instance settings.
@@ -46,7 +48,7 @@ typedef projectm* projectm_handle; //!< A pointer to the opaque projectM instanc
  * projectm_free_settings() will automatically call projectm_free_string() on it. If you free it on your own, remember
  * to reset the pointer to NULL after doing so!</p>
  */
-struct PROJECTM_EXPORT projectm_settings
+typedef struct PROJECTM_EXPORT projectm_settings_s
 {
     int mesh_x; //!< Per-pixel mesh X resolution.
     int mesh_y; //!< Per-pixel mesh Y resolution.
@@ -68,50 +70,50 @@ struct PROJECTM_EXPORT projectm_settings
     float easter_egg; //!< Used as the "sigma" value for a gaussian RNG to randomize preset duration. Unused on Windows.
     bool shuffle_enabled; //!< Enable playlist shuffle, selecting a random preset on each switch instead of the next in list.
     bool soft_cut_ratings_enabled; //!< If true, use soft cut ratings on soft cuts and hard cut ratings on hard cuts. If false, the hard cut rating is always used.
-};
+} projectm_settings;
 
 /**
  * Flags that influence projectM instance creation.
  */
-enum projectm_flags
+typedef enum
 {
     PROJECTM_FLAG_NONE = 0, //!< No flags.
     PROJECTM_FLAG_DISABLE_PLAYLIST_LOAD = 1 << 0 //!< Set this flag to disable loading a preset playlist on startup.
-};
+} projectm_flags;
 
 /**
  * For specifying audio data format.
  */
-enum projectm_channels {
+typedef enum {
     PROJECTM_MONO = 1,
     PROJECTM_STEREO = 2
-};
+} projectm_channels;
 
 /**
  * Rating types supported by projectM. Used to control preset selection for different types
  * of transitions (hard/soft).
  */
-enum projectm_preset_rating_type
+typedef enum
 {
     PROJECTM_HARD_CUT_RATING_TYPE, //!< Rating for hard cuts.
     PROJECTM_SOFT_CUT_RATING_TYPE //!< Rating for soft cuts.
-};
+} projectm_preset_rating_type;
 
 /**
  * Placeholder values that can be used to address channel indices in PCM data arrays.
  */
-enum projectm_pcm_channel
+typedef enum
 {
     PROJECTM_CHANNEL_L = 0, //!< Left audio channel.
     PROJECTM_CHANNEL_0 = 0, //!< Left audio channel.
     PROJECTM_CHANNEL_R = 1, //!< Right audio channel.
     PROJECTM_CHANNEL_1 = 1 //!< Right audio channel.
-};
+} projectm_pcm_channel;
 
 /**
  * Waveform render types used in the touch start method.
  */
-enum projectm_touch_type
+typedef enum
 {
     PROJECTM_TOUCH_TYPE_RANDOM, //!< Random waveform type.
     PROJECTM_TOUCH_TYPE_CIRCLE, //!< Draws a circular waveform.
@@ -122,7 +124,7 @@ enum projectm_touch_type
     PROJECTM_TOUCH_TYPE_BLOB5, //!< Draws a five-blob waveform.
     PROJECTM_TOUCH_TYPE_LINE, //!< Draws a single-line waveform.
     PROJECTM_TOUCH_TYPE_DOUBLE_LINE //!< Draws a double-line waveform.
-};
+} projectm_touch_type;
 
 /**
  * @brief Allocates memory for a string and returns the pointer.
