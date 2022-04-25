@@ -23,7 +23,7 @@
 
 #include "BeatDetect.hpp"
 #include "ConfigFile.h"
-#include "PCM.hpp"                    //Sound data handler (buffering, FFT, etc.)
+#include "PCM.hpp" //Sound data handler (buffering, FFT, etc.)
 #include "PipelineContext.hpp"
 #include "PipelineMerger.hpp"
 #include "Preset.hpp"
@@ -77,7 +77,6 @@ ProjectM::ProjectM(const std::string& configurationFilename, Flags flags)
     ReadConfig(configurationFilename);
     Reset();
     ResetOpenGL(m_settings.windowWidth, m_settings.windowHeight);
-
 }
 
 ProjectM::ProjectM(const class Settings& settings, Flags flags)
@@ -136,8 +135,7 @@ void ProjectM::ReadConfig(const std::string& configurationFilename)
     m_settings.fps = config.read<int>("FPS", 35);
     m_settings.windowWidth = config.read<int>("Window Width", 512);
     m_settings.windowHeight = config.read<int>("Window Height", 512);
-    m_settings.softCutDuration = config.read<double>
-        ("Smooth Preset Duration", config.read<int>("Smooth Transition Duration", 10));
+    m_settings.softCutDuration = config.read<double>("Smooth Preset Duration", config.read<int>("Smooth Transition Duration", 10));
     m_settings.presetDuration = config.read<double>("Preset Duration", 15);
 
 #ifdef __unix__
@@ -146,32 +144,26 @@ void ProjectM::ReadConfig(const std::string& configurationFilename)
 
 #ifdef __APPLE__
     /// @bug awful hardcoded hack- need to add intelligence to cmake wrt bundling - carm
-    _settings.presetURL = config.read<string> ( "Preset Path", "../Resources/presets" );
+    _settings.presetURL = config.read<string>("Preset Path", "../Resources/presets");
 #endif
 
 #ifdef WIN32
-    _settings.presetURL = config.read<string> ( "Preset Path", "/usr/local/share/projectM/presets" );
+    _settings.presetURL = config.read<string>("Preset Path", "/usr/local/share/projectM/presets");
 #endif
 
 #ifdef __APPLE__
-    _settings.titleFontURL = config.read<string>
-    ( "Title Font",  "../Resources/fonts/Vera.tff");
-    _settings.menuFontURL = config.read<string>
-    ( "Menu Font", "../Resources/fonts/VeraMono.ttf");
+    _settings.titleFontURL = config.read<string>("Title Font", "../Resources/fonts/Vera.tff");
+    _settings.menuFontURL = config.read<string>("Menu Font", "../Resources/fonts/VeraMono.ttf");
 #endif
 
 #ifdef __unix__
-    m_settings.titleFontURL = config.read<string>
-        ("Title Font", "/usr/local/share/projectM/fonts/Vera.tff");
-    m_settings.menuFontURL = config.read<string>
-        ("Menu Font", "/usr/local/share/projectM/fonts/VeraMono.tff");
+    m_settings.titleFontURL = config.read<string>("Title Font", "/usr/local/share/projectM/fonts/Vera.tff");
+    m_settings.menuFontURL = config.read<string>("Menu Font", "/usr/local/share/projectM/fonts/VeraMono.tff");
 #endif
 
 #ifdef WIN32
-    _settings.titleFontURL = config.read<string>
-    ( "Title Font", projectM_FONT_TITLE );
-    _settings.menuFontURL = config.read<string>
-    ( "Menu Font", projectM_FONT_MENU );
+    _settings.titleFontURL = config.read<string>("Title Font", projectM_FONT_TITLE);
+    _settings.menuFontURL = config.read<string>("Menu Font", projectM_FONT_MENU);
 #endif
 
 
@@ -188,7 +180,7 @@ void ProjectM::ReadConfig(const std::string& configurationFilename)
     // Hard Cut sensitivity is the volume difference before a "hard cut" is triggered.
     m_settings.hardCutSensitivity = config.read<float>("Hard Cut Sensitivity", 1.0);
 
-    // Beat Sensitivity impacts how reactive your visualizations are to volume, bass, mid-range, and treble. 
+    // Beat Sensitivity impacts how reactive your visualizations are to volume, bass, mid-range, and treble.
     // Preset authors have developed their visualizations with the default of 1.0.
     m_settings.beatSensitivity = config.read<float>("Beat Sensitivity", 1.0);
 
@@ -206,8 +198,6 @@ void ProjectM::ReadConfig(const std::string& configurationFilename)
         m_settings.aspectCorrection = false;
         m_renderer->correction = false;
     }
-
-
 }
 
 
@@ -372,7 +362,6 @@ auto ProjectM::RenderFrameOnlyPass1(
 
 
         return pipeline;
-
     }
     else
     {
@@ -389,15 +378,10 @@ auto ProjectM::RenderFrameOnlyPass1(
         m_activePreset->Render(*m_beatDetect, PipelineContext());
         m_renderer->RenderFrameOnlyPass1(m_activePreset->pipeline(), PipelineContext());
         return NULL; // indicating no transition
-
     }
 
     //	std::cout<< m_activePreset->absoluteFilePath()<<std::endl;
     //	renderer->presetName = m_activePreset->absoluteFilePath();
-
-
-
-
 }
 
 
@@ -414,7 +398,7 @@ void ProjectM::RenderFrameOnlyPass2(Pipeline* pipeline,
 #endif
 
     if (pipeline)
-//    if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty() )
+    //    if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty() )
     {
         //	 printf("start thread\n");
         assert(m_activePreset2.get());
@@ -423,17 +407,13 @@ void ProjectM::RenderFrameOnlyPass2(Pipeline* pipeline,
         /* was other stuff */
 
         m_renderer->RenderFrameOnlyPass2(*pipeline, PipelineContext(), offsetX, offsetY, 0);
-
     }
     else
     {
 
 
         m_renderer->RenderFrameOnlyPass2(m_activePreset->pipeline(), PipelineContext(), offsetX, offsetY, 0);
-
-
     }
-
 }
 
 
@@ -443,7 +423,7 @@ void ProjectM::RenderFrameEndOnSeparatePasses(Pipeline* pipeline)
     if (pipeline)
     {
         // mergePipelines() sets masterAlpha for each RenderItem, reset it before we forget
-        for (RenderItem* drawable: pipeline->drawables)
+        for (RenderItem* drawable : pipeline->drawables)
         {
             drawable->masterAlpha = 1.0;
         }
@@ -464,7 +444,7 @@ void ProjectM::Initialize(int meshResolutionX, int meshResolutionY, int targetFp
 {
     /** Initialise start time */
     m_timeKeeper = std::make_unique<TimeKeeper>(m_settings.presetDuration, m_settings.softCutDuration, m_settings.hardCutDuration,
-                                m_settings.easterEgg);
+                                                m_settings.easterEgg);
 
     /** Nullify frame stash */
 
@@ -491,7 +471,6 @@ void ProjectM::Initialize(int meshResolutionX, int meshResolutionY, int targetFp
     // ToDo: Calculate the real FPS instead
     PipelineContext().fps = targetFps;
     PipelineContext2().fps = targetFps;
-
 }
 
 /* Reinitializes the engine variables to a default (conservative and sane) value */
@@ -503,7 +482,6 @@ void ProjectM::ResetEngine()
         m_beatDetect->Reset();
         m_beatDetect->beatSensitivity = m_settings.beatSensitivity;
     }
-
 }
 
 /** Resets OpenGL state */
@@ -575,9 +553,8 @@ auto ProjectM::InitializePresetTools(int meshResolutionX, int meshResolutionY) -
     *m_presetPos = m_presetChooser->end();
 
     // Load idle preset
-//        std::cerr << "[projectM] Allocating idle preset..." << std::endl;
-    m_activePreset = m_presetLoader->loadPreset
-        ("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk");
+    //        std::cerr << "[projectM] Allocating idle preset..." << std::endl;
+    m_activePreset = m_presetLoader->loadPreset("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk");
     m_renderer->setPresetName("Geiss & Sperl - Feedback (projectM idle HDR mix)");
 
     PopulatePresetMenu();
@@ -643,18 +620,15 @@ void ProjectM::RemovePreset(unsigned int index)
         *m_presetPos = m_presetChooser->begin(chooserIndex);
     }
 
-        // Case: we have deleted the active preset position
-        // Set iterator to end of chooser
+    // Case: we have deleted the active preset position
+    // Set iterator to end of chooser
     else if (chooserIndex == index)
     {
         *m_presetPos = m_presetChooser->end();
     }
-
-
 }
 
-auto
-ProjectM::AddPresetURL(const std::string& presetFilename, const std::string& presetName, const RatingList& ratingList) -> unsigned int
+auto ProjectM::AddPresetURL(const std::string& presetFilename, const std::string& presetName, const RatingList& ratingList) -> unsigned int
 {
     bool restorePosition = false;
 
@@ -693,7 +667,7 @@ void ProjectM::SelectPreset(unsigned int index, bool hardCut)
 void ProjectM::PopulatePresetMenu()
 {
     if (m_renderer->showmenu)
-    { // only track a preset list buffer if the preset menu is up.
+    {                                     // only track a preset list buffer if the preset menu is up.
         m_renderer->m_presetList.clear(); // clear preset list buffer from renderer.
 
         if (TextInputActive())
@@ -710,7 +684,7 @@ void ProjectM::PopulatePresetMenu()
                     {
                         h++;
                         m_renderer->m_presetList.push_back(
-                            { h, PresetName(i), "" }); // populate the renders preset list.
+                            {h, PresetName(i), ""}); // populate the renders preset list.
                         if (h == presetIndex)
                         {
                             m_renderer->m_activePresetID = h;
@@ -749,7 +723,7 @@ void ProjectM::PopulatePresetMenu()
             while (page_start < page_end)
             {
                 m_renderer->m_presetList.push_back(
-                    { page_start, PresetName(page_start), "" }); // populate the renders preset list.
+                    {page_start, PresetName(page_start), ""}); // populate the renders preset list.
                 page_start++;
             }
         }
@@ -809,7 +783,6 @@ void ProjectM::SelectRandom(const bool hardCut)
         m_presetHistory.erase(m_presetHistory.begin());
     }
     m_presetFuture.clear();
-
 }
 
 void ProjectM::SelectPrevious(const bool hardCut)
@@ -1047,7 +1020,7 @@ void ProjectM::InsertPresetURL(unsigned int index, const std::string& presetFile
         newSelectedIndex++;
     }
 
-    else  // Case: inserting at selected preset
+    else // Case: inserting at selected preset
     {
         newSelectedIndex++;
     }
@@ -1062,8 +1035,6 @@ void ProjectM::InsertPresetURL(unsigned int index, const std::string& presetFile
     {
         *m_presetPos = m_presetChooser->begin(newSelectedIndex);
     }
-
-
 }
 
 void ProjectM::ChangePresetName(unsigned int index, std::string presetName)
@@ -1196,7 +1167,7 @@ void ProjectM::ToggleSearchText()
 // get index from search results based on preset name
 auto ProjectM::SearchIndex(const std::string& presetName) const -> unsigned int
 {
-    for (auto& it: m_renderer->m_presetList)
+    for (auto& it : m_renderer->m_presetList)
     {
         if (it.name == presetName)
         {

@@ -30,8 +30,8 @@
 #pragma comment(lib, "psapi.lib")
 #pragma comment(lib, "kernel32.lib")
 
-#pragma warning (disable:4244)
-#pragma warning (disable:4305)
+#pragma warning(disable : 4244)
+#pragma warning(disable : 4305)
 
 #include <windows.h>
 #else
@@ -46,9 +46,9 @@
 
 #if USE_THREADS
 
+#include "BackgroundWorker.h"
 #include <mutex>
 #include <thread>
-#include "BackgroundWorker.h"
 
 #endif
 
@@ -97,33 +97,33 @@ public:
      */
     enum Flags
     {
-        None = 0, //!< No special flags.
+        None = 0,                    //!< No special flags.
         DisablePlaylistLoad = 1 << 0 //!< Prevent automatic playlist loading on startup.
     };
 
     class Settings
     {
     public:
-        size_t meshX{ 32 };
-        size_t meshY{ 24 };
-        size_t fps{ 35 };
-        size_t textureSize{ 512 };
-        size_t windowWidth{ 512 };
-        size_t windowHeight{ 512 };
+        size_t meshX{32};
+        size_t meshY{24};
+        size_t fps{35};
+        size_t textureSize{512};
+        size_t windowWidth{512};
+        size_t windowHeight{512};
         std::string presetURL;
         std::string titleFontURL;
         std::string menuFontURL;
         std::string datadir;
-        double presetDuration{ 15.0 };
-        double softCutDuration{ 10.0 };
-        double hardCutDuration{ 60.0 };
-        bool hardCutEnabled{ false };
-        float hardCutSensitivity{ 2.0 };
-        float beatSensitivity{ 1.0 };
-        bool aspectCorrection{ true };
-        float easterEgg{ 0.0 };
-        bool shuffleEnabled{ true };
-        bool softCutRatingsEnabled{ false };
+        double presetDuration{15.0};
+        double softCutDuration{10.0};
+        double hardCutDuration{60.0};
+        bool hardCutEnabled{false};
+        float hardCutSensitivity{2.0};
+        float beatSensitivity{1.0};
+        bool aspectCorrection{true};
+        float easterEgg{0.0};
+        bool shuffleEnabled{true};
+        bool softCutRatingsEnabled{false};
     };
 
     explicit ProjectM(const std::string& configurationFilename, Flags flags = Flags::None);
@@ -384,42 +384,42 @@ private:
 
     void RecreateRenderer();
 
-    #if USE_THREADS
+#if USE_THREADS
 
-        void ThreadWorker();
+    void ThreadWorker();
 
-    #endif
+#endif
 
-    class Pcm m_pcm;//!< Audio data buffer and analyzer instance.
+    class Pcm m_pcm; //!< Audio data buffer and analyzer instance.
 
-    class Settings m_settings;//!< The projectM Settings.
+    class Settings m_settings; //!< The projectM Settings.
 
-    Flags m_flags{Flags::None};//!< Behaviour flags.
+    Flags m_flags{Flags::None}; //!< Behaviour flags.
 
-    std::vector<int> m_presetHistory;//!< List of previously played preset indices.
-    std::vector<int> m_presetFuture; //!< List of preset indices queued for playing.
+    std::vector<int> m_presetHistory; //!< List of previously played preset indices.
+    std::vector<int> m_presetFuture;  //!< List of preset indices queued for playing.
 
     /** Timing information */
-    int m_count{0};//!< Rendered frame count since start
+    int m_count{0}; //!< Rendered frame count since start
 
-    bool m_errorLoadingCurrentPreset{false};//!< Error flag for preset loading errors.
+    bool m_errorLoadingCurrentPreset{false}; //!< Error flag for preset loading errors.
 
-    std::unique_ptr<Renderer> m_renderer;                     //!< The Preset renderer.
-    std::unique_ptr<BeatDetect> m_beatDetect;                 //!< The beat detection class.
-    std::unique_ptr<class PipelineContext> m_pipelineContext; //!< Pipeline context for the first/current preset.
-    std::unique_ptr<class PipelineContext> m_pipelineContext2;//!< Pipeline context for the next/transitioning preset.
-    std::unique_ptr<PresetIterator> m_presetPos;              //!< The current position of the directory iterator.
-    std::unique_ptr<PresetLoader> m_presetLoader;             //!< Required by the preset chooser. Manages a loaded preset directory.
-    std::unique_ptr<PresetChooser> m_presetChooser;           //!< Provides accessor functions to choose presets.
-    std::unique_ptr<Preset> m_activePreset;                   //!< Currently loaded preset.
-    std::unique_ptr<Preset> m_activePreset2;                  //!< Destination preset when smooth preset switching.
-    std::unique_ptr<TimeKeeper> m_timeKeeper;                 //!< Keeps the different timers used to render and switch presets.
-    std::unique_ptr<RenderItemMatcher> m_matcher;             //!< Render item matcher for preset transitions.
-    std::unique_ptr<MasterRenderItemMerge> m_merger;          //!< Render item merger for preset transitions.
+    std::unique_ptr<Renderer> m_renderer;                      //!< The Preset renderer.
+    std::unique_ptr<BeatDetect> m_beatDetect;                  //!< The beat detection class.
+    std::unique_ptr<class PipelineContext> m_pipelineContext;  //!< Pipeline context for the first/current preset.
+    std::unique_ptr<class PipelineContext> m_pipelineContext2; //!< Pipeline context for the next/transitioning preset.
+    std::unique_ptr<PresetIterator> m_presetPos;               //!< The current position of the directory iterator.
+    std::unique_ptr<PresetLoader> m_presetLoader;              //!< Required by the preset chooser. Manages a loaded preset directory.
+    std::unique_ptr<PresetChooser> m_presetChooser;            //!< Provides accessor functions to choose presets.
+    std::unique_ptr<Preset> m_activePreset;                    //!< Currently loaded preset.
+    std::unique_ptr<Preset> m_activePreset2;                   //!< Destination preset when smooth preset switching.
+    std::unique_ptr<TimeKeeper> m_timeKeeper;                  //!< Keeps the different timers used to render and switch presets.
+    std::unique_ptr<RenderItemMatcher> m_matcher;              //!< Render item matcher for preset transitions.
+    std::unique_ptr<MasterRenderItemMerge> m_merger;           //!< Render item merger for preset transitions.
 
 #if USE_THREADS
-    mutable std::recursive_mutex m_presetSwitchMutex;//!< Mutex for locking preset switching while rendering and vice versa.
-    std::thread m_workerThread;                      //!< Background worker for preloading presets.
-    BackgroundWorkerSync m_workerSync;               //!< Background work synchronizer.
+    mutable std::recursive_mutex m_presetSwitchMutex; //!< Mutex for locking preset switching while rendering and vice versa.
+    std::thread m_workerThread;                       //!< Background worker for preloading presets.
+    BackgroundWorkerSync m_workerSync;                //!< Background work synchronizer.
 #endif
 };
