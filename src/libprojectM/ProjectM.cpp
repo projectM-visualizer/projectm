@@ -144,16 +144,16 @@ void ProjectM::ReadConfig(const std::string& configurationFilename)
 
 #ifdef __APPLE__
     /// @bug awful hardcoded hack- need to add intelligence to cmake wrt bundling - carm
-    _settings.presetURL = config.read<string>("Preset Path", "../Resources/presets");
+    m_settings.presetURL = config.read<string>("Preset Path", "../Resources/presets");
 #endif
 
 #ifdef WIN32
-    _settings.presetURL = config.read<string>("Preset Path", "/usr/local/share/projectM/presets");
+    m_settings.presetURL = config.read<string>("Preset Path", "/usr/local/share/projectM/presets");
 #endif
 
 #ifdef __APPLE__
-    _settings.titleFontURL = config.read<string>("Title Font", "../Resources/fonts/Vera.tff");
-    _settings.menuFontURL = config.read<string>("Menu Font", "../Resources/fonts/VeraMono.ttf");
+    m_settings.titleFontURL = config.read<string>("Title Font", "../Resources/fonts/Vera.tff");
+    m_settings.menuFontURL = config.read<string>("Menu Font", "../Resources/fonts/VeraMono.ttf");
 #endif
 
 #ifdef __unix__
@@ -162,8 +162,8 @@ void ProjectM::ReadConfig(const std::string& configurationFilename)
 #endif
 
 #ifdef WIN32
-    _settings.titleFontURL = config.read<string>("Title Font", projectM_FONT_TITLE);
-    _settings.menuFontURL = config.read<string>("Menu Font", projectM_FONT_MENU);
+    m_settings.titleFontURL = config.read<string>("Title Font", projectM_FONT_TITLE);
+    m_settings.menuFontURL = config.read<string>("Menu Font", projectM_FONT_MENU);
 #endif
 
 
