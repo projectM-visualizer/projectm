@@ -5,6 +5,9 @@ set(libprojectM_VERSION @PROJECT_VERSION@)
 include(CMakeFindDependencyMacro)
 
 find_dependency(OpenGL)
+if("@ENABLE_OPENMP@") # ENABLE_OPENMP
+   find_dependency(OpenMP)
+endif()
 if("@ENABLE_THREADING@") # ENABLE_THREADING
     find_dependency(Threads)
 endif()
