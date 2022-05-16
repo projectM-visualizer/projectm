@@ -40,6 +40,13 @@ target_link_libraries(projectM_static
         ${PROJECTM_OPENGL_LIBRARIES}
         )
 
+if(ENABLE_OPENMP)
+    target_link_libraries(projectM_static
+            PUBLIC
+            OpenMP::OpenMP_CXX
+            )
+endif()
+
 if(ENABLE_THREADING)
     target_link_libraries(projectM_static
             PUBLIC

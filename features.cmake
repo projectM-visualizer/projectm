@@ -23,26 +23,9 @@ if(NOT MSVC)
             -Wsign-compare
             -Wtype-limits
     )
-
-    # Emscripten does not support multithreading, so OpenMP doesn't make sense even if the compiler
-    # says it supports it.
-    if(NOT ENABLE_EMSCRIPTEN)
-        enable_cflags_if_supported(
-                -fopenmp
-        )
-
-        enable_linker_flags_if_supported(
-                -fopenmp
-        )
-    endif()
 else()
     enable_cflags_if_supported(
             /W4
-            /openmp
-    )
-
-    enable_linker_flags_if_supported(
-            /openmp
     )
 endif()
 
