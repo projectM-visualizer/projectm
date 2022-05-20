@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
 
 if(CMAKE_VERSION VERSION_LESS 3.19 AND CMAKE_GENERATOR STREQUAL "Xcode")
     message(AUTHOR_WARNING "Using a CMake version before 3.19 with a recent Xcode SDK and the Xcode generator "
@@ -140,7 +140,12 @@ else()
         endif()
         if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
             find_package(GLEW REQUIRED)
-            list(APPEND PROJECTM_OPENGL_LIBRARIES GLEW::glew)
+            # Prefer shared, but check for static lib if shared is not available.
+            if(TARGET GLEW::glew)
+                list(APPEND PROJECTM_OPENGL_LIBRARIES GLEW::glew)
+            elseif(TARGET GLEW::glew_s)
+                list(APPEND PROJECTM_OPENGL_LIBRARIES GLEW::glew_s)
+            endif()
         endif()
     endif()
 
