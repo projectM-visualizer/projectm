@@ -55,9 +55,17 @@ endif()
 
 # Temporary fix to deal with wrong include dir set by SDL2's CMake configuration.
 get_target_property(_SDL2_INCLUDE_DIR SDL2::SDL2 INTERFACE_INCLUDE_DIRECTORIES)
-if(_SDL2_INCLUDE_DIR MATCHES "(.+)/SDL2\$")
+if(_SDL2_INCLUDE_DIR MATCHES "(.+)/SDL2\$" AND _SDL2_TARGET_TYPE STREQUAL STATIC_LIBRARY)
+    # Check if SDL2::SDL2 is aliased to SDL2::SDL2-static (will be the case for static-only builds)
+    get_target_property(_SDL2_ALIASED_TARGET SDL2::SDL2 ALIASED_TARGET)
+    if(_SDL2_ALIASED_TARGET)
+        set(_sdl2_target ${_SDL2_ALIASED_TARGET})
+    else()
+        set(_sdl2_target SDL2::SDL2)
+    endif()
+
     message(STATUS "SDL2 include dir contains \"SDL2\" subdir (SDL bug #4004) - fixing to \"${CMAKE_MATCH_1}\".")
-    set_target_properties(SDL2::SDL2 PROPERTIES
+    set_target_properties(${_sdl2_target} PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_MATCH_1}"
             )
 endif()
