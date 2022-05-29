@@ -311,6 +311,11 @@ public:
 private:
     void EvaluateSecondPreset();
 
+    /**
+     * @brief Renders the first pass of a frame.
+     * @param pipeline A pointer to a Pipeline for use in pass 2.
+     * @return Returns the pointer passed in pipeline if in a transition, else returns nullptr.
+     */
     auto RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*;
 
     void RenderFrameOnlyPass2(Pipeline* pipeline, int offsetX, int offsetY);

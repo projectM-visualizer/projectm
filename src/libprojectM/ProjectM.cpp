@@ -265,8 +265,7 @@ void ProjectM::RenderFrame()
 }
 
 
-auto ProjectM::RenderFrameOnlyPass1(
-    Pipeline* pipeline) -> Pipeline* /*pPipeline is a pointer to a Pipeline for use in pass 2. returns the pointer if it was used, else returns NULL */
+auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
 {
 #if USE_THREADS
     std::lock_guard<std::recursive_mutex> guard(m_presetSwitchMutex);
@@ -318,7 +317,6 @@ auto ProjectM::RenderFrameOnlyPass1(
 
     if (m_timeKeeper->IsSmoothing() && m_timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty())
     {
-        //	 printf("start thread\n");
         assert(m_activePreset2.get());
 
 #if USE_THREADS
@@ -343,7 +341,6 @@ auto ProjectM::RenderFrameOnlyPass1(
                                        *m_merger, m_timeKeeper->SmoothRatio());
 
         m_renderer->RenderFrameOnlyPass1(*pipeline, PipelineContext());
-
 
         return pipeline;
     }
