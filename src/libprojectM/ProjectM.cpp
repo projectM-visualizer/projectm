@@ -359,19 +359,15 @@ auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
 
 void ProjectM::RenderFrameOnlyPass2(Pipeline* pipeline,
                                     int offsetX,
-                                    int offsetY) /*pipeline can be null if we re not in transition */
+                                    int offsetY)
 {
-    if (pipeline != nullptr)
+    if (pipeline == nullptr)
     {
-        assert(m_activePreset2.get());
+        assert(m_activePreset.get());
+        pipeline = &m_activePreset->pipeline();
+    }
 
-        /* was other stuff */
-        m_renderer->RenderFrameOnlyPass2(*pipeline, PipelineContext(), offsetX, offsetY, 0);
-    }
-    else
-    {
-        m_renderer->RenderFrameOnlyPass2(m_activePreset->pipeline(), PipelineContext(), offsetX, offsetY, 0);
-    }
+    m_renderer->RenderFrameOnlyPass2(*pipeline, PipelineContext(), offsetX, offsetY, 0);
 }
 
 
