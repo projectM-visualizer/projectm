@@ -330,14 +330,14 @@ private:
 
     void ReadSettings(const class Settings& settings);
 
-    void Initialize(int meshResolutionX, int meshResolutionY, int targetFps, int width, int height);
+    void Initialize();
 
     void Reset();
 
     void ResetEngine();
 
     /// Initializes preset loading / management libraries
-    auto InitializePresetTools(int meshResolutionX, int meshResolutionY) -> void;
+    auto InitializePresetTools() -> void;
 
     auto SwitchToCurrentPreset() -> std::unique_ptr<Preset>;
 
