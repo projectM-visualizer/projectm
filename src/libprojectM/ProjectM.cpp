@@ -54,8 +54,6 @@ ProjectM::~ProjectM()
     m_workerSync.FinishUp();
     m_workerThread.join();
 #endif
-
-    DestroyPresetTools();
 }
 
 auto ProjectM::InitRenderToTexture() -> unsigned
@@ -545,17 +543,6 @@ auto ProjectM::InitializePresetTools(int meshResolutionX, int meshResolutionY) -
     m_matcher->distanceFunction().addMetric(new ShapeXYDistance());
 
     ResetEngine();
-}
-
-void ProjectM::DestroyPresetTools()
-{
-    m_activePreset.reset();
-    m_activePreset2.reset();
-    m_presetPos.reset();
-    m_presetChooser.reset();
-    m_presetLoader.reset();
-    m_matcher.reset();
-    m_merger.reset();
 }
 
 /// @bug queuePreset case isn't handled
