@@ -484,7 +484,7 @@ auto ProjectM::InitializePresetTools() -> void
     srand(time(nullptr));
 
     std::string url;
-    if ((m_flags & Flags::DisablePlaylistLoad) == Flags::DisablePlaylistLoad)
+    if ((m_flags & Flags::DisablePlaylistLoad) != Flags::DisablePlaylistLoad)
     {
         url = Settings().presetURL;
     }
