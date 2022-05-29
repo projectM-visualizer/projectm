@@ -78,16 +78,6 @@ class RenderItemMatcher;
 
 class MasterRenderItemMerge;
 
-/** Interface types */
-typedef enum
-{
-    MENU_INTERFACE,
-    SHELL_INTERFACE,
-    EDITOR_INTERFACE,
-    DEFAULT_INTERFACE,
-    BROWSER_INTERFACE
-} interface_t;
-
 class ProjectM
 {
 public:
