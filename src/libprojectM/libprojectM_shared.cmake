@@ -43,6 +43,13 @@ target_link_libraries(projectM_shared
         ${CMAKE_DL_LIBS}
         )
 
+if(ENABLE_OPENMP)
+    target_link_libraries(projectM_shared
+            PUBLIC
+            OpenMP::OpenMP_CXX
+            )
+endif()
+
 if(ENABLE_THREADING)
     target_link_libraries(projectM_shared
             PUBLIC
