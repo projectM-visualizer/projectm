@@ -282,7 +282,6 @@ void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineCo
 
 
 	// When console refreshes, there is a chance the preset has been changed by the user
-	refreshConsole();
 	// TODO:
 	draw_title_to_screen(false);
 	if (this->showhelp == true)
