@@ -34,8 +34,6 @@
 
 
 class Preset;
-interface_t current_interface = DEFAULT_INTERFACE;
-
 void selectRandom(const bool hardCut);
 void selectNext(const bool hardCut);
 void selectPrevious(const bool hardCut);
@@ -47,67 +45,19 @@ std::string round_float(float number)
 	return rounded;
 }
 
-void refreshConsole() {
-
-  switch (current_interface) {
-
-  case MENU_INTERFACE:
-    // unimplemented
-    break;
-  case SHELL_INTERFACE:
-    // unimplemented
-    break;
-  case EDITOR_INTERFACE:
-    // unimplemented
-    break;
-  case DEFAULT_INTERFACE:
-    break;
-  case BROWSER_INTERFACE:
-    // unimplemented
-    break;
-  default:
-    break;
-  }
-
-}
-
 void ProjectM::KeyHandler(projectMEvent event,
-                           projectMKeycode keyCode, projectMModifier modifier ) {
-
-	switch( event ) {
-
-
-	case PROJECTM_KEYDOWN:
-
-	  //default_key_handler();
-	  switch (current_interface)
-	    {
-
-	    case MENU_INTERFACE:
-//	      menu_key_handler(this, event, keycode);
-	      break;
-	    case SHELL_INTERFACE:
-	      //shell_key_handler();
-	      break;
-	    case EDITOR_INTERFACE:
-//	      editor_key_handler(event,keycode);
-	      break;
-	    case BROWSER_INTERFACE:
-//	      browser_key_handler(event,keycode,modifier);
-	      break;
-	    case DEFAULT_INTERFACE:
+                          projectMKeycode keyCode,
+                          projectMModifier modifier)
+{
+    switch (event)
+    {
+        case PROJECTM_KEYDOWN:
             DefaultKeyHandler(event, keyCode);
-	      break;
-	    default:
-            DefaultKeyHandler(event, keyCode);
-	      break;
+            break;
 
-	    }
-	  break;
-	default:
-		break;
-
-	}
+        default:
+            break;
+    }
 }
 
 void ProjectM::DefaultKeyHandler(projectMEvent event, projectMKeycode keycode) {
