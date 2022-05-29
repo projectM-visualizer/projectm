@@ -365,34 +365,19 @@ auto ProjectM::RenderFrameOnlyPass1(
     return nullptr; // indicating no transition
 }
 
-
-/* eye is 0,or 1, or who knows?*/
 void ProjectM::RenderFrameOnlyPass2(Pipeline* pipeline,
                                     int offsetX,
                                     int offsetY) /*pipeline can be null if we re not in transition */
 {
-#ifdef DEBUG
-    char fname[1024];
-    FILE* f = NULL;
-    int index = 0;
-    int x, y;
-#endif
-
-    if (pipeline)
-    //    if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty() )
+    if (pipeline != nullptr)
     {
-        //	 printf("start thread\n");
         assert(m_activePreset2.get());
 
-
         /* was other stuff */
-
         m_renderer->RenderFrameOnlyPass2(*pipeline, PipelineContext(), offsetX, offsetY, 0);
     }
     else
     {
-
-
         m_renderer->RenderFrameOnlyPass2(m_activePreset->pipeline(), PipelineContext(), offsetX, offsetY, 0);
     }
 }
@@ -400,8 +385,7 @@ void ProjectM::RenderFrameOnlyPass2(Pipeline* pipeline,
 
 void ProjectM::RenderFrameEndOnSeparatePasses(Pipeline* pipeline)
 {
-
-    if (pipeline)
+    if (pipeline != nullptr)
     {
         // mergePipelines() sets masterAlpha for each RenderItem, reset it before we forget
         for (RenderItem* drawable : pipeline->drawables)
