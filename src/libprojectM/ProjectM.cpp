@@ -262,9 +262,7 @@ void ProjectM::EvaluateSecondPreset()
 void ProjectM::RenderFrame()
 {
     Pipeline pipeline;
-    Pipeline* comboPipeline;
-
-    comboPipeline = RenderFrameOnlyPass1(&pipeline);
+    Pipeline* comboPipeline = RenderFrameOnlyPass1(&pipeline);
 
     RenderFrameOnlyPass2(comboPipeline, 0, 0);
 
@@ -279,13 +277,6 @@ auto ProjectM::RenderFrameOnlyPass1(
     std::lock_guard<std::recursive_mutex> guard(m_presetSwitchMutex);
 #endif
 
-#ifdef DEBUG
-    char fname[1024];
-    FILE* f = NULL;
-    int index = 0;
-    int x, y;
-#endif
-
     m_timeKeeper->UpdateTimers();
 
     /// @bug who is responsible for updating this now?"
@@ -298,10 +289,8 @@ auto ProjectM::RenderFrameOnlyPass1(
 
     m_beatDetect->CalculateBeatStatistics();
 
-    //m_activePreset->evaluateFrame();
-
     //if the preset isn't locked and there are more presets
-    if (m_renderer->noSwitch == false && !m_presetChooser->empty())
+    if (!m_renderer->noSwitch && !m_presetChooser->empty())
     {
         //if preset is done and we're not already switching
         if (m_timeKeeper->PresetProgressA() >= 1.0 && !m_timeKeeper->IsSmoothing())
@@ -315,7 +304,8 @@ auto ProjectM::RenderFrameOnlyPass1(
                 SelectNext(false);
             }
         }
-        else if (Settings().hardCutEnabled && (m_beatDetect->vol - m_beatDetect->volOld > Settings().hardCutSensitivity) &&
+        else if (Settings().hardCutEnabled &&
+                 (m_beatDetect->vol - m_beatDetect->volOld > Settings().hardCutSensitivity) &&
                  m_timeKeeper->CanHardCut())
         {
             // Hard Cuts must be enabled, must have passed the hardcut duration, and the volume must be a greater difference than the hardcut sensitivity.
@@ -361,25 +351,17 @@ auto ProjectM::RenderFrameOnlyPass1(
 
         return pipeline;
     }
-    else
+
+    if (m_timeKeeper->IsSmoothing() && m_timeKeeper->SmoothRatio() > 1.0)
     {
-
-
-        if (m_timeKeeper->IsSmoothing() && m_timeKeeper->SmoothRatio() > 1.0)
-        {
-            //printf("End Smooth\n");
-            m_activePreset = std::move(m_activePreset2);
-            m_timeKeeper->EndSmoothing();
-        }
-        //printf("Normal\n");
-
-        m_activePreset->Render(*m_beatDetect, PipelineContext());
-        m_renderer->RenderFrameOnlyPass1(m_activePreset->pipeline(), PipelineContext());
-        return NULL; // indicating no transition
+        m_activePreset = std::move(m_activePreset2);
+        m_timeKeeper->EndSmoothing();
     }
 
-    //	std::cout<< m_activePreset->absoluteFilePath()<<std::endl;
-    //	renderer->presetName = m_activePreset->absoluteFilePath();
+    m_activePreset->Render(*m_beatDetect, PipelineContext());
+    m_renderer->RenderFrameOnlyPass1(m_activePreset->pipeline(), PipelineContext());
+
+    return nullptr; // indicating no transition
 }
 
 
