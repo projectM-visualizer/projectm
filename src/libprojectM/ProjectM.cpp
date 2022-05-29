@@ -431,6 +431,16 @@ void ProjectM::RenderFrameEndOnSeparatePasses(Pipeline* pipeline)
     m_count++;
 }
 
+auto ProjectM::PipelineContext() -> class PipelineContext&
+{
+    return *m_pipelineContext;
+}
+
+auto ProjectM::PipelineContext2() -> class PipelineContext&
+{
+    return *m_pipelineContext2;
+}
+
 void ProjectM::Reset()
 {
     this->m_count = 0;
@@ -732,6 +742,21 @@ void ProjectM::SelectRandom(const bool hardCut)
     m_presetFuture.clear();
 }
 
+auto ProjectM::WindowWidth() -> int
+{
+    return m_settings.windowWidth;
+}
+
+auto ProjectM::WindowHeight() -> int
+{
+    return m_settings.windowHeight;
+}
+
+auto ProjectM::ErrorLoadingCurrentPreset() const -> bool
+{
+    return m_errorLoadingCurrentPreset;
+}
+
 void ProjectM::SelectPrevious(const bool hardCut)
 {
     if (m_presetChooser->empty())
@@ -938,6 +963,16 @@ auto ProjectM::PlaylistSize() const -> unsigned int
     return m_presetLoader->size();
 }
 
+void ProjectM::SetShuffleEnabled(bool value)
+{
+    m_settings.shuffleEnabled = value;
+}
+
+auto ProjectM::ShuffleEnabled() const -> bool
+{
+    return m_settings.shuffleEnabled;
+}
+
 void ProjectM::ChangePresetRating(unsigned int index, int rating, const PresetRatingType ratingType)
 {
     m_presetLoader->setRating(index, rating, ratingType);
@@ -1111,6 +1146,11 @@ void ProjectM::ToggleSearchText()
     }
 }
 
+auto ProjectM::Pcm() -> class Pcm&
+{
+    return m_pcm;
+}
+
 // get index from search results based on preset name
 auto ProjectM::SearchIndex(const std::string& presetName) const -> unsigned int
 {
@@ -1204,6 +1244,11 @@ void ProjectM::SetToastMessage(const std::string& toastMessage)
     {
         m_renderer->setToastMessage(toastMessage);
     }
+}
+
+auto ProjectM::Settings() const -> const class ProjectM::Settings&
+{
+    return m_settings;
 }
 
 void ProjectM::Touch(float touchX, float touchY, int pressure, int touchType)

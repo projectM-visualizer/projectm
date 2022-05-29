@@ -202,10 +202,7 @@ public:
 
     void SetToastMessage(const std::string& toastMessage);
 
-    auto Settings() const -> const Settings&
-    {
-        return m_settings;
-    }
+    auto Settings() const -> const class Settings&;
 
     /// Writes a Settings configuration to the specified file
     static auto WriteConfig(const std::string& configurationFilename,
@@ -259,10 +256,9 @@ public:
     auto SelectedPresetIndex(unsigned int& index) const -> bool;
 
     /// Add a preset url to the play list. Appended to bottom. Returns index of preset
-    auto
-    AddPresetURL(const std::string& presetFilename,
-                 const std::string& presetName,
-                 const RatingList& ratingList) -> unsigned int;
+    auto AddPresetURL(const std::string& presetFilename,
+                      const std::string& presetName,
+                      const RatingList& ratingList) -> unsigned int;
 
     /// Insert a preset url to the play list at the suggested index.
     void InsertPresetURL(unsigned int index,
@@ -290,17 +286,9 @@ public:
     /// Returns the size of the play list
     auto PlaylistSize() const -> unsigned int;
 
-    inline void SetShuffleEnabled(bool value)
-    {
-        m_settings.shuffleEnabled = value;
+    void SetShuffleEnabled(bool value);
 
-        /// idea@ call a virtualfunction shuffleChanged()
-    }
-
-    inline auto ShuffleEnabled() const -> bool
-    {
-        return m_settings.shuffleEnabled;
-    }
+    auto ShuffleEnabled() const -> bool;
 
     /// Occurs when active preset has switched. Switched to index is returned
     virtual void PresetSwitchedEvent(bool hardCut, size_t index) const {};
@@ -312,10 +300,7 @@ public:
     /// Occurs whenever preset rating has changed via ChangePresetRating() method
     virtual void PresetRatingChanged(unsigned int index, int rating, PresetRatingType ratingType) const {};
 
-    inline auto Pcm() -> Pcm&
-    {
-        return m_pcm;
-    }
+    auto Pcm() -> class Pcm&;
 
     /// Get the preset index given a name
     auto SearchIndex(const std::string& presetName) const -> unsigned int;
@@ -326,20 +311,11 @@ public:
 
     void SelectRandom(bool hardCut);
 
-    auto WindowWidth() -> int
-    {
-        return m_settings.windowWidth;
-    }
+    auto WindowWidth() -> int;
 
-    auto WindowHeight() -> int
-    {
-        return m_settings.windowHeight;
-    }
+    auto WindowHeight() -> int;
 
-    auto ErrorLoadingCurrentPreset() const -> bool
-    {
-        return m_errorLoadingCurrentPreset;
-    }
+    auto ErrorLoadingCurrentPreset() const -> bool;
 
     void DefaultKeyHandler(projectMEvent event, projectMKeycode keycode);
 
@@ -352,15 +328,9 @@ private:
 
     void RenderFrameEndOnSeparatePasses(Pipeline* pipeline);
 
-    auto PipelineContext() -> class PipelineContext&
-    {
-        return *m_pipelineContext;
-    }
+    auto PipelineContext() -> class PipelineContext&;
 
-    auto PipelineContext2() -> class PipelineContext&
-    {
-        return *m_pipelineContext2;
-    }
+    auto PipelineContext2() -> class PipelineContext&;
 
     void ReadConfig(const std::string& configurationFilename);
 
