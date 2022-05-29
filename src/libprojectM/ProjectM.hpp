@@ -373,7 +373,7 @@ private:
     void ResetEngine();
 
     /// Initializes preset loading / management libraries
-    auto InitializePresetTools(int meshResolutionX, int meshResolutionY) -> int;
+    auto InitializePresetTools(int meshResolutionX, int meshResolutionY) -> void;
 
     /// Deinitialize all preset related tools. Usually done before projectM cleanup
     void DestroyPresetTools();
