@@ -510,11 +510,10 @@ void ProjectM::SetTitle(const std::string& title)
 }
 
 
-auto ProjectM::InitializePresetTools(int meshResolutionX, int meshResolutionY) -> int
+auto ProjectM::InitializePresetTools(int meshResolutionX, int meshResolutionY) -> void
 {
-
     /* Set the seed to the current time in seconds */
-    srand(time(NULL));
+    srand(time(nullptr));
 
     std::string url;
     if ((m_flags & Flags::DisablePlaylistLoad) == Flags::DisablePlaylistLoad)
@@ -522,38 +521,14 @@ auto ProjectM::InitializePresetTools(int meshResolutionX, int meshResolutionY) -
         url = Settings().presetURL;
     }
 
-    if ((m_presetLoader = std::make_unique<PresetLoader>(meshResolutionX, meshResolutionY, url)) == 0)
-    {
-        m_presetLoader = 0;
-        std::cerr << "[projectM] error allocating preset loader" << std::endl;
-        return PROJECTM_FAILURE;
-    }
-
-    if ((m_presetChooser = std::make_unique<PresetChooser>(*m_presetLoader, Settings().softCutRatingsEnabled)) == 0)
-    {
-        m_presetLoader.reset();
-
-        m_presetChooser = 0;
-        m_presetLoader = 0;
-
-        std::cerr << "[projectM] error allocating preset chooser" << std::endl;
-        return PROJECTM_FAILURE;
-    }
-
-    // Start the iterator
-    if (!m_presetPos)
-    {
-        m_presetPos = std::make_unique<PresetIterator>();
-    }
-
-    // Initialize a preset queue position as well
-    //	m_presetQueuePos = new PresetIterator();
+    m_presetLoader = std::make_unique<PresetLoader>(meshResolutionX, meshResolutionY, url);
+    m_presetChooser = std::make_unique<PresetChooser>(*m_presetLoader, Settings().softCutRatingsEnabled);
+    m_presetPos = std::make_unique<PresetIterator>();
 
     // Start at end ptr- this allows next/previous to easily be done from this position.
     *m_presetPos = m_presetChooser->end();
 
     // Load idle preset
-    //        std::cerr << "[projectM] Allocating idle preset..." << std::endl;
     m_activePreset = m_presetLoader->loadPreset("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk");
     m_renderer->setPresetName("Geiss & Sperl - Feedback (projectM idle HDR mix)");
 
@@ -561,30 +536,15 @@ auto ProjectM::InitializePresetTools(int meshResolutionX, int meshResolutionY) -
 
     m_renderer->SetPipeline(m_activePreset->pipeline());
 
-    // Case where no valid presets exist in directory. Could also mean
-    // playlist initialization was deferred
-    if (m_presetChooser->empty())
-    {
-        //std::cerr << "[projectM] warning: no valid files found in preset directory \""
-        ///< m_presetLoader->directoryName() << "\"" << std::endl;
-    }
-
     m_matcher = std::make_unique<RenderItemMatcher>();
     m_merger = std::make_unique<MasterRenderItemMerge>();
-    //_merger->add(new WaveFormMergeFunction());
     m_merger->add(new ShapeMerge());
     m_merger->add(new BorderMerge());
-    //_merger->add(new BorderMergeFunction());
 
     /// @bug These should be requested by the preset factories.
     m_matcher->distanceFunction().addMetric(new ShapeXYDistance());
 
-    //std::cerr << "[projectM] Idle preset allocated." << std::endl;
-
     ResetEngine();
-
-    //std::cerr << "[projectM] engine has been reset." << std::endl;
-    return PROJECTM_SUCCESS;
 }
 
 void ProjectM::DestroyPresetTools()
