@@ -177,10 +177,6 @@ void ProjectM::ReadConfig(const std::string& configurationFilename)
     // Preset authors have developed their visualizations with the default of 1.0.
     m_settings.beatSensitivity = config.read<float>("Beat Sensitivity", 1.0);
 
-
-    Initialize(m_settings.meshX, m_settings.meshY, m_settings.fps,
-               m_settings.windowWidth, m_settings.windowHeight);
-
     if (config.read("Aspect Correction", true))
     {
         m_settings.aspectCorrection = true;
@@ -191,6 +187,8 @@ void ProjectM::ReadConfig(const std::string& configurationFilename)
         m_settings.aspectCorrection = false;
         m_renderer->correction = false;
     }
+
+    Initialize();
 }
 
 
@@ -220,11 +218,9 @@ void ProjectM::ReadSettings(const class Settings& settings)
 
     m_settings.beatSensitivity = settings.beatSensitivity;
 
-    Initialize(m_settings.meshX, m_settings.meshY, m_settings.fps,
-               m_settings.windowWidth, m_settings.windowHeight);
-
-
     m_settings.aspectCorrection = settings.aspectCorrection;
+
+    Initialize();
 }
 
 #if USE_THREADS
@@ -403,10 +399,12 @@ void ProjectM::Reset()
     ResetEngine();
 }
 
-void ProjectM::Initialize(int meshResolutionX, int meshResolutionY, int targetFps, int width, int height)
+void ProjectM::Initialize()
 {
     /** Initialise start time */
-    m_timeKeeper = std::make_unique<TimeKeeper>(m_settings.presetDuration, m_settings.softCutDuration, m_settings.hardCutDuration,
+    m_timeKeeper = std::make_unique<TimeKeeper>(m_settings.presetDuration,
+                                                m_settings.softCutDuration,
+                                                m_settings.hardCutDuration,
                                                 m_settings.easterEgg);
 
     /** Nullify frame stash */
@@ -417,10 +415,17 @@ void ProjectM::Initialize(int meshResolutionX, int meshResolutionY, int targetFp
 
     m_beatDetect = std::make_unique<BeatDetect>(m_pcm);
 
-    this->m_renderer = std::make_unique<Renderer>(width, height, meshResolutionX, meshResolutionY, m_beatDetect.get(), Settings().presetURL, Settings().titleFontURL,
-                                                  Settings().menuFontURL, Settings().datadir);
+    this->m_renderer = std::make_unique<Renderer>(m_settings.windowWidth,
+                                                  m_settings.windowHeight,
+                                                  m_settings.meshX,
+                                                  m_settings.meshY,
+                                                  m_beatDetect.get(),
+                                                  Settings().presetURL,
+                                                  Settings().titleFontURL,
+                                                  Settings().menuFontURL,
+                                                  Settings().datadir);
 
-    InitializePresetTools(meshResolutionX, meshResolutionY);
+    InitializePresetTools();
 
 #if USE_THREADS
     m_workerSync.Reset();
@@ -432,8 +437,8 @@ void ProjectM::Initialize(int meshResolutionX, int meshResolutionY, int targetFp
     m_timeKeeper->StartPreset();
 
     // ToDo: Calculate the real FPS instead
-    PipelineContext().fps = targetFps;
-    PipelineContext2().fps = targetFps;
+    PipelineContext().fps = static_cast<int>(m_settings.fps);
+    PipelineContext2().fps = static_cast<int>(m_settings.fps);
 }
 
 /* Reinitializes the engine variables to a default (conservative and sane) value */
@@ -473,7 +478,7 @@ void ProjectM::SetTitle(const std::string& title)
 }
 
 
-auto ProjectM::InitializePresetTools(int meshResolutionX, int meshResolutionY) -> void
+auto ProjectM::InitializePresetTools() -> void
 {
     /* Set the seed to the current time in seconds */
     srand(time(nullptr));
@@ -484,7 +489,7 @@ auto ProjectM::InitializePresetTools(int meshResolutionX, int meshResolutionY) -
         url = Settings().presetURL;
     }
 
-    m_presetLoader = std::make_unique<PresetLoader>(meshResolutionX, meshResolutionY, url);
+    m_presetLoader = std::make_unique<PresetLoader>(m_settings.meshX, m_settings.meshY, url);
     m_presetChooser = std::make_unique<PresetChooser>(*m_presetLoader, Settings().softCutRatingsEnabled);
     m_presetPos = std::make_unique<PresetIterator>();
 
