@@ -333,6 +333,7 @@ auto ProjectM::RenderFrameOnlyPass1(
         m_activePreset->Render(*m_beatDetect, PipelineContext());
 
 #if USE_THREADS
+        // FIXME: Instead of waiting after a single render pass, check every frame if it's done.
         m_workerSync.WaitForBackgroundTaskToFinish();
 #else
         evaluateSecondPreset();
