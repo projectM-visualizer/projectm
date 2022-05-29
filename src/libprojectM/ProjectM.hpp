@@ -22,6 +22,7 @@
 
 #include "Common.hpp"
 #include "PCM.hpp"
+#include "PipelineContext.hpp"
 #include "event.h"
 #include "fatal.h"
 
@@ -51,8 +52,6 @@
 #include <thread>
 
 #endif
-
-class PipelineContext;
 
 class BeatDetect;
 
@@ -361,10 +360,11 @@ private:
 
     bool m_errorLoadingCurrentPreset{false}; //!< Error flag for preset loading errors.
 
+    class PipelineContext m_pipelineContext;  //!< Pipeline context for the first/current preset.
+    class PipelineContext m_pipelineContext2; //!< Pipeline context for the next/transitioning preset.
+
     std::unique_ptr<Renderer> m_renderer;                      //!< The Preset renderer.
     std::unique_ptr<BeatDetect> m_beatDetect;                  //!< The beat detection class.
-    std::unique_ptr<class PipelineContext> m_pipelineContext;  //!< Pipeline context for the first/current preset.
-    std::unique_ptr<class PipelineContext> m_pipelineContext2; //!< Pipeline context for the next/transitioning preset.
     std::unique_ptr<PresetIterator> m_presetPos;               //!< The current position of the directory iterator.
     std::unique_ptr<PresetLoader> m_presetLoader;              //!< Required by the preset chooser. Manages a loaded preset directory.
     std::unique_ptr<PresetChooser> m_presetChooser;            //!< Provides accessor functions to choose presets.

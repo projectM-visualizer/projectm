@@ -24,7 +24,6 @@
 #include "BeatDetect.hpp"
 #include "ConfigFile.h"
 #include "PCM.hpp" //Sound data handler (buffering, FFT, etc.)
-#include "PipelineContext.hpp"
 #include "PipelineMerger.hpp"
 #include "Preset.hpp"
 #include "PresetChooser.hpp"
@@ -69,8 +68,6 @@ void ProjectM::ResetTextures()
 
 ProjectM::ProjectM(const std::string& configurationFilename, Flags flags)
     : m_flags(flags)
-    , m_pipelineContext(std::make_unique<class PipelineContext>())
-    , m_pipelineContext2(std::make_unique<class PipelineContext>())
 {
     ReadConfig(configurationFilename);
     Reset();
@@ -79,8 +76,6 @@ ProjectM::ProjectM(const std::string& configurationFilename, Flags flags)
 
 ProjectM::ProjectM(const class Settings& settings, Flags flags)
     : m_flags(flags)
-    , m_pipelineContext(std::make_unique<class PipelineContext>())
-    , m_pipelineContext2(std::make_unique<class PipelineContext>())
 {
     ReadSettings(settings);
     Reset();
@@ -400,12 +395,12 @@ void ProjectM::RenderFrameEndOnSeparatePasses(Pipeline* pipeline)
 
 auto ProjectM::PipelineContext() -> class PipelineContext&
 {
-    return *m_pipelineContext;
+    return m_pipelineContext;
 }
 
 auto ProjectM::PipelineContext2() -> class PipelineContext&
 {
-    return *m_pipelineContext2;
+    return m_pipelineContext2;
 }
 
 void ProjectM::Reset()
