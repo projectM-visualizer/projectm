@@ -94,9 +94,7 @@ auto ProjectM::WriteConfig(const std::string& configurationFilename, const class
     config.add("Window Height", settings.windowHeight);
     config.add("Smooth Preset Duration", settings.softCutDuration);
     config.add("Preset Duration", settings.presetDuration);
-    config.add("Preset Path", settings.presetURL);
-    config.add("Title Font", settings.titleFontURL);
-    config.add("Menu Font", settings.menuFontURL);
+    config.add("Preset Path", settings.presetPath);
     config.add("Hard Cut Sensitivity", settings.beatSensitivity);
     config.add("Aspect Correction", settings.aspectCorrection);
     config.add("Easter Egg Parameter", settings.easterEgg);
@@ -130,33 +128,17 @@ void ProjectM::ReadConfig(const std::string& configurationFilename)
     m_settings.presetDuration = config.read<double>("Preset Duration", 15);
 
 #ifdef __unix__
-    m_settings.presetURL = config.read<string>("Preset Path", "/usr/local/share/projectM/presets");
+    m_settings.presetPath = config.read<string>("Preset Path", "/usr/local/share/projectM/presets");
 #endif
 
 #ifdef __APPLE__
     /// @bug awful hardcoded hack- need to add intelligence to cmake wrt bundling - carm
-    m_settings.presetURL = config.read<string>("Preset Path", "../Resources/presets");
+    m_settings.presetPath = config.read<string>("Preset Path", "../Resources/presets");
 #endif
 
 #ifdef WIN32
-    m_settings.presetURL = config.read<string>("Preset Path", "/usr/local/share/projectM/presets");
+    m_settings.presetPath = config.read<string>("Preset Path", "/usr/local/share/projectM/presets");
 #endif
-
-#ifdef __APPLE__
-    m_settings.titleFontURL = config.read<string>("Title Font", "../Resources/fonts/Vera.tff");
-    m_settings.menuFontURL = config.read<string>("Menu Font", "../Resources/fonts/VeraMono.ttf");
-#endif
-
-#ifdef __unix__
-    m_settings.titleFontURL = config.read<string>("Title Font", "/usr/local/share/projectM/fonts/Vera.tff");
-    m_settings.menuFontURL = config.read<string>("Menu Font", "/usr/local/share/projectM/fonts/VeraMono.tff");
-#endif
-
-#ifdef WIN32
-    m_settings.titleFontURL = config.read<string>("Title Font", projectM_FONT_TITLE);
-    m_settings.menuFontURL = config.read<string>("Menu Font", projectM_FONT_MENU);
-#endif
-
 
     m_settings.shuffleEnabled = config.read<bool>("Shuffle Enabled", true);
 
@@ -202,11 +184,9 @@ void ProjectM::ReadSettings(const class Settings& settings)
     m_settings.presetDuration = settings.presetDuration;
     m_settings.softCutRatingsEnabled = settings.softCutRatingsEnabled;
 
-    m_settings.presetURL = settings.presetURL;
-    m_settings.titleFontURL = settings.titleFontURL;
-    m_settings.menuFontURL = settings.menuFontURL;
+    m_settings.presetPath = settings.presetPath;
     m_settings.shuffleEnabled = settings.shuffleEnabled;
-    m_settings.datadir = settings.datadir;
+    m_settings.dataPath = settings.dataPath;
 
     m_settings.easterEgg = settings.easterEgg;
 
@@ -414,14 +394,18 @@ void ProjectM::Initialize()
     m_beatDetect = std::make_unique<BeatDetect>(m_pcm);
 
     // Create texture search path list
-    if (!m_settings.presetURL.empty())
+    if (!m_settings.presetPath.empty())
     {
-        m_textureSearchPaths.emplace_back(m_settings.presetURL);
+        m_textureSearchPaths.emplace_back(m_settings.presetPath);
     }
-    if (!m_settings.datadir.empty())
+    if (!m_settings.texturePath.empty())
     {
-        m_textureSearchPaths.emplace_back(m_settings.datadir + pathSeparator + "presets");
-        m_textureSearchPaths.emplace_back(m_settings.datadir + pathSeparator + "textures");
+        m_textureSearchPaths.emplace_back(m_settings.texturePath);
+    }
+    if (!m_settings.dataPath.empty())
+    {
+        m_textureSearchPaths.emplace_back(m_settings.dataPath + pathSeparator + "presets");
+        m_textureSearchPaths.emplace_back(m_settings.dataPath + pathSeparator + "textures");
     }
 
     this->m_renderer = std::make_unique<Renderer>(m_settings.windowWidth,
@@ -492,7 +476,7 @@ auto ProjectM::InitializePresetTools() -> void
     std::string url;
     if ((m_flags & Flags::DisablePlaylistLoad) != Flags::DisablePlaylistLoad)
     {
-        url = Settings().presetURL;
+        url = Settings().presetPath;
     }
 
     m_presetLoader = std::make_unique<PresetLoader>(m_settings.meshX, m_settings.meshY, url);
