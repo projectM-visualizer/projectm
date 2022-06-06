@@ -21,14 +21,13 @@ using namespace std::chrono;
 class Preset;
 
 Renderer::Renderer(int width, int height, int gx, int gy,
-                   BeatDetect* beatDetect, std::string presetPath, const std::string& dataPath)
+                   BeatDetect* beatDetect, const std::vector<std::string>& textureSearchPaths)
     : m_perPixelMesh(gx, gy)
     , m_beatDetect(beatDetect)
     , m_presetName("None")
-    , m_dataPath(dataPath)
     , m_viewportWidth(width)
     , m_viewportHeight(height)
-    , m_presetPath(std::move(presetPath))
+    , m_textureSearchPaths(std::move(textureSearchPaths))
     , m_menuText(width)
 {
 	// This is the default help menu for applications that have not defined any custom menu.
@@ -475,7 +474,7 @@ void Renderer::reset(int w, int h)
 
 	InitCompositeShaderVertex();
 
-    m_textureManager = std::make_unique<TextureManager>(m_presetPath, m_textureSizeX, m_textureSizeY, m_dataPath);
+    m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths, m_textureSizeX, m_textureSizeY);
 
     m_shaderEngine.setParams(m_textureSizeX, m_textureSizeY, m_fAspectX, m_fAspectY, m_beatDetect, m_textureManager.get());
     m_shaderEngine.reset();

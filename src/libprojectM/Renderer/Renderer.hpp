@@ -55,7 +55,7 @@ public:
   };
 
   Renderer() = delete;
-  Renderer(int width, int height, int gx, int gy, BeatDetect* beatDetect, std::string presetPath, const std::string& dataPath = "");
+  Renderer(int width, int height, int gx, int gy, BeatDetect* beatDetect, const std::vector<std::string>& textureSearchPaths);
   ~Renderer();
 
   void RenderFrame(const Pipeline &pipeline, const PipelineContext &pipelineContext);
@@ -193,7 +193,6 @@ private:
     ShaderEngine m_shaderEngine;
 
     std::string m_presetName;
-    std::string m_dataPath;
     std::string m_fps;
     std::string m_toastMessage;
     std::string m_searchText;
@@ -218,7 +217,7 @@ private:
     int m_viewportWidth{0};
     int m_viewportHeight{0};
 
-    std::string m_presetPath;
+    const std::vector<std::string>& m_textureSearchPaths; ///!< List of paths to search for texture files
 
     GLuint m_vboInterpolation{0};
     GLuint m_vaoInterpolation{0};
