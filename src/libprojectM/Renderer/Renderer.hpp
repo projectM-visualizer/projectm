@@ -48,75 +48,11 @@ class Renderer
 {
 
 public:
-    /*  touchx(float) x for touch waveform to start displaying(scale of 0 - 1 and not the exact coordinates)
-        touchy(float) y for touch waveform to start displaying(scale of 0 - 1 and not the exact coordinates)
-        touchp(int) touch pressure - @TODO not implemented yet!
-        touchtype(int) Waveform type (bias to Circle). 1 = Circle; 2 = RadialBlob; 3 = Blob2; 4 = Blob 3; 5 = DerivativeLine; 6 = Blob5; 7 = Line; 8 DoubleLine; 
-        touchr(double) Red
-        touchb(double) Blue
-        touchg(double) Green
-        toucha(double) Alpha
-    */
-  float touchx{ 0.0 };
-  float touchy{ 0.0 };
-  int touchp{ 0 }; // Touch Pressure.
-  int touchtype{ 0 }; // Touch Type
-  double touchr{ 0.0 };
-  double touchg{ 0.0 };
-  double touchb{ 0.0 };
-  double toucha{ 0.0 };
-  
-  bool showtoast{ false };
-  bool showfps{ false };
-  bool showtitle{ false };
-  bool showpreset{ false };
-  bool showhelp{ false };
-  bool showsearch{ false };
-  bool showmenu{ false };
-  bool showstats{ false };
-
-  bool shuffletrack{ false };
-
-  bool studio{ false };
-  bool correction{ true };
-
-  bool noSwitch{ false };
-  bool writeNextFrameToFile;
-
   struct preset {
     int id;
     std::string name;
     std::string presetPack;
   };
-
-
-  milliseconds lastTimeFPS{ nowMilliseconds() };
-  milliseconds currentTimeFPS{ nowMilliseconds() };
-
-  milliseconds lastTimeToast{ nowMilliseconds() };
-  milliseconds currentTimeToast{ nowMilliseconds() };
-
-  std::string m_helpText;
-
-  std::vector<MilkdropWaveform> waveformList;
-
-  int totalframes{ 1 };
-  float realfps{ 0.0 };
-
-  std::string title;
-  int m_activePresetID{ 0 };
-  std::vector<preset> m_presetList;
-
-  int drawtitle{ 0 };
-  int texsizeX{ 0 };
-  int texsizeY{ 0 };
-  int textMenuPageSize{ 10 };
-  int textMenuLineHeight{ 25 };
-  int textMenuYOffset{ 60 };
-  float m_fAspectX{ 1.0 };
-  float m_fAspectY{ 1.0 };
-  float m_fInvAspectX{ 1.0 };
-  float m_fInvAspectY{ 1.0 };
 
   Renderer() = delete;
   Renderer(int width, int height, int gx, int gy, BeatDetect *_beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL, const std::string& datadir = "");
@@ -187,6 +123,34 @@ public:
   }
 
   void UpdateContext(PipelineContext& context);
+
+    bool showfps{ false };
+    bool showtitle{ false };
+    bool showpreset{ false };
+    bool showhelp{ false };
+    bool showsearch{ false };
+    bool showmenu{ false };
+    bool showstats{ false };
+
+    bool shuffletrack{ false };
+
+    bool correction{ true };
+
+    bool noSwitch{ false };
+    bool writeNextFrameToFile;
+
+    milliseconds lastTimeFPS{ nowMilliseconds() };
+    milliseconds currentTimeFPS{ nowMilliseconds() };
+
+    int totalframes{ 1 };
+    float realfps{ 0.0 };
+
+    std::string title;
+    int m_activePresetID{ 0 };
+    std::vector<preset> m_presetList;
+
+    int drawtitle{ 0 };
+    int textMenuPageSize{ 10 };
 
 private:
 
@@ -277,6 +241,39 @@ int nearestPower2( int value );
   composite_shader_vertex    m_comp_verts[FCGSX*FCGSY];
   int         m_comp_indices[(FCGSX-2)*(FCGSY-2)*6];
 
+    /*  touchx(float) x for touch waveform to start displaying(scale of 0 - 1 and not the exact coordinates)
+          touchy(float) y for touch waveform to start displaying(scale of 0 - 1 and not the exact coordinates)
+          touchr(double) Red
+          touchb(double) Blue
+          touchg(double) Green
+          toucha(double) Alpha
+      */
+    float touchx{ 0.0 };
+    float touchy{ 0.0 };
+    double touchr{ 0.0 };
+    double touchg{ 0.0 };
+    double touchb{ 0.0 };
+    double toucha{ 0.0 };
+
+    bool showtoast{ false };
+
+    milliseconds lastTimeToast{ nowMilliseconds() };
+    milliseconds currentTimeToast{ nowMilliseconds() };
+
+    std::string m_helpText;
+
+    std::vector<MilkdropWaveform> waveformList;
+
+    int texsizeX{ 0 };
+    int texsizeY{ 0 };
+
+    int textMenuLineHeight{ 25 };
+    const int textMenuYOffset{ 60 };
+
+    float m_fAspectX{ 1.0 };
+    float m_fAspectY{ 1.0 };
+    float m_fInvAspectX{ 1.0 };
+    float m_fInvAspectY{ 1.0 };
 };
 
 #endif

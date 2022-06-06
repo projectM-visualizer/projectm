@@ -187,14 +187,6 @@ void ProjectM::DefaultKeyHandler(projectMEvent event, projectMKeycode keycode) {
 		case PROJECTM_K_F2:
             m_renderer->showtitle = !m_renderer->showtitle;
 			break;
-#ifndef MACOS
-		case PROJECTM_K_F9:
-#else
-		case PROJECTM_K_F8:
-#endif
-
-            m_renderer->studio = !m_renderer->studio;
-			break;
 
 		case PROJECTM_K_ESCAPE: {
             m_renderer->showsearch = false; // hide input menu
@@ -258,8 +250,6 @@ void ProjectM::DefaultKeyHandler(projectMEvent event, projectMKeycode keycode) {
 		    if (TextInputActive(true)) break; // disable when searching.
             SetPresetLocked(!PresetLocked());
 		    break;
-	    case PROJECTM_K_s:
-            m_renderer->studio = !m_renderer->studio;
 	    case PROJECTM_K_i:
 	        break;
 		case PROJECTM_K_d:	// d stands for write DEBUG output.
