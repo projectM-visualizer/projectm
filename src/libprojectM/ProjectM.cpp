@@ -413,13 +413,23 @@ void ProjectM::Initialize()
 
     m_beatDetect = std::make_unique<BeatDetect>(m_pcm);
 
+    // Create texture search path list
+    if (!m_settings.presetURL.empty())
+    {
+        m_textureSearchPaths.emplace_back(m_settings.presetURL);
+    }
+    if (!m_settings.datadir.empty())
+    {
+        m_textureSearchPaths.emplace_back(m_settings.datadir + pathSeparator + "presets");
+        m_textureSearchPaths.emplace_back(m_settings.datadir + pathSeparator + "textures");
+    }
+
     this->m_renderer = std::make_unique<Renderer>(m_settings.windowWidth,
                                                   m_settings.windowHeight,
                                                   m_settings.meshX,
                                                   m_settings.meshY,
                                                   m_beatDetect.get(),
-                                                  Settings().menuFontURL,
-                                                  Settings().datadir);
+                                                  m_textureSearchPaths);
 
     InitializePresetTools();
 
@@ -1244,6 +1254,5 @@ void ProjectM::RecreateRenderer()
 {
     m_renderer = std::make_unique<Renderer>(m_settings.windowWidth, m_settings.windowHeight,
                                             m_settings.meshX, m_settings.meshY,
-                                            m_beatDetect.get(), m_settings.presetURL,
-                                            m_settings.datadir);
+                                            m_beatDetect.get(), m_textureSearchPaths);
 }

@@ -356,6 +356,8 @@ private:
     std::vector<int> m_presetHistory; //!< List of previously played preset indices.
     std::vector<int> m_presetFuture;  //!< List of preset indices queued for playing.
 
+    std::vector<std::string> m_textureSearchPaths; ///!< List of paths to search for texture files
+
     /** Timing information */
     int m_count{0}; //!< Rendered frame count since start
 

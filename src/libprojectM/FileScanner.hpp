@@ -30,7 +30,7 @@ class FileScanner
 {
 public:
 	FileScanner();
-	FileScanner(std::vector<std::string> &rootDirs, std::vector<std::string> &extensions);
+	FileScanner(const std::vector<std::string> &rootDirs, std::vector<std::string> &extensions);
 
 	void scan(ScanCallback cb);
 	std::string extensionMatches(std::string &filename);

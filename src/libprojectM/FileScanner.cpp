@@ -14,7 +14,7 @@
 
 FileScanner::FileScanner() {}
 
-FileScanner::FileScanner(std::vector<std::string> &rootDirs, std::vector<std::string> &extensions) : _rootDirs(rootDirs), _extensions(extensions) {}
+FileScanner::FileScanner(const std::vector<std::string> &rootDirs, std::vector<std::string> &extensions) : _rootDirs(rootDirs), _extensions(extensions) {}
 
 void FileScanner::scan(ScanCallback cb) {
 #if HAVE_FTS_H

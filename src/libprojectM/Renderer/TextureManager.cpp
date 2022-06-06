@@ -14,8 +14,8 @@
 #define NUM_BLUR_TEX    6
 
 
-TextureManager::TextureManager(const std::string presetPath, const int texsizeX, const int texsizeY, std::string dataPath)
-    : m_textureDirectories{presetPath, dataPath + "/presets", dataPath + "/textures"} // Order is important!
+TextureManager::TextureManager(const std::vector<std::string>& textureSearchPaths, int texSizeX, int texSizeY)
+    : m_textureDirectories(textureSearchPaths)
 {
     FileScanner fileScanner = FileScanner(m_textureDirectories, m_extensions);
 
@@ -24,17 +24,9 @@ TextureManager::TextureManager(const std::string presetPath, const int texsizeX,
     fileScanner.scan(std::bind(&TextureManager::loadTexture, this, _1, _2));
 
     Preload();
-    // if not data directory specified from user code
-    // we use the built-in default directory (unix prefix based)
-    if (dataPath.empty())
-#ifdef WIN32
-		datadir = ".";
-#else
-        dataPath = DATADIR_PATH;
-#endif /** WIN32 */
 
     // Create main texture ans associated samplers
-    m_mainTexture = new Texture("main", texsizeX, texsizeY, false);
+    m_mainTexture = new Texture("main", texSizeX, texSizeY, false);
     m_mainTexture->getSampler(GL_REPEAT, GL_LINEAR);
     m_mainTexture->getSampler(GL_REPEAT, GL_NEAREST);
     m_mainTexture->getSampler(GL_CLAMP_TO_EDGE, GL_LINEAR);
@@ -42,8 +34,8 @@ TextureManager::TextureManager(const std::string presetPath, const int texsizeX,
     m_textures["main"] = m_mainTexture;
 
     // Initialize blur textures
-    int w = texsizeX;
-    int h = texsizeY;
+    int w = texSizeX;
+    int h = texSizeY;
     for (int i=0; i<NUM_BLUR_TEX; i++)
     {
         // main VS = 1024
