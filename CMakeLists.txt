@@ -55,6 +55,7 @@ cmake_dependent_option(ENABLE_GLES "Enable OpenGL ES support" OFF "NOT ENABLE_EM
 cmake_dependent_option(ENABLE_OPENMP "Enable OpenMP support if available" ON "NOT ENABLE_EMSCRIPTEN" ON)
 option(ENABLE_THREADING "Enable multithreading support. Use with care with emscripten." ON)
 cmake_dependent_option(ENABLE_LLVM "Enable LLVM JIT support" OFF "NOT ENABLE_EMSCRIPTEN" OFF)
+option(ENABLE_SYSTEM_GLM "Enable use of system-install GLM library" OFF)
 
 if(NOT ENABLE_STATIC_LIB AND NOT ENABLE_SHARED_LIB)
     message(FATAL_ERROR "At least one of either ENABLE_STATIC_LIB or ENABLE_SHARED_LIB options must be set to ON.")
@@ -64,17 +65,13 @@ if(ENABLE_DOXYGEN)
     find_package(Doxygen REQUIRED)
 endif()
 
-find_package(GLM)
-if(NOT TARGET GLM::GLM)
+if(ENABLE_SYSTEM_GLM)
+    find_package(GLM REQUIRED)
+else()
     add_library(GLM::GLM INTERFACE IMPORTED tests/FileParserTest.cpp)
     set_target_properties(GLM::GLM PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/vendor"
             )
-
-    message(STATUS "GLM library not found, using bundled version.")
-    set(USE_SYSTEM_GLM OFF)
-else()
-    set(USE_SYSTEM_GLM ON)
 endif()
 
 if(ENABLE_EMSCRIPTEN)
@@ -228,7 +225,7 @@ message(STATUS "    LLVM JIT:                ${ENABLE_LLVM}")
 if(ENABLE_LLVM)
     message(STATUS "        LLVM version:        ${LLVM_VERSION}")
 endif()
-message(STATUS "    Use system GLM:          ${USE_SYSTEM_GLM}")
+message(STATUS "    Use system GLM:          ${ENABLE_SYSTEM_GLM}")
 message(STATUS "    Link UI with shared lib: ${ENABLE_SHARED_LINKING}")
 message(STATUS "")
 message(STATUS "Targets and applications:")
