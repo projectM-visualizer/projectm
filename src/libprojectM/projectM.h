@@ -56,10 +56,9 @@ typedef struct PROJECTM_EXPORT projectm_settings_s
     int texture_size; //!< Size of the render texture. Must be a power of 2.
     int window_width; //!< Width of the rendering viewport.
     int window_height; //!< Height of the rendering viewport.
-    char* preset_url; //!< Path to a preset playlist in XML format to be loaded. Use FLAG_DISABLE_PLAYLIST_LOAD to skip loading a playlist.
-    char* title_font_url; //!< Path to the "title" font that is used to render the preset name.
-    char* menu_font_url; //!< Path to the "menu" font that is used to render the built-in on-screen menu.
-    char* data_dir; //!< Path to data files like default fonts and presets.
+    char* preset_path; //!< Path with preset files to be loaded into the playlist. Use FLAG_DISABLE_PLAYLIST_LOAD to skip automatic loading of presets.
+    char* texture_path; //!< Additional path with texture files for use in presets.
+    char* data_path; //!< Path to data files like default textures and presets.
     double preset_duration; //!< Display duration for each preset in seconds.
     double soft_cut_duration; //!< Blend-over duration between two presets in seconds.
     double hard_cut_duration; //!< Minimum time in seconds a preset is displayed before a hard cut can happen.
@@ -526,25 +525,18 @@ PROJECTM_EXPORT size_t projectm_get_fps(projectm_handle instance);
 PROJECTM_EXPORT const char* projectm_get_preset_path(projectm_handle instance);
 
 /**
- * @brief Returns the path and filename of the font used to render the title overlay text.
+ * @brief Returns the search path for additional textures.
  * @param instance The projectM instance handle.
- * @return The path and filename of the title text font.
+ * @return The path used to search for additional textures.
  */
-PROJECTM_EXPORT const char* projectm_get_title_font_filename(projectm_handle instance);
-
-/**
- * @brief Returns the path and filename of the font used to render the menu overlay text.
- * @param instance The projectM instance handle.
- * @return The path and filename of the menu text font.
- */
-PROJECTM_EXPORT const char* projectm_get_menu_font_filename(projectm_handle instance);
+PROJECTM_EXPORT const char* projectm_get_texture_path(projectm_handle instance);
 
 /**
  * @brief Returns the path projectM uses to search for additional data.
  * @param instance The projectM instance handle.
  * @return The data dir path.
  */
-PROJECTM_EXPORT const char* projectm_get_data_dir_path(projectm_handle instance);
+PROJECTM_EXPORT const char* projectm_get_data_path(projectm_handle instance);
 
 /**
  * @brief Enabled or disables aspect ratio correction in presets that support it.

@@ -95,10 +95,9 @@ public:
         size_t textureSize{512};
         size_t windowWidth{512};
         size_t windowHeight{512};
-        std::string presetURL;
-        std::string titleFontURL;
-        std::string menuFontURL;
-        std::string datadir;
+        std::string presetPath;
+        std::string texturePath;
+        std::string dataPath;
         double presetDuration{15.0};
         double softCutDuration{10.0};
         double hardCutDuration{60.0};

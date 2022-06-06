@@ -98,10 +98,9 @@ void projectm_free_settings(const projectm_settings* settings)
 {
     if (settings)
     {
-        projectm_free_string(settings->preset_url);
-        projectm_free_string(settings->title_font_url);
-        projectm_free_string(settings->menu_font_url);
-        projectm_free_string(settings->data_dir);
+        projectm_free_string(settings->preset_path);
+        projectm_free_string(settings->texture_path);
+        projectm_free_string(settings->data_path);
     }
 
     delete settings;
@@ -131,10 +130,9 @@ projectm_handle projectm_create_settings(const projectm_settings* settings, int 
         cppSettings.textureSize = settings->texture_size;
         cppSettings.windowWidth = settings->window_width;
         cppSettings.windowHeight = settings->window_height;
-        cppSettings.presetURL = settings->preset_url ? settings->preset_url : "";
-        cppSettings.titleFontURL = settings->title_font_url ? settings->title_font_url : "";
-        cppSettings.menuFontURL = settings->menu_font_url ? settings->menu_font_url : "";
-        cppSettings.datadir = settings->data_dir ? settings->data_dir : "";
+        cppSettings.presetPath = settings->preset_path ? settings->preset_path : "";
+        cppSettings.texturePath = settings->texture_path ? settings->texture_path : "";
+        cppSettings.dataPath = settings->data_path ? settings->data_path : "";
         cppSettings.softCutDuration = settings->soft_cut_duration;
         cppSettings.presetDuration = settings->preset_duration;
         cppSettings.hardCutEnabled = settings->hard_cut_enabled;
@@ -329,25 +327,19 @@ size_t projectm_get_fps(projectm_handle instance)
 const char* projectm_get_preset_path(projectm_handle instance)
 {
     auto projectMInstance = handle_to_instance(instance);
-    return projectm_alloc_string_from_std_string(projectMInstance->Settings().presetURL);
+    return projectm_alloc_string_from_std_string(projectMInstance->Settings().presetPath);
 }
 
-const char* projectm_get_title_font_filename(projectm_handle instance)
+const char* projectm_get_texture_path(projectm_handle instance)
 {
     auto projectMInstance = handle_to_instance(instance);
-    return projectm_alloc_string_from_std_string(projectMInstance->Settings().titleFontURL);
+    return projectm_alloc_string_from_std_string(projectMInstance->Settings().texturePath);
 }
 
-const char* projectm_get_menu_font_filename(projectm_handle instance)
+const char* projectm_get_data_path(projectm_handle instance)
 {
     auto projectMInstance = handle_to_instance(instance);
-    return projectm_alloc_string_from_std_string(projectMInstance->Settings().menuFontURL);
-}
-
-const char* projectm_get_data_dir_path(projectm_handle instance)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    return projectm_alloc_string_from_std_string(projectMInstance->Settings().datadir);
+    return projectm_alloc_string_from_std_string(projectMInstance->Settings().dataPath);
 }
 
 void projectm_set_aspect_correction(projectm_handle instance, bool enabled)
@@ -432,10 +424,9 @@ projectm_settings* projectm_get_settings(projectm_handle instance)
     settingsStruct->texture_size = settings.textureSize;
     settingsStruct->window_width = settings.windowWidth;
     settingsStruct->window_height = settings.windowHeight;
-    settingsStruct->preset_url = projectm_alloc_string_from_std_string(settings.presetURL);
-    settingsStruct->title_font_url = projectm_alloc_string_from_std_string(settings.titleFontURL);
-    settingsStruct->menu_font_url = projectm_alloc_string_from_std_string(settings.menuFontURL);
-    settingsStruct->data_dir = projectm_alloc_string_from_std_string(settings.datadir);
+    settingsStruct->preset_path = projectm_alloc_string_from_std_string(settings.presetPath);
+    settingsStruct->texture_path = projectm_alloc_string_from_std_string(settings.texturePath);
+    settingsStruct->data_path = projectm_alloc_string_from_std_string(settings.dataPath);
     settingsStruct->soft_cut_duration = settings.softCutDuration;
     settingsStruct->preset_duration = settings.presetDuration;
     settingsStruct->hard_cut_enabled = settings.hardCutEnabled;
@@ -459,10 +450,9 @@ void projectm_write_config(const char* config_file, const projectm_settings* set
     cppSettings.textureSize = settings->texture_size;
     cppSettings.windowWidth = settings->window_width;
     cppSettings.windowHeight = settings->window_height;
-    cppSettings.presetURL = settings->preset_url ? settings->preset_url : "";
-    cppSettings.titleFontURL = settings->title_font_url ? settings->title_font_url : "";
-    cppSettings.menuFontURL = settings->menu_font_url ? settings->menu_font_url : "";
-    cppSettings.datadir = settings->data_dir ? settings->data_dir : "";
+    cppSettings.presetPath = settings->preset_path ? settings->preset_path : "";
+    cppSettings.texturePath = settings->texture_path ? settings->texture_path : "";
+    cppSettings.dataPath = settings->data_path ? settings->data_path : "";
     cppSettings.softCutDuration = settings->soft_cut_duration;
     cppSettings.presetDuration = settings->preset_duration;
     cppSettings.hardCutEnabled = settings->hard_cut_enabled;
