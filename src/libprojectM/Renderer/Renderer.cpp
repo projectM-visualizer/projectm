@@ -209,7 +209,7 @@ void Renderer::RenderItems(const Pipeline& pipeline, const PipelineContext& pipe
     m_renderContext.aspectY = m_fAspectY;
     m_renderContext.invAspectX = m_fInvAspectX;
     m_renderContext.invAspectY = m_fInvAspectY;
-    m_renderContext.textureManager = m_textureManager;
+    m_renderContext.textureManager = m_textureManager.get();
     m_renderContext.beatDetect = m_beatDetect;
 
 	for (std::vector<RenderItem*>::const_iterator pos = pipeline.drawables.begin(); pos != pipeline.drawables.end(); ++pos)
@@ -428,10 +428,6 @@ void Renderer::Interpolation(const Pipeline& pipeline, const PipelineContext& pi
 
 Renderer::~Renderer()
 {
-	if (m_textureManager)
-		delete (m_textureManager);
-
-
 	free(m_perPointMeshBuffer);
 
 	glDeleteBuffers(1, &m_vboInterpolation);
@@ -479,13 +475,9 @@ void Renderer::reset(int w, int h)
 
 	InitCompositeShaderVertex();
 
-	if (m_textureManager != nullptr)
-	{
-		delete m_textureManager;
-	}
-    m_textureManager = new TextureManager(m_presetPath, m_textureSizeX, m_textureSizeY, m_dataPath);
+    m_textureManager = std::make_unique<TextureManager>(m_presetPath, m_textureSizeX, m_textureSizeY, m_dataPath);
 
-    m_shaderEngine.setParams(m_textureSizeX, m_textureSizeY, m_fAspectX, m_fAspectY, m_beatDetect, m_textureManager);
+    m_shaderEngine.setParams(m_textureSizeX, m_textureSizeY, m_fAspectX, m_fAspectY, m_beatDetect, m_textureManager.get());
     m_shaderEngine.reset();
     m_shaderEngine.loadPresetShaders(*m_currentPipeline, m_presetName);
 

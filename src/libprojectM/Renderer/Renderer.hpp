@@ -187,7 +187,7 @@ private:
 
     PerPixelMesh m_perPixelMesh;
     BeatDetect* m_beatDetect{nullptr};
-    TextureManager* m_textureManager{nullptr};
+    std::unique_ptr<TextureManager> m_textureManager;
     Pipeline* m_currentPipeline{nullptr};
     RenderContext m_renderContext;
     ShaderEngine m_shaderEngine;
