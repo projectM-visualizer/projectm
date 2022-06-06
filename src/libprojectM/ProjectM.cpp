@@ -418,8 +418,6 @@ void ProjectM::Initialize()
                                                   m_settings.meshX,
                                                   m_settings.meshY,
                                                   m_beatDetect.get(),
-                                                  Settings().presetURL,
-                                                  Settings().titleFontURL,
                                                   Settings().menuFontURL,
                                                   Settings().datadir);
 
@@ -1247,6 +1245,5 @@ void ProjectM::RecreateRenderer()
     m_renderer = std::make_unique<Renderer>(m_settings.windowWidth, m_settings.windowHeight,
                                             m_settings.meshX, m_settings.meshY,
                                             m_beatDetect.get(), m_settings.presetURL,
-                                            m_settings.titleFontURL, m_settings.menuFontURL,
                                             m_settings.datadir);
 }
