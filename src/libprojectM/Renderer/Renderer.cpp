@@ -584,7 +584,6 @@ void Renderer::touch(float x, float y, int pressure, int type = 0)
 
 	touchx = x;
 	touchy = y;
-	touchp = pressure;
 
 	// Randomly select colours on touch
 	touchr = ((double)rand() / (RAND_MAX));
@@ -630,7 +629,6 @@ void Renderer::touchDrag(float x, float y, int pressure)
 			waveformList[i].y = y;
 		}
 	}
-	touchp = pressure;
 }
 
 // Remove waveform at X Y
