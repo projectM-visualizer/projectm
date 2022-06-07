@@ -20,7 +20,7 @@ void FileScanner::scan(ScanCallback cb) {
 #if HAVE_FTS_H
 	scanPosix(cb);
 #else
-	for (auto dir : _rootDirs)
+	for (const auto& dir : _rootDirs)
 		scanGeneric(cb, dir.c_str());
 #endif
 }
@@ -161,8 +161,14 @@ void FileScanner::scanPosix(ScanCallback cb) {
     FTS* fileSystem = NULL;
     FTSENT *node    = NULL;
 
+    if (_rootDirs.empty())
+    {
+        return ;
+    }
+
     // list of directories to scan
     auto rootDirCount = _rootDirs.size();
+
     char **dirList = (char **)malloc(sizeof(char*) * (rootDirCount + 1));
     for (unsigned long i = 0; i < rootDirCount; i++) {
         dirList[i] = (char *) _rootDirs[i].c_str();
