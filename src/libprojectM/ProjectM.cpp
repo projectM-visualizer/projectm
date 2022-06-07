@@ -185,6 +185,7 @@ void ProjectM::ReadSettings(const class Settings& settings)
     m_settings.softCutRatingsEnabled = settings.softCutRatingsEnabled;
 
     m_settings.presetPath = settings.presetPath;
+    m_settings.texturePath = settings.texturePath;
     m_settings.shuffleEnabled = settings.shuffleEnabled;
     m_settings.dataPath = settings.dataPath;
 
