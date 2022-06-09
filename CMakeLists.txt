@@ -68,7 +68,7 @@ endif()
 if(ENABLE_SYSTEM_GLM)
     find_package(GLM REQUIRED)
 else()
-    add_library(GLM::GLM INTERFACE IMPORTED tests/FileParserTest.cpp)
+    add_library(GLM::GLM INTERFACE IMPORTED)
     set_target_properties(GLM::GLM PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/vendor"
             )
