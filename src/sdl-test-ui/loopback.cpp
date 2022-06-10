@@ -207,7 +207,7 @@ bool processLoopbackFrame(projectMSDL *app) {
             LONG lBytesToWrite = nNumFramesToRead * nBlockAlign;
             
             /** Add the waveform data */
-            projectm_pcm_add_float(app->projectM(), (float*) pData, nNumFramesToRead, PROJECTM_STEREO);
+            projectm_pcm_add_float(app->projectM(), (float *)pData, nNumFramesToRead, PROJECTM_STEREO);
             
             *pnFrames += nNumFramesToRead;
             
