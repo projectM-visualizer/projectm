@@ -172,6 +172,41 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     else
         return GL_FALSE;
 
+    // Find matching closing brace and cut off excess text after shader's main function
+    int bracesOpen = 1;
+    size_t pos = found + 1;
+    for (; pos < program.length() && bracesOpen > 0; ++pos)
+    {
+        switch (program.at(pos))
+        {
+            case '/':
+                // Skip comments until EoL to prevent false counting
+                if (pos < program.length() - 1 && program.at(pos + 1) == '/')
+                {
+                    for (; pos < program.length(); ++pos)
+                    {
+                        if (program.at(pos) == '\n')
+                        {
+                            break;
+                        }
+                    }
+                }
+                continue;
+
+            case '{':
+                bracesOpen++;
+                continue;
+
+            case '}':
+                bracesOpen--;
+        }
+    }
+
+    if (pos < program.length() - 1)
+    {
+        program.resize(pos);
+    }
+
     pmShader.textures.clear();
 
 
