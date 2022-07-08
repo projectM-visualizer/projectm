@@ -100,7 +100,7 @@ void Shape::Draw(RenderContext& context)
         }
         else
         {
-            auto texture = context.textureManager->getTexture(image, GL_CLAMP_TO_BORDER, GL_LINEAR);
+            auto texture = context.textureManager->getTexture(image, GL_CLAMP_TO_EDGE, GL_LINEAR);
             if (texture.first)
             {
                 glBindTexture(GL_TEXTURE_2D, texture.first->texID);
@@ -177,7 +177,9 @@ void Shape::Draw(RenderContext& context)
                            glm::value_ptr(context.mat_ortho));
         glVertexAttrib4f(1, border_r, border_g, border_b, border_a * masterAlpha);
         glLineWidth(1);
+#if USE_GLES == 0
         glEnable(GL_LINE_SMOOTH);
+#endif
 
         glBindVertexArray(m_vaoID);
         glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
@@ -227,6 +229,8 @@ void Shape::Draw(RenderContext& context)
         glBindVertexArray(0);
     }
 
+#if USE_GLES == 0
     glDisable(GL_LINE_SMOOTH);
+#endif
     glUseProgram(0);
 }

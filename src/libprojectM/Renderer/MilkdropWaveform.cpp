@@ -42,7 +42,9 @@ void MilkdropWaveform::Draw(RenderContext& context)
     // so this member variable is just being set in WaveformMath and used here
     assert(samples <= NumWaveformSamples);
 
+#if USE_GLES == 0
     glDisable(GL_LINE_SMOOTH);
+#endif
     glLineWidth(1);
 
     for (int waveIndex = 0; waveIndex < 2; waveIndex++)
