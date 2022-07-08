@@ -323,7 +323,7 @@ auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
         // FIXME: Instead of waiting after a single render pass, check every frame if it's done.
         m_workerSync.WaitForBackgroundTaskToFinish();
 #else
-        evaluateSecondPreset();
+        EvaluateSecondPreset();
 #endif
 
         pipeline->setStaticPerPixel(Settings().meshX, Settings().meshY);
