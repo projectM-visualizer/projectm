@@ -104,7 +104,9 @@ void Waveform::Draw(RenderContext &context)
 	if (additive)  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	else glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+#if USE_GLES == 0
     glDisable(GL_LINE_SMOOTH);
+#endif
     glLineWidth(1);
 
     // Additive wave drawing (vice overwrite)
