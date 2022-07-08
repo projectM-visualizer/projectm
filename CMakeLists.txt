@@ -52,8 +52,8 @@ option(ENABLE_NATIVE_PRESETS "Build and install native preset loading support an
 option(BUILD_TESTING "Build the libprojectM test suite" OFF)
 cmake_dependent_option(ENABLE_SDL_UI "Build the SDL2-based developer test UI" OFF "NOT ENABLE_EMSCRIPTEN" OFF)
 cmake_dependent_option(ENABLE_GLES "Enable OpenGL ES support" OFF "NOT ENABLE_EMSCRIPTEN" ON)
-cmake_dependent_option(ENABLE_OPENMP "Enable OpenMP support if available" ON "NOT ENABLE_EMSCRIPTEN" ON)
-option(ENABLE_THREADING "Enable multithreading support. Use with care with emscripten." ON)
+cmake_dependent_option(ENABLE_OPENMP "Enable OpenMP support if available" ON "NOT ENABLE_EMSCRIPTEN" OFF)
+cmake_dependent_option(ENABLE_THREADING "Enable multithreading support." ON "NOT ENABLE_EMSCRIPTEN" OFF)
 cmake_dependent_option(ENABLE_LLVM "Enable LLVM JIT support" OFF "NOT ENABLE_EMSCRIPTEN" OFF)
 option(ENABLE_SYSTEM_GLM "Enable use of system-install GLM library" OFF)
 
