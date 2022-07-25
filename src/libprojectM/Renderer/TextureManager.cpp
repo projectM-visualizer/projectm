@@ -10,6 +10,11 @@
 
 #include "MilkdropNoise.hpp"
 
+// Missing in macOS SDK. Query will most certainly fail, but then use the default format.
+#ifndef GL_TEXTURE_IMAGE_FORMAT
+#define GL_TEXTURE_IMAGE_FORMAT 0x828F
+#endif
+
 #define NUM_BLUR_TEX    6
 
 
