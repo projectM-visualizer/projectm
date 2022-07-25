@@ -157,16 +157,7 @@ void ProjectM::ReadConfig(const std::string& configurationFilename)
     // Preset authors have developed their visualizations with the default of 1.0.
     m_settings.beatSensitivity = config.read<float>("Beat Sensitivity", 1.0);
 
-    if (config.read("Aspect Correction", true))
-    {
-        m_settings.aspectCorrection = true;
-        m_renderer->correction = true;
-    }
-    else
-    {
-        m_settings.aspectCorrection = false;
-        m_renderer->correction = false;
-    }
+    m_settings.aspectCorrection = config.read<bool>("Aspect Correction", true);
 
     Initialize();
 }
