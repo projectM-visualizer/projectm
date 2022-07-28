@@ -21,13 +21,13 @@ using namespace std::chrono;
 class Preset;
 
 Renderer::Renderer(int width, int height, int gx, int gy,
-                   BeatDetect* beatDetect, const std::vector<std::string>& textureSearchPaths)
+                   BeatDetect* beatDetect, std::vector<std::string>& textureSearchPaths)
     : m_perPixelMesh(gx, gy)
     , m_beatDetect(beatDetect)
     , m_presetName("None")
     , m_viewportWidth(width)
     , m_viewportHeight(height)
-    , m_textureSearchPaths(std::move(textureSearchPaths))
+    , m_textureSearchPaths(textureSearchPaths)
     , m_menuText(width)
 {
 	// This is the default help menu for applications that have not defined any custom menu.

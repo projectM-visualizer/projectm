@@ -55,7 +55,7 @@ public:
   };
 
   Renderer() = delete;
-  Renderer(int width, int height, int gx, int gy, BeatDetect* beatDetect, const std::vector<std::string>& textureSearchPaths);
+  Renderer(int width, int height, int gx, int gy, BeatDetect* beatDetect, std::vector<std::string>& textureSearchPaths);
   ~Renderer();
 
   void RenderFrame(const Pipeline &pipeline, const PipelineContext &pipelineContext);
@@ -217,7 +217,7 @@ private:
     int m_viewportWidth{0};
     int m_viewportHeight{0};
 
-    const std::vector<std::string>& m_textureSearchPaths; ///!< List of paths to search for texture files
+    std::vector<std::string>& m_textureSearchPaths; ///!< List of paths to search for texture files
 
     GLuint m_vboInterpolation{0};
     GLuint m_vaoInterpolation{0};

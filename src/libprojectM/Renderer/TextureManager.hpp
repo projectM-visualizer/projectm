@@ -18,7 +18,7 @@ public:
      * @param texSizeX Width of the main texture. Does not influence the size of loaded textures!
      * @param texSizeY Height of the main texture. Does not influence the size of loaded textures!
      */
-    TextureManager(const std::vector<std::string>& textureSearchPaths, int texSizeX, int texSizeY);
+    TextureManager(std::vector<std::string>& textureSearchPaths, int texSizeX, int texSizeY);
     ~TextureManager();
 
     void Clear();
@@ -35,7 +35,7 @@ private:
     TextureSamplerDesc loadTexture(const std::string name, const std::string imageUrl);
     void ExtractTextureSettings(const std::string qualifiedName, GLint& _wrap_mode, GLint& _filter_mode, std::string& name);
 
-    const std::vector<std::string>& m_textureDirectories;
+    std::vector<std::string>& m_textureDirectories;
     std::map<std::string, Texture*> m_textures;
     std::vector<Texture*> m_blurTextures;
     Texture* m_mainTexture;
