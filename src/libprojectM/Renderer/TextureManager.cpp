@@ -14,7 +14,7 @@
 #define NUM_BLUR_TEX    6
 
 
-TextureManager::TextureManager(const std::vector<std::string>& textureSearchPaths, int texSizeX, int texSizeY)
+TextureManager::TextureManager(std::vector<std::string>& textureSearchPaths, int texSizeX, int texSizeY)
     : m_textureDirectories(textureSearchPaths)
 {
     FileScanner fileScanner = FileScanner(m_textureDirectories, m_extensions);
