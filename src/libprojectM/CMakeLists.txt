@@ -182,6 +182,14 @@ install(FILES
         COMPONENT Devel
         )
 
+if(NOT ENABLE_EMSCRIPTEN AND ENABLE_GLES)
+    install(FILES
+            "${CMAKE_SOURCE_DIR}/cmake/gles/FindOpenGL.cmake"
+            DESTINATION "${PROJECTM_LIB_DIR}/cmake/libprojectM"
+            COMPONENT Devel
+            )
+endif()
+
 install(EXPORT libprojectMTargets
         FILE libprojectMTargets.cmake
         NAMESPACE libprojectM::
