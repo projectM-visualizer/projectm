@@ -907,6 +907,14 @@ auto ProjectM::ShuffleEnabled() const -> bool
     return m_settings.shuffleEnabled;
 }
 
+void ProjectM::PresetSwitchedEvent(bool hardCut, size_t index) const {}
+
+void ProjectM::ShuffleEnabledValueChanged(bool enabled) const {}
+
+void ProjectM::PresetSwitchFailedEvent(bool hardCut, unsigned int index, const std::string& message) const {}
+
+void ProjectM::PresetRatingChanged(unsigned int index, int rating, PresetRatingType ratingType) const {}
+
 void ProjectM::ChangePresetRating(unsigned int index, int rating, const PresetRatingType ratingType)
 {
     m_presetLoader->setRating(index, rating, ratingType);
