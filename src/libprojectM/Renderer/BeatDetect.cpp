@@ -70,15 +70,15 @@ auto BeatDetect::CalculateBeatStatistics() -> void
 
     std::array<float, fftLength> const freqL =
         [this]() {
-            std::array<float, fftLength> freqL{};
-            pcm.GetSpectrum(freqL.data(), CHANNEL_L, fftLength);
-            return freqL;
+            std::array<float, fftLength> freq{};
+            pcm.GetSpectrum(freq.data(), CHANNEL_L, fftLength);
+            return freq;
         }();
     std::array<float, fftLength> const freqR =
         [this]() {
-            std::array<float, fftLength> freqR{};
-            pcm.GetSpectrum(freqR.data(), CHANNEL_R, fftLength);
-            return freqR;
+            std::array<float, fftLength> freq{};
+            pcm.GetSpectrum(freq.data(), CHANNEL_R, fftLength);
+            return freq;
         }();
 
     auto const intensityBetween = [&freqL, &freqR](size_t const from, size_t const to) {

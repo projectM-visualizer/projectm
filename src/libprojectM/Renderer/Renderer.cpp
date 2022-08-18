@@ -374,7 +374,7 @@ void Renderer::Interpolation(const Pipeline& pipeline, const PipelineContext& pi
 	}
 	else
 	{
-        m_perPixelMesh.Reset();
+		m_perPixelMesh.Reset();
 		Pipeline *cp = m_currentPipeline;
 		omptl::transform(m_perPixelMesh.p.begin(), m_perPixelMesh.p.end(), m_perPixelMesh.identity.begin(), m_perPixelMesh.p.begin(),
 			[cp](PixelPoint point, PerPixelContext &context) {
@@ -391,11 +391,11 @@ void Renderer::Interpolation(const Pipeline& pipeline, const PipelineContext& pi
 				int index = j * m_perPixelMesh.width + i;
 				int index2 = (j + 1) * m_perPixelMesh.width + i;
 
-                m_perPointMeshBuffer[strip + 2] = m_perPixelMesh.p[index].x;
-                m_perPointMeshBuffer[strip + 3] = m_perPixelMesh.p[index].y;
+				m_perPointMeshBuffer[strip + 2] = m_perPixelMesh.p[index].x;
+				m_perPointMeshBuffer[strip + 3] = m_perPixelMesh.p[index].y;
 
-                m_perPointMeshBuffer[strip + 6] = m_perPixelMesh.p[index2].x;
-                m_perPointMeshBuffer[strip + 7] = m_perPixelMesh.p[index2].y;
+				m_perPointMeshBuffer[strip + 6] = m_perPixelMesh.p[index2].x;
+				m_perPointMeshBuffer[strip + 7] = m_perPixelMesh.p[index2].y;
 			}
 		}
 	}
