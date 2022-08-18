@@ -278,14 +278,14 @@ public:
     auto ShuffleEnabled() const -> bool;
 
     /// Occurs when active preset has switched. Switched to index is returned
-    virtual void PresetSwitchedEvent(bool hardCut, size_t index) const {};
+    virtual void PresetSwitchedEvent(bool hardCut, size_t index) const;
 
-    virtual void ShuffleEnabledValueChanged(bool enabled) const {};
+    virtual void ShuffleEnabledValueChanged(bool enabled) const;
 
-    virtual void PresetSwitchFailedEvent(bool hardCut, unsigned int index, const std::string& message) const {};
+    virtual void PresetSwitchFailedEvent(bool hardCut, unsigned int index, const std::string& message) const;
 
     /// Occurs whenever preset rating has changed via ChangePresetRating() method
-    virtual void PresetRatingChanged(unsigned int index, int rating, PresetRatingType ratingType) const {};
+    virtual void PresetRatingChanged(unsigned int index, int rating, PresetRatingType ratingType) const;
 
     auto Pcm() -> class Pcm&;
 
