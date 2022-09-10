@@ -71,7 +71,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
             )
 endif()
 
-enable_target_linker_flags_if_supported(projectM_shared PRIVATE --no-undefined)
+# --no-undefined doesn't make sense for Windows as all symbols are always required to be defined
+if (NOT WIN32)
+    enable_target_linker_flags_if_supported(projectM_shared PRIVATE --no-undefined)
+endif()
 
 install(TARGETS projectM_shared
         EXPORT libprojectMTargets
