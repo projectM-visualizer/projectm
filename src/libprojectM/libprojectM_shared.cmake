@@ -12,9 +12,9 @@ add_library(projectM_shared SHARED
         $<$<PLATFORM_ID:Windows>:$<TARGET_OBJECTS:dlfcn>>
         )
 
-target_compile_options(projectM_shared
+target_compile_definitions(projectM_shared
         PRIVATE
-        -DprojectM_main_EXPORTS
+        projectM_main_EXPORTS
         )
 
 set_target_properties(projectM_shared PROPERTIES
