@@ -12,9 +12,9 @@ add_library(projectM_static STATIC
         $<$<PLATFORM_ID:Windows>:$<TARGET_OBJECTS:dlfcn>>
         )
 
-target_compile_options(projectM_static
+target_compile_definitions(projectM_static
         PUBLIC
-        -DPROJECTM_STATIC_DEFINE
+        PROJECTM_STATIC_DEFINE
         )
 
 set_target_properties(projectM_static PROPERTIES
