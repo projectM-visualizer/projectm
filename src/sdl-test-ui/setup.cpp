@@ -79,7 +79,7 @@ std::string getConfigFilePath(std::string datadir_path) {
 
 
 void seedRand() {
-#ifndef WIN32
+#ifndef _WIN32
     srand((int)(time(NULL)));
 #endif
 }
@@ -172,9 +172,9 @@ projectMSDL *setupSDLApp() {
 
     SDL_GLContext glCtx = SDL_GL_CreateContext(win);
 
-#if defined(WIN32)
+#if defined(_WIN32)
 	GLenum err = glewInit();
-#endif /** WIN32 */
+#endif /** _WIN32 */
 
     dumpOpenGLInfo();
 

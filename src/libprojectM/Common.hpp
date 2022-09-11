@@ -26,22 +26,22 @@
 
 #ifndef COMMON_HPP
 #define COMMON_HPP
+
+#include <algorithm>
 #include <cassert>
 #include <cstdarg>
 #include <locale>
+#include <string>
 #include <typeinfo>
 #include <vector>
 
-#include <algorithm>
-#include <string>
-
 //CPP17: std::filesystem::path::preferred_separator
 /** Per-platform path separators */
-#ifdef WIN32
+#ifdef _WIN32
 char constexpr pathSeparator{'\\'};
 #else
 char constexpr pathSeparator{'/'};
-#endif /** WIN32 */
+#endif /** _WIN32 */
 
 size_t constexpr maxTokenSize{512};
 size_t constexpr maxPathSize{4096};

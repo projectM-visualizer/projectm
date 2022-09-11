@@ -20,16 +20,14 @@
  */
 
 #include <cstdio>
-#include <cstring>
 #include <cstdlib>
+#include <cstring>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include "dirent.h"
 #else
-
 #include <dirent.h>
-
-#endif /** WIN32 */
+#endif /** _WIN32 */
 
 #include <time.h>
 

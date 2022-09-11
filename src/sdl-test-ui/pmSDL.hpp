@@ -31,9 +31,9 @@
 
 
 // Disable LOOPBACK and FAKE audio to enable microphone input
-#ifdef WIN32
+#ifdef _WIN32
 #define WASAPI_LOOPBACK     1
-#endif /** WIN32 */
+#endif /** _WIN32 */
 #define FAKE_AUDIO          0
 // ----------------------------
 #define TEST_ALL_PRESETS    0
@@ -75,12 +75,12 @@
 
 #endif /** WASAPI_LOOPBACK */
 
-#ifdef WIN32
+#ifdef _WIN32
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
 #else
 #include <SDL2/SDL.h>
-#endif /** WIN32 */
+#endif /** _WIN32 */
 
 
 // DATADIR_PATH should be set by the root Makefile if this is being
@@ -91,9 +91,9 @@
         #warning "DATADIR_PATH is not defined - falling back to ./"
     #else
         #define DATADIR_PATH "/usr/local/share/projectM"
-#ifndef WIN32
+#ifndef _WIN32
         #warning "DATADIR_PATH is not defined - falling back to /usr/local/share/projectM"
-#endif /** WIN32 */
+#endif /** _WIN32 */
     #endif
 #endif
 

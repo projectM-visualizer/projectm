@@ -14,15 +14,16 @@
 #include "HLSLTree.h"
 
 #include <algorithm>
-#include <ctype.h>
-#include <string.h>
-#include <stack>
-#include <iostream>
 #include <cmath>
 #include <cstdlib>
-#if defined WIN32 && !defined alloca
+#include <ctype.h>
+#include <iostream>
+#include <stack>
+#include <string.h>
+
+#if defined _WIN32 && !defined alloca
 #include <malloc.h>
-#endif /** WIN32 */
+#endif /** _WIN32 */
 
 
 namespace M4
@@ -1098,13 +1099,13 @@ struct CompareRanks
 static CompareFunctionsResult CompareFunctions(HLSLTree* tree, const HLSLFunctionCall* call, const HLSLFunction* function1, const HLSLFunction* function2)
 { 
 
-#if defined WIN32 && !defined alloca
+#if defined _WIN32 && !defined alloca
 	int* function1Ranks = static_cast<int*>(_alloca(sizeof(int) * call->numArguments));
 	int* function2Ranks = static_cast<int*>(_alloca(sizeof(int) * call->numArguments));
 #else
 	int* function1Ranks = static_cast<int*>(alloca(sizeof(int) * call->numArguments));
 	int* function2Ranks = static_cast<int*>(alloca(sizeof(int) * call->numArguments));
-#endif /** WIN32 */
+#endif /** _WIN32 && ! alloca */
 
     const bool function1Viable = GetFunctionCallCastRanks(tree, call, function1, function1Ranks);
     const bool function2Viable = GetFunctionCallCastRanks(tree, call, function2, function2Ranks);

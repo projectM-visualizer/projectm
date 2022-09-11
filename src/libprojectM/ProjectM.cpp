@@ -32,7 +32,7 @@
 #include "fatal.h"
 #include "projectM-opengl.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #include "dirent.h"
 #else
 #include <dirent.h>
@@ -136,7 +136,7 @@ void ProjectM::ReadConfig(const std::string& configurationFilename)
     m_settings.presetPath = config.read<string>("Preset Path", "../Resources/presets");
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
     m_settings.presetPath = config.read<string>("Preset Path", "/usr/local/share/projectM/presets");
 #endif
 

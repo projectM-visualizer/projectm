@@ -899,9 +899,9 @@ void ShaderEngine::reset()
 
 GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, const std::string & FragmentShaderCode, const std::string & shaderTypeString){
 
-#if defined(WIN32) && !defined(EYETUNE_WINRT)
+#if defined(_WIN32) && !defined(EYETUNE_WINRT)
 	GLenum err = glewInit();
-#endif /** WIN32 */
+#endif /** _WIN32 */
 
 	// Create the shaders
     GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);

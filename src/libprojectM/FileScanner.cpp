@@ -7,7 +7,7 @@
 #include "FileScanner.hpp"
 #include "Common.hpp"
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <sys/stat.h>
 #include <sys/types.h>
 #endif
@@ -109,7 +109,7 @@ void FileScanner::scanGeneric(ScanCallback cb, const char *currentDir) {
 
         std::string fullPath = std::string(currentDir) + pathSeparator + filename;
 
-#ifndef WIN32
+#ifndef _WIN32
         // filesystems are free to return DT_UNKNOWN
         if (dir_entry->d_type == DT_UNKNOWN)
         {
