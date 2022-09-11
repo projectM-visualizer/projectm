@@ -28,10 +28,6 @@
 #ifndef _CARBONTOPROJECTM_H
 #define _CARBONTOPROJECTM_H
 
-#ifdef WIN32
-#else
-#endif
-
 projectMKeycode cocoa2pmKeycode( NSEvent *event ) {
     projectMKeycode char_code = (projectMKeycode)[event keyCode];
     switch ( char_code ) {
