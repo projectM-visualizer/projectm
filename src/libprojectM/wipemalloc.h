@@ -33,11 +33,11 @@
 
 #ifndef MACOS
 #ifndef HAVE_AIX /** AIX has malloc() defined in a strange place... */
-#ifdef WIN32
+#ifdef _WIN32
 #include <malloc.h>
 #endif
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #else
 #include <stdlib.h>
 #endif /** !HAVE_AIX */
@@ -48,7 +48,7 @@
 #include <stdio.h>
 
 #ifdef PANTS
-#if defined(WIN32) && !defined(inline)
+#if defined(_WIN32) && !defined(inline)
 #define inline
 #endif
 #endif
