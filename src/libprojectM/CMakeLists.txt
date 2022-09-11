@@ -20,6 +20,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
     # Additional preprocessor definitions for Windows builds
     add_compile_definitions(
+            NOMINMAX
+            WIN32_LEAN_AND_MEAN
             USE_FTGL
             USE_NATIVE_GLEW
             STBI_NO_DDS
