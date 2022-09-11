@@ -74,7 +74,6 @@
 
 #if defined( __WIN32__ ) || defined( _WIN32 ) || defined( WIN32 )
 	#define SOIL_PLATFORM_WIN32
-	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 	#include <wingdi.h>
 	#include <GL/gl.h>
