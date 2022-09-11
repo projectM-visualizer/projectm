@@ -29,10 +29,6 @@ r/**
 #ifndef _CARBONTOPROJECTM_H
 #define _CARBONTOPROJECTM_H
 
-#ifdef WIN32
-#else
-#endif
-
 projectMKeycode carbon2pmKeycode( NSEvent *event ) {
     projectMKeycode char_code = (projectMKeycode)(event->message & charCodeMask); 
     switch ( char_code ) { 
