@@ -25,6 +25,8 @@ if(NOT MSVC)
     )
 else()
     enable_cflags_if_supported(
+            /EHsc   # Exception handling support
+            /GR     # RTTI, for dynamic_cast
             /W4
     )
 endif()
