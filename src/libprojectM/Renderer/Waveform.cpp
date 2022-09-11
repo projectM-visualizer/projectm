@@ -6,9 +6,9 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <functional>
-#endif /** WIN32 */
+#endif /** _WIN32 */
 
 Waveform::Waveform(int _samples)
     : RenderItem()
