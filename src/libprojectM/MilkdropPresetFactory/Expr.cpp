@@ -63,11 +63,11 @@ public:
 float PrefunExpr::eval ( int mesh_i, int mesh_j )
 {
 	assert ( func_ptr );
-#ifdef WIN32
+#ifdef _MSC_VER
 	float arg_list[3];	// variable length array not supported by MSVC
 #else
 	float arg_list[num_args];	// variable length array supported by GCC
-#endif /** WIN32 */
+#endif /** _MSC_VER */
 
     //printf("numargs %d", num_args);
 
