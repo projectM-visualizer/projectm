@@ -72,14 +72,13 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
 {
 
   int c;
-  int i;
 
   if (string != NULL)
     memset(string, 0, maxTokenSize);
 
 
   /* Loop until a delimiter is found, or the maximum string size is found */
-  for (i = 0; i < maxTokenSize;i++)
+  for (size_t i = 0; i < maxTokenSize; ++i)
   {
     //c = fgetc(fs);
     if (!fs || fs.eof())
@@ -95,7 +94,7 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
             std::cout << "ERROR String line buffer full. Buffer: " << string_line_buffer << std::endl;
         }
         return tStringBufferFilled;
-		}
+    }
 
     /* Otherwise add this character to the string line buffer */
     string_line_buffer[string_line_buffer_index++] = tolower(c);
@@ -2020,7 +2019,7 @@ int Parser::parse_shapecode(char * token, std::istream &  fs, MilkdropPreset * p
 int Parser::parse_wavecode_prefix(char * token, int * id, char ** var_string)
 {
 
-  int len, i, j;
+  int len, i;
 
   if (token == NULL)
     return PROJECTM_FAILURE;
@@ -2037,10 +2036,10 @@ int Parser::parse_wavecode_prefix(char * token, int * id, char ** var_string)
   if (len <= WAVECODE_STRING_LENGTH)
     return PROJECTM_FAILURE;
   i = WAVECODE_STRING_LENGTH;
-  j = 0;
   (*id) = 0;
 
   /* This loop grabs the integer id for this custom wave */
+  size_t j = 0;
   while ((i < len) && (token[i] >=  48) && (token[i] <= 57))
   {
     if (j >= maxTokenSize)
@@ -2065,7 +2064,7 @@ int Parser::parse_wavecode_prefix(char * token, int * id, char ** var_string)
 int Parser::parse_shapecode_prefix(char * token, int * id, char ** var_string)
 {
 
-  int len, i, j;
+  int len, i;
 
   if (token == NULL)
     return PROJECTM_FAILURE;
@@ -2082,10 +2081,10 @@ int Parser::parse_shapecode_prefix(char * token, int * id, char ** var_string)
   if (len <= SHAPECODE_STRING_LENGTH)
     return PROJECTM_FAILURE;
   i = SHAPECODE_STRING_LENGTH;
-  j = 0;
   (*id) = 0;
 
   /* This loop grabs the integer id for this custom shape */
+  size_t j = 0;
   while ((i < len) && (token[i] >=  48) && (token[i] <= 57))
   {
     if (j >= maxTokenSize)
@@ -2109,7 +2108,7 @@ int Parser::parse_shapecode_prefix(char * token, int * id, char ** var_string)
 int Parser::parse_wave_prefix(char * token, int * id, char ** eqn_string)
 {
 
-  int len, i, j;
+  int len, i;
 
   if (token == NULL)
     return PROJECTM_FAILURE;
@@ -2125,10 +2124,10 @@ int Parser::parse_wave_prefix(char * token, int * id, char ** eqn_string)
 
 
   i = WAVE_STRING_LENGTH;
-  j = 0;
   (*id) = 0;
 
   /* This loop grabs the integer id for this custom wave */
+  size_t j = 0;
   while ((i < len) && (token[i] >=  48) && (token[i] <= 57))
   {
     if (j >= maxTokenSize)
@@ -2152,7 +2151,7 @@ int Parser::parse_wave_prefix(char * token, int * id, char ** eqn_string)
 int Parser::parse_shape_prefix(char * token, int * id, char ** eqn_string)
 {
 
-  int len, i, j;
+  int len, i;
 
   if (token == NULL)
     return PROJECTM_FAILURE;
@@ -2168,10 +2167,10 @@ int Parser::parse_shape_prefix(char * token, int * id, char ** eqn_string)
 
 
   i = SHAPE_STRING_LENGTH;
-  j = 0;
   (*id) = 0;
 
   /* This loop grabs the integer id for this custom wave */
+  size_t j = 0;
   while ((i < len) && (token[i] >=  48) && (token[i] <= 57))
   {
     if (j >= maxTokenSize)
