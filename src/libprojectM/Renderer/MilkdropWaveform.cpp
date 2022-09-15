@@ -269,7 +269,7 @@ void MilkdropWaveform::WaveformMath(RenderContext& context)
     const float vol_scale = context.beatDetect->GetPCMScale();
     if (vol_scale != 1.0)
     {
-        for (int i = 0; i < pcmDataL.size(); i++)
+        for (size_t i = 0; i < pcmDataL.size(); ++i)
         {
             pcmDataL[i] *= vol_scale;
             pcmDataR[i] *= vol_scale;
