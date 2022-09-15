@@ -6,7 +6,7 @@
 
 #include <string>
 
-class GLTtext;
+struct GLTtext;
 
 /**
  * @brief Menu text renderer
