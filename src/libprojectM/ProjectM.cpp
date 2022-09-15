@@ -29,17 +29,8 @@
 #include "PresetChooser.hpp"
 #include "Renderer.hpp"
 #include "TimeKeeper.hpp"
-#include "fatal.h"
-#include "projectM-opengl.h"
-
-#ifdef _WIN32
-#include "dirent.h"
-#else
-#include <dirent.h>
-#endif
 
 #include <iostream>
-#include <map>
 
 namespace {
 constexpr int kMaxSwitchRetries = 10;

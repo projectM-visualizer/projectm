@@ -69,8 +69,5 @@
 /* Define USE_THREADS */
 #cmakedefine01 USE_THREADS
 
-/* Define ENABLE_NATIVE_PRESETS */
-#cmakedefine ENABLE_NATIVE_PRESETS
-
 /* Version number of package */
 #define VERSION "@PROJECT_VERSION@"
