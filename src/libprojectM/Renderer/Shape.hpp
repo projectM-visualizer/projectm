@@ -15,9 +15,9 @@ public:
 
     ~Shape() override;
 
-    void InitVertexAttrib();
+    void InitVertexAttrib() override;
 
-    virtual void Draw(RenderContext& context);
+    void Draw(RenderContext& context) override;
 
     std::string image; //!< Texture filename to be rendered on this shape
 
