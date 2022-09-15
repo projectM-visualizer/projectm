@@ -67,7 +67,6 @@ private:
     };
 
 	float temp_a{ 0.0f };
-	float rot{ 0.0f };
 	int samples{ NumWaveformSamples };
 	bool loop{ false };
 
