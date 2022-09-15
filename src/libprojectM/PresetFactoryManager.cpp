@@ -12,10 +12,6 @@
 #include "PresetFactoryManager.hpp"
 #include "MilkdropPresetFactory/MilkdropPresetFactory.hpp"
 
-#ifdef ENABLE_NATIVE_PRESETS
-#include "NativePresetFactory/NativePresetFactory.hpp"
-#endif
-
 #include "config.h"
 #include <sstream>
 
@@ -45,12 +41,7 @@ void PresetFactoryManager::initialize(int gx, int gy) {
 	PresetFactory * factory;
 
 	factory = new MilkdropPresetFactory(_gx, _gy);
-	registerFactory(factory->supportedExtensions(), factory);		
-
-	#ifdef ENABLE_NATIVE_PRESETS
-	factory = new NativePresetFactory();
 	registerFactory(factory->supportedExtensions(), factory);
-	#endif
 }
 
 // Current behavior if a conflict is occurs is to override the previous request

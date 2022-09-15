@@ -8,15 +8,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # dirent.h support
     set(MSVC_EXTRA_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/msvc")
     include_directories("${MSVC_EXTRA_INCLUDE_DIR}")
-    
-    add_library(dlfcn OBJECT
-            msvc/dlfcn.c
-            msvc/dlfcn.h
-            )
-            
-    set_target_properties(dlfcn PROPERTIES
-            FOLDER libprojectM
-            )
 
     # Additional preprocessor definitions for Windows builds
     add_compile_definitions(
@@ -40,7 +31,6 @@ set(EXPORTED_TARGETS
         )
 
 add_subdirectory(MilkdropPresetFactory)
-add_subdirectory(NativePresetFactory)
 add_subdirectory(Renderer)
 
 set(PROJECTM_EXPORT_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/projectM_export.h")
@@ -100,7 +90,6 @@ target_include_directories(projectM_main
         "${CMAKE_CURRENT_SOURCE_DIR}/Renderer"
         "${CMAKE_CURRENT_SOURCE_DIR}/Renderer/hlslparser/src"
         "${CMAKE_CURRENT_SOURCE_DIR}/MilkdropPresetFactory"
-        "${CMAKE_CURRENT_SOURCE_DIR}/NativePresetFactory"
         "${MSVC_EXTRA_INCLUDE_DIR}"
         )
 
