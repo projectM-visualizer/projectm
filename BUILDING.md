@@ -316,16 +316,6 @@ LLVM (https://github.com/projectM-visualizer/projectm/pull/360).
 
 Made up of everything in `src/libprojectM/Renderer`. These files compose the `libRenderer` sub-library.
 
-#### Native Presets
-
-These are not built by default.
-
-Native presets are visualizations that are implemented in C++ instead of `.milk` preset files. They are completely
-optional. Milkdrop presets are also technically optional but the whole thing is basically useless without them.
-
-If you don't want native presets, and you probably don't, don't bother with them. To enable loading and building these
-presets, add `-DENABLE_NATIVE_PRESETS=ON` to the CMake configuration command.
-
 ### Assets
 
 `libprojectM` can either have a configuration hard-coded or load from a configuration file. It's up to each application

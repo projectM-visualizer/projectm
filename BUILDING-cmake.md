@@ -91,7 +91,6 @@ using the `-D` switch.
 | `ENABLE_SDL`            | `ON`    | `SDL2`                | Builds and installs the standalone SDL visualizer application. Also required for Emscripten and the tests. |
 | `ENABLE_GLES`           | `OFF`   | `GLES`                | Use OpenGL ES 3 profile for rendering instead of the Core profile.                                         |
 | `ENABLE_THREADING`      | `ON`    | `pthreads`            | Enable multithreading support. If enabled, will cause an error if pthreads are not available.              |
-| `ENABLE_NATIVE_PRESETS` | `OFF`   |                       | Builds and installs the binary (native) preset libraries.                                                  |
 | `ENABLE_PRESETS`        | `ON`    |                       | Installs several thousand shipped presets.                                                                 |
 | `ENABLE_PULSEAUDIO`     | `OFF`   | `Qt5`, `Pulseaudio`   | Build the Qt5-based Pulseaudio visualizer application.                                                     |
 | `ENABLE_JACK`           | `OFF`   | `Qt5`, `JACK`         | Build the Qt5-based JACK visualizer application.                                                           |

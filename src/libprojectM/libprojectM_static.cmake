@@ -5,11 +5,9 @@ add_library(projectM_static STATIC
 
         $<TARGET_OBJECTS:projectM_main>
         $<TARGET_OBJECTS:MilkdropPresetFactory>
-        $<$<TARGET_EXISTS:NativePresetFactory>:$<TARGET_OBJECTS:NativePresetFactory>>
         $<TARGET_OBJECTS:Renderer>
         $<TARGET_OBJECTS:hlslparser>
         $<TARGET_OBJECTS:SOIL2>
-        $<$<PLATFORM_ID:Windows>:$<TARGET_OBJECTS:dlfcn>>
         )
 
 target_compile_definitions(projectM_static
@@ -30,7 +28,6 @@ target_include_directories(projectM_static
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer/hlslparser/src>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/MilkdropPresetFactory>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/NativePresetFactory>"
         "$<BUILD_INTERFACE:${MSVC_EXTRA_INCLUDE_DIR}>"
         "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}>"
         )
