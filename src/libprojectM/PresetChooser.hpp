@@ -237,11 +237,21 @@ inline PresetChooser::iterator PresetChooser::weightedRandom(bool hardCut) const
 	
 	const std::vector<int> & weights = _presetLoader->getPresetRatings()[ratingsTypeIndex];
 
-	const std::size_t index = RandomNumberGenerators::weightedRandom
-		(weights,
-		 _presetLoader->getPresetRatingsSums()[ratingsTypeIndex]);
-	
-	return begin(index);
+    const auto weightsSum = _presetLoader->getPresetRatingsSums()[ratingsTypeIndex];
+
+    std::size_t index;
+    if (weightsSum > 0)
+    {
+        index = RandomNumberGenerators::weightedRandom(weights,
+                                                       _presetLoader->getPresetRatingsSums()[ratingsTypeIndex]);
+    }
+    else
+    {
+        // No ratings (all zero), so just select a random preset with a uniform distribution.
+        index = RandomNumberGenerators::uniformInteger(_presetLoader->size());
+    }
+
+    return begin(index);
 }
 
 #endif
