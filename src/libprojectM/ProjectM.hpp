@@ -29,17 +29,9 @@
 #ifdef _WIN32
 
 #ifdef _MSC_VER
-// libs required for win32
-#pragma comment(lib, "psapi.lib")
-#pragma comment(lib, "kernel32.lib")
-
 #pragma warning(disable : 4244)
 #pragma warning(disable : 4305)
 #endif /* _MSC_VER */
-
-#include <windows.h>
-#else
-#include <unistd.h>
 #endif /** _WIN32 */
 
 #include <sys/types.h>
