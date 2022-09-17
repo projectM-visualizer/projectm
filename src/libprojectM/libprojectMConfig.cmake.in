@@ -22,4 +22,35 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     find_dependency(GLEW)
 endif()
 
+set(_libprojectM_FIND_PARTS_REQUIRED)
+if(libprojectM_FIND_REQUIRED)
+    set(_libprojectM_FIND_PARTS_REQUIRED REQUIRED)
+endif()
+set(_libprojectM_FIND_PARTS_QUIET)
+if(libprojectM_FIND_QUIETLY)
+    set(_libprojectM_FIND_PARTS_QUIET QUIET)
+endif()
+
 include("${CMAKE_CURRENT_LIST_DIR}/libprojectMTargets.cmake")
+
+if(libprojectM_FIND_COMPONENTS)
+    foreach(component ${libprojectM_FIND_COMPONENTS})
+        find_package(libprojectM${component}
+            ${_libprojectM_FIND_PARTS_REQUIRED}
+            ${_libprojectM_FIND_PARTS_QUIET}
+            )
+
+        if(NOT libprojectM${component}_FOUND)
+            if (libprojectM_FIND_REQUIRED_${component})
+                set(_libprojectM_NOTFOUND_MESSAGE "${_libprojectM_NOTFOUND_MESSAGE}Failed to find libprojectM component \"${component}\" config file\n")
+            elseif(NOT libprojectM_FIND_QUIETLY)
+                message(WARNING "Failed to find libprojectM component \"${component}\" config file")
+            endif()
+        endif()
+    endforeach()
+endif()
+
+if (_libprojectM_NOTFOUND_MESSAGE)
+    set(libprojectM_NOT_FOUND_MESSAGE "${_libprojectM_NOTFOUND_MESSAGE}")
+    set(libprojectM_FOUND False)
+endif()
