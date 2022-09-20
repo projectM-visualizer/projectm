@@ -32,7 +32,6 @@ int projectMSDL::initAudioInput() {
     SDL_Log("Opened audio capture device index=%i devId=%i: %s", selectedAudioDevice, audioDeviceID, deviceName);
     std::string deviceToast = deviceName; // Example: Microphone rear
     deviceToast += " selected";
-    projectm_set_toast_message(_projectM, deviceToast.c_str());
 #ifdef DEBUG
     SDL_Log("Samples: %i, frequency: %i, channels: %i, format: %i", have.samples, have.freq, have.channels, have.format);
 #endif
@@ -129,7 +128,6 @@ int projectMSDL::openAudioInput() {
     if(!initAudioInput() && NumAudioDevices == 0) {
         // the default device doesn't work, and there's no other device to try
         SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "No audio capture devices found");
-        projectm_set_toast_message(_projectM, "No audio capture devices found: using simulated audio");
         fakeAudio = true;
         return 0;
     }

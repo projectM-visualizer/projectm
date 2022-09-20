@@ -203,18 +203,6 @@ void projectm_reset_textures(projectm_handle instance)
     projectMInstance->ResetTextures();
 }
 
-const char* projectm_get_title(projectm_handle instance)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    return projectm_alloc_string_from_std_string(projectMInstance->Title());
-}
-
-void projectm_set_title(projectm_handle instance, const char* title)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->SetTitle(title);
-}
-
 void projectm_render_frame(projectm_handle instance)
 {
     auto projectMInstance = handle_to_instance(instance);
@@ -390,28 +378,6 @@ void projectm_touch_destroy_all(projectm_handle instance)
     projectMInstance->TouchDestroyAll();
 }
 
-void projectm_set_help_text(projectm_handle instance, const char* help_text)
-{
-    if (!help_text)
-    {
-        return;
-    }
-
-    auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->SetHelpText(help_text);
-}
-
-void projectm_set_toast_message(projectm_handle instance, const char* toast_message)
-{
-    if (!toast_message)
-    {
-        return;
-    }
-
-    auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->SetToastMessage(toast_message);
-}
-
 projectm_settings* projectm_get_settings(projectm_handle instance)
 {
     auto projectMInstance = handle_to_instance(instance);
@@ -479,12 +445,6 @@ void projectm_select_preset(projectm_handle instance, unsigned int index, bool h
     projectMInstance->SelectPreset(index, hard_cut);
 }
 
-void projectm_populate_preset_menu(projectm_handle instance)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->PopulatePresetMenu();
-}
-
 void projectm_remove_preset(projectm_handle instance, unsigned int index)
 {
     auto projectMInstance = handle_to_instance(instance);
@@ -509,12 +469,6 @@ bool projectm_is_preset_locked(projectm_handle instance)
     return projectMInstance->PresetLocked();
 }
 
-bool projectm_is_text_input_active(projectm_handle instance, bool no_minimum_length)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    return projectMInstance->TextInputActive(no_minimum_length);
-}
-
 unsigned int projectm_get_preset_index(projectm_handle instance, const char* preset_name)
 {
     if (!preset_name)
@@ -535,35 +489,6 @@ void projectm_select_preset_by_name(projectm_handle instance, const char* preset
 
     auto projectMInstance = handle_to_instance(instance);
     return projectMInstance->SelectPresetByName(preset_name, hard_cut);
-}
-
-const char* projectm_get_search_text(projectm_handle instance)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    return projectm_alloc_string_from_std_string(projectMInstance->SearchText());
-}
-
-void projectm_set_search_text(projectm_handle instance, const char* search_text)
-{
-    if (!search_text)
-    {
-        return;
-    }
-
-    auto projectMInstance = handle_to_instance(instance);
-    return projectMInstance->SetSearchText(search_text);
-}
-
-void projectm_delete_search_text(projectm_handle instance)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    return projectMInstance->DeleteSearchText();
-}
-
-void projectm_reset_search_text(projectm_handle instance)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    return projectMInstance->ResetSearchText();
 }
 
 bool projectm_get_selected_preset_index(projectm_handle instance, unsigned int* index)

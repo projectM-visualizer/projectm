@@ -28,22 +28,7 @@ Renderer::Renderer(int width, int height, int gx, int gy,
     , m_viewportWidth(width)
     , m_viewportHeight(height)
     , m_textureSearchPaths(textureSearchPaths)
-    , m_menuText(width)
 {
-	// This is the default help menu for applications that have not defined any custom menu.
-	const char* defaultHelpMenu = "\n"
-		"F1: This help menu""\n"
-		"F3: Show preset name""\n"
-		"F5: Show FPS""\n"
-		"L: Lock/Unlock Preset""\n"
-		"R: Random preset""\n"
-		"N/P: [N]ext+ or [P]revious-reset""\n"
-		"M/Return: Preset Menu (Arrow Up/Down & Page Up/Down to Navigate)""\n"
-		"Arrow Up/Down: Increase or Decrease Beat Sensitivity""\n"
-		"CTRL-F: Fullscreen";
-
-	this->setHelpText(defaultHelpMenu);
-
 	int size = (m_perPixelMesh.height - 1) * m_perPixelMesh.width * 4 * 2;
     m_perPointMeshBuffer = static_cast<float *>(wipemalloc(size * sizeof(float)));
 
@@ -177,22 +162,6 @@ void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipel
 {
 	totalframes++;
 
-	/*
-	If FPS is displayed (by pressing F5 or by config):
-		- check if 250 milliseconds has passed (1/4 of a second)
-		- multiply the total rendered frames (totalframes) by the fraction of a second that passed to get the approximate frames per second count.
-		- reset the totalframes and timer (lastTime) so we don't trigger for another 250 milliseconds.
-	*/
-	if (this->showfps)
-	{
-		this->currentTimeFPS = nowMilliseconds();
-		if (timeCheck(this->currentTimeFPS, this->lastTimeFPS, (double)250)) {
-			this->realfps = totalframes * (1000 / 250);
-			setFPS(realfps);
-			totalframes = 0;
-			this->lastTimeFPS = nowMilliseconds();
-		}
-	}
 	glViewport(0, 0, m_textureSizeX, m_textureSizeY);
 
     m_renderContext.mat_ortho = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -40.0f, 40.0f);
@@ -242,8 +211,6 @@ void Renderer::RenderTouch(const Pipeline& pipeline, const PipelineContext& pipe
 
 void Renderer::FinishPass1()
 {
-	draw_title_to_texture();
-
     m_textureManager->updateMainTexture();
 	if(writeNextFrameToFile) {
 		debugWriteMainTextureToFile();
@@ -276,29 +243,6 @@ void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineCo
 	{
 		CompositeOutput(pipeline, pipelineContext);
 	}
-
-
-	// When console refreshes, there is a chance the preset has been changed by the user
-	// TODO:
-	draw_title_to_screen(false);
-	if (this->showhelp == true)
-		draw_help();
-	if (this->showtitle == true)
-		draw_title();
-	if (this->showfps == true)
-		draw_fps();
-	// this->realfps
-	if (this->showsearch == true)
-		draw_search();
-	if (this->showmenu == true)
-		draw_menu();
-	if (this->showpreset == true)
-		draw_preset();
-	if (this->showstats == true)
-		draw_stats();
-	// We should always draw toasts last so they are on top of other text (lp/menu).
-	if (this->m_showToast == true)
-		draw_toast();
 }
 
 void Renderer::RenderFrame(const Pipeline& pipeline,
@@ -436,10 +380,6 @@ Renderer::~Renderer()
 	glDeleteVertexArrays(1, &m_vaoCompositeOutput);
 
 	glDeleteTextures(1, &textureRenderToTexture);
-
-#ifdef USE_TEXT_MENU
-    MenuText::CleanUp();
-#endif
 }
 
 void Renderer::reset(int w, int h)
@@ -483,24 +423,6 @@ void Renderer::reset(int w, int h)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glClear(GL_COLOR_BUFFER_BIT);
-
-#ifdef USE_TEXT_MENU
-    m_menuText.SetViewportWidth(w);
-
-	// When the renderer resets, do a check to find out what the maximum number of lines we could display are.
-	int r_textMenuPageSize = 0;
-	int yOffset = m_textMenuYOffset;
-	while (true) { // infinite loop, only satisifed when we have found the max lines of text on the screen.
-		if (yOffset < m_viewportHeight - m_textMenuLineHeight) { // if yOffset could be displayed on the screen (vh), then we have room for the next line.
-			r_textMenuPageSize++;
-			yOffset = yOffset + m_textMenuLineHeight;
-		}
-		else { // if we reached the end of the screen, set textMenuPageSize and move on.
-			textMenuPageSize = r_textMenuPageSize;
-			break;
-		}
-	}
-#endif
 }
 
 GLuint Renderer::initRenderToTexture()
@@ -518,17 +440,6 @@ GLuint Renderer::initRenderToTexture()
 	}
 
 	return textureRenderToTexture;
-}
-
-void Renderer::draw_title_to_texture()
-{
-#ifdef USE_TEXT_MENU
-	if (this->drawtitle > 100)
-	{
-		draw_title_to_screen(true);
-		this->drawtitle = 0;
-	}
-#endif /** USE_TEXT_MENU */
 }
 
 float title_y;
@@ -638,43 +549,6 @@ void Renderer::touchDestroyAll()
     m_waveformList.clear();
 }
 
-// turn search menu on / off
-void Renderer::toggleSearchText() {
-	this->showsearch = !this->showsearch;
-	if (this->showsearch)
-	{
-		this->showfps = false;
-		this->showtitle = false;
-	}
-}
-
-std::string Renderer::getSearchText() const
-{
-    return m_searchText;
-}
-
-// search based on new key input
-void Renderer::setSearchText(const std::string& theValue)
-{
-	m_searchText = m_searchText + theValue;
-}
-
-// reset search text backspace (reset)
-void Renderer::resetSearchText()
-{
-	m_searchText = "";
-}
-
-// search text backspace (delete a key)
-void Renderer::deleteSearchText()
-{
-	if (m_searchText.length() >= 1) {
-		m_searchText = m_searchText.substr(0, m_searchText.size() - 1);
-	}
-}
-
-
-
 void Renderer::debugWriteMainTextureToFile() const {
 	GLuint fbo;
 	auto mainTexture = m_textureManager->getMainTexture();
@@ -715,165 +589,6 @@ void Renderer::UpdateContext(PipelineContext& context)
     // It's actually the inverse of the aspect ratio.
     context.aspectx = m_fInvAspectX;
     context.aspecty = m_fInvAspectY;
-}
-
-void Renderer::setToastMessage(const std::string& theValue)
-{
-	// Initialize counters
-    m_lastTimeToast = nowMilliseconds();
-    m_currentTimeToast = nowMilliseconds();
-	m_toastMessage = theValue;
-    m_showToast = true;
-}
-
-// TODO:
-void Renderer::draw_title_to_screen(bool flip)
-{
-#ifdef USE_TEXT_MENU
-	if (this->drawtitle > 0)
-	{
-	}
-#endif /** USE_TEXT_MENU */
-}
-
-// render search text menu
-void Renderer::draw_search()
-{
-#ifdef USE_TEXT_MENU
-	std::string search = "Search: ";
-	search = search + searchText();
-
-    m_menuText.DrawBegin();
-    m_menuText.Draw(search, 30, 20, 2.5);
-    m_menuText.DrawEnd();
-#endif /** USE_TEXT_MENU */
-}
-
-void Renderer::draw_title()
-{
-#ifdef USE_TEXT_MENU
-	// TODO: investigate possible banner text for GUI
-    // m_menuText.DrawBegin();
-	// drawText(title_font, this->title.c_str(), 10, 20, 2.5);
-    // m_menuText.DrawEnd();
-#endif /** USE_TEXT_MENU */
-}
-
-void Renderer::draw_menu()
-{
-#ifdef USE_TEXT_MENU
-	int menu_xOffset = 30; // x axis static point.
-	int menu_yOffset = 60; // y axis start point.
-	float windowHeight = m_viewportHeight;
-	float alpha = 1.0;
-	if (this->showsearch) // if search input is up, slightly dim preset menu
-		alpha = 0.82f;
-    m_menuText.DrawBegin();
-	for (auto& it : m_presetList) { // loop over preset buffer
-		if (menu_yOffset  < windowHeight - m_textMenuLineHeight) { // if we are not at the bottom of the screen, display preset name.
-			if (it.id == m_activePresetID) { // if this is the active preset, add some color.
-				m_menuText.Draw(it.name, menu_xOffset, menu_yOffset , 1.5,
-                                MenuText::HorizontalAlignment::Left,
-                                MenuText::VerticalAlignment::Top,
-                                1.0, 0.1, 0.1, 1.0, true, m_searchText);
-			}
-			else {
-				m_menuText.Draw(it.name, menu_xOffset, menu_yOffset , 1.5,
-                                MenuText::HorizontalAlignment::Left,
-                                MenuText::VerticalAlignment::Top,
-                                1.0, 1.0, 1.0, alpha, true, m_searchText);
-			}
-		}
-		menu_yOffset = menu_yOffset + m_textMenuLineHeight; // increase line y offset so we can track if we reached the bottom of the screen.
-	}
-    m_menuText.DrawEnd();
-#endif /** USE_TEXT_MENU */
-}
-
-void Renderer::draw_preset()
-{
-#ifdef USE_TEXT_MENU
-    m_menuText.DrawBegin();
-	m_menuText.Draw(this->presetName(), 30, 20, 2.5);
-    m_menuText.DrawEnd();
-#endif /** USE_TEXT_MENU */
-}
-
-void Renderer::draw_help()
-{
-#ifdef USE_TEXT_MENU
-	// TODO: match winamp/milkdrop bindings
-    m_menuText.DrawBegin();
-	m_menuText.Draw(this->helpText(), 30, 20, 2.5);
-    m_menuText.DrawEnd();
-#endif /** USE_TEXT_MENU */
-}
-
-// fake rounding - substr is good enough.
-std::string Renderer::float_stats(float stat)
-{
-    std::string num_text = std::to_string(stat);
-    std::string rounded = num_text.substr(0, num_text.find(".")+4);
-	return rounded;
-}
-
-// TODO
-void Renderer::draw_stats()
-{
-#ifdef USE_TEXT_MENU
-	std::string stats = "\n";
-	std::string warpShader = (!m_currentPipeline->warpShader.programSource.empty()) ? "ON" : "OFF";
-	std::string compShader = (!m_currentPipeline->compositeShader.programSource.empty()) ? "ON" : "OFF";
-
-	stats += "Render:""\n";
-	stats += "Resolution: " + std::to_string(m_viewportWidth) + "x" + std::to_string(m_viewportHeight) + "\n";
-	stats += "Mesh X: " + std::to_string(m_perPixelMesh.width) + "\n";
-	stats += "Mesh Y: " + std::to_string(m_perPixelMesh.height) + "\n";
-    stats += "Time: " + std::to_string(m_renderContext.time) + "\n";
-
-	stats += "\n";
-	stats += "Beat Detect:""\n";
-	stats += "Sensitivity: " + float_stats(m_beatDetect->beatSensitivity) + "\n";
-	stats += "Bass: " + float_stats(m_beatDetect->bass) + "\n";
-	stats += "Mid Range: " + float_stats(m_beatDetect->mid) + "\n";
-	stats += "Treble: " + float_stats(m_beatDetect->treb) + "\n";
-	stats += "Volume: " + float_stats(m_beatDetect->vol) + "\n";
-
-	stats += "\n";
-	stats += "Preset:""\n";
-	stats += "Warp Shader: " + warpShader + "\n";
-	stats += "Composite Shader: " + compShader + "\n";
-    m_menuText.DrawBegin();
-	m_menuText.Draw(stats, 30, 20, 2.5);
-    m_menuText.DrawEnd();
-#endif /** USE_TEXT_MENU */
-}
-
-// TODO
-void Renderer::draw_fps()
-{
-#ifdef USE_TEXT_MENU
-    m_menuText.DrawBegin();
-	m_menuText.Draw(this->fps(), 30, 20, 2.5);
-    m_menuText.DrawEnd();
-#endif /** USE_TEXT_MENU */
-}
-
-void Renderer::draw_toast()
-{
-#ifdef USE_TEXT_MENU
-    m_menuText.DrawBegin();
-	m_menuText.Draw(this->toastMessage(), (m_viewportWidth /2), (m_viewportHeight /2), 2.5,
-                    MenuText::HorizontalAlignment::Center, MenuText::VerticalAlignment::Center);
-    m_menuText.DrawEnd();
-#endif /** USE_TEXT_MENU */
-
-	this->m_currentTimeToast = nowMilliseconds();
-	if (timeCheck(this->m_currentTimeToast,this->m_lastTimeToast,(double)(TOAST_TIME*1000))) {
-		this->m_currentTimeToast = nowMilliseconds();
-		this->m_lastTimeToast = nowMilliseconds();
-		this->m_showToast = false;
-	}
 }
 
 void Renderer::CompositeOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext)

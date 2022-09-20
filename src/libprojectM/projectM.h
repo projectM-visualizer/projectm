@@ -306,18 +306,6 @@ PROJECTM_EXPORT void projectm_set_preset_rating_changed_event_callback(projectm_
                                                                        void* user_data);
 
 /**
- * @brief Reset the projectM OpenGL renderer.
- *
- * <p>Required if anything invalidates the state of the current OpenGL context projectM is rendering to.</p>
- *
- * <p>For resize events, it is sufficient to call projectm_set_window_size()</p>
- *
- * @param instance The projectM instance handle.
- */
-PROJECTM_EXPORT void projectm_reset_gl(projectm_handle instance);
-
-
-/**
  * @brief Reloads all textures.
  *
  * Also resets the OpenGL renderer without changing the viewport size. Useful if preset paths were changed.
@@ -325,20 +313,6 @@ PROJECTM_EXPORT void projectm_reset_gl(projectm_handle instance);
  * @param instance The projectM instance handle.
  */
 PROJECTM_EXPORT void projectm_reset_textures(projectm_handle instance);
-
-/**
- * @brief Returns the current title text.
- * @param instance The projectM instance handle.
- * @return The currently set title text.
- */
-PROJECTM_EXPORT const char* projectm_get_title(projectm_handle instance);
-
-/**
- * @brief Sets the current title text and displays it.
- * @param instance The projectM instance handle.
- * @param title The title text to display.
- */
-PROJECTM_EXPORT void projectm_set_title(projectm_handle instance, const char* title);
 
 /**
  * @brief Renders a single frame.
@@ -620,30 +594,6 @@ PROJECTM_EXPORT void projectm_touch_destroy(projectm_handle instance, float x, f
 PROJECTM_EXPORT void projectm_touch_destroy_all(projectm_handle instance);
 
 /**
- * @brief Sets the help menu text.
- *
- * The help menu will be toggled if the key mapped to PROJECTM_K_F1 is pressed.
- *
- * @param instance The projectM instance handle.
- * @param help_text The help text to be displayed.
- */
-PROJECTM_EXPORT void projectm_set_help_text(projectm_handle instance, const char* help_text);
-
-/**
- * @brief Displays a short message in the center of the rendering area for a few seconds.
- *
- * <p>Useful to display song titles and changed audio settings. Used internally by projectM to display setting
- * changes like preset lock.</p>
- *
- * <p>Only one toast message is shown at a time. If this method is called while another message is shown, it
- * will be replaced immediately.</p>
- *
- * @param instance The projectM instance handle.
- * @param toast_message The message to display.
- */
-PROJECTM_EXPORT void projectm_set_toast_message(projectm_handle instance, const char* toast_message);
-
-/**
  * @brief Returns a structure with the current projectM settings.
  * @param instance The projectM instance handle.
  * @return A struct with all currently used settings.
@@ -677,12 +627,6 @@ PROJECTM_EXPORT void projectm_select_preset_position(projectm_handle instance, u
 PROJECTM_EXPORT void projectm_select_preset(projectm_handle instance, unsigned int index, bool hard_cut);
 
 /**
- * @brief Populates the on-screen preset menu.
- * @param instance The projectM instance handle.
- */
-PROJECTM_EXPORT void projectm_populate_preset_menu(projectm_handle instance);
-
-/**
  * @brief Removes a preset from the playlist.
  * @param instance The projectM instance handle.
  * @param index The  preset index to remove from the playlist.
@@ -714,15 +658,6 @@ PROJECTM_EXPORT void projectm_lock_preset(projectm_handle instance, bool lock);
 PROJECTM_EXPORT bool projectm_is_preset_locked(projectm_handle instance);
 
 /**
- * @brief Returns whether the search text input mode is active or not.
- * @param instance The projectM instance handle.
- * @param no_minimum_length If set to true, will return true if at least one character has been typed, otherwise
- *                          a minimum length of three characters is required.
- * @return True if text input mode is active, false otherwise.
- */
-PROJECTM_EXPORT bool projectm_is_text_input_active(projectm_handle instance, bool no_minimum_length);
-
-/**
  * @brief Returns the playlist index for the given preset name.
  *
  * If the preset name is found multiple times, the first matching index will be returned.
@@ -740,38 +675,6 @@ PROJECTM_EXPORT unsigned int projectm_get_preset_index(projectm_handle instance,
  * @param hard_cut If true, the preset will be shown immediately, if false a soft transition will be rendered.
  */
 PROJECTM_EXPORT void projectm_select_preset_by_name(projectm_handle instance, const char* preset_name, bool hard_cut);
-
-/**
- * @brief Returns the current preset search text.
- * @param instance The projectM instance handle.
- * @return The current search text used to search for presets in the playlist.
- */
-PROJECTM_EXPORT const char* projectm_get_search_text(projectm_handle instance);
-
-/**
- * @brief Sets the current preset search text.
- * @param instance The projectM instance handle.
- * @param search_text The search text used to search for presets in the current playlist.
- */
-PROJECTM_EXPORT void projectm_set_search_text(projectm_handle instance, const char* search_text);
-
-/**
- * @brief Deletes one character from the preset search text.
- *
- * This is equivalent to pressing DEL in a text box.
- *
- * @param instance The projectM instance handle.
- */
-PROJECTM_EXPORT void projectm_delete_search_text(projectm_handle instance);
-
-/**
- * @brief Deletes the whole search text.
- *
- * This will effectively leave preset search mode.
- *
- * @param instance The projectM instance handle.
- */
-PROJECTM_EXPORT void projectm_reset_search_text(projectm_handle instance);
 
 /**
  * @brief Returns the currently selected preset index.

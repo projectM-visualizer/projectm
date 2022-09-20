@@ -119,7 +119,6 @@ public:
     void touchDrag(float x, float y, int pressure);
     void touchDestroy(float x, float y);
     void touchDestroyAll();
-    void setHelpText(const std::string& theValue);
     void renderFrame();
     void pollEvent();
     bool keymod = false;

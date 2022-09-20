@@ -434,23 +434,6 @@ void ProjectM::ResetOpenGL(size_t width, size_t height)
     m_renderer->reset(width, height);
 }
 
-/** Sets the title to display */
-auto ProjectM::Title() const -> std::string
-{
-    return m_renderer->title;
-}
-
-/** Sets the title to display */
-void ProjectM::SetTitle(const std::string& title)
-{
-    if (title != m_renderer->title)
-    {
-        m_renderer->title = title;
-        m_renderer->drawtitle = 1;
-    }
-}
-
-
 auto ProjectM::InitializePresetTools() -> void
 {
     /* Set the seed to the current time in seconds */
@@ -472,9 +455,6 @@ auto ProjectM::InitializePresetTools() -> void
     // Load idle preset
     m_activePreset = m_presetLoader->loadPreset("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk");
     m_renderer->setPresetName("Geiss & Sperl - Feedback (projectM idle HDR mix)");
-
-    PopulatePresetMenu();
-
     m_renderer->SetPipeline(m_activePreset->pipeline());
 
     ResetEngine();
@@ -536,79 +516,10 @@ void ProjectM::SelectPreset(unsigned int index, bool hardCut)
         return;
     }
 
-    PopulatePresetMenu();
-
     *m_presetPos = m_presetChooser->begin(index);
     if (!StartPresetTransition(hardCut))
     {
         SelectRandom(hardCut);
-    }
-}
-
-// populatePresetMenu is called when a preset is loaded.
-void ProjectM::PopulatePresetMenu()
-{
-    if (m_renderer->showmenu)
-    {                                     // only track a preset list buffer if the preset menu is up.
-        m_renderer->m_presetList.clear(); // clear preset list buffer from renderer.
-
-        if (TextInputActive())
-        {
-            // if a searchTerm is active, we will populate the preset menu with search terms instead of the page we are on.
-            int h = 0;
-            std::string presetName = m_renderer->presetName();
-            int presetIndex = SearchIndex(presetName);
-            for (unsigned int i = 0; i < PlaylistSize(); i++)
-            { // loop over all presets
-                if (CaseInsensitiveSubstringFind(PresetName(i), m_renderer->searchText()) != std::string::npos)
-                {                                         // if term matches
-                    if (h < m_renderer->textMenuPageSize) // limit to just one page, pagination is not needed.
-                    {
-                        h++;
-                        m_renderer->m_presetList.push_back(
-                            {h, PresetName(i), ""}); // populate the renders preset list.
-                        if (h == presetIndex)
-                        {
-                            m_renderer->m_activePresetID = h;
-                        }
-                    }
-                }
-            }
-        }
-        else
-        {
-            // normal preset menu, based on pagination.
-            m_renderer->m_activePresetID = m_presetPos->lastIndex(); // tell renderer about the active preset ID (so it can be highlighted)
-            int page_start = 0;
-            if (m_presetPos->lastIndex() != m_presetLoader->size())
-            {
-                page_start = m_renderer->m_activePresetID; // if it's not the idle preset, then set it to the true value
-            }
-            if (page_start < m_renderer->textMenuPageSize)
-            {
-                page_start = 0; // if we are on page 1, start at the first preset.
-            }
-            if (page_start % m_renderer->textMenuPageSize == 0)
-            {
-                // if it's a perfect division of the page size, we are good.
-            }
-            else
-            {
-                page_start = page_start - (page_start %
-                                           m_renderer->textMenuPageSize); // if not, find closest divisable number for page start
-            }
-            int page_end = page_start + m_renderer->textMenuPageSize; // page end is page start + page size
-            if (page_end > m_presetLoader->size())
-            {
-                page_end = m_presetLoader->size();
-            }
-            while (page_start < page_end)
-            {
-                m_renderer->m_presetList.push_back(
-                    {page_start, PresetName(page_start), ""}); // populate the renders preset list.
-                page_start++;
-            }
-        }
     }
 }
 
@@ -619,7 +530,7 @@ bool ProjectM::StartPresetTransition(bool hardCut)
     {
         PresetSwitchFailedEvent(hardCut, **m_presetPos, "fake error");
         m_errorLoadingCurrentPreset = true;
-        PopulatePresetMenu();
+
         return false;
     }
 
@@ -637,8 +548,6 @@ bool ProjectM::StartPresetTransition(bool hardCut)
 
     PresetSwitchedEvent(hardCut, **m_presetPos);
     m_errorLoadingCurrentPreset = false;
-
-    PopulatePresetMenu();
 
     return true;
 }
@@ -689,24 +598,8 @@ void ProjectM::SelectPrevious(const bool hardCut)
         return;
     }
 
-    if (TextInputActive() && m_renderer->m_presetList.size() >= 1)
-    {
-        // if search menu is up, previous is based on search terms.
-        if (m_renderer->m_activePresetID <= 1)
-        {
-            // loop to bottom of page is at top
-            m_renderer->m_activePresetID = m_renderer->m_presetList.size();
-            SelectPresetByName(m_renderer->m_presetList[m_renderer->m_activePresetID - 1].name, true);
-        }
-        else
-        {
-            // otherwise move back
-            m_renderer->m_activePresetID--;
-            SelectPresetByName(m_renderer->m_presetList[m_renderer->m_activePresetID - 1].name, true);
-        }
-    }
-    else if (Settings().shuffleEnabled && m_presetHistory.size() >= 1 &&
-             static_cast<std::size_t>(m_presetHistory.back()) != m_presetLoader->size() && !m_renderer->showmenu)
+    if (Settings().shuffleEnabled && m_presetHistory.size() >= 1 &&
+             static_cast<std::size_t>(m_presetHistory.back()) != m_presetLoader->size())
     { // if randomly browsing presets, "previous" should return to last random preset not the index--. Avoid returning to size() because that's the idle:// preset.
         m_presetFuture.push_back(m_presetPos->lastIndex());
         SelectPreset(m_presetHistory.back());
@@ -732,24 +625,8 @@ void ProjectM::SelectNext(const bool hardCut)
         return;
     }
 
-    if (TextInputActive() && m_renderer->m_presetList.size() >= 1) // if search is active and there are search results
-    {
-        // if search menu is down, next is based on search terms.
-        if (static_cast<std::size_t>(m_renderer->m_activePresetID) >= m_renderer->m_presetList.size())
-        {
-            // loop to top of page is at bottom
-            m_renderer->m_activePresetID = 1;
-            SelectPresetByName(m_renderer->m_presetList[0].name, true);
-        }
-        else
-        {
-            // otherwise move forward
-            m_renderer->m_activePresetID++;
-            SelectPresetByName(m_renderer->m_presetList[m_renderer->m_activePresetID - 1].name, true);
-        }
-    }
-    else if (Settings().shuffleEnabled && m_presetFuture.size() >= 1 &&
-             static_cast<std::size_t>(m_presetFuture.front()) != m_presetLoader->size() && !m_renderer->showmenu)
+    if (Settings().shuffleEnabled && m_presetFuture.size() >= 1 &&
+             static_cast<std::size_t>(m_presetFuture.front()) != m_presetLoader->size())
     { // if shuffling and we have future presets already stashed then let's go forward rather than truely move randomly.
         m_presetHistory.push_back(m_presetPos->lastIndex());
         SelectPreset(m_presetFuture.back());
@@ -810,27 +687,6 @@ auto ProjectM::SwitchToCurrentPreset() -> std::unique_ptr<Preset>
 void ProjectM::SetPresetLocked(bool locked)
 {
     m_renderer->noSwitch = locked;
-    if (PresetLocked())
-    {
-        m_renderer->setToastMessage("Preset Locked");
-    }
-    else
-    {
-        m_renderer->setToastMessage("Unlocked");
-    }
-}
-
-// check if search menu is up and you have search terms (2 chars). nomin means you don't care about search terms.
-auto ProjectM::TextInputActive(bool noMinimumCharacters) const -> bool
-{
-    if (m_renderer->showsearch && (m_renderer->searchText().length() >= 2 || noMinimumCharacters))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
 }
 
 auto ProjectM::PresetLocked() const -> bool
@@ -1068,15 +924,6 @@ void ProjectM::SetMeshSize(size_t meshResolutionX, size_t meshResolutionY)
     RecreateRenderer();
 }
 
-// toggleSearchText
-void ProjectM::ToggleSearchText()
-{
-    if (m_renderer)
-    {
-        m_renderer->toggleSearchText();
-    }
-}
-
 auto ProjectM::Pcm() -> class Pcm&
 {
     return m_pcm;
@@ -1116,67 +963,6 @@ void ProjectM::SelectPresetByName(std::string presetName, bool hardCut)
     SelectPreset(index);
 }
 
-auto ProjectM::SearchText() const -> std::string
-{
-    return m_renderer->getSearchText();
-}
-
-// update search text based on new keystroke
-void ProjectM::SetSearchText(const std::string& searchKey)
-{
-    if (m_renderer)
-    {
-        m_renderer->setSearchText(searchKey);
-    }
-    PopulatePresetMenu();
-    if (m_renderer->m_presetList.size() >= 1)
-    {
-        std::string topPreset = m_renderer->m_presetList.front().name;
-        m_renderer->m_activePresetID = 1;
-        SelectPresetByName(topPreset);
-    }
-}
-
-// update search text based on new backspace
-void ProjectM::DeleteSearchText()
-{
-    if (m_renderer)
-    {
-        m_renderer->deleteSearchText();
-    }
-    PopulatePresetMenu();
-    if (m_renderer->m_presetList.size() >= 1)
-    {
-        m_renderer->m_activePresetID = 1;
-        std::string topPreset = m_renderer->m_presetList.front().name;
-        SelectPresetByName(topPreset);
-    }
-}
-
-// reset search text
-void ProjectM::ResetSearchText()
-{
-    if (m_renderer)
-    {
-        m_renderer->resetSearchText();
-    }
-    PopulatePresetMenu();
-    if (m_renderer->m_presetList.size() >= 1)
-    {
-        m_renderer->m_activePresetID = 1;
-        std::string topPreset = m_renderer->m_presetList.front().name;
-        SelectPresetByName(topPreset);
-    }
-}
-
-void ProjectM::SetToastMessage(const std::string& toastMessage)
-{
-    if (m_renderer)
-    {
-        m_renderer->setToastMessage(toastMessage);
-    }
-}
-
 auto ProjectM::Settings() const -> const class ProjectM::Settings&
 {
     return m_settings;
@@ -1212,14 +998,6 @@ void ProjectM::TouchDestroyAll()
     if (m_renderer)
     {
         m_renderer->touchDestroyAll();
-    }
-}
-
-void ProjectM::SetHelpText(const std::string& helpText)
-{
-    if (m_renderer)
-    {
-        m_renderer->setHelpText(helpText);
     }
 }
 

@@ -115,10 +115,6 @@ public:
 
     void ResetTextures();
 
-    auto Title() const -> std::string;
-
-    void SetTitle(const std::string& title);
-
     void RenderFrame();
 
     auto InitRenderToTexture() -> unsigned;
@@ -175,12 +171,6 @@ public:
 
     void TouchDestroyAll();
 
-    void SetHelpText(const std::string& helpText);
-
-    void ToggleSearchText(); // turn search text input on / off
-
-    void SetToastMessage(const std::string& toastMessage);
-
     auto Settings() const -> const class Settings&;
 
     /// Writes a Settings configuration to the specified file
@@ -192,9 +182,6 @@ public:
 
     /// Plays a preset immediately
     void SelectPreset(unsigned int index, bool hardCut = true);
-
-    /// Populates a page full of presets for the renderer to use.
-    void PopulatePresetMenu();
 
     /// Removes a preset from the play list. If it is playing then it will continue as normal until next switch
     void RemovePreset(unsigned int index);
@@ -208,25 +195,10 @@ public:
     /// Returns true if the active preset is locked
     auto PresetLocked() const -> bool;
 
-    /// Returns true if the text based search menu is up.
-    auto TextInputActive(bool noMinimumCharacters = false) const -> bool;
-
     auto PresetIndex(const std::string& presetFilename) const -> unsigned int;
 
     /// Plays a preset immediately when given preset name
     void SelectPresetByName(std::string presetName, bool hardCut = true);
-
-    // search based on keystroke
-    auto SearchText() const -> std::string;
-
-    // search based on keystroke
-    void SetSearchText(const std::string& searchKey);
-
-    // delete part of search term (backspace)
-    void DeleteSearchText();
-
-    // reset search term (blank)
-    void ResetSearchText();
 
     /// Returns index of currently active preset. In the case where the active
     /// preset was removed from the playlist, this function will return the element

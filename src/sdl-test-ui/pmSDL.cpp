@@ -58,11 +58,6 @@ projectMSDL::~projectMSDL()
     _projectM = nullptr;
 }
 
-void projectMSDL::setHelpText(const std::string& helpText)
-{
-    projectm_set_help_text(_projectM, helpText.c_str());
-}
-
 /* Stretch projectM across multiple monitors */
 void projectMSDL::stretchMonitors()
 {
@@ -194,25 +189,6 @@ void projectMSDL::keyHandler(SDL_Event* sdl_evt)
                 return;
             }
             break;
-        case SDLK_BACKSPACE:
-            projectm_delete_search_text(_projectM);
-            break;
-        case SDLK_SLASH:
-            break;
-        case SDLK_BACKSLASH:
-            break;
-        case SDLK_RETURN:
-            if (!projectm_is_text_input_active(_projectM, false))
-            {
-                SDL_StartTextInput();
-            }
-            break;
-        case SDLK_ESCAPE:
-            if (projectm_is_text_input_active(_projectM, false))
-            {
-                SDL_StopTextInput();
-            }
-            break;
         case SDLK_i:
             if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
             {
@@ -278,10 +254,7 @@ void projectMSDL::keyHandler(SDL_Event* sdl_evt)
 
 
         case SDLK_SPACE:
-            if (!projectm_is_text_input_active(_projectM, true))
-            {
-                projectm_lock_preset(_projectM, !projectm_is_preset_locked(_projectM));
-            }
+            projectm_lock_preset(_projectM, !projectm_is_preset_locked(_projectM));
             break;
         case SDLK_F1:
             break;
@@ -423,13 +396,6 @@ void projectMSDL::pollEvent()
                 break;
             case SDL_MOUSEBUTTONUP:
                 mouseDown = false;
-                break;
-            case SDL_TEXTINPUT:
-                if (projectm_is_text_input_active(_projectM, true))
-                {
-                    projectm_set_search_text(_projectM, evt.text.text);
-                    projectm_populate_preset_menu(_projectM);
-                }
                 break;
             case SDL_QUIT:
                 done = true;
