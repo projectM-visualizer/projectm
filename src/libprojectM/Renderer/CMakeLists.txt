@@ -10,8 +10,6 @@ add_library(Renderer OBJECT
         DarkenCenter.hpp
         Filters.cpp
         Filters.hpp
-        MenuText.cpp
-        MenuText.h
         MilkdropNoise.cpp
         MilkdropNoise.hpp
         MilkdropWaveform.cpp

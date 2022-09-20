@@ -235,12 +235,8 @@ projectMSDL *setupSDLApp() {
         settings->shuffle_enabled = 1;
         settings->soft_cut_ratings_enabled = 1; // ???
         // get path to our app, use CWD or resource dir for presets/fonts/etc
-        settings->preset_url = projectm_alloc_string(presetURL.length() + 1);
-        strncpy(settings->preset_url, presetURL.c_str(), presetURL.length());
-        settings->menu_font_url = projectm_alloc_string(menuFontURL.length() + 1);
-        strncpy(settings->menu_font_url, menuFontURL.c_str(), menuFontURL.length());
-        settings->title_font_url = projectm_alloc_string(titleFontURL.length() + 1);
-        strncpy(settings->title_font_url, titleFontURL.c_str(), titleFontURL.length());
+        settings->preset_path = projectm_alloc_string(presetURL.length() + 1);
+        strncpy(settings->preset_path, presetURL.c_str(), presetURL.length());
         // init with settings
         app = new projectMSDL(glCtx, settings, 0);
     }
@@ -264,28 +260,6 @@ projectMSDL *setupSDLApp() {
     modKey = "CMD";
 #endif
 
-    std::string sdlHelpMenu = "\n"
-    "F1: This help menu""\n"
-    "F3: Show preset name""\n"
-    "F4: Show details and statistics""\n"
-    "F5: Show FPS""\n"
-    "L or SPACE: Lock/Unlock Preset""\n"
-    "R: Random preset""\n"
-    "N: Next preset""\n"
-    "P: Previous preset""\n"
-    "UP: Increase Beat Sensitivity""\n"
-    "DOWN: Decrease Beat Sensitivity""\n"
-#ifdef PROJECTM_TOUCH_ENABLED
-    "Left Click: Drop Random Waveform on Screen""\n"
-    "Right Click: Remove Random Waveform""\n" +
-    modKey + "+Right Click: Remove All Random Waveforms""\n"
-#endif
-    + modKey + "+I: Audio Input (listen to next device)""\n" +
-    modKey + "+M: Change Monitor""\n" +
-    modKey + "+S: Stretch Monitors""\n" +
-    modKey + "+F: Fullscreen""\n" +
-    modKey + "+Q: Quit";
-    app->setHelpText(sdlHelpMenu.c_str());
     app->init(win);
 
 #if STEREOSCOPIC_SBS
