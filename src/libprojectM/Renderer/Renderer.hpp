@@ -8,9 +8,6 @@
 #include "ShaderEngine.hpp"
 #include "Transformation.hpp"
 #include "projectM-opengl.h"
-#ifdef USE_TEXT_MENU
-#include "MenuText.h"
-#endif /** USE_TEXT_MENU */
 
 #include <chrono>
 #include <ctime>
@@ -22,9 +19,6 @@
 
 
 using namespace std::chrono;
-
-#define TOAST_TIME 2
-#define TOUCH_TIME 5
 
 // for final composite grid:
 #define FCGSX 32 // final composite gridsize - # verts - should be EVEN.
@@ -80,14 +74,6 @@ public:
     return m_presetName;
   }
 
-  void setHelpText(const std::string& theValue) {
-		m_helpText = theValue;
-  }
-
-  std::string helpText() const {
-		return m_helpText;
-  }
-
   void setFPS(const int &theValue) {
 		m_fps = std::to_string(theValue);
   }
@@ -100,38 +86,16 @@ public:
 		return duration_cast<milliseconds>(system_clock::now().time_since_epoch());;
   }
 
-  void toggleSearchText();
-  void toggleInput();
   void touch(float x, float y, int pressure, int type);
   void touchDrag(float x, float y, int pressure);
   void touchDestroy(float x, float y);
   void touchDestroyAll();
   bool touchedWaveform(float x, float y, std::size_t i);
 
-  void setToastMessage(const std::string& theValue);
-  std::string getSearchText() const;
-  void setSearchText(const std::string& theValue);
-  void resetSearchText();
-  void deleteSearchText();
   /// Writes the contents of current mainTexture in TextureManager to a bmp file
   void debugWriteMainTextureToFile() const;
-  std::string toastMessage() const {
-    return m_toastMessage;
-  }
-
-  std::string searchText() const {
-    return m_searchText;
-  }
 
   void UpdateContext(PipelineContext& context);
-
-    bool showfps{ false };
-    bool showtitle{ false };
-    bool showpreset{ false };
-    bool showhelp{ false };
-    bool showsearch{ false };
-    bool showmenu{ false };
-    bool showstats{ false };
 
     bool shuffletrack{ false };
 
@@ -150,9 +114,6 @@ public:
     int m_activePresetID{ 0 };
     std::vector<preset> m_presetList;
 
-    int drawtitle{ 0 };
-    int textMenuPageSize{ 10 };
-
 private:
     void SetupPass1(const Pipeline& pipeline, const PipelineContext& pipelineContext);
     void Interpolation(const Pipeline& pipeline, const PipelineContext& pipelineContext);
@@ -162,21 +123,6 @@ private:
     void Pass2(const Pipeline& pipeline, const PipelineContext& pipelineContext);
     void CompositeShaderOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext);
     void CompositeOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext);
-
-    void rescale_per_pixel_matrices();
-
-    void draw_toast();
-    void draw_fps();
-    void draw_stats();
-    void draw_help();
-    void draw_menu();
-    void draw_preset();
-    void draw_search();
-    void draw_title();
-    void draw_title_to_screen(bool flip);
-    void draw_title_to_texture();
-
-    std::string float_stats(float stat);
 
     int nearestPower2(int value);
 
@@ -195,8 +141,6 @@ private:
 
     std::string m_presetName;
     std::string m_fps;
-    std::string m_toastMessage;
-    std::string m_searchText;
 
     float* m_perPointMeshBuffer{nullptr};
 
@@ -229,10 +173,6 @@ private:
     GLuint m_vboCompositeShaderOutput{0};
     GLuint m_vaoCompositeShaderOutput{0};
 
-#ifdef USE_TEXT_MENU
-    MenuText m_menuText;
-#endif /** USE_TEXT_MENU */
-
     composite_shader_vertex m_compositeVertices[FCGSX * FCGSY];
     int m_compositeIndices[(FCGSX - 2) * (FCGSY - 2) * 6];
 
@@ -243,20 +183,10 @@ private:
     double m_touchB{0.0};///!< Blue
     double m_touchA{0.0};///!< Alpha
 
-    bool m_showToast{false};
-
-    milliseconds m_lastTimeToast{nowMilliseconds()};
-    milliseconds m_currentTimeToast{nowMilliseconds()};
-
-    std::string m_helpText;
-
     std::vector<MilkdropWaveform> m_waveformList;
 
     int m_textureSizeX{0};
     int m_textureSizeY{0};
-
-    int m_textMenuLineHeight{25};
-    const int m_textMenuYOffset{60};
 
     float m_fAspectX{1.0};
     float m_fAspectY{1.0};
