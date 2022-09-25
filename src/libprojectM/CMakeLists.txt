@@ -32,8 +32,6 @@ set(EXPORTED_TARGETS
 add_subdirectory(MilkdropPresetFactory)
 add_subdirectory(Renderer)
 
-set(PROJECTM_EXPORT_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/projectM_export.h")
-
 # CMake cannot combine multiple static libraries using target_link_libraries.
 # This syntax will pull in the compiled object files into the final library.
 add_library(projectM_main OBJECT
@@ -41,7 +39,6 @@ add_library(projectM_main OBJECT
         Common.hpp
         ConfigFile.cpp
         ConfigFile.h
-        event.h
         fatal.h
         fftsg.cpp
         fftsg.h
@@ -53,7 +50,6 @@ add_library(projectM_main OBJECT
         IdleTextures.hpp
         KeyHandler.cpp
         KeyHandler.hpp
-        lvtoprojectM.h
         PCM.cpp
         PCM.hpp
         PipelineMerger.cpp
@@ -73,7 +69,6 @@ add_library(projectM_main OBJECT
         projectM-opengl.h
         RandomNumberGenerators.hpp
         resource.h
-        sdltoprojectM.h
         TestRunner.cpp
         TestRunner.hpp
         TimeKeeper.cpp
@@ -97,13 +92,8 @@ target_link_libraries(projectM_main
         GLM::GLM
         PUBLIC
         ${PROJECTM_OPENGL_LIBRARIES}
-        )
-
-include(GenerateExportHeader)
-
-generate_export_header(projectM_main
-        BASE_NAME projectM
-        EXPORT_FILE_NAME "${PROJECTM_EXPORT_HEADER}"
+        PUBLIC
+        projectM::API
         )
 
 if (ENABLE_STATIC_LIB)
@@ -119,14 +109,6 @@ if(ENABLE_SHARED_LINKING)
 else()
     add_library(projectM::libprojectM ALIAS projectM_static)
 endif()
-
-install(FILES
-        event.h
-        projectM.h
-        "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/projectM_export.h"
-        DESTINATION "${PROJECTM_INCLUDE_DIR}/libprojectM"
-        COMPONENT Devel
-        )
 
 if(ENABLE_CXX_INTERFACE)
     install(FILES
@@ -144,6 +126,7 @@ endif()
 
 # For use from a local projectM build tree (without installing)
 export(TARGETS
+        projectM_api
         ${EXPORTED_TARGETS}
         NAMESPACE libprojectM::
         FILE projectM-exports.cmake

@@ -1,8 +1,6 @@
 add_library(projectM_shared SHARED
-        projectM.h
         ProjectMCWrapper.cpp
         ProjectMCWrapper.hpp
-
         $<TARGET_OBJECTS:projectM_main>
         $<TARGET_OBJECTS:MilkdropPresetFactory>
         $<TARGET_OBJECTS:Renderer>
@@ -25,7 +23,7 @@ set_target_properties(projectM_shared PROPERTIES
 
 target_include_directories(projectM_shared
         PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer/hlslparser/src>"
@@ -36,6 +34,7 @@ target_include_directories(projectM_shared
 
 target_link_libraries(projectM_shared
         PUBLIC
+        projectM::API
         ${PROJECTM_OPENGL_LIBRARIES}
         ${CMAKE_DL_LIBS}
         )

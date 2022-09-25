@@ -1,8 +1,6 @@
 add_library(projectM_static STATIC
-        projectM.h
         ProjectMCWrapper.cpp
         ProjectMCWrapper.hpp
-
         $<TARGET_OBJECTS:projectM_main>
         $<TARGET_OBJECTS:MilkdropPresetFactory>
         $<TARGET_OBJECTS:Renderer>
@@ -23,7 +21,7 @@ set_target_properties(projectM_static PROPERTIES
 
 target_include_directories(projectM_static
         PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer/hlslparser/src>"
@@ -34,6 +32,7 @@ target_include_directories(projectM_static
 
 target_link_libraries(projectM_static
         PUBLIC
+        projectM::API
         ${PROJECTM_OPENGL_LIBRARIES}
         )
 

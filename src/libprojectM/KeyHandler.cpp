@@ -19,18 +19,13 @@
  *
  */
 
-#include <stdio.h>
-
-#include "fatal.h"
-#include "KeyHandler.hpp"
-#include "event.h"
-#include "BeatDetect.hpp"
 #include "PresetChooser.hpp"
-#include "Renderer.hpp"
 #include "ProjectM.hpp"
+#include "Renderer.hpp"
+#include "TimeKeeper.hpp"
+#include "libprojectM/event.h"
 
 #include <iostream>
-#include "TimeKeeper.hpp"
 
 
 class Preset;

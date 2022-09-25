@@ -1,6 +1,6 @@
 #include "ProjectMCWrapper.hpp"
 
-#include "projectM.h"
+#include "libprojectM/projectM.h"
 
 #include <cstring>
 #include <utility>
