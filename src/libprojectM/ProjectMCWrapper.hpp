@@ -22,7 +22,8 @@
 #pragma once
 
 #include "ProjectM.hpp"
-#include "projectM.h"
+
+#include "libprojectM/projectM.h"
 
 class projectMWrapper : public ProjectM
 {

@@ -40,9 +40,9 @@
 #define STEREOSCOPIC_SBS    0
 
 // projectM
+#include <libprojectM/projectM.h>
+#include <libprojectM/sdltoprojectM.h>
 #include <projectM-opengl.h>
-#include <projectM.h>
-#include <sdltoprojectM.h>
 
 // projectM SDL
 #include "setup.hpp"

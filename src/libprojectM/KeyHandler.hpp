@@ -27,7 +27,8 @@
 #ifndef _KEY_HANDLER_HPP
 #define _KEY_HANDLER_HPP
 
-#include "event.h"
+#include "libprojectM/event.h"
+
 class ProjectM;
 void default_key_handler(ProjectM *PM, projectMEvent event, projectMKeycode keycode);
 void refreshConsole();

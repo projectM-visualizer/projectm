@@ -21,8 +21,8 @@
 
 #pragma once
 
-#include "projectM_export.h"
-#include "event.h"
+#include "libprojectM/event.h"
+#include "libprojectM/projectM_export.h"
 
 #include <stdbool.h>
 #include <stddef.h>

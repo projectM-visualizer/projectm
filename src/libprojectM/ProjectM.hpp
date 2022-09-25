@@ -22,9 +22,10 @@
 
 #include "Common.hpp"
 #include "PCM.hpp"
-#include "PipelineContext.hpp"
-#include "event.h"
 #include "fatal.h"
+#include "Renderer/PipelineContext.hpp"
+
+#include "libprojectM/event.h"
 
 #ifdef _WIN32
 
