@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Javascript|String-Function</title>
+</head>
+<body>
+    <div class="box">
+        <h2>
+            Javascript & String Funtion Tutorial
+        </h2>
+    </div>
+
+    <script>
+
+        var str= "This is a COMPLETE a string";
+        console.log(str);
+
+        // var postion= str.indexOf('complete');
+        var postion= str.lastIndexOf('complete');
+        console.log(postion);
+        // console.log(str[10]);
+        // var postion= str.search('complete');
+        // console.log(postion);
+        
+        // var postion= str.indexOf('a');
+        // var postion= str.lastIndexOf('a');
+        // console.log(postion);
+
+        // Extracting String Parts
+        //     There are 3 methods for extracting a part of a string:
+
+        //     slice(start, end)
+        //     substring(start, end)
+        //     substr(start, length)
+
+        var sl= str.slice(8);
+        // var sl= str.slice(0,10);
+        // var sl= str.substring(0,12);
+        // var sl= str.substr(0,str.length);
+        console.log(sl);
+
+        // replace method
+        // var replace=str.replace("complete", "darkskyt");
+        // will not work with capital letter
+        // var replace=str.replace(/complete/i, "darkskyt");
+        // var replace=str.replace(/COMPLETE/g, "darkskyt");
+        // console.log(replace);
+
+        // To letter converter method
+
+        // var small= str.toLowerCase();
+        // console.log(small);
+        // var cap= str.toUpperCase();
+        // console.log(cap);
+
+        // var con=str.concat(" Ubunu is linux based operating");
+        // console.log(con);
+
+        // trim method 
+        // var withWhiteSpace="      system is 64     arcitecture     ";
+        // console.log(withWhiteSpace);
+        // console.log(withWhiteSpace.trim());
+
+        // charAt method 
+
+        // var char1=str.charAt(8);
+        var char1=str.charCodeAt(8);
+        console.log(char1);
+        // console.log(str.charCodeAt('8'));
+    </script>
+</body>
+</html>
