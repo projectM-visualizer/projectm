@@ -1,8 +1,12 @@
 [![Build Status](https://travis-ci.org/projectM-visualizer/projectm.svg?branch=master)](https://travis-ci.org/projectM-visualizer/projectm)
+![Discord Shield](https://discordapp.com/api/guilds/737206408482914387/widget.png?style=shield)
+[Chat with us on Discord](https://discord.gg/gaHtkQ3v)
 
 ![Logo](https://github.com/projectM-visualizer/projectm/raw/master/web/logo.png)
 
 ## projectM - The most advanced open-source music visualizer
+
+
 
 **Experience psychedelic and mesmerizing visuals by transforming music into equations that render into a limitless array
 of user-contributed visualizations.**
@@ -63,7 +67,7 @@ source-code and binary releases of the projectM development libraries and header
 
 ### Discord chat
 
-[Chat with us on Discord.](https://discord.gg/tpEuywB)
+[Chat with us on Discord.](https://discord.gg/gaHtkQ3v)
 
 ### Demo Video
 
