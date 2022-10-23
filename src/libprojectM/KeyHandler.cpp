@@ -113,9 +113,6 @@ void ProjectM::DefaultKeyHandler(projectMEvent event, projectMKeycode keycode) {
 		    break;
 	    case PROJECTM_K_i:
 	        break;
-		case PROJECTM_K_d:	// d stands for write DEBUG output.
-            m_renderer->writeNextFrameToFile = true;
-			break;
 	    case PROJECTM_K_EQUALS:
 	    case PROJECTM_K_PLUS:
 
