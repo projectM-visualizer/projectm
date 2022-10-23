@@ -102,7 +102,7 @@ public:
     bool correction{ true };
 
     bool noSwitch{ false };
-    bool writeNextFrameToFile;
+    bool writeNextFrameToFile{ false };
 
     milliseconds lastTimeFPS{ nowMilliseconds() };
     milliseconds currentTimeFPS{ nowMilliseconds() };
