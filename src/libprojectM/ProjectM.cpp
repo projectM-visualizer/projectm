@@ -184,6 +184,13 @@ void ProjectM::ReadSettings(const class Settings& settings)
     Initialize();
 }
 
+
+void ProjectM::DumpDebugImageOnNextFrame()
+{
+    m_renderer->writeNextFrameToFile = true;
+}
+
+
 #if USE_THREADS
 
 void ProjectM::ThreadWorker()

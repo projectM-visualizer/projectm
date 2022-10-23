@@ -923,6 +923,15 @@ PROJECTM_EXPORT void projectm_pcm_add_int16(projectm_handle instance, const int1
 PROJECTM_EXPORT void projectm_pcm_add_uint8(projectm_handle instance, const uint8_t* samples,
                                                      unsigned int count, projectm_channels channels);
 
+/**
+ * @brief Writes a .bmp framedump after rendering the next main texture, before shaders are applied.
+ *
+ * The image is written to the current working directory and is named "frame_texture_contents-[date].bmp".
+ *
+ * @param instance The projectM instance handle.
+ */
+PROJECTM_EXPORT void projectm_write_debug_image_on_next_frame(projectm_handle instance);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

@@ -270,6 +270,13 @@ public:
 
     void DefaultKeyHandler(projectMEvent event, projectMKeycode keycode);
 
+    /**
+     * @brief Dumps a debug image to the working dir when the next frame is rendered.
+     *
+     * The main texture is dumped after render pass 1, e.g. before shaders are applied.
+     */
+    void DumpDebugImageOnNextFrame();
+
 private:
     void EvaluateSecondPreset();
 
