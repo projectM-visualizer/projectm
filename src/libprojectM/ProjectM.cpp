@@ -824,6 +824,11 @@ auto ProjectM::TextureSize() const -> size_t
     return m_settings.textureSize;
 }
 
+void ProjectM::SetBeatSensitivity(float sensitivity)
+{
+    m_beatDetect->beatSensitivity = sensitivity;
+}
+
 auto ProjectM::SoftCutDuration() const -> double
 {
     return m_settings.softCutDuration;
