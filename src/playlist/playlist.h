@@ -10,6 +10,16 @@ struct projectm_playlist;                                   //!< Opaque projectM
 typedef struct projectm_playlist* projectm_playlist_handle; //!< A pointer to the opaque projectM playlist instance.
 
 /**
+ * @brief Frees a string array returned by any of the playlist API functions.
+ *
+ * Please only use this function with pointers returned by the playlist library, and don't use
+ * other projectM memory management functions with pointers returned by the playlist library.
+ *
+ * @param array The pointer to the array of strings that should be freed.
+ */
+void projectm_playlist_free_string_array(const char** array);
+
+/**
  * @brief Creates a playlist manager for the given projectM instance
  *
  * Only one active playlist manager is supported per projectM instance. If multiple playlists use
@@ -20,8 +30,9 @@ typedef struct projectm_playlist* projectm_playlist_handle; //!< A pointer to th
  *
  * @param instance The projectM instance to connect to. Can be a null pointer to leave the newly
  *                 created playlist instance unconnected.
+ * @return An opaque pointer to the newly created playlist manager instance. Null if creation failed.
  */
-void projectm_playlist_create(projectm_handle projectm_instance);
+projectm_playlist_handle projectm_playlist_create(projectm_handle projectm_instance);
 
 /**
  * @brief Destroys a previously created playlist manager.
@@ -30,7 +41,7 @@ void projectm_playlist_create(projectm_handle projectm_instance);
  *
  * @param instance The playlist manager instance to destroy.
  */
-void projectm_playlist_destroy(projectm_playlist instance);
+void projectm_playlist_destroy(projectm_playlist_handle instance);
 
 /**
  * @brief Connects the playlist manager to a projectM instance.
@@ -48,22 +59,34 @@ void projectm_playlist_destroy(projectm_playlist instance);
  * @param projectm_instance The projectM instance to connect to. Can be a null pointer to remove
  *                          an existing binding and clear the projectM preset switch callback.
  */
-void projectm_playlist_connect(projectm_playlist instance, projectm_handle projectm_instance);
+void projectm_playlist_connect(projectm_playlist_handle instance, projectm_handle projectm_instance);
 
 /**
- * @brief Returns the current playlist size.
- * @return The number of items in the current playlist.
+ * @brief Returns the number of presets in the current playlist.
+ * @param instance The playlist manager instance.
+ * @return The number of presets in the current playlist.
  */
-unsigned int projectm_playlist_size(projectm_playlist instance);
+uint32_t projectm_playlist_size(projectm_playlist_handle instance);
 
 /**
  * @brief Clears the playlist.
  * @param instance The playlist manager instance to clear.
  */
-void projectm_playlist_clear(projectm_playlist instance);
+void projectm_playlist_clear(projectm_playlist_handle instance);
 
 /**
- * @brief Adds presets from the given path to the current playlist.
+ * @brief Returns a list of all preset files in the current playlist, in order.
+ * @note Call projectm_playlist_free_string_array() when you're done using the list.
+ * @note Ideally, don't rely on the playlist size to iterate over the filenames. Instead, look for
+ *       the terminating null pointer to abort the loop.
+ * @param instance The playlist manager instance.
+ * @return A pointer to a list of char pointers, each containing a single preset. The last entry
+ *         is denoted by a null pointer.
+ */
+char** projectm_playlist_items(projectm_playlist_handle instance);
+
+/**
+ * @brief Appends presets from the given path to the end of the current playlist.
  *
  * This method will scan the given path for files with a ".milk" extension and add these to the
  * playlist.
@@ -74,9 +97,10 @@ void projectm_playlist_clear(projectm_playlist instance);
  *                        only the exact path given is searched for presets.
  * @param allow_duplicates If true, files found will always be added. If false, only files are
  *                         added that do not already exist in the current playlist.
- * @return The number of files added or -1 if the path could not be scanned.
+ * @return The number of files added. 0 may indicate issues scanning the path.
  */
-int projectm_playlist_add_path(projectm_playlist instance, const char* path, bool recurse_subdirs, bool allow_duplicates);
+uint32_t projectm_playlist_add_path(projectm_playlist_handle instance, const char* path,
+                                    bool recurse_subdirs, bool allow_duplicates);
 
 /**
  * @brief Adds a single preset to the end of the playlist.
@@ -91,7 +115,8 @@ int projectm_playlist_add_path(projectm_playlist instance, const char* path, boo
  * @return True if the file was added to the playlist, false if the file was a duplicate and
  *         allow_duplicates was set to false.
  */
-bool projectm_playlist_add_preset(projectm_playlist instance, const char* filename, bool allow_duplicates);
+bool projectm_playlist_add_preset(projectm_playlist_handle instance, const char* filename,
+                                  bool allow_duplicates);
 
 /**
  * @brief Adds a single preset to the playlist at the specified position.
@@ -111,8 +136,8 @@ bool projectm_playlist_add_preset(projectm_playlist instance, const char* filena
  * @return True if the file was added to the playlist, false if the file was a duplicate and
  *         allow_duplicates was set to false.
  */
-bool projectm_playlist_insert_preset(projectm_playlist instance, const char* filename,
-                                     unsigned int index, bool allow_duplicates);
+bool projectm_playlist_insert_preset(projectm_playlist_handle instance, const char* filename,
+                                     uint32_t index, bool allow_duplicates);
 
 /**
  * @brief Adds a list of presets to the end of the playlist.
@@ -127,8 +152,8 @@ bool projectm_playlist_insert_preset(projectm_playlist instance, const char* fil
  *                         current playlist.
  * @return The number of files added to the playlist. Ranges between 0 and count.
  */
-int projectm_playlist_add_presets(projectm_playlist instance, const char** filenames,
-                                  size_t count, bool allow_duplicates);
+uint32_t projectm_playlist_add_presets(projectm_playlist_handle instance, const char** filenames,
+                                       uint32_t count, bool allow_duplicates);
 
 /**
  * @brief Adds a single preset to the playlist at the specified position.
@@ -148,10 +173,41 @@ int projectm_playlist_add_presets(projectm_playlist instance, const char** filen
  *                         current playlist.
  * @return The number of files added to the playlist. Ranges between 0 and count.
  */
-int projectm_playlist_insert_presets(projectm_playlist instance, const char* filenames,
-                                     size_t count, unsigned int index, bool allow_duplicates);
+uint32_t projectm_playlist_insert_presets(projectm_playlist_handle instance, const char** filenames,
+                                          uint32_t count, unsigned int index, bool allow_duplicates);
+
+/**
+ * @brief Removes a single preset from the playlist at the specified position.
+ *
+ * @param instance The playlist manager instance.
+ * @param index The preset index to remove. If it exceeds the playlist size, no preset will be
+ *              removed.
+ * @return True if the preset was removed from the playlist, false if the index was out of range.
+ */
+bool projectm_playlist_remove_preset(projectm_playlist_handle instance, uint32_t index);
+
+/**
+ * @brief Removes a number of presets from the playlist from the specified position.
+ *
+ * @param instance The playlist manager instance.
+ * @param index The first preset index to remove. If it exceeds the playlist size, no preset will be
+ *              removed.
+ * @param count The number of presets to remove from the given index.
+ * @return The number of presets removed from the playlist.
+ */
+uint32_t projectm_playlist_remove_presets(projectm_playlist_handle instance, uint32_t index,
+                                          uint32_t count);
+
+
+/**
+ * @brief Enable or disable shuffle mode.
+ * @param instance The playlist manager instance.
+ * @param shuffle True to enable random shuffling, false to play presets in playlist order.
+ */
+void projectm_playlist_set_shuffle(projectm_playlist_handle instance, bool shuffle);
 
 
 #ifdef __cplusplus
-} // extern "C"
+}
+// extern "C"
 #endif
