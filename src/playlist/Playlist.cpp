@@ -2,6 +2,10 @@
 
 #include <algorithm>
 
+// Fall back to boost if compiler doesn't support C++17
+#include FS_INCLUDE
+using namespace FS_NAMESPACE::filesystem;
+
 namespace ProjectM {
 namespace Playlist {
 
@@ -51,6 +55,51 @@ bool Playlist::AddItem(const std::string& filename, uint32_t index, bool allowDu
 }
 
 
+auto Playlist::AddPath(const std::string& path, uint32_t index, bool recursive, bool allowDuplicates) -> uint32_t
+{
+    uint32_t presetsAdded{0};
+
+    if (recursive)
+    {
+        for (const auto& entry : recursive_directory_iterator(path))
+        {
+            if (is_regular_file(entry) && entry.path().extension() == ".milk")
+            {
+                uint32_t currentIndex{InsertAtEnd};
+                if (index < InsertAtEnd)
+                {
+                    currentIndex = index + presetsAdded;
+                }
+                if (AddItem(entry.path().string(), currentIndex, allowDuplicates))
+                {
+                    presetsAdded++;
+                }
+            }
+        }
+    }
+    else
+    {
+        for (const auto& entry : directory_iterator(path))
+        {
+            if (is_regular_file(entry) && entry.path().extension() == ".milk")
+            {
+                uint32_t currentIndex{InsertAtEnd};
+                if (index < InsertAtEnd)
+                {
+                    currentIndex = index + presetsAdded;
+                }
+                if (AddItem(entry.path().string(), currentIndex, allowDuplicates))
+                {
+                    presetsAdded++;
+                }
+            }
+        }
+    }
+
+    return presetsAdded;
+}
+
+
 auto Playlist::RemoveItem(uint32_t index) -> bool
 {
     if (index >= m_items.size())
@@ -70,10 +119,47 @@ void Playlist::Shuffle(bool enabled)
 }
 
 
-auto Playlist::Shuffle() -> bool
+auto Playlist::Shuffle() const -> bool
 {
     return m_shuffle;
 }
+
+
+void Playlist::Sort(uint32_t startIndex, uint32_t count,
+                    Playlist::SortPredicate predicate, Playlist::SortOrder order)
+{
+    std::sort(m_items.begin() + startIndex,
+              m_items.begin() + startIndex + count,
+              [predicate, order](const Item& left, const Item& right) {
+                  std::string leftFilename;
+                  std::string rightFilename;
+
+                  switch (predicate)
+                  {
+                      case SortPredicate::FullPath:
+                          leftFilename = left.Filename();
+                          rightFilename = right.Filename();
+                          break;
+
+                      case SortPredicate::FilenameOnly: {
+                          leftFilename = path(left.Filename()).filename().string();
+                          rightFilename = path(right.Filename()).filename().string();
+                          break;
+                      }
+                  }
+
+                  switch (order)
+                  {
+                      case SortOrder::Ascending:
+                          return std::lexicographical_compare(leftFilename.begin(), leftFilename.end(),
+                                                              rightFilename.begin(), rightFilename.end());
+                      case SortOrder::Descending:
+                          return std::lexicographical_compare(rightFilename.begin(), rightFilename.end(),
+                                                              leftFilename.begin(), leftFilename.end());
+                  }
+              });
+}
+
 
 } // namespace Playlist
 } // namespace ProjectM

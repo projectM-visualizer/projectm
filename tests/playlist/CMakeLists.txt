@@ -12,6 +12,11 @@ add_executable(projectM-playlist-unittest
         PlaylistTest.cpp
         )
 
+target_compile_definitions(projectM-playlist-unittest
+        PRIVATE
+        PROJECTM_PLAYLIST_TEST_DATA_DIR="${CMAKE_CURRENT_LIST_DIR}/data"
+        )
+
 target_link_libraries(projectM-playlist-unittest
         PRIVATE
         projectM_playlist

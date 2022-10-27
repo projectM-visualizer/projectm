@@ -1,3 +1,6 @@
+if(NOT ENABLE_PLAYLIST)
+    return()
+endif()
 
 add_library(projectM_playlist STATIC
         Item.cpp
@@ -23,6 +26,9 @@ set_target_properties(projectM_playlist PROPERTIES
         EXPORT_NAME playlist
         FOLDER libprojectM
         )
+
+# Adds fallback support to boost if std::filesystem is unavailable.
+include(FilesystemSupport.cmake)
 
 install(TARGETS projectM_playlist
         EXPORT libprojectMPlaylist

@@ -102,7 +102,16 @@ auto projectm_playlist_add_path(projectm_playlist_handle instance, const char* p
 {
     auto* playlist = playlist_handle_to_instance(instance);
 
-    return 0;
+    return playlist->AddPath(path, Playlist::InsertAtEnd, recurse_subdirs, allow_duplicates);
+}
+
+
+auto projectm_playlist_insert_path(projectm_playlist_handle instance, const char* path,
+                                   uint32_t index, bool recurse_subdirs, bool allow_duplicates) -> uint32_t
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+
+    return playlist->AddPath(path, index, recurse_subdirs, allow_duplicates);
 }
 
 
@@ -216,4 +225,26 @@ void projectm_playlist_set_shuffle(projectm_playlist_handle instance, bool shuff
 {
     auto* playlist = playlist_handle_to_instance(instance);
     playlist->Shuffle(shuffle);
+}
+
+
+void projectm_playlist_sort(projectm_playlist_handle instance, uint32_t start_index, uint32_t count,
+                            projectm_playlist_sort_predicate predicate, projectm_playlist_sort_order order)
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+
+    Playlist::SortPredicate predicatePlaylist{ProjectM::Playlist::Playlist::SortPredicate::FullPath};
+    Playlist::SortOrder orderPlaylist{ProjectM::Playlist::Playlist::SortOrder::Ascending};
+
+    if (predicate == SORT_PREDICATE_FILENAME_ONLY)
+    {
+        predicatePlaylist = ProjectM::Playlist::Playlist::SortPredicate::FilenameOnly;
+    }
+
+    if (order == SORT_ORDER_DESCENDING)
+    {
+        orderPlaylist = ProjectM::Playlist::Playlist::SortOrder::Descending;
+    }
+
+    playlist->Sort(start_index, count, predicatePlaylist, orderPlaylist);
 }

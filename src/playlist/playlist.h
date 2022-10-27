@@ -10,6 +10,26 @@ struct projectm_playlist;                                   //!< Opaque projectM
 typedef struct projectm_playlist* projectm_playlist_handle; //!< A pointer to the opaque projectM playlist instance.
 
 /**
+ * Sort predicate for playlist sorting.
+ */
+typedef enum
+{
+    SORT_PREDICATE_FULL_PATH,    //!< Sort by full path name
+    SORT_PREDICATE_FILENAME_ONLY //!< Sort only by preset filename
+} projectm_playlist_sort_predicate;
+
+
+/**
+ * Sort order for playlist sorting.
+ */
+typedef enum
+{
+    SORT_ORDER_ASCENDING, //!< Sort in alphabetically ascending order.
+    SORT_ORDER_DESCENDING //!< Sort in alphabetically descending order.
+} projectm_playlist_sort_order;
+
+
+/**
  * @brief Frees a string array returned by any of the playlist API functions.
  *
  * Please only use this function with pointers returned by the playlist library, and don't use
@@ -91,6 +111,8 @@ char** projectm_playlist_items(projectm_playlist_handle instance);
  * This method will scan the given path for files with a ".milk" extension and add these to the
  * playlist.
  *
+ * Symbolic links are not followed.
+ *
  * @param instance The playlist manager instance.
  * @param path A local filesystem path to scan for presets.
  * @param recurse_subdirs If true, subdirectories of the given path will also be scanned. If false,
@@ -101,6 +123,28 @@ char** projectm_playlist_items(projectm_playlist_handle instance);
  */
 uint32_t projectm_playlist_add_path(projectm_playlist_handle instance, const char* path,
                                     bool recurse_subdirs, bool allow_duplicates);
+
+
+/**
+ * @brief Inserts presets from the given path to the end of the current playlist.
+ *
+ * This method will scan the given path for files with a ".milk" extension and add these to the
+ * playlist.
+ *
+ * Symbolic links are not followed.
+ *
+ * @param instance The playlist manager instance.
+ * @param path A local filesystem path to scan for presets.
+ * @param index The index to insert the presets at. If it exceeds the playlist size, the presets are
+*              added at the end of the playlist.
+ * @param recurse_subdirs If true, subdirectories of the given path will also be scanned. If false,
+ *                        only the exact path given is searched for presets.
+ * @param allow_duplicates If true, files found will always be added. If false, only files are
+ *                         added that do not already exist in the current playlist.
+ * @return The number of files added. 0 may indicate issues scanning the path.
+ */
+uint32_t projectm_playlist_insert_path(projectm_playlist_handle instance, const char* path,
+                                       uint32_t index, bool recurse_subdirs, bool allow_duplicates);
 
 /**
  * @brief Adds a single preset to the end of the playlist.
@@ -198,7 +242,6 @@ bool projectm_playlist_remove_preset(projectm_playlist_handle instance, uint32_t
 uint32_t projectm_playlist_remove_presets(projectm_playlist_handle instance, uint32_t index,
                                           uint32_t count);
 
-
 /**
  * @brief Enable or disable shuffle mode.
  * @param instance The playlist manager instance.
@@ -206,6 +249,28 @@ uint32_t projectm_playlist_remove_presets(projectm_playlist_handle instance, uin
  */
 void projectm_playlist_set_shuffle(projectm_playlist_handle instance, bool shuffle);
 
+/**
+ * @brief Sorts part or the whole playlist according to the given predicate and order.
+ *
+ * It is safe to provide values in start_index and count that will exceed the number of items
+ * in the playlist. Only items that fall into an existing index range are sorted. If start_index
+ * is equal to or larger than the playlist size, no items are sorted. If start_index is inside the
+ * playlist, but adding count results in an index outside the playlist, items until the end are
+ * sorted.
+ *
+ * Sort order is lexicographical for both predicates and case-sensitive.
+ *
+ * If invalid values are provides as predicate or order, the defaults as mentioned in the parameter
+ * description are used.
+ *
+ * @param instance The playlist manager instance.
+ * @param start_index The starting index to begin sorting at.
+ * @param count The number of items, beginning at start_index, to sort.
+ * @param predicate The predicate to use for sorting. Default is SORT_PREDICATE_FULL_PATH.
+ * @param order The sort order. Default is SORT_ORDER_ASCENDING.
+ */
+void projectm_playlist_sort(projectm_playlist_handle instance, uint32_t start_index, uint32_t count,
+                            projectm_playlist_sort_predicate predicate, projectm_playlist_sort_order order);
 
 #ifdef __cplusplus
 }
