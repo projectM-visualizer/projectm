@@ -127,6 +127,10 @@ public:
 
     auto TextureSize() const -> size_t;
 
+    void SetBeatSensitivity(float sensitivity);
+
+    auto GetBeatSensitivity() const -> float;
+
     auto SoftCutDuration() const -> double;
 
     void SetSoftCutDuration(int seconds);
