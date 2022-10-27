@@ -829,6 +829,11 @@ void ProjectM::SetBeatSensitivity(float sensitivity)
     m_beatDetect->beatSensitivity = sensitivity;
 }
 
+auto ProjectM::GetBeatSensitivity() const -> float
+{
+    return m_beatDetect->beatSensitivity;
+}
+
 auto ProjectM::SoftCutDuration() const -> double
 {
     return m_settings.softCutDuration;

@@ -246,6 +246,12 @@ void projectm_set_beat_sensitivity(projectm_handle instance, float sensitivity)
     projectMInstance->SetBeatSensitivity(sensitivity);
 }
 
+float projectm_get_beat_sensitivity(projectm_handle instance)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    return projectMInstance->GetBeatSensitivity();
+}
+
 double projectm_get_hard_cut_duration(projectm_handle instance)
 {
     auto projectMInstance = handle_to_instance(instance);

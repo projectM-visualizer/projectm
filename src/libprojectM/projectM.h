@@ -394,6 +394,13 @@ PROJECTM_EXPORT void projectm_set_texture_size(projectm_handle instance, size_t 
 PROJECTM_EXPORT void projectm_set_beat_sensitivity(projectm_handle instance, float sensitivity);
 
 /**
+ * @brief Returns the beat sensitivity.
+ * @param instance The projectM instance handle.
+ * @return The current sensitivity setting.
+ */
+PROJECTM_EXPORT void projectm_get_beat_sensitivity(projectm_handle instance, float sensitivity);
+
+/**
  * @brief Returns the minimum display time before a hard cut can happen.
  * @param instance The projectM instance handle.
  * @return The minimum number of seconds the preset will be displayed before a hard cut.
