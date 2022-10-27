@@ -17,7 +17,7 @@ typedef struct projectm_playlist* projectm_playlist_handle; //!< A pointer to th
  *
  * @param array The pointer to the array of strings that should be freed.
  */
-void projectm_playlist_free_string_array(const char** array);
+void projectm_playlist_free_string_array(char** array);
 
 /**
  * @brief Creates a playlist manager for the given projectM instance

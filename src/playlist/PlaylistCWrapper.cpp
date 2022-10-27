@@ -2,6 +2,8 @@
 
 #include <limits>
 
+using ProjectM::Playlist::Playlist;
+
 PlaylistCWrapper::PlaylistCWrapper(projectm_handle projectMInstance)
 {
 }
@@ -19,12 +21,13 @@ auto playlist_handle_to_instance(projectm_playlist_handle instance) -> PlaylistC
 }
 
 
-void projectm_playlist_free_string_array(const char** array)
+void projectm_playlist_free_string_array(char** array)
 {
     int index{0};
     while (array[index] != nullptr)
     {
         delete[] array[index];
+        index++;
     }
     delete[] array;
 }
@@ -87,6 +90,7 @@ auto projectm_playlist_items(projectm_playlist_handle instance) -> char**
         auto filename = item.Filename();
         array[index] = new char[filename.length() + 1]{};
         filename.copy(array[index], filename.length());
+        index++;
     }
 
     return array;
@@ -107,7 +111,7 @@ auto projectm_playlist_add_preset(projectm_playlist_handle instance, const char*
 {
     auto* playlist = playlist_handle_to_instance(instance);
 
-    return playlist->AddItem(filename, std::numeric_limits<uint32_t>::max(), allow_duplicates);
+    return playlist->AddItem(filename, Playlist::InsertAtEnd, allow_duplicates);
 }
 
 
@@ -139,7 +143,7 @@ uint32_t projectm_playlist_add_presets(projectm_playlist_handle instance, const 
             continue;
         }
 
-        if (playlist->AddItem(filenames[index], std::numeric_limits<uint32_t>::max(), allow_duplicates))
+        if (playlist->AddItem(filenames[index], Playlist::InsertAtEnd, allow_duplicates))
         {
             addCount++;
         }
@@ -168,7 +172,7 @@ auto projectm_playlist_insert_presets(projectm_playlist_handle instance, const c
             continue;
         }
 
-        if (playlist->AddItem(filenames[filenameIndex], index + filenameIndex, allow_duplicates))
+        if (playlist->AddItem(filenames[filenameIndex], index + addCount, allow_duplicates))
         {
             addCount++;
         }

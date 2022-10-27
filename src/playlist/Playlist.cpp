@@ -7,16 +7,17 @@ namespace Playlist {
 
 uint32_t Playlist::Size() const
 {
-    return 0;
+    return m_items.size();
 }
 
 
 void Playlist::Clear()
 {
+    m_items.clear();
 }
 
 
-const std::vector<Item>& Playlist::Items()
+const std::vector<Item>& Playlist::Items() const
 {
     return m_items;
 }
@@ -24,6 +25,11 @@ const std::vector<Item>& Playlist::Items()
 
 bool Playlist::AddItem(const std::string& filename, uint32_t index, bool allowDuplicates)
 {
+    if (filename.empty())
+    {
+        return false;
+    }
+
     if (!allowDuplicates)
     {
         if (std::find(m_items.begin(), m_items.end(), filename) != m_items.end())
@@ -61,6 +67,12 @@ auto Playlist::RemoveItem(uint32_t index) -> bool
 void Playlist::Shuffle(bool enabled)
 {
     m_shuffle = enabled;
+}
+
+
+auto Playlist::Shuffle() -> bool
+{
+    return m_shuffle;
 }
 
 } // namespace Playlist

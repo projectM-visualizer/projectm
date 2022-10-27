@@ -9,6 +9,11 @@ add_library(projectM_playlist STATIC
         playlist.h
         )
 
+target_include_directories(projectM_playlist
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        )
+
 target_link_libraries(projectM_playlist
         PUBLIC
         projectM::API
