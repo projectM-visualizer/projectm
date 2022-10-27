@@ -92,7 +92,23 @@ TEST(projectMPlaylist, APIAddPath)
 {
     PlaylistCWrapperMock mockPlaylist;
 
-    EXPECT_EQ(projectm_playlist_add_path(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), "", true, false), 0);
+    EXPECT_CALL(mockPlaylist, AddPath("/some/path", ProjectM::Playlist::Playlist::InsertAtEnd, true, false))
+        .Times(1)
+        .WillOnce(Return(35));
+
+    EXPECT_EQ(projectm_playlist_add_path(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), "/some/path", true, false), 35);
+}
+
+
+TEST(projectMPlaylist, APIInsertPath)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    EXPECT_CALL(mockPlaylist, AddPath("/some/path", 6782, false, true))
+        .Times(1)
+        .WillOnce(Return(84));
+
+    EXPECT_EQ(projectm_playlist_insert_path(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), "/some/path", 6782, false, true), 84);
 }
 
 
@@ -169,9 +185,9 @@ TEST(projectMPlaylist, APIRemovePreset)
     PlaylistCWrapperMock mockPlaylist;
 
     EXPECT_CALL(mockPlaylist, RemoveItem(0))
-    .Times(2)
-    .WillOnce(Return(true))
-    .WillOnce(Return(false));
+        .Times(2)
+        .WillOnce(Return(true))
+        .WillOnce(Return(false));
 
     EXPECT_TRUE(projectm_playlist_remove_preset(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 0));
     EXPECT_FALSE(projectm_playlist_remove_preset(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 0));
@@ -205,3 +221,32 @@ TEST(projectMPlaylist, APISetShuffle)
     projectm_playlist_set_shuffle(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), false);
 }
 
+
+TEST(projectMPlaylist, APISort)
+{
+    using ProjectM::Playlist::Playlist;
+
+    PlaylistCWrapperMock mockPlaylist;
+
+    EXPECT_CALL(mockPlaylist, Sort(0, 5000, Playlist::SortPredicate::FullPath, Playlist::SortOrder::Ascending))
+        .Times(3); // Defaults - invalid values should call the Sort() function like this.
+    EXPECT_CALL(mockPlaylist, Sort(0, 5000, Playlist::SortPredicate::FullPath, Playlist::SortOrder::Descending))
+        .Times(1);
+    EXPECT_CALL(mockPlaylist, Sort(0, 5000, Playlist::SortPredicate::FilenameOnly, Playlist::SortOrder::Ascending))
+        .Times(1);
+    EXPECT_CALL(mockPlaylist, Sort(0, 5000, Playlist::SortPredicate::FilenameOnly, Playlist::SortOrder::Descending))
+        .Times(1);
+
+    projectm_playlist_sort(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 0, 5000,
+                           SORT_PREDICATE_FULL_PATH, SORT_ORDER_ASCENDING);
+    projectm_playlist_sort(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 0, 5000,
+                           SORT_PREDICATE_FULL_PATH, SORT_ORDER_DESCENDING);
+    projectm_playlist_sort(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 0, 5000,
+                           SORT_PREDICATE_FILENAME_ONLY, SORT_ORDER_ASCENDING);
+    projectm_playlist_sort(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 0, 5000,
+                           SORT_PREDICATE_FILENAME_ONLY, SORT_ORDER_DESCENDING);
+    projectm_playlist_sort(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 0, 5000,
+                           static_cast<projectm_playlist_sort_predicate>(100), SORT_ORDER_ASCENDING);
+    projectm_playlist_sort(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 0, 5000,
+                           SORT_PREDICATE_FULL_PATH, static_cast<projectm_playlist_sort_order>(200));
+}
