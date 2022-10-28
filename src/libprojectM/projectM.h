@@ -398,7 +398,7 @@ PROJECTM_EXPORT void projectm_set_beat_sensitivity(projectm_handle instance, flo
  * @param instance The projectM instance handle.
  * @return The current sensitivity setting.
  */
-PROJECTM_EXPORT void projectm_get_beat_sensitivity(projectm_handle instance, float sensitivity);
+PROJECTM_EXPORT float projectm_get_beat_sensitivity(projectm_handle instance);
 
 /**
  * @brief Returns the minimum display time before a hard cut can happen.
