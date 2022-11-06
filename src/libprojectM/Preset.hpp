@@ -1,38 +1,27 @@
-/*
- * Preset.hpp
- *
- *  Created on: Aug 5, 2008
- *      Author: carm
- */
+#pragma once
 
-#ifndef PRESET_HPP_
-#define PRESET_HPP_
+#include <Renderer/BeatDetect.hpp>
+#include <Renderer/Pipeline.hpp>
+#include <Renderer/PipelineContext.hpp>
 
-#include <string>
-
-#include "Renderer/BeatDetect.hpp"
-#include "Renderer/Pipeline.hpp"
-#include "Renderer/PipelineContext.hpp"
-
-class Preset {
+class Preset
+{
 public:
+    virtual ~Preset() = default;
 
-	
-	Preset(const std::string & name=std::string(), const std::string & author = std::string());
-	virtual ~Preset();
+    virtual Pipeline& pipeline() = 0;
+    virtual void Render(const BeatDetect& music, const PipelineContext& context) = 0;
 
-	void setName(const std::string & value);
-	const std::string & name() const;
+    inline void SetFilename(const std::string& filename)
+    {
+        m_filename = filename;
+    }
 
-	void setAuthor(const std::string & value);
-	const std::string & author() const;
-
-	virtual Pipeline & pipeline() = 0;
-	virtual void Render(const BeatDetect &music, const PipelineContext &context) = 0;
+    inline const std::string& Filename() const
+    {
+        return m_filename;
+    }
 
 private:
-	std::string _name;
-	std::string _author;
+    std::string m_filename;
 };
-
-#endif /* PRESET_HPP_ */

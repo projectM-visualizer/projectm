@@ -52,7 +52,6 @@ add_library(projectM_main OBJECT
         PCM.hpp
         PipelineMerger.cpp
         PipelineMerger.hpp
-        Preset.cpp
         Preset.hpp
         PresetFactory.cpp
         PresetFactory.hpp

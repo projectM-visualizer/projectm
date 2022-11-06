@@ -2,7 +2,7 @@
 
 const std::string PresetFactory::IDLE_PRESET_PROTOCOL("idle");
 
-std::string PresetFactory::protocol(const std::string & url, std::string & path) {
+std::string PresetFactory::Protocol(const std::string& url, std::string& path) {
 
 #ifdef __APPLE__
 	// NOTE: Brian changed this from url.find_first_of to url.find, since presumably we want to find the first occurence of
@@ -12,12 +12,15 @@ std::string PresetFactory::protocol(const std::string & url, std::string & path)
 	std::size_t pos = url.find_first_of("://");
 #endif
 	if (pos == std::string::npos)
-		return std::string();
-	else {
+    {
+        path = url;
+        return std::string();
+    }
+    else
+    {
 		path = url.substr(pos + 3, url.length());
-//        std::cout << "[PresetFactory] path is " << path << std::endl;
 #ifdef DEBUG
-        std::cout << "[PresetFactory] url is " << url << std::endl;
+        std::cout << "[PresetFactory] Filename is URL: " << url << std::endl;
 #endif
 		return url.substr(0, pos);
 	}

@@ -23,6 +23,25 @@ class ShaderEngine;
 #include "Shader.hpp"
 #include <glm/vec3.hpp>
 
+class ShaderException : public std::exception
+{
+public:
+    inline ShaderException(std::string message)
+        : m_message(std::move(message))
+    {
+    }
+
+    virtual ~ShaderException() = default;
+
+    const std::string& message() const
+    {
+        return m_message;
+    }
+
+private:
+    std::string m_message;
+};
+
 
 class ShaderEngine
 {
@@ -37,7 +56,7 @@ public:
 
     ShaderEngine();
     virtual ~ShaderEngine();
-    bool loadPresetShaders(Pipeline &pipeline, const std::string &presetName);
+    void loadPresetShaders(Pipeline &pipeline);
     bool enableWarpShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext, const glm::mat4 & mat_ortho);
     bool enableCompositeShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
     void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext);
@@ -116,8 +135,6 @@ private:
     GLuint programID_presetComp, programID_presetWarp;
 
     bool presetCompShaderLoaded, presetWarpShaderLoaded;
-
-    std::string m_presetName;
 };
 
 #endif /* SHADERENGINE_HPP_ */

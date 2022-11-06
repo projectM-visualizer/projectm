@@ -12,8 +12,9 @@
 
 #pragma once
 
+#include <PresetFactory.hpp>
+
 #include <memory>
-#include "../PresetFactory.hpp"
 
 class PresetOutputs;
 
@@ -23,15 +24,16 @@ class MilkdropPresetFactory : public PresetFactory
 {
 
 public:
-    MilkdropPresetFactory(int gx, int gy);
+    MilkdropPresetFactory(int meshX, int meshY);
 
     ~MilkdropPresetFactory() override;
 
     // called by ~MilkdropPreset
     void releasePreset(Preset* preset);
 
-    std::unique_ptr<Preset> allocate(const std::string& url, const std::string& name,
-                                     const std::string& author) override;
+    std::unique_ptr<Preset> LoadPresetFromFile(const std::string& filename) override;
+
+    std::unique_ptr<Preset> LoadPresetFromStream(std::istream& data) override;
 
     std::string supportedExtensions() const override
     {
@@ -39,11 +41,14 @@ public:
     }
 
 private:
-    static PresetOutputs* createPresetOutputs(int gx, int gy);
+    void ResetPresetOutputs(PresetOutputs* presetOutputs);
+
+    static PresetOutputs* CreatePresetOutputs(int meshX, int meshY);
 
     void reset();
 
-    int gx{ 0 };
-    int gy{ 0 };
-    PresetOutputs* _presetOutputsCache{ nullptr };
+    int m_meshX{0};
+    int m_meshY{0};
+
+    PresetOutputs* m_presetOutputsCache{nullptr};
 };

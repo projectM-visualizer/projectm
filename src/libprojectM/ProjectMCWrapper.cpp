@@ -15,12 +15,12 @@ projectMWrapper::projectMWrapper(class ProjectM::Settings settings)
 {
 }
 
-void projectMWrapper::PresetSwitchFailedEvent(bool isHardCut, const std::string& presetFilename,
+void projectMWrapper::PresetSwitchFailedEvent(const std::string& presetFilename,
                                               const std::string& failureMessage) const
 {
     if (_presetSwitchFailedEventCallback)
     {
-        _presetSwitchFailedEventCallback(isHardCut, presetFilename.c_str(),
+        _presetSwitchFailedEventCallback(presetFilename.c_str(),
                                          failureMessage.c_str(), _presetSwitchFailedEventUserData);
     }
 }
@@ -415,12 +415,6 @@ void projectm_set_window_size(projectm_handle instance, size_t width, size_t hei
 {
     auto projectMInstance = handle_to_instance(instance);
     projectMInstance->ResetOpenGL(width, height);
-}
-
-bool projectm_get_error_loading_current_preset(projectm_handle instance)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    return projectMInstance->ErrorLoadingCurrentPreset();
 }
 
 unsigned int projectm_pcm_get_max_samples()

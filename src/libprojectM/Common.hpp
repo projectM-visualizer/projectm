@@ -66,10 +66,6 @@ double constexpr defaultDoubleLb{minDoubleSize};
 double constexpr defaultDoubleUb{maxDoubleSize};
 
 unsigned int const numQVariables(32);
-std::string const projectmFileExtension("prjm");
-std::string const milkdropFileExtension("milk");
-std::string const projectmModuleExtension("so");
-
 
 //CPP17: std::filesystem::path::extension
 inline auto ParseExtension(const std::string& filename) -> std::string
@@ -97,41 +93,5 @@ inline auto ParseFilename(const std::string& filename) -> std::string
 
     return filename.substr(start + 1, filename.length());
 }
-
-inline auto MeanSquaredError(const double& x, const double& y) -> double
-{
-    return (x - y) * (x - y);
-}
-
-inline auto CaseInsensitiveSubstringFind(std::string const& haystack, std::string const& needle) -> size_t
-{
-    auto const it = std::search(
-        haystack.cbegin(),
-        haystack.cend(),
-        needle.cbegin(),
-        needle.cend(),
-        [](char ch1, char ch2) {
-            return std::toupper(ch1) == std::toupper(ch2);
-        });
-
-    if (it != haystack.end())
-    {
-        return std::distance(haystack.begin(), it);
-    }
-
-    return std::string::npos;
-}
-
-enum PresetRatingType
-{
-    FIRST_RATING_TYPE = 0,
-    HARD_CUT_RATING_TYPE = FIRST_RATING_TYPE,
-    SOFT_CUT_RATING_TYPE,
-    LAST_RATING_TYPE = SOFT_CUT_RATING_TYPE,
-    TOTAL_RATING_TYPES = SOFT_CUT_RATING_TYPE + 1
-};
-
-
-using RatingList = std::vector<int>;
 
 #endif

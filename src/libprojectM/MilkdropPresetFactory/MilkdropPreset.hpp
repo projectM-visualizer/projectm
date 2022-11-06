@@ -68,17 +68,14 @@ public:
 
     ///  Load a MilkdropPreset by filename with input and output buffers specified.
     /// \param absoluteFilePath the absolute file path of a MilkdropPreset to load from the file system
-    /// \param milkdropPresetName a descriptive name for the MilkdropPreset. Usually just the file name
     /// \param presetOutputs initialized and filled with data parsed from a MilkdropPreset
     MilkdropPreset(MilkdropPresetFactory* factory, const std::string& absoluteFilePath,
-                   const std::string& milkdropPresetName, PresetOutputs* presetOutputs);
+                   PresetOutputs* presetOutputs);
 
     ///  Load a MilkdropPreset from an input stream with input and output buffers specified.
     /// \param in an already initialized input stream to read the MilkdropPreset file from
-    /// \param milkdropPresetName a descriptive name for the MilkdropPreset. Usually just the file name
     /// \param presetOutputs initialized and filled with data parsed from a MilkdropPreset
-    MilkdropPreset(MilkdropPresetFactory* factory, std::istream& in, const std::string& milkdropPresetName,
-                   PresetOutputs* presetOutputs);
+    MilkdropPreset(MilkdropPresetFactory* factory, std::istream& in, PresetOutputs* presetOutputs);
 
     ~MilkdropPreset();
 
@@ -148,15 +145,7 @@ public:
 
     void Render(const BeatDetect& music, const PipelineContext& context);
 
-    const std::string& name() const;
-
-    const std::string& filename() const
-    {
-        return _filename;
-    }
-
 private:
-    std::string _filename;
     PresetInputs _presetInputs;
 
     /// Evaluates the MilkdropPreset for a frame given the current values of MilkdropPreset inputs / outputs

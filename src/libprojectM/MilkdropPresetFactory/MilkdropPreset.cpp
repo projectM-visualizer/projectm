@@ -52,10 +52,8 @@
 #endif
 
 
-MilkdropPreset::MilkdropPreset(MilkdropPresetFactory* factory, std::istream& in, const std::string& presetName,
-                               PresetOutputs* presetOutputs)
-    : Preset(presetName)
-    , builtinParams(_presetInputs, presetOutputs)
+MilkdropPreset::MilkdropPreset(MilkdropPresetFactory* factory, std::istream& in, PresetOutputs* presetOutputs)
+    : builtinParams(_presetInputs, presetOutputs)
     , per_pixel_program(nullptr)
     , _factory(factory)
     , _presetOutputs(presetOutputs)
@@ -65,11 +63,9 @@ MilkdropPreset::MilkdropPreset(MilkdropPresetFactory* factory, std::istream& in,
 
 
 MilkdropPreset::MilkdropPreset(MilkdropPresetFactory* factory, const std::string& absoluteFilePath,
-                               const std::string& presetName, PresetOutputs* presetOutputs)
-    : Preset(presetName)
-    , builtinParams(_presetInputs, presetOutputs)
+                               PresetOutputs* presetOutputs)
+    : builtinParams(_presetInputs, presetOutputs)
     , per_pixel_program(nullptr)
-    , _filename(ParseFilename(absoluteFilePath))
     , _absoluteFilePath(absoluteFilePath)
     , _factory(factory)
     , _presetOutputs(presetOutputs)
@@ -151,7 +147,7 @@ int MilkdropPreset::add_per_pixel_eqn(char* name, Expr* gen_expr)
     {
         if (PER_PIXEL_EQN_DEBUG)
         {
-            printf("add_per_pixel_eqn: failed to allocate a new parameter!\n");
+            printf("add_per_pixel_eqn: failed to CreatePresetFromFile a new parameter!\n");
         }
         return PROJECTM_FAILURE;
     }
@@ -338,6 +334,8 @@ void MilkdropPreset::initialize(const std::string& pathname)
     {
         std::cerr << "[Preset] loading file \"" << pathname << "\"..." << std::endl;
     }
+
+    SetFilename(ParseFilename(pathname));
 
     loadPresetFile(pathname);
 
@@ -590,7 +588,7 @@ int MilkdropPreset::loadPresetFile(const std::string& pathname)
 
     /* Open the file corresponding to pathname */
     std::ifstream fs(pathname.c_str());
-    if (!fs || fs.eof())
+    if (!fs.good() || fs.eof())
     {
 
         std::ostringstream oss;
@@ -603,10 +601,3 @@ int MilkdropPreset::loadPresetFile(const std::string& pathname)
     return readIn(fs);
 
 }
-
-const std::string& MilkdropPreset::name() const
-{
-
-    return filename();
-}
-

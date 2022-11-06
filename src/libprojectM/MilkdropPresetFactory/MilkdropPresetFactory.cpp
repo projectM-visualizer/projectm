@@ -17,10 +17,9 @@
 #include "IdlePreset.hpp"
 #include "PresetFrameIO.hpp"
 
-MilkdropPresetFactory::MilkdropPresetFactory(int gx_, int gy_)
-    : gx(gx_)
-    , gy(gy_)
-    , _presetOutputsCache(nullptr)
+MilkdropPresetFactory::MilkdropPresetFactory(int meshX, int meshY)
+    : m_meshX(meshX)
+    , m_meshY(meshY)
 {
     /* Initializes the builtin function database */
     BuiltinFuncs::init_builtin_func_db();
@@ -33,18 +32,12 @@ MilkdropPresetFactory::~MilkdropPresetFactory()
 {
     Eval::destroy_infix_ops();
     BuiltinFuncs::destroy_builtin_func_db();
-
-    if (_presetOutputsCache)
-    {
-        delete (_presetOutputsCache);
-        _presetOutputsCache = nullptr;
-    }
 }
 
 /* Reinitializes the engine variables to a default (conservative and sane) value */
-void resetPresetOutputs(PresetOutputs* presetOutputs)
+void MilkdropPresetFactory::ResetPresetOutputs(PresetOutputs* presetOutputs)
 {
-    if (!presetOutputs)
+    if (presetOutputs == nullptr)
     {
         return;
     }
@@ -151,18 +144,17 @@ void resetPresetOutputs(PresetOutputs* presetOutputs)
 /* Reinitializes the engine variables to a default (conservative and sane) value */
 void MilkdropPresetFactory::reset()
 {
-    if (_presetOutputsCache)
+    if (m_presetOutputsCache)
     {
-        resetPresetOutputs(_presetOutputsCache);
+        ResetPresetOutputs(m_presetOutputsCache);
     }
 }
 
-PresetOutputs* MilkdropPresetFactory::createPresetOutputs(int gx, int gy)
+PresetOutputs* MilkdropPresetFactory::CreatePresetOutputs(int meshX, int meshY)
 {
+    auto* presetOutputs = new PresetOutputs();
 
-    PresetOutputs* presetOutputs = new PresetOutputs();
-
-    presetOutputs->Initialize(gx, gy);
+    presetOutputs->Initialize(meshX, meshY);
 
     /* PER FRAME CONSTANTS BEGIN */
     presetOutputs->zoom = 1.0;
@@ -177,31 +169,26 @@ PresetOutputs* MilkdropPresetFactory::createPresetOutputs(int gx, int gy)
     presetOutputs->cx = 0.5;
     presetOutputs->cy = 0.5;
 
-    presetOutputs->screenDecay = .98;
-
-
-//_presetInputs.meshx = 0;
-//_presetInputs.meshy = 0;
-
+    presetOutputs->screenDecay = 0.98f;
 
     /* PER_FRAME CONSTANTS END */
-    presetOutputs->fRating = 0;
-    presetOutputs->fGammaAdj = 1.0;
-    presetOutputs->videoEcho.zoom = 1.0;
-    presetOutputs->videoEcho.a = 0;
-    presetOutputs->videoEcho.orientation = Normal;
+    presetOutputs->fRating = 0.0f;
+    presetOutputs->fGammaAdj = 1.0f;
+    presetOutputs->videoEcho.zoom = 1.0f;
+    presetOutputs->videoEcho.a = 0.0f;
+    presetOutputs->videoEcho.orientation = Orientation::Normal;
 
-    presetOutputs->textureWrap = 0;
-    presetOutputs->bDarkenCenter = 0;
-    presetOutputs->bRedBlueStereo = 0;
-    presetOutputs->bBrighten = 0;
-    presetOutputs->bDarken = 0;
-    presetOutputs->bSolarize = 0;
-    presetOutputs->bInvert = 0;
-    presetOutputs->bMotionVectorsOn = 1;
-    presetOutputs->fWarpAnimSpeed = 0;
-    presetOutputs->fWarpScale = 0;
-    presetOutputs->fShader = 0;
+    presetOutputs->textureWrap = false;
+    presetOutputs->bDarkenCenter = false;
+    presetOutputs->bRedBlueStereo = false;
+    presetOutputs->bBrighten = false;
+    presetOutputs->bDarken = false;
+    presetOutputs->bSolarize = false;
+    presetOutputs->bInvert = false;
+    presetOutputs->bMotionVectorsOn = true;
+    presetOutputs->fWarpAnimSpeed = 0.0f;
+    presetOutputs->fWarpScale = 0.0f;
+    presetOutputs->fShader = 0.0f;
 
     /* PER_PIXEL CONSTANTS BEGIN */
 
@@ -220,32 +207,57 @@ PresetOutputs* MilkdropPresetFactory::createPresetOutputs(int gx, int gy)
 
 
 std::unique_ptr<Preset>
-MilkdropPresetFactory::allocate(const std::string& url, const std::string& name, const std::string& author)
+MilkdropPresetFactory::LoadPresetFromFile(const std::string& filename)
+{
+    PresetOutputs* presetOutputs;
+    // use cached PresetOutputs if there is one, otherwise allocate
+    if (m_presetOutputsCache)
+    {
+        presetOutputs = m_presetOutputsCache;
+        m_presetOutputsCache = nullptr;
+    }
+    else
+    {
+        presetOutputs = CreatePresetOutputs(m_meshX, m_meshY);
+    }
+
+    ResetPresetOutputs(presetOutputs);
+
+    std::string path;
+    auto protocol = PresetFactory::Protocol(filename, path);
+    if (protocol == PresetFactory::IDLE_PRESET_PROTOCOL)
+    {
+        return IdlePresets::allocate(this, presetOutputs);
+    }
+    else if (protocol == "" or protocol == "file")
+    {
+        return std::make_unique<MilkdropPreset>(this, path, presetOutputs);
+    }
+    else
+    {
+        // ToDO: Throw unsupported protocol exception instead to provide more information.
+        return nullptr;
+    }
+}
+
+std::unique_ptr<Preset> MilkdropPresetFactory::LoadPresetFromStream(std::istream& data)
 {
 
     PresetOutputs* presetOutputs;
     // use cached PresetOutputs if there is one, otherwise allocate
-    if (_presetOutputsCache)
+    if (m_presetOutputsCache)
     {
-        presetOutputs = _presetOutputsCache;
-        _presetOutputsCache = nullptr;
+        presetOutputs = m_presetOutputsCache;
+        m_presetOutputsCache = nullptr;
     }
     else
     {
-        presetOutputs = createPresetOutputs(gx, gy);
+        presetOutputs = CreatePresetOutputs(m_meshX, m_meshY);
     }
 
-    resetPresetOutputs(presetOutputs);
+    ResetPresetOutputs(presetOutputs);
 
-    std::string path;
-    if (PresetFactory::protocol(url, path) == PresetFactory::IDLE_PRESET_PROTOCOL)
-    {
-        return IdlePresets::allocate(this, path, presetOutputs);
-    }
-    else
-    {
-        return std::unique_ptr<Preset>(new MilkdropPreset(this, url, name, presetOutputs));
-    }
+    return std::make_unique<MilkdropPreset>(this, data, presetOutputs);
 }
 
 // this gives the preset a way to return the PresetOutput w/o dependency on class projectM behavior
@@ -260,9 +272,9 @@ void MilkdropPresetFactory::releasePreset(Preset* preset)
     }
 
     // return PresetOutputs to the cache
-    if (!_presetOutputsCache)
+    if (!m_presetOutputsCache)
     {
-        _presetOutputsCache = milkdropPreset->_presetOutputs;
+        m_presetOutputsCache = milkdropPreset->_presetOutputs;
     }
     else
     {

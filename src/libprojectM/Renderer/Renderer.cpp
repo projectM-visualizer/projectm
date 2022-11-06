@@ -24,7 +24,6 @@ Renderer::Renderer(int width, int height, int gx, int gy,
                    BeatDetect* beatDetect, std::vector<std::string>& textureSearchPaths)
     : m_perPixelMesh(gx, gy)
     , m_beatDetect(beatDetect)
-    , m_presetName("None")
     , m_viewportWidth(width)
     , m_viewportHeight(height)
     , m_textureSearchPaths(textureSearchPaths)
@@ -137,16 +136,19 @@ Renderer::Renderer(int width, int height, int gx, int gy,
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-std::string Renderer::SetPipeline(Pipeline& pipeline)
+void Renderer::SetPipeline(Pipeline& pipeline)
 {
     m_currentPipeline = &pipeline;
     m_shaderEngine.reset();
-	if (!m_shaderEngine.loadPresetShaders(pipeline, m_presetName))
-	{
-		return "Shader compilation error";
-	}
 
-	return std::string();
+	try {
+        m_shaderEngine.loadPresetShaders(pipeline);
+
+    }
+    catch(const ShaderException& ex)
+	{
+		throw RenderException("Shader compilation error: " + ex.message());
+	}
 }
 
 void Renderer::ResetTextures()
@@ -418,7 +420,14 @@ void Renderer::reset(int w, int h)
 
     m_shaderEngine.setParams(m_textureSizeX, m_textureSizeY, m_fAspectX, m_fAspectY, m_beatDetect, m_textureManager.get());
     m_shaderEngine.reset();
-    m_shaderEngine.loadPresetShaders(*m_currentPipeline, m_presetName);
+    try
+    {
+        m_shaderEngine.loadPresetShaders(*m_currentPipeline);
+    }
+    catch(const ShaderException& ex)
+    {
+        throw RenderException("Shader compilation error: " + ex.message());
+    }
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

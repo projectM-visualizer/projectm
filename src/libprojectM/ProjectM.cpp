@@ -26,33 +26,11 @@
 #include "PCM.hpp" //Sound data handler (buffering, FFT, etc.)
 #include "PipelineMerger.hpp"
 #include "Preset.hpp"
+#include "PresetFactoryManager.hpp"
 #include "Renderer.hpp"
 #include "TimeKeeper.hpp"
 
 #include <iostream>
-
-namespace {
-constexpr int kMaxSwitchRetries = 10;
-}
-
-ProjectM::~ProjectM()
-{
-#if USE_THREADS
-    m_workerSync.FinishUp();
-    m_workerThread.join();
-#endif
-}
-
-auto ProjectM::InitRenderToTexture() -> unsigned
-{
-    return m_renderer->initRenderToTexture();
-}
-
-void ProjectM::ResetTextures()
-{
-    m_renderer->ResetTextures();
-}
-
 
 ProjectM::ProjectM(const std::string& configurationFilename)
 {
@@ -66,6 +44,68 @@ ProjectM::ProjectM(const class Settings& settings)
     ReadSettings(settings);
     Reset();
     ResetOpenGL(m_settings.windowWidth, m_settings.windowHeight);
+}
+
+ProjectM::~ProjectM()
+{
+#if USE_THREADS
+    m_workerSync.FinishUp();
+    m_workerThread.join();
+#endif
+}
+
+void ProjectM::PresetSwitchRequestedEvent(bool isHardCut) const
+{
+}
+
+void ProjectM::PresetSwitchFailedEvent(const std::string&, const std::string&) const
+{
+}
+
+void ProjectM::LoadPresetFile(const std::string& presetFilename, bool smoothTransition)
+{
+    // If already in a transition, force immediate completion.
+    if (m_transitioningPreset != nullptr)
+    {
+        m_activePreset = std::move(m_transitioningPreset);
+    }
+
+    try
+    {
+        StartPresetTransition(m_presetFactoryManager.CreatePresetFromFile(presetFilename), !smoothTransition);
+    }
+    catch (const PresetFactoryException& ex)
+    {
+        PresetSwitchFailedEvent(presetFilename, ex.message());
+    }
+}
+
+void ProjectM::LoadPresetData(std::istream& presetData, bool smoothTransition)
+{
+    // If already in a transition, force immediate completion.
+    if (m_transitioningPreset != nullptr)
+    {
+        m_activePreset = std::move(m_transitioningPreset);
+    }
+
+    try
+    {
+        StartPresetTransition(m_presetFactoryManager.CreatePresetFromStream("milk", presetData), !smoothTransition);
+    }
+    catch (const PresetFactoryException& ex)
+    {
+        PresetSwitchFailedEvent("", ex.message());
+    }
+}
+
+auto ProjectM::InitRenderToTexture() -> unsigned
+{
+    return m_renderer->initRenderToTexture();
+}
+
+void ProjectM::ResetTextures()
+{
+    m_renderer->ResetTextures();
 }
 
 
@@ -188,7 +228,7 @@ void ProjectM::EvaluateSecondPreset()
     PipelineContext2().frame = m_timeKeeper->PresetFrameB();
     PipelineContext2().progress = m_timeKeeper->PresetProgressB();
 
-    m_activePreset2->Render(*m_beatDetect, PipelineContext2());
+    m_transitioningPreset->Render(*m_beatDetect, PipelineContext2());
 }
 
 void ProjectM::RenderFrame()
@@ -220,8 +260,8 @@ auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
 
     m_beatDetect->CalculateBeatStatistics();
 
-    //if the preset isn't locked and there are more presets
-    if (!m_renderer->noSwitch)
+    // Check if the preset isn't locked, and we've not already notified the user
+    if (!m_presetChangeNotified)
     {
         //if preset is done and we're not already switching
         if (m_timeKeeper->PresetProgressA() >= 1.0 && !m_timeKeeper->IsSmoothing())
@@ -234,10 +274,11 @@ auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
         {
             // Call preset change callback
         }
+        m_presetChangeNotified = true;
     }
 
 
-    if (m_timeKeeper->IsSmoothing() && m_timeKeeper->SmoothRatio() <= 1.0 && m_activePreset2 != nullptr)
+    if (m_timeKeeper->IsSmoothing() && m_timeKeeper->SmoothRatio() <= 1.0 && m_transitioningPreset != nullptr)
     {
 #if USE_THREADS
         m_workerSync.WakeUpBackgroundTask();
@@ -256,7 +297,7 @@ auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
 
         PipelineMerger::mergePipelines(
             m_activePreset->pipeline(),
-            m_activePreset2->pipeline(),
+            m_transitioningPreset->pipeline(),
             *pipeline,
             m_timeKeeper->SmoothRatio());
 
@@ -267,7 +308,7 @@ auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
 
     if (m_timeKeeper->IsSmoothing() && m_timeKeeper->SmoothRatio() > 1.0)
     {
-        m_activePreset = std::move(m_activePreset2);
+        m_activePreset = std::move(m_transitioningPreset);
         m_timeKeeper->EndSmoothing();
     }
 
@@ -289,7 +330,6 @@ void ProjectM::RenderFrameOnlyPass2(Pipeline* pipeline,
 
     m_renderer->RenderFrameOnlyPass2(*pipeline, PipelineContext(), offsetX, offsetY, 0);
 }
-
 
 void ProjectM::RenderFrameEndOnSeparatePasses(Pipeline* pipeline)
 {
@@ -319,6 +359,8 @@ auto ProjectM::PipelineContext2() -> class PipelineContext&
 void ProjectM::Reset()
 {
     this->m_count = 0;
+
+    m_presetFactoryManager.initialize(m_settings.meshX, m_settings.meshY);
 
     ResetEngine();
 }
@@ -388,7 +430,14 @@ void ProjectM::ResetOpenGL(size_t width, size_t height)
     /** Stash the new dimensions */
     m_settings.windowWidth = width;
     m_settings.windowHeight = height;
-    m_renderer->reset(width, height);
+    try
+    {
+        m_renderer->reset(width, height);
+    }
+    catch (const RenderException& ex)
+    {
+        // ToDo: Add generic error callback
+    }
 }
 
 auto ProjectM::InitializePresetTools() -> void
@@ -396,38 +445,40 @@ auto ProjectM::InitializePresetTools() -> void
     /* Set the seed to the current time in seconds */
     srand(time(nullptr));
 
-    m_renderer->setPresetName("Geiss & Sperl - Feedback (projectM idle HDR mix)");
     m_renderer->SetPipeline(m_activePreset->pipeline());
 
     ResetEngine();
 }
 
-bool ProjectM::StartPresetTransition(bool hardCut)
+void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hardCut)
 {
-    std::unique_ptr<Preset> new_preset = SwitchToCurrentPreset();
-    if (new_preset == nullptr)
+    if (preset == nullptr)
     {
-        PresetSwitchFailedEvent(hardCut, "", "No preset available to switch to");
-        m_errorLoadingCurrentPreset = true;
+        return;
+    }
 
-        return false;
+    try {
+        m_renderer->SetPipeline(preset->pipeline());
+    }
+    catch(const RenderException& ex)
+    {
+        PresetSwitchFailedEvent(preset->Filename(), ex.message());
+        return;
     }
 
     if (hardCut)
     {
-        m_activePreset = std::move(new_preset);
+        m_activePreset = std::move(preset);
         m_timeKeeper->StartPreset();
     }
     else
     {
-        m_activePreset2 = std::move(new_preset);
+        m_transitioningPreset = std::move(preset);
         m_timeKeeper->StartPreset();
         m_timeKeeper->StartSmoothing();
     }
 
-    m_errorLoadingCurrentPreset = false;
-
-    return true;
+    m_presetChangeNotified = m_presetLocked;
 }
 
 auto ProjectM::WindowWidth() -> int
@@ -440,54 +491,18 @@ auto ProjectM::WindowHeight() -> int
     return m_settings.windowHeight;
 }
 
-auto ProjectM::ErrorLoadingCurrentPreset() const -> bool
-{
-    return m_errorLoadingCurrentPreset;
-}
-
-/**
- * Switches the pipeline and renderer to the current preset.
- * @return the resulting Preset object, or nullptr on failure.
- */
-auto ProjectM::SwitchToCurrentPreset() -> std::unique_ptr<Preset>
-{
-    std::unique_ptr<Preset> new_preset;
-#if USE_THREADS
-    std::lock_guard<std::recursive_mutex> guard(m_presetSwitchMutex);
-#endif
-
-    // ToDo: Load preset by filename here
-
-    if (new_preset == nullptr)
-    {
-        return nullptr;
-    }
-
-    // Set preset name here - event is not done because at the moment this function
-    // is oblivious to smooth/hard switches
-    m_renderer->setPresetName(new_preset->name());
-    std::string result = m_renderer->SetPipeline(new_preset->pipeline());
-    if (!result.empty())
-    {
-        std::cerr << "problem setting pipeline: " << result << std::endl;
-    }
-
-    return new_preset;
-}
-
 void ProjectM::SetPresetLocked(bool locked)
 {
     // ToDo: Add a preset switch timer separate from the display timer and reset to 0 when
     //       disabling the preset switch lock.
-    m_renderer->noSwitch = locked;
+    m_presetLocked = locked;
+    m_presetChangeNotified = locked;
 }
 
 auto ProjectM::PresetLocked() const -> bool
 {
-    return m_renderer->noSwitch;
+    return m_presetLocked;
 }
-
-void ProjectM::PresetSwitchFailedEvent(bool, const std::string&, const std::string&) const {}
 
 void ProjectM::SetTextureSize(size_t size)
 {

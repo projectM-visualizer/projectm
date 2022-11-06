@@ -187,13 +187,12 @@ typedef void (*projectm_shuffle_enable_changed_event)(bool shuffle_enabled, void
  * The message and filename pointers are only valid inside the callback. Make a copy if these values
  * need to be retained for later use.
  *
- * @param is_hard_cut True if the preset was switched using a hard cut via beat detection.
  * @param preset_filename The filename of the failed preset.
  * @param message The error message.
  * @param user_data A user-defined data pointer that was provided when registering the callback,
  *                  e.g. context information.
  */
-typedef void (*projectm_preset_switch_failed_event)(bool is_hard_cut, const char* preset_filename,
+typedef void (*projectm_preset_switch_failed_event)(const char* preset_filename,
                                                     const char* message, void* user_data);
 
 /**
@@ -237,6 +236,42 @@ PROJECTM_EXPORT projectm_handle projectm_create_settings(const projectm_settings
  * @param instance A handle returned by projectm_create() or projectm_create_settings().
  */
 PROJECTM_EXPORT void projectm_destroy(projectm_handle instance);
+
+/**
+ * @brief Loads a preset from the given filename/URL.
+ *
+ * Ideally, the filename should be given as a standard local path. projectM also supports loading
+ * "file://" URLs. Additionally, the special filename "idle://" can be used to load the default
+ * idle preset, displaying the "M" logo.
+ *
+ * Other URL schemas aren't supported and will cause a loading error.
+ *
+ * If the preset can't be loaded, no switch takes place and the current preset will continue to
+ * be displayed. Note that if there's a transition in progress when calling this function, the
+ * transition will be finished immediately, even if the new preset can't be loaded.
+ *
+ * @param instance The projectM instance handle.
+ * @param filename The preset filename or URL to load.
+ * @param smooth_transition If true, the new preset is smoothly blended over.
+ */
+PROJECTM_EXPORT void projectm_load_preset_file(projectm_handle instance, const char* filename,
+                                               bool smooth_transition);
+
+/**
+ * @brief Loads a preset from the data pointer.
+ *
+ * Currently, the preset data is assumed to be in Milkdrop format.
+ *
+ * If the preset can't be loaded, no switch takes place and the current preset will continue to
+ * be displayed. Note that if there's a transition in progress when calling this function, the
+ * transition will be finished immediately, even if the new preset can't be loaded.
+ *
+ * @param instance The projectM instance handle.
+ * @param data The preset contents to load.
+ * @param smooth_transition If true, the new preset is smoothly blended over.
+ */
+PROJECTM_EXPORT void projectm_load_preset_data(projectm_handle instance, const char* data,
+                                               bool smooth_transition);
 
 /**
  * @brief Sets a callback function that will be called when a preset changes.
@@ -668,14 +703,6 @@ PROJECTM_EXPORT void projectm_get_window_size(projectm_handle instance, size_t* 
  * @param height New viewport height in pixels.
  */
 PROJECTM_EXPORT void projectm_set_window_size(projectm_handle instance, size_t width, size_t height);
-
-/**
- * @brief Returns whether the current preset was loaded successfully or not.
- * @param instance The projectM instance handle.
- * @return True if the preset was not loaded successfully, false if it is displayed correctly.
- */
-PROJECTM_EXPORT bool projectm_get_error_loading_current_preset(projectm_handle instance);
-
 
 /**
  * @brief Returns the maximum number of audio samples that can be stored.

@@ -130,18 +130,11 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     std::string program = pmShader.programSource;
 
     if (program.length() <= 0)
-        return GL_FALSE;
-
-    // replace "}" with return statement (this can probably be optimized for the GLSL conversion...)
-    size_t found = program.rfind('}');
-    if (found != std::string::npos)
     {
-        //std::cout << "last '}' found at: " << int(found) << std::endl;
-        program.replace(int(found), 1, "_return_value = float4(ret.xyz, 1.0);\n"
-                                       "}\n");
+        throw ShaderException("Preset shader is declared, but empty.");
     }
-    else
-        return GL_FALSE;
+
+    size_t found;
 
     // replace shader_body with entry point function
     found = program.find("shader_body");
@@ -157,7 +150,22 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
         }
     }
     else
-        return GL_FALSE;
+    {
+        throw ShaderException("Preset shader is missing \"shader_body\" entry point.");
+    }
+
+    // replace "}" with return statement (this can probably be optimized for the GLSL conversion...)
+    found = program.rfind('}');
+    if (found != std::string::npos)
+    {
+        //std::cout << "last '}' found at: " << int(found) << std::endl;
+        program.replace(int(found), 1, "_return_value = float4(ret.xyz, 1.0);\n"
+                                       "}\n");
+    }
+    else
+    {
+        throw ShaderException("Preset shader has no closing brace.");
+    }
 
     // replace "{" with some variable declarations
     found = program.find('{',found);
@@ -170,7 +178,9 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
         program.replace(int(found), 1, progMain);
     }
     else
-        return GL_FALSE;
+    {
+        throw ShaderException("Preset shader has no opening braces.");
+    }
 
     // Find matching closing brace and cut off excess text after shader's main function
     int bracesOpen = 1;
@@ -344,16 +354,12 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     // preprocess define macros
     std::string sourcePreprocessed;
     if (!parser.ApplyPreprocessor(shaderFilename.c_str(), fullSource.c_str(), fullSource.size(), sourcePreprocessed)) {
-        std::cerr << "Failed to preprocess HLSL(step1) " << shaderTypeString << " shader" << std::endl;
-
-#if !DUMP_SHADERS_ON_ERROR
-        std::cerr << "Source: " << std::endl << fullSource << std::endl;
-#else
+#if DUMP_SHADERS_ON_ERROR
         std::ofstream out("/tmp/shader_" + shaderTypeString + "_step1.txt");
             out << fullSource;
             out.close();
 #endif
-            return GL_FALSE;
+            throw ShaderException("Failed to preprocess HLSL(step1) " + shaderTypeString + " shader.\nSource:\n" + fullSource);
     }
 
     // Remove previous shader declarations
@@ -396,64 +402,50 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
 
     // parse
     if( !parser.Parse(shaderFilename.c_str(), sourcePreprocessed.c_str(), sourcePreprocessed.size()) ) {
-        std::cerr << "Failed to parse HLSL(step2) " << shaderTypeString << " shader" << std::endl;
-
-#if !DUMP_SHADERS_ON_ERROR
-        std::cerr << "Source: " << std::endl << sourcePreprocessed << std::endl;
-#else
+#if DUMP_SHADERS_ON_ERROR
         std::ofstream out2("/tmp/shader_" + shaderTypeString + "_step2.txt");
             out2 << sourcePreprocessed;
             out2.close();
 #endif
-            return GL_FALSE;
+        throw ShaderException("Failed to parse HLSL(step2) " + shaderTypeString + " shader.\nSource:\n" + sourcePreprocessed);
     }
 
     // generate GLSL
     if (!generator.Generate(&tree, M4::GLSLGenerator::Target_FragmentShader,
                             StaticGlShaders::Get()->GetGlslGeneratorVersion(),
                             "PS")) {
-        std::cerr << "Failed to transpile HLSL(step3) " << shaderTypeString << " shader to GLSL" << std::endl;
-#if !DUMP_SHADERS_ON_ERROR
-        std::cerr << "Source: " << std::endl << sourcePreprocessed << std::endl;
-#else
+#if DUMP_SHADERS_ON_ERROR
         std::ofstream out2("/tmp/shader_" + shaderTypeString + "_step2.txt");
             out2 << sourcePreprocessed;
             out2.close();
 #endif
-        return GL_FALSE;
+        throw ShaderException("Failed to transpile HLSL(step3) " + shaderTypeString + " shader to GLSL.\nSource:\n" + sourcePreprocessed);
     }
 
     // now we have GLSL source for the preset shader program (hopefully it's
     // valid!) copmile the preset shader fragment shader with the standard
     // vertex shader and cross our fingers
-    GLuint ret = 0;
+    GLuint compiledProgramId = 0;
     if (shaderType == PresentWarpShader) {
-        ret = CompileShaderProgram(
+        compiledProgramId = CompileShaderProgram(
             StaticGlShaders::Get()->GetPresetWarpVertexShader(),
             generator.GetResult(), shaderTypeString);
     } else {
-        ret = CompileShaderProgram(
+        compiledProgramId = CompileShaderProgram(
             StaticGlShaders::Get()->GetPresetCompVertexShader(),
             generator.GetResult(), shaderTypeString);
     }
 
-    if (ret != GL_FALSE) {
-#ifdef DEBUG
-        std::cerr << "Successful compilation of " << shaderTypeString << std::endl;
-#endif
-    } else {
-        std::cerr << "Compilation error (step3) of " << shaderTypeString << std::endl;
-
-#if !DUMP_SHADERS_ON_ERROR
-        std::cerr << "Source:" << std::endl << generator.GetResult() << std::endl;
-#else
+    if (compiledProgramId == GL_FALSE) {
+#if DUMP_SHADERS_ON_ERROR
         std::ofstream out3("/tmp/shader_" + shaderTypeString + "_step3.txt");
             out3 << generator.GetResult();
             out3.close();
 #endif
+            throw ShaderException("Compilation error (step3) of " + shaderTypeString + " shader.\nSource:\n" + generator.GetResult());
     }
 
-    return ret;
+    return compiledProgramId;
 }
 
 
@@ -808,40 +800,27 @@ bool ShaderEngine::linkProgram(GLuint programID) {
 }
 
 
-bool ShaderEngine::loadPresetShaders(Pipeline &pipeline, const std::string & presetName) {
-
-    bool ok = true;
-
+void ShaderEngine::loadPresetShaders(Pipeline &pipeline)
+{
     // blur programs
     blur1_enabled = false;
     blur2_enabled = false;
     blur3_enabled = false;
 
-    m_presetName = presetName;
+    programID_presetWarp = GL_FALSE;
+    programID_presetComp = GL_FALSE;
 
     // compile and link warp and composite shaders from pipeline
     if (!pipeline.warpShader.programSource.empty()) {
         programID_presetWarp = loadPresetShader(PresentWarpShader, pipeline.warpShader, pipeline.warpShaderFilename);
-        if (programID_presetWarp != GL_FALSE) {
-            uniform_vertex_transf_warp_shader = glGetUniformLocation(programID_presetWarp, "vertex_transformation");
-            presetWarpShaderLoaded = true;
-        } else {
-            ok = false;
-        }
+        uniform_vertex_transf_warp_shader = glGetUniformLocation(programID_presetWarp, "vertex_transformation");
+        presetWarpShaderLoaded = true;
     }
 
     if (!pipeline.compositeShader.programSource.empty()) {
         programID_presetComp = loadPresetShader(PresentCompositeShader, pipeline.compositeShader, pipeline.compositeShaderFilename);
-        if (programID_presetComp != GL_FALSE) {
-            presetCompShaderLoaded = true;
-        } else {
-            ok = false;
-        }
+        presetCompShaderLoaded = true;
     }
-
-//    std::cout << "Preset composite shader active: " << presetCompShaderLoaded << ", preset warp shader active: " << presetWarpShaderLoaded << std::endl;
-
-    return ok;
 }
 
 GLuint ShaderEngine::loadPresetShader(const ShaderEngine::PresentShaderType shaderType, Shader &presetShader, std::string &shaderFilename) {
