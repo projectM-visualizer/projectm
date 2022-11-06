@@ -19,7 +19,6 @@
  *
  */
 
-#include "PresetChooser.hpp"
 #include "ProjectM.hpp"
 #include "Renderer.hpp"
 #include "TimeKeeper.hpp"
@@ -78,68 +77,14 @@ void ProjectM::DefaultKeyHandler(projectMEvent event, projectMKeycode keycode) {
                 m_beatDetect->beatSensitivity = 0;
             }
 			break;
-		case PROJECTM_K_y:
-            this->SetShuffleEnabled(!this->ShuffleEnabled());
-			break;
+
 		case PROJECTM_K_a:
             m_renderer->correction = !m_renderer->correction;
 			break;
-      case PROJECTM_K_n:
-            SelectNext(true);
-            break;
-      case PROJECTM_K_N:
-            SelectNext(false);
-            break;
-	    case PROJECTM_K_r:
-            SelectRandom(true);
-		    break;
-	    case PROJECTM_K_R:
-            SelectRandom(false);
-		    break;
-	    case PROJECTM_K_p:
-            SelectPrevious(true);
-	        break;
-	    case PROJECTM_K_P:
-	    case PROJECTM_K_BACKSPACE:
-            SelectPrevious(false);
-	        break;
+
 	    case PROJECTM_K_l:
             SetPresetLocked(!PresetLocked());
 		    break;
-	    case PROJECTM_K_i:
-	        break;
-	    case PROJECTM_K_EQUALS:
-	    case PROJECTM_K_PLUS:
-
-	    	unsigned int index;
-
-	    	if (SelectedPresetIndex(index)) {
-
-	    		const int oldRating = PresetRating(index, HARD_CUT_RATING_TYPE);
-
-	    		if (oldRating >= 6)
-	    			  break;
-
-	    		const int rating = oldRating + 1;
-
-                ChangePresetRating(index, rating, HARD_CUT_RATING_TYPE);
-	    	}
-
-	    	break;
-
-	    case PROJECTM_K_MINUS:
-	    	if (SelectedPresetIndex(index)) {
-
-	    		const int oldRating = PresetRating(index, HARD_CUT_RATING_TYPE);
-
-	    		if (oldRating <= 1)
-	    			  break;
-
-	    		const int rating = oldRating - 1;
-
-                ChangePresetRating(index, rating, HARD_CUT_RATING_TYPE);
-	    	}
-	    	break;
 
 	    default:
 	      break;

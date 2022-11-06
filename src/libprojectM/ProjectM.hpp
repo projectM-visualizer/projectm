@@ -59,12 +59,6 @@ class Renderer;
 
 class Preset;
 
-class PresetIterator;
-
-class PresetChooser;
-
-class PresetLoader;
-
 class TimeKeeper;
 
 class Pipeline;
@@ -72,16 +66,6 @@ class Pipeline;
 class ProjectM
 {
 public:
-    /*
-     * Behaviour flags for the projectM instance. Currently, it's only used to prevent automatically filling
-     * the preset playlist by traversing the preset path for files.
-     */
-    enum Flags
-    {
-        None = 0,                    //!< No special flags.
-        DisablePlaylistLoad = 1 << 0 //!< Prevent automatic playlist loading on startup.
-    };
-
     class Settings
     {
     public:
@@ -91,7 +75,6 @@ public:
         size_t textureSize{512};
         size_t windowWidth{512};
         size_t windowHeight{512};
-        std::string presetPath;
         std::string texturePath;
         std::string dataPath;
         double presetDuration{15.0};
@@ -102,13 +85,11 @@ public:
         float beatSensitivity{1.0};
         bool aspectCorrection{true};
         float easterEgg{0.0};
-        bool shuffleEnabled{true};
-        bool softCutRatingsEnabled{false};
     };
 
-    explicit ProjectM(const std::string& configurationFilename, Flags flags = Flags::None);
+    explicit ProjectM(const std::string& configurationFilename);
 
-    explicit ProjectM(const class Settings& configurationFilename, Flags flags = Flags::None);
+    explicit ProjectM(const class Settings& configurationFilename);
 
     virtual ~ProjectM();
 
@@ -134,13 +115,9 @@ public:
 
     auto SoftCutDuration() const -> double;
 
-    void SetSoftCutDuration(int seconds);
-
     void SetSoftCutDuration(double seconds);
 
     auto HardCutDuration() const -> double;
-
-    void SetHardCutDuration(int seconds);
 
     void SetHardCutDuration(double seconds);
 
@@ -157,8 +134,6 @@ public:
      * @return The currently set preset duration in seconds.
      */
     auto PresetDuration() const -> double;
-
-    void SetPresetDuration(int seconds);
 
     void SetPresetDuration(double seconds);
 
@@ -200,90 +175,15 @@ public:
     static auto WriteConfig(const std::string& configurationFilename,
                             const class Settings& settings) -> bool;
 
-    /// Sets preset iterator position to the passed in index
-    void SelectPresetPosition(unsigned int index);
-
-    /// Plays a preset immediately
-    void SelectPreset(unsigned int index, bool hardCut = true);
-
-    /// Removes a preset from the play list. If it is playing then it will continue as normal until next switch
-    void RemovePreset(unsigned int index);
-
-    /// Removes entire playlist, The currently loaded preset will end up sticking until new presets are added
-    void ClearPlaylist();
-
     /// Turn on or off a lock that prevents projectM from switching to another preset
     void SetPresetLocked(bool locked);
 
     /// Returns true if the active preset is locked
     auto PresetLocked() const -> bool;
 
-    auto PresetIndex(const std::string& presetFilename) const -> unsigned int;
-
-    /// Plays a preset immediately when given preset name
-    void SelectPresetByName(std::string presetName, bool hardCut = true);
-
-    /// Returns index of currently active preset. In the case where the active
-    /// preset was removed from the playlist, this function will return the element
-    /// before active preset (thus the next in order preset is invariant with respect
-    /// to the removal)
-    auto SelectedPresetIndex(unsigned int& index) const -> bool;
-
-    /// Add a preset url to the play list. Appended to bottom. Returns index of preset
-    auto AddPresetURL(const std::string& presetFilename,
-                      const std::string& presetName,
-                      const RatingList& ratingList) -> unsigned int;
-
-    /// Insert a preset url to the play list at the suggested index.
-    void InsertPresetURL(unsigned int index,
-                         const std::string& presetFilename,
-                         const std::string& presetName,
-                         const RatingList& ratingList);
-
-    /// Returns true if the selected preset position points to an actual preset in the
-    /// currently loaded playlist
-    auto PresetPositionValid() const -> bool;
-
-    /// Returns the url associated with a preset index
-    auto PresetURL(unsigned int index) const -> std::string;
-
-    /// Returns the preset name associated with a preset index
-    auto PresetName(unsigned int index) const -> std::string;
-
-    void ChangePresetName(unsigned int index, std::string presetName);
-
-    /// Returns the rating associated with a preset index
-    auto PresetRating(unsigned int index, PresetRatingType ratingType) const -> int;
-
-    void ChangePresetRating(unsigned int index, int rating, PresetRatingType ratingType);
-
-    /// Returns the size of the play list
-    auto PlaylistSize() const -> unsigned int;
-
-    void SetShuffleEnabled(bool value);
-
-    auto ShuffleEnabled() const -> bool;
-
-    /// Occurs when active preset has switched. Switched to index is returned
-    virtual void PresetSwitchedEvent(bool hardCut, size_t index) const;
-
-    virtual void ShuffleEnabledValueChanged(bool enabled) const;
-
-    virtual void PresetSwitchFailedEvent(bool hardCut, unsigned int index, const std::string& message) const;
-
-    /// Occurs whenever preset rating has changed via ChangePresetRating() method
-    virtual void PresetRatingChanged(unsigned int index, int rating, PresetRatingType ratingType) const;
+    virtual void PresetSwitchFailedEvent(bool hardCut, const std::string& presetFilename, const std::string& message) const;
 
     auto Pcm() -> class Pcm&;
-
-    /// Get the preset index given a name
-    auto SearchIndex(const std::string& presetName) const -> unsigned int;
-
-    void SelectPrevious(bool hardCut);
-
-    void SelectNext(bool hardCut);
-
-    void SelectRandom(bool hardCut);
 
     auto WindowWidth() -> int;
 
@@ -347,11 +247,6 @@ private:
 
     class Settings m_settings; //!< The projectM Settings.
 
-    Flags m_flags{Flags::None}; //!< Behaviour flags.
-
-    std::vector<int> m_presetHistory; //!< List of previously played preset indices.
-    std::vector<int> m_presetFuture;  //!< List of preset indices queued for playing.
-
     std::vector<std::string> m_textureSearchPaths; ///!< List of paths to search for texture files
 
     /** Timing information */
@@ -364,9 +259,6 @@ private:
 
     std::unique_ptr<Renderer> m_renderer;                      //!< The Preset renderer.
     std::unique_ptr<BeatDetect> m_beatDetect;                  //!< The beat detection class.
-    std::unique_ptr<PresetIterator> m_presetPos;               //!< The current position of the directory iterator.
-    std::unique_ptr<PresetLoader> m_presetLoader;              //!< Required by the preset chooser. Manages a loaded preset directory.
-    std::unique_ptr<PresetChooser> m_presetChooser;            //!< Provides accessor functions to choose presets.
     std::unique_ptr<Preset> m_activePreset;                    //!< Currently loaded preset.
     std::unique_ptr<Preset> m_activePreset2;                   //!< Destination preset when smooth preset switching.
     std::unique_ptr<TimeKeeper> m_timeKeeper;                  //!< Keeps the different timers used to render and switch presets.

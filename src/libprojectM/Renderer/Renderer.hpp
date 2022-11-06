@@ -43,12 +43,6 @@ class Renderer
 {
 
 public:
-  struct preset {
-    int id;
-    std::string name;
-    std::string presetPack;
-  };
-
   Renderer() = delete;
   Renderer(int width, int height, int gx, int gy, BeatDetect* beatDetect, std::vector<std::string>& textureSearchPaths);
   ~Renderer();
@@ -97,8 +91,6 @@ public:
 
   void UpdateContext(PipelineContext& context);
 
-    bool shuffletrack{ false };
-
     bool correction{ true };
 
     bool noSwitch{ false };
@@ -111,8 +103,6 @@ public:
     float realfps{ 0.0 };
 
     std::string title;
-    int m_activePresetID{ 0 };
-    std::vector<preset> m_presetList;
 
 private:
     void SetupPass1(const Pipeline& pipeline, const PipelineContext& pipelineContext);
