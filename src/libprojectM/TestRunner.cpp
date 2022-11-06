@@ -3,7 +3,6 @@
 //
 
 #include <iostream>
-#include <MilkdropPresetFactory/Parser.hpp>
 #include <TestRunner.hpp>
 #include <MilkdropPresetFactory/Param.hpp>
 
@@ -25,7 +24,6 @@ bool TestRunner::run()
         // We still call register/run tests in NDEBUG (useful for performance testing)
         //   but tests may choose to comment out body to save space
         tests.push_back(Param::test());
-        tests.push_back(Parser::test());
         tests.push_back(Expr::test());
     }
 

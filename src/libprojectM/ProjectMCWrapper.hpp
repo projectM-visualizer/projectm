@@ -28,26 +28,14 @@
 class projectMWrapper : public ProjectM
 {
 public:
-    projectMWrapper(std::string configFile, int flags);
+    projectMWrapper(std::string configFile);
 
-    projectMWrapper(class Settings settings, int flags);
+    projectMWrapper(class Settings settings);
 
-    void PresetSwitchedEvent(bool isHardCut, size_t presetIndex) const override;
-
-    void ShuffleEnabledValueChanged(bool shuffle_enabled) const override;
-
-    void PresetSwitchFailedEvent(bool isHardCut, unsigned int presetIndex,
+    void PresetSwitchFailedEvent(bool isHardCut, const std::string& presetFilename,
                                  const std::string& failureMessage) const override;
 
-    void PresetRatingChanged(unsigned int presetIndex, int rating, PresetRatingType ratingType) const override;
-
-    projectm_preset_switched_event _presetSwitchedEventCallback{ nullptr };
-    projectm_shuffle_enable_changed_event _shuffleEnableChangedEventCallback{ nullptr };
     projectm_preset_switch_failed_event _presetSwitchFailedEventCallback{ nullptr };
-    projectm_preset_rating_changed_event _presetRatingChangedEventCallback{ nullptr };
 
-    void* _presetSwitchedEventUserData{ nullptr };
-    void* _shuffleEnableChangedEventUserData{ nullptr };
     void* _presetSwitchFailedEventUserData{ nullptr };
-    void* _presetRatingChangedEventUserData{ nullptr };
 };

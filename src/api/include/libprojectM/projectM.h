@@ -32,7 +32,7 @@
 extern "C" {
 #endif
 
-struct projectm; //!< Opaque projectM instance type.
+struct projectm;                          //!< Opaque projectM instance type.
 typedef struct projectm* projectm_handle; //!< A pointer to the opaque projectM instance.
 
 /**
@@ -48,42 +48,30 @@ typedef struct projectm* projectm_handle; //!< A pointer to the opaque projectM 
  * projectm_free_settings() will automatically call projectm_free_string() on it. If you free it on your own, remember
  * to reset the pointer to NULL after doing so!</p>
  */
-typedef struct PROJECTM_EXPORT projectm_settings_s
-{
-    int mesh_x; //!< Per-pixel mesh X resolution.
-    int mesh_y; //!< Per-pixel mesh Y resolution.
-    int fps; //!< Target rendering frames per second.
-    int texture_size; //!< Size of the render texture. Must be a power of 2.
-    int window_width; //!< Width of the rendering viewport.
-    int window_height; //!< Height of the rendering viewport.
-    char* preset_path; //!< Path with preset files to be loaded into the playlist. Use FLAG_DISABLE_PLAYLIST_LOAD to skip automatic loading of presets.
-    char* texture_path; //!< Additional path with texture files for use in presets.
-    char* data_path; //!< Path to data files like default textures and presets.
-    double preset_duration; //!< Display duration for each preset in seconds.
-    double soft_cut_duration; //!< Blend-over duration between two presets in seconds.
-    double hard_cut_duration; //!< Minimum time in seconds a preset is displayed before a hard cut can happen.
-    bool hard_cut_enabled; //!< Set to true to enable fast beat-driven preset switches.
-    float hard_cut_sensitivity; //!< Beat sensitivity value that must be surpassed for a hard cut.
-    float beat_sensitivity; //!< Beat sensitivity. Standard sensitivity is 1.0.
-    bool aspect_correction; //!< Use aspect ration correction in presets that support it.
-    float easter_egg; //!< Used as the "sigma" value for a gaussian RNG to randomize preset duration. Unused on Windows.
-    bool shuffle_enabled; //!< Enable playlist shuffle, selecting a random preset on each switch instead of the next in list.
-    bool soft_cut_ratings_enabled; //!< If true, use soft cut ratings on soft cuts and hard cut ratings on hard cuts. If false, the hard cut rating is always used.
+typedef struct PROJECTM_EXPORT projectm_settings_s {
+    int mesh_x;                    //!< Per-pixel mesh X resolution.
+    int mesh_y;                    //!< Per-pixel mesh Y resolution.
+    int fps;                       //!< Target rendering frames per second.
+    int texture_size;              //!< Size of the render texture. Must be a power of 2.
+    int window_width;              //!< Width of the rendering viewport.
+    int window_height;             //!< Height of the rendering viewport.
+    char* texture_path;            //!< Additional path with texture files for use in presets.
+    char* data_path;               //!< Path to data files like default textures and presets.
+    double preset_duration;        //!< Display duration for each preset in seconds.
+    double soft_cut_duration;      //!< Blend-over duration between two presets in seconds.
+    double hard_cut_duration;      //!< Minimum time in seconds a preset is displayed before a hard cut can happen.
+    bool hard_cut_enabled;         //!< Set to true to enable fast beat-driven preset switches.
+    float hard_cut_sensitivity;    //!< Beat sensitivity value that must be surpassed for a hard cut.
+    float beat_sensitivity;        //!< Beat sensitivity. Standard sensitivity is 1.0.
+    bool aspect_correction;        //!< Use aspect ration correction in presets that support it.
+    float easter_egg;              //!< Used as the "sigma" value for a gaussian RNG to randomize preset duration. Unused on Windows.
 } projectm_settings;
-
-/**
- * Flags that influence projectM instance creation.
- */
-typedef enum
-{
-    PROJECTM_FLAG_NONE = 0, //!< No flags.
-    PROJECTM_FLAG_DISABLE_PLAYLIST_LOAD = 1 << 0 //!< Set this flag to disable loading a preset playlist on startup.
-} projectm_flags;
 
 /**
  * For specifying audio data format.
  */
-typedef enum {
+typedef enum
+{
     PROJECTM_MONO = 1,
     PROJECTM_STEREO = 2
 } projectm_channels;
@@ -95,7 +83,7 @@ typedef enum {
 typedef enum
 {
     PROJECTM_HARD_CUT_RATING_TYPE, //!< Rating for hard cuts.
-    PROJECTM_SOFT_CUT_RATING_TYPE //!< Rating for soft cuts.
+    PROJECTM_SOFT_CUT_RATING_TYPE  //!< Rating for soft cuts.
 } projectm_preset_rating_type;
 
 /**
@@ -106,7 +94,7 @@ typedef enum
     PROJECTM_CHANNEL_L = 0, //!< Left audio channel.
     PROJECTM_CHANNEL_0 = 0, //!< Left audio channel.
     PROJECTM_CHANNEL_R = 1, //!< Right audio channel.
-    PROJECTM_CHANNEL_1 = 1 //!< Right audio channel.
+    PROJECTM_CHANNEL_1 = 1  //!< Right audio channel.
 } projectm_pcm_channel;
 
 /**
@@ -114,15 +102,15 @@ typedef enum
  */
 typedef enum
 {
-    PROJECTM_TOUCH_TYPE_RANDOM, //!< Random waveform type.
-    PROJECTM_TOUCH_TYPE_CIRCLE, //!< Draws a circular waveform.
-    PROJECTM_TOUCH_TYPE_RADIAL_BLOB, //!< Draws a radial blob waveform.
-    PROJECTM_TOUCH_TYPE_BLOB2,//!< Draws a blob-style waveform.
-    PROJECTM_TOUCH_TYPE_BLOB3, //!< Draws another blob-style waveform.
+    PROJECTM_TOUCH_TYPE_RANDOM,          //!< Random waveform type.
+    PROJECTM_TOUCH_TYPE_CIRCLE,          //!< Draws a circular waveform.
+    PROJECTM_TOUCH_TYPE_RADIAL_BLOB,     //!< Draws a radial blob waveform.
+    PROJECTM_TOUCH_TYPE_BLOB2,           //!< Draws a blob-style waveform.
+    PROJECTM_TOUCH_TYPE_BLOB3,           //!< Draws another blob-style waveform.
     PROJECTM_TOUCH_TYPE_DERIVATIVE_LINE, //!< Draws a derivative-line waveform.
-    PROJECTM_TOUCH_TYPE_BLOB5, //!< Draws a five-blob waveform.
-    PROJECTM_TOUCH_TYPE_LINE, //!< Draws a single-line waveform.
-    PROJECTM_TOUCH_TYPE_DOUBLE_LINE //!< Draws a double-line waveform.
+    PROJECTM_TOUCH_TYPE_BLOB5,           //!< Draws a five-blob waveform.
+    PROJECTM_TOUCH_TYPE_LINE,            //!< Draws a single-line waveform.
+    PROJECTM_TOUCH_TYPE_DOUBLE_LINE      //!< Draws a double-line waveform.
 } projectm_touch_type;
 
 /**
@@ -183,7 +171,7 @@ PROJECTM_EXPORT void projectm_free_settings(const projectm_settings* settings);
  * @param user_data A user-defined data pointer that was provided when registering the callback,
  *                  e.g. context information.
  */
-typedef void(* projectm_preset_switched_event)(bool is_hard_cut, unsigned int index, void* user_data);
+typedef void (*projectm_preset_switched_event)(bool is_hard_cut, unsigned int index, void* user_data);
 
 /**
  * @brief Callback function that is executed is the shuffle setting has changed.
@@ -191,22 +179,22 @@ typedef void(* projectm_preset_switched_event)(bool is_hard_cut, unsigned int in
  * @param user_data A user-defined data pointer that was provided when registering the callback,
  *                  e.g. context information.
  */
-typedef void(* projectm_shuffle_enable_changed_event)(bool shuffle_enabled, void* user_data);
+typedef void (*projectm_shuffle_enable_changed_event)(bool shuffle_enabled, void* user_data);
 
 /**
  * @brief Callback function that is executed if a preset change failed.
  *
- * The message pointer is only valid inside the callback. Make a copy if it must be kept
- * for later use.
+ * The message and filename pointers are only valid inside the callback. Make a copy if these values
+ * need to be retained for later use.
  *
  * @param is_hard_cut True if the preset was switched using a hard cut via beat detection.
- * @param index The playlist index of the new preset.
+ * @param preset_filename The filename of the failed preset.
  * @param message The error message.
  * @param user_data A user-defined data pointer that was provided when registering the callback,
  *                  e.g. context information.
  */
-typedef void(* projectm_preset_switch_failed_event)(bool is_hard_cut, unsigned int index, const char* message,
-                                                    void* user_data);
+typedef void (*projectm_preset_switch_failed_event)(bool is_hard_cut, const char* preset_filename,
+                                                    const char* message, void* user_data);
 
 /**
  * @brief Callback function that is executed if a preset rating has been changed.
@@ -219,30 +207,27 @@ typedef void(* projectm_preset_switch_failed_event)(bool is_hard_cut, unsigned i
  * @param user_data A user-defined data pointer that was provided when registering the callback,
  *                  e.g. context information.
  */
-typedef void(* projectm_preset_rating_changed_event)(unsigned int index, int rating,
+typedef void (*projectm_preset_rating_changed_event)(unsigned int index, int rating,
                                                      projectm_preset_rating_type rating_type, void* user_data);
-
 
 
 /**
  * @brief Creates a new projectM instance, reading settings from the given file.
  * @param setting_file_path A path to the settings file to read the configuration from.
  *                          If NULL or an empty path are provided, default settings will be used.
- * @param flags Any combination of values from the projectm_flags enumeration.
  * @return A projectM handle for the newly created instance that must be used in subsequent API calls.
  *         NULL if the instance could not be created successfully.
  */
-PROJECTM_EXPORT projectm_handle projectm_create(const char* setting_file_path, int flags);
+PROJECTM_EXPORT projectm_handle projectm_create(const char* setting_file_path);
 
 /**
  * @brief Creates a new projectM instance with given settings.
  * @param settings A pointer to a projectm_settings_t with the settings to be used by the new instance.
  *                 If this pointer is NULL, default settings will be used.
- * @param flags Any combination of values from the projectm_flags enumeration.
  * @return A projectM handle for the newly created instance that must be used in subsequent API calls.
  *         NULL if the instance could not be created successfully.
  */
-PROJECTM_EXPORT projectm_handle projectm_create_settings(const projectm_settings* settings, int flags);
+PROJECTM_EXPORT projectm_handle projectm_create_settings(const projectm_settings* settings);
 
 /**
  * @brief Destroys the given instance and frees the resources.
@@ -535,13 +520,6 @@ PROJECTM_EXPORT int32_t projectm_get_fps(projectm_handle instance);
 PROJECTM_EXPORT void projectm_set_fps(projectm_handle instance, int32_t fps);
 
 /**
- * @brief Returns the search path for presets and textures.
- * @param instance The projectM instance handle.
- * @return The path used to search for presets and textures.
- */
-PROJECTM_EXPORT const char* projectm_get_preset_path(projectm_handle instance);
-
-/**
  * @brief Returns the search path for additional textures.
  * @param instance The projectM instance handle.
  * @return The path used to search for additional textures.
@@ -655,34 +633,6 @@ PROJECTM_EXPORT projectm_settings* projectm_get_settings(projectm_handle instanc
 PROJECTM_EXPORT void projectm_write_config(const char* config_file, const projectm_settings* settings);
 
 /**
- * @brief Selects a preset, but does not display it.
- * @param instance The projectM instance handle.
- * @param index The preset index to select.
- */
-PROJECTM_EXPORT void projectm_select_preset_position(projectm_handle instance, unsigned int index);
-
-/**
- * @brief Selects and displays the preset.
- * @param instance The projectM instance handle.
- * @param index the preset to display.
- * @param hard_cut If true, a hard cut is made, otherwise it will be blended smoothly.
- */
-PROJECTM_EXPORT void projectm_select_preset(projectm_handle instance, unsigned int index, bool hard_cut);
-
-/**
- * @brief Removes a preset from the playlist.
- * @param instance The projectM instance handle.
- * @param index The  preset index to remove from the playlist.
- */
-PROJECTM_EXPORT void projectm_remove_preset(projectm_handle instance, unsigned int index);
-
-/**
- * @brief Clears the preset playlist.
- * @param instance The projectM instance handle.
- */
-PROJECTM_EXPORT void projectm_clear_playlist(projectm_handle instance);
-
-/**
  * @brief Locks or unlocks the current preset.
  *
  * Locking effectively disables automatic preset transitions, both hard and soft cuts. Programmatic
@@ -699,183 +649,6 @@ PROJECTM_EXPORT void projectm_lock_preset(projectm_handle instance, bool lock);
  * @return True if the preset lock is enabled, false otherwise.
  */
 PROJECTM_EXPORT bool projectm_is_preset_locked(projectm_handle instance);
-
-/**
- * @brief Returns the playlist index for the given preset name.
- *
- * If the preset name is found multiple times, the first matching index will be returned.
- *
- * @param instance The projectM instance handle.
- * @param preset_name The preset name to search for.
- * @return The first found playlist index of the requested preset, or 0 if the preset wasn't found.
- */
-PROJECTM_EXPORT unsigned int projectm_get_preset_index(projectm_handle instance, const char* preset_name);
-
-/**
- * @brief Displays the preset with the given name.
- * @param instance The projectM instance handle.
- * @param preset_name The preset name to search for.
- * @param hard_cut If true, the preset will be shown immediately, if false a soft transition will be rendered.
- */
-PROJECTM_EXPORT void projectm_select_preset_by_name(projectm_handle instance, const char* preset_name, bool hard_cut);
-
-/**
- * @brief Returns the currently selected preset index.
- * @param instance The projectM instance handle.
- * @param index A valid pointer to an unsigned int that will receive the preset index.
- * @return True if a preset idnex was returned, false if no preset was selected, e.g. the playlist is empty.
- */
-PROJECTM_EXPORT bool projectm_get_selected_preset_index(projectm_handle instance, unsigned int* index);
-
-/**
- * @brief Adds a new preset at the end of the playlist.
- *
- * The rating list is one rating per value of the projectm_preset_rating_type enumeration, with each actual enum
- * value used as the index. If the rating list has the wrong length, the preset will not be added.
- *
- * @param instance The projectM instance handle.
- * @param preset_url The full path and filename of the preset.
- * @param preset_name The display name of the preset.
- * @param rating_list A list with ratings for the preset, one rating per rating type.
- * @param rating_list_length Length of the preset rating list.
- */
-PROJECTM_EXPORT void projectm_add_preset_url(projectm_handle instance, const char* preset_url,
-                                             const char* preset_name, int* rating_list,
-                                             unsigned int rating_list_length);
-
-/**
- * @brief Adds a new preset at the given position in the playlist.
- *
- * The rating list is one rating per value of the projectm_preset_rating_type enumeration, with each actual enum
- * value used as the index. If the rating list has the wrong length, the preset will not be added.
- *
- * @param instance The projectM instance handle.
- * @param index The playlist index to insert the preset at. Must be less than or equal to the length of
- *              the playlist.
- * @param preset_url The full path and filename of the preset.
- * @param preset_name The display name of the preset.
- * @param rating_list A list with ratings for the preset, one rating per rating type.
- * @param rating_list_length Length of the preset rating list.
- */
-PROJECTM_EXPORT void projectm_insert_preset_url(projectm_handle instance, unsigned int index, const char* preset_url,
-                                                const char* preset_name, int* rating_list,
-                                                unsigned int rating_list_length);
-
-/**
- * @brief Returns whether the currently selected preset has a valid position in the playlist.
- *
- * This function is useful to check if the currently displayed preset is still inside the bounds of
- * the current playlist, for example after the playlist was changed.
- *
- * @param instance The projectM instance handle.
- * @return True if the position is valid, false if outside bounds.
- */
-PROJECTM_EXPORT bool projectm_preset_position_valid(projectm_handle instance);
-
-/**
- * @brief Returns the path and filename of the preset at the requested playlist index.
- * @note Make sure the index is inside the playlist bounds!
- * @param instance The projectM instance handle.
- * @param index The playlist index to return the filename for.
- * @return The full path and filename of the preset at the given index.
- */
-PROJECTM_EXPORT const char* projectm_get_preset_filename(projectm_handle instance, unsigned int index);
-
-/**
- * @brief Returns the display name of the preset at the requested playlist index.
- * @note Make sure the index is inside the playlist bounds!
- * @param instance The projectM instance handle.
- * @param index The playlist index to return the display name for.
- * @return The display name of the preset at the given index.
- */
-PROJECTM_EXPORT const char* projectm_get_preset_name(projectm_handle instance, unsigned int index);
-
-/**
- * @brief Changes the display name of the given preset in the playlist.
- * @param instance The projectM instance handle.
- * @param index the playlist item index to change.
- * @param name The new display name.
- */
-PROJECTM_EXPORT void projectm_set_preset_name(projectm_handle instance, unsigned int index, const char* name);
-
-/**
- * @brief Returns the rating for the given index and transition type.
- * @param instance The projectM instance handle.
- * @param index The playlist item to retrieve the rating from.
- * @param rating_type The rating type to retrieve, either hard or soft cut.
- * @return The rating value of the requested item and type.
- */
-PROJECTM_EXPORT int projectm_get_preset_rating(projectm_handle instance, unsigned int index,
-                                               projectm_preset_rating_type rating_type);
-
-/**
- * @brief Changes the rating or a playlist item and type.
- * @param instance The projectM instance handle.
- * @param index the playlist item to change the rating of.
- * @param rating The new rating value.
- * @param rating_type The type of the rating, either hard or soft cut.
- */
-PROJECTM_EXPORT void projectm_set_preset_rating(projectm_handle instance, unsigned int index, int rating,
-                                                projectm_preset_rating_type rating_type);
-
-/**
- * @brief Returns the number of presets in the current playlist.
- * @param instance The projectM instance handle.
- * @return The number of presets in the currently loaded playlist.
- */
-PROJECTM_EXPORT unsigned int projectm_get_playlist_size(projectm_handle instance);
-
-/**
- * @brief Returns whether playlist shuffling is currently enabled or not.
- * @param instance The projectM instance handle.
- * @return True if shuffle is enabled, false if not.
- */
-PROJECTM_EXPORT bool projectm_get_shuffle_enabled(projectm_handle instance);
-
-/**
- * @brief Enables or disables preset playlist shuffling.
- * @param instance The projectM instance handle.
- * @param shuffle_enabled True to randomly select the next preset, false to skip to the next item in line.
- */
-PROJECTM_EXPORT void projectm_set_shuffle_enabled(projectm_handle instance, bool shuffle_enabled);
-
-/**
- * @brief Gets the index of the provided preset name in the current search result list.
- * @param instance The projectM instance handle.
- * @param name The name of the preset to return the index for.
- * @return The search result list index of the given preset name.
- */
-PROJECTM_EXPORT unsigned int projectm_get_search_index(projectm_handle instance, const char* name);
-
-/**
- * @brief Switches to the previous preset in the current playlist.
- *
- * This is unaffected by the shuffle mode and will always switch to the previous item.
- *
- * @param instance The projectM instance handle.
- * @param hard_cut True to immediately perform to the previous preset, false to do a soft transition.
- */
-PROJECTM_EXPORT void projectm_select_previous_preset(projectm_handle instance, bool hard_cut);
-
-/**
- * @brief Switches to the next preset in the current playlist.
- *
- * This is unaffected by the shuffle mode and will always switch to the next item.
- *
- * @param instance The projectM instance handle.
- * @param hard_cut True to immediately perform to the next preset, false to do a soft transition.
- */
-PROJECTM_EXPORT void projectm_select_next_preset(projectm_handle instance, bool hard_cut);
-
-/**
- * @brief Switches to a random preset in the current playlist.
- *
- * This is unaffected by the shuffle mode and will always switch to a random item.
- *
- * @param instance The projectM instance handle.
- * @param hard_cut True to immediately perform to a random preset, false to do a soft transition.
- */
-PROJECTM_EXPORT void projectm_select_random_preset(projectm_handle instance, bool hard_cut);
 
 /**
  * @brief Returns the current viewport size in pixels.
@@ -930,7 +703,7 @@ PROJECTM_EXPORT unsigned int projectm_pcm_get_max_samples();
  * Can be PROJECTM_MONO or PROJECTM_STEREO.
  */
 PROJECTM_EXPORT void projectm_pcm_add_float(projectm_handle instance, const float* samples,
-                                                     unsigned int count, projectm_channels channels);
+                                            unsigned int count, projectm_channels channels);
 
 /**
  * @brief Adds 16-bit integer audio samples.
@@ -947,7 +720,7 @@ PROJECTM_EXPORT void projectm_pcm_add_float(projectm_handle instance, const floa
  * Can be PROJECTM_MONO or PROJECTM_STEREO.
  */
 PROJECTM_EXPORT void projectm_pcm_add_int16(projectm_handle instance, const int16_t* samples,
-                                                     unsigned int count, projectm_channels channels);
+                                            unsigned int count, projectm_channels channels);
 
 /**
  * @brief Adds 8-bit unsigned integer audio samples.
@@ -964,7 +737,7 @@ PROJECTM_EXPORT void projectm_pcm_add_int16(projectm_handle instance, const int1
  * Can be PROJECTM_MONO or PROJECTM_STEREO.
  */
 PROJECTM_EXPORT void projectm_pcm_add_uint8(projectm_handle instance, const uint8_t* samples,
-                                                     unsigned int count, projectm_channels channels);
+                                            unsigned int count, projectm_channels channels);
 
 /**
  * @brief Writes a .bmp framedump after rendering the next main texture, before shaders are applied.

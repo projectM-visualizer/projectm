@@ -8,6 +8,8 @@ add_library(Renderer OBJECT
         Border.hpp
         DarkenCenter.cpp
         DarkenCenter.hpp
+        FileScanner.cpp
+        FileScanner.hpp
         Filters.cpp
         Filters.hpp
         MilkdropNoise.cpp

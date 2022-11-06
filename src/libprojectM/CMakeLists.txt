@@ -42,8 +42,6 @@ add_library(projectM_main OBJECT
         fatal.h
         fftsg.cpp
         fftsg.h
-        FileScanner.cpp
-        FileScanner.hpp
         glError.h
         gltext.h
         HungarianMethod.hpp
@@ -56,14 +54,10 @@ add_library(projectM_main OBJECT
         PipelineMerger.hpp
         Preset.cpp
         Preset.hpp
-        PresetChooser.cpp
-        PresetChooser.hpp
         PresetFactory.cpp
         PresetFactory.hpp
         PresetFactoryManager.cpp
         PresetFactoryManager.hpp
-        PresetLoader.cpp
-        PresetLoader.hpp
         ProjectM.cpp
         ProjectM.hpp
         projectM-opengl.h
