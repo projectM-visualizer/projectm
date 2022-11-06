@@ -1,42 +1,49 @@
-//
-// C++ Interface: PresetFactory
-//
-// Description:
-//
-//
-// Author: Carmelo Piccione <carmelo.piccione@gmail.com>, (C) 2008
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
+#pragma once
 
 #include "Preset.hpp"
+
 #include <memory>
 
-#ifndef __PRESET_FACTORY_HPP
-#define __PRESET_FACTORY_HPP
-
-class PresetFactory {
+class PresetFactory
+{
 
 public:
- static const std::string IDLE_PRESET_PROTOCOL;
- static std::string protocol(const std::string & url, std::string & path);
+    static const std::string IDLE_PRESET_PROTOCOL; //!< The string "idle"
 
- inline PresetFactory() {}
+    PresetFactory() = default;
 
- inline virtual ~PresetFactory() {}
+    virtual ~PresetFactory() = default;
 
- /// Constructs a new preset given an url and optional meta data
- /// \param url a locational identifier referencing the preset
- /// \param name the preset name
- /// \param author the preset author
- /// \returns a valid preset object
- virtual std::unique_ptr<Preset> allocate(const std::string & url, const std::string & name=std::string(),
-	 const std::string & author=std::string()) = 0;
+    /**
+     * @brief Returns the protocol portion for the given URL
+     *
+     * Some implementation may hand over "file:///path/to/preset" as the preset filename. This method
+     * takes care of cutting of the URL portion and return the path. Internally, it can be used to load
+     * the default idle preset via the "idle://" URL.
+     *
+     * @param url The URL to parse
+     * @param path [out] The path portion of the URL, basically everything after the "://" delimiter.
+     * @return The protocol, e.g. "file"
+     */
+    static std::string Protocol(const std::string& url, std::string& path);
 
- /// Returns a space separated list of supported extensions
- virtual std::string supportedExtensions() const = 0;
+    /**
+     * @brief Constructs a new preset from a local file
+     * @param filename The preset filename
+     * @returns A valid preset object
+     */
+    virtual std::unique_ptr<Preset> LoadPresetFromFile(const std::string& filename) = 0;
 
+    /**
+     * @brief Constructs a new preset from a stream
+     * @param data The preset data stream
+     * @returns A valid preset object
+     */
+    virtual std::unique_ptr<Preset> LoadPresetFromStream(std::istream& data) = 0;
+
+    /**
+     * Returns a space separated list of supported extensions
+     * @return A space separated list of supported extensions
+     */
+    virtual std::string supportedExtensions() const = 0;
 };
-
-#endif

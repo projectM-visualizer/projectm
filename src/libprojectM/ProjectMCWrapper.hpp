@@ -32,7 +32,7 @@ public:
 
     projectMWrapper(class Settings settings);
 
-    void PresetSwitchFailedEvent(bool isHardCut, const std::string& presetFilename,
+    void PresetSwitchFailedEvent(const std::string& presetFilename,
                                  const std::string& failureMessage) const override;
 
     projectm_preset_switch_failed_event _presetSwitchFailedEventCallback{ nullptr };

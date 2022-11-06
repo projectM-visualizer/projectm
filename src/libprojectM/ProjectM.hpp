@@ -22,8 +22,8 @@
 
 #include "Common.hpp"
 #include "PCM.hpp"
+#include "PresetFactoryManager.hpp"
 #include "fatal.h"
-#include "Renderer/PipelineContext.hpp"
 
 #include "libprojectM/event.h"
 
@@ -44,6 +44,9 @@
 #if USE_THREADS
 
 #include "BackgroundWorker.h"
+
+#include <Renderer/PipelineContext.hpp>
+
 #include <mutex>
 #include <thread>
 
@@ -92,6 +95,42 @@ public:
     explicit ProjectM(const class Settings& configurationFilename);
 
     virtual ~ProjectM();
+
+    /**
+     * @brief Callback for notifying the integrating app that projectM wants to switch to a new preset.
+     *
+     * It is safe to call LoadPreset() from inside the callback. The app can decide when to actually
+     * call the function or even ignore the request completely.
+     *
+     * @param isHardCut True if the switch event was caused by a hard cut, false if it is a soft cut.
+     */
+    virtual void PresetSwitchRequestedEvent(bool isHardCut) const;
+
+    /**
+     * @brief Callback for notifying the integrating app that the requested preset file couldn't be loaded.
+     * @param presetFilename The filename of the preset that failed to load. Empty if loaded from a stream.
+     * @param message The error message with the failure reason.
+     */
+    virtual void PresetSwitchFailedEvent(const std::string& presetFilename, const std::string& message) const;
+
+    /**
+     * @brief Loads the given preset file and performs a smooth or immediate transition.
+     * @param presetFilename The preset filename to load.
+     * @param smoothTransition If set to true, old and new presets will be blended over smoothly.
+     *                         If set to false, the new preset will be rendered immediately.
+     */
+    void LoadPresetFile(const std::string& presetFilename, bool smoothTransition);
+
+    /**
+     * @brief Loads the given preset data and performs a smooth or immediate transition.
+     *
+     * This function assumes the data to be in Milkdrop format.
+     *
+     * @param presetData The preset data stream to load from.
+     * @param smoothTransition If set to true, old and new presets will be blended over smoothly.
+     *                         If set to false, the new preset will be rendered immediately.
+     */
+    void LoadPresetData(std::istream& presetData, bool smoothTransition);
 
     void ResetOpenGL(size_t width, size_t height);
 
@@ -181,15 +220,11 @@ public:
     /// Returns true if the active preset is locked
     auto PresetLocked() const -> bool;
 
-    virtual void PresetSwitchFailedEvent(bool hardCut, const std::string& presetFilename, const std::string& message) const;
-
     auto Pcm() -> class Pcm&;
 
     auto WindowWidth() -> int;
 
     auto WindowHeight() -> int;
-
-    auto ErrorLoadingCurrentPreset() const -> bool;
 
     void DefaultKeyHandler(projectMEvent event, projectMKeycode keycode);
 
@@ -231,9 +266,7 @@ private:
     /// Initializes preset loading / management libraries
     auto InitializePresetTools() -> void;
 
-    auto SwitchToCurrentPreset() -> std::unique_ptr<Preset>;
-
-    auto StartPresetTransition(bool hardCut) -> bool;
+    void StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hardCut);
 
     void RecreateRenderer();
 
@@ -252,16 +285,19 @@ private:
     /** Timing information */
     int m_count{0}; //!< Rendered frame count since start
 
-    bool m_errorLoadingCurrentPreset{false}; //!< Error flag for preset loading errors.
+    bool m_presetLocked{false}; //!< If true, the preset change event will not be sent.
+    bool m_presetChangeNotified{false}; //!< Stores whether the user has been notified that projectM wants to switch the preset.
+
+    PresetFactoryManager m_presetFactoryManager; //!< Provides access to all available preset factories.
 
     class PipelineContext m_pipelineContext;  //!< Pipeline context for the first/current preset.
     class PipelineContext m_pipelineContext2; //!< Pipeline context for the next/transitioning preset.
 
-    std::unique_ptr<Renderer> m_renderer;                      //!< The Preset renderer.
-    std::unique_ptr<BeatDetect> m_beatDetect;                  //!< The beat detection class.
-    std::unique_ptr<Preset> m_activePreset;                    //!< Currently loaded preset.
-    std::unique_ptr<Preset> m_activePreset2;                   //!< Destination preset when smooth preset switching.
-    std::unique_ptr<TimeKeeper> m_timeKeeper;                  //!< Keeps the different timers used to render and switch presets.
+    std::unique_ptr<Renderer> m_renderer;     //!< The Preset renderer.
+    std::unique_ptr<BeatDetect> m_beatDetect; //!< The beat detection class.
+    std::unique_ptr<Preset> m_activePreset;   //!< Currently loaded preset.
+    std::unique_ptr<Preset> m_transitioningPreset;  //!< Destination preset when smooth preset switching.
+    std::unique_ptr<TimeKeeper> m_timeKeeper; //!< Keeps the different timers used to render and switch presets.
 
 #if USE_THREADS
     mutable std::recursive_mutex m_presetSwitchMutex; //!< Mutex for locking preset switching while rendering and vice versa.

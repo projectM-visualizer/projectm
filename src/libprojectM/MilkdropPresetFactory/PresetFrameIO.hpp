@@ -116,8 +116,10 @@ public:
     Invert invert;
     Solarize solarize;
 
+    // ToDo: Check if redeclaration here is wanted, as the Pipeline base class also defines these.
+    int gy;
+    int gx;
 
-    int gy,gx;
     /* PER_FRAME VARIABLES END */
 
     float fRating;

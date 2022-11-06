@@ -39,6 +39,25 @@ class BeatDetect;
 class TextureManager;
 class TimeKeeper;
 
+class RenderException : public std::exception
+{
+public:
+    inline RenderException(std::string message)
+        : m_message(std::move(message))
+    {
+    }
+
+    virtual ~RenderException() = default;
+
+    const std::string& message() const
+    {
+        return m_message;
+    }
+
+private:
+    std::string m_message;
+};
+
 class Renderer
 {
 
@@ -56,17 +75,7 @@ public:
 
   bool timeCheck(const milliseconds currentTime, const milliseconds lastTime, const double difference);
 
-  std::string SetPipeline(Pipeline &pipeline);
-
-  void setPresetName(const std::string& theValue)
-  {
-    m_presetName = theValue;
-  }
-
-  std::string presetName() const
-  {
-    return m_presetName;
-  }
+  void SetPipeline(Pipeline &pipeline);
 
   void setFPS(const int &theValue) {
 		m_fps = std::to_string(theValue);
@@ -93,7 +102,6 @@ public:
 
     bool correction{ true };
 
-    bool noSwitch{ false };
     bool writeNextFrameToFile{ false };
 
     milliseconds lastTimeFPS{ nowMilliseconds() };
@@ -129,7 +137,6 @@ private:
     RenderContext m_renderContext;
     ShaderEngine m_shaderEngine;
 
-    std::string m_presetName;
     std::string m_fps;
 
     float* m_perPointMeshBuffer{nullptr};
