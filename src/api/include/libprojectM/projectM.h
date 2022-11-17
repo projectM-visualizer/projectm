@@ -160,27 +160,6 @@ PROJECTM_EXPORT projectm_settings* projectm_alloc_settings();
  */
 PROJECTM_EXPORT void projectm_free_settings(const projectm_settings* settings);
 
-
-/**
- * @brief Callback function that is executed on each preset change.
- *
- * Can be used for example to update the application window title.
- *
- * @param is_hard_cut True if the preset was switched using a hard cut via beat detection.
- * @param index The playlist index of the new preset.
- * @param user_data A user-defined data pointer that was provided when registering the callback,
- *                  e.g. context information.
- */
-typedef void (*projectm_preset_switched_event)(bool is_hard_cut, unsigned int index, void* user_data);
-
-/**
- * @brief Callback function that is executed is the shuffle setting has changed.
- * @param shuffle_enabled True if shuffle is enabled, false if it was disabled.
- * @param user_data A user-defined data pointer that was provided when registering the callback,
- *                  e.g. context information.
- */
-typedef void (*projectm_shuffle_enable_changed_event)(bool shuffle_enabled, void* user_data);
-
 /**
  * @brief Callback function that is executed if a preset change failed.
  *
@@ -194,20 +173,6 @@ typedef void (*projectm_shuffle_enable_changed_event)(bool shuffle_enabled, void
  */
 typedef void (*projectm_preset_switch_failed_event)(const char* preset_filename,
                                                     const char* message, void* user_data);
-
-/**
- * @brief Callback function that is executed if a preset rating has been changed.
- *
- * Can be used for example to update the rating display in the host application.
- *
- * @param index The playlist index of the new preset.
- * @param rating The new rating value.
- * @param rating_type The rating type that has been changed.
- * @param user_data A user-defined data pointer that was provided when registering the callback,
- *                  e.g. context information.
- */
-typedef void (*projectm_preset_rating_changed_event)(unsigned int index, int rating,
-                                                     projectm_preset_rating_type rating_type, void* user_data);
 
 
 /**
@@ -274,32 +239,6 @@ PROJECTM_EXPORT void projectm_load_preset_data(projectm_handle instance, const c
                                                bool smooth_transition);
 
 /**
- * @brief Sets a callback function that will be called when a preset changes.
- *
- * Only one callback can be registered per projectM instance. To remove the callback, use NULL.
- *
- * @param instance The projectM instance handle.
- * @param callback A pointer to the callback function.
- * @param user_data A pointer to any data that will be sent back in the callback, e.g. context information.
- */
-PROJECTM_EXPORT void projectm_set_preset_switched_event_callback(projectm_handle instance,
-                                                                 projectm_preset_switched_event callback,
-                                                                 void* user_data);
-
-/**
- * @brief Sets a callback function that will be called when the shuffle setting changes.
- *
- * Only one callback can be registered per projectM instance. To remove the callback, use NULL.
- *
- * @param instance The projectM instance handle.
- * @param callback A pointer to the callback function.
- * @param user_data A pointer to any data that will be sent back in the callback, e.g. context information.
- */
-PROJECTM_EXPORT void projectm_set_shuffle_enable_changed_event_callback(projectm_handle instance,
-                                                                        projectm_shuffle_enable_changed_event callback,
-                                                                        void* user_data);
-
-/**
  * @brief Sets a callback function that will be called when a preset change failed.
  *
  * Only one callback can be registered per projectM instance. To remove the callback, use NULL.
@@ -311,19 +250,6 @@ PROJECTM_EXPORT void projectm_set_shuffle_enable_changed_event_callback(projectm
 PROJECTM_EXPORT void projectm_set_preset_switch_failed_event_callback(projectm_handle instance,
                                                                       projectm_preset_switch_failed_event callback,
                                                                       void* user_data);
-
-/**
- * @brief Sets a callback function that will be called when a preset rating changed.
- *
- * Only one callback can be registered per projectM instance. To remove the callback, use NULL.
- *
- * @param instance The projectM instance handle.
- * @param callback A pointer to the callback function.
- * @param user_data A pointer to any data that will be sent back in the callback, e.g. context information.
- */
-PROJECTM_EXPORT void projectm_set_preset_rating_changed_event_callback(projectm_handle instance,
-                                                                       projectm_preset_rating_changed_event callback,
-                                                                       void* user_data);
 
 /**
  * @brief Reloads all textures.
