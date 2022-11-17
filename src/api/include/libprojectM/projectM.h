@@ -49,22 +49,22 @@ typedef struct projectm* projectm_handle; //!< A pointer to the opaque projectM 
  * to reset the pointer to NULL after doing so!</p>
  */
 typedef struct PROJECTM_EXPORT projectm_settings_s {
-    int mesh_x;                    //!< Per-pixel mesh X resolution.
-    int mesh_y;                    //!< Per-pixel mesh Y resolution.
-    int fps;                       //!< Target rendering frames per second.
-    int texture_size;              //!< Size of the render texture. Must be a power of 2.
-    int window_width;              //!< Width of the rendering viewport.
-    int window_height;             //!< Height of the rendering viewport.
-    char* texture_path;            //!< Additional path with texture files for use in presets.
-    char* data_path;               //!< Path to data files like default textures and presets.
-    double preset_duration;        //!< Display duration for each preset in seconds.
-    double soft_cut_duration;      //!< Blend-over duration between two presets in seconds.
-    double hard_cut_duration;      //!< Minimum time in seconds a preset is displayed before a hard cut can happen.
-    bool hard_cut_enabled;         //!< Set to true to enable fast beat-driven preset switches.
-    float hard_cut_sensitivity;    //!< Beat sensitivity value that must be surpassed for a hard cut.
-    float beat_sensitivity;        //!< Beat sensitivity. Standard sensitivity is 1.0.
-    bool aspect_correction;        //!< Use aspect ration correction in presets that support it.
-    float easter_egg;              //!< Used as the "sigma" value for a gaussian RNG to randomize preset duration. Unused on Windows.
+    int mesh_x;                 //!< Per-pixel mesh X resolution.
+    int mesh_y;                 //!< Per-pixel mesh Y resolution.
+    int fps;                    //!< Target rendering frames per second.
+    int texture_size;           //!< Size of the render texture. Must be a power of 2.
+    int window_width;           //!< Width of the rendering viewport.
+    int window_height;          //!< Height of the rendering viewport.
+    char* texture_path;         //!< Additional path with texture files for use in presets.
+    char* data_path;            //!< Path to data files like default textures and presets.
+    double preset_duration;     //!< Display duration for each preset in seconds.
+    double soft_cut_duration;   //!< Blend-over duration between two presets in seconds.
+    double hard_cut_duration;   //!< Minimum time in seconds a preset is displayed before a hard cut can happen.
+    bool hard_cut_enabled;      //!< Set to true to enable fast beat-driven preset switches.
+    float hard_cut_sensitivity; //!< Beat sensitivity value that must be surpassed for a hard cut.
+    float beat_sensitivity;     //!< Beat sensitivity. Standard sensitivity is 1.0.
+    bool aspect_correction;     //!< Use aspect ration correction in presets that support it.
+    float easter_egg;           //!< Used as the "sigma" value for a gaussian RNG to randomize preset duration. Unused on Windows.
 } projectm_settings;
 
 /**
@@ -75,16 +75,6 @@ typedef enum
     PROJECTM_MONO = 1,
     PROJECTM_STEREO = 2
 } projectm_channels;
-
-/**
- * Rating types supported by projectM. Used to control preset selection for different types
- * of transitions (hard/soft).
- */
-typedef enum
-{
-    PROJECTM_HARD_CUT_RATING_TYPE, //!< Rating for hard cuts.
-    PROJECTM_SOFT_CUT_RATING_TYPE  //!< Rating for soft cuts.
-} projectm_preset_rating_type;
 
 /**
  * Placeholder values that can be used to address channel indices in PCM data arrays.
