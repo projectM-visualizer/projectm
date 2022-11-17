@@ -4,6 +4,7 @@
 
 #include <cstring>
 #include <utility>
+#include <sstream>
 
 projectMWrapper::projectMWrapper(std::string configFile)
     : ProjectM(std::move(configFile))
@@ -13,6 +14,14 @@ projectMWrapper::projectMWrapper(std::string configFile)
 projectMWrapper::projectMWrapper(class ProjectM::Settings settings)
     : ProjectM(std::move(settings))
 {
+}
+
+void projectMWrapper::PresetSwitchRequestedEvent(bool isHardCut) const
+{
+    if (_presetSwitchRequestedEventCallback)
+    {
+        _presetSwitchRequestedEventCallback(isHardCut, _presetSwitchRequestedEventUserData);
+    }
 }
 
 void projectMWrapper::PresetSwitchFailedEvent(const std::string& presetFilename,
@@ -128,6 +137,29 @@ void projectm_destroy(projectm_handle instance)
 {
     auto projectMInstance = handle_to_instance(instance);
     delete projectMInstance;
+}
+
+void projectm_load_preset_file(projectm_handle instance, const char* filename,
+                               bool smooth_transition)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->LoadPresetFile(filename, smooth_transition);
+}
+
+void projectm_load_preset_data(projectm_handle instance, const char* data,
+                               bool smooth_transition)
+{
+    std::stringstream presetDataStream(data);
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->LoadPresetData(presetDataStream, smooth_transition);
+}
+
+void projectm_set_preset_switch_requested_event_callback(projectm_handle instance,
+                                                         projectm_preset_switch_requested_event callback, void* user_data)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->_presetSwitchRequestedEventCallback = callback;
+    projectMInstance->_presetSwitchRequestedEventUserData = user_data;
 }
 
 void projectm_set_preset_switch_failed_event_callback(projectm_handle instance,
@@ -427,10 +459,12 @@ static auto PcmAdd(projectm_handle instance, const BufferType* samples, unsigned
 {
     auto* projectMInstance = handle_to_instance(instance);
 
-    if(channels == PROJECTM_MONO) {
+    if (channels == PROJECTM_MONO)
+    {
         projectMInstance->Pcm().AddMono(samples, count);
     }
-    else {
+    else
+    {
         projectMInstance->Pcm().AddStereo(samples, count);
     }
 }

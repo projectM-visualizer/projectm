@@ -151,6 +151,15 @@ PROJECTM_EXPORT projectm_settings* projectm_alloc_settings();
 PROJECTM_EXPORT void projectm_free_settings(const projectm_settings* settings);
 
 /**
+ * @brief Callback function that is executed whenever projectM wants to switch to a new preset.
+ *
+ * @param is_hard_cut If true, the transition was triggered by a beat-driven event.
+ * @param user_data A user-defined data pointer that was provided when registering the callback,
+*                   e.g. context information.
+ */
+typedef void (*projectm_preset_switch_requested_event)(bool is_hard_cut, void* user_data);
+
+/**
  * @brief Callback function that is executed if a preset change failed.
  *
  * The message and filename pointers are only valid inside the callback. Make a copy if these values
@@ -229,13 +238,28 @@ PROJECTM_EXPORT void projectm_load_preset_data(projectm_handle instance, const c
                                                bool smooth_transition);
 
 /**
+ * @brief Sets a callback function that will be called when a preset change is requested.
+ *
+ * Only one callback can be registered per projectM instance. To remove the callback, use NULL.
+ *
+ * @param instance The projectM instance handle.
+ * @param callback A pointer to the callback function.
+ * @param user_data A pointer to any data that will be sent back in the callback, e.g. context
+ *                  information.
+ */
+PROJECTM_EXPORT void projectm_set_preset_switch_requested_event_callback(projectm_handle instance,
+                                                                         projectm_preset_switch_requested_event callback,
+                                                                         void* user_data);
+
+/**
  * @brief Sets a callback function that will be called when a preset change failed.
  *
  * Only one callback can be registered per projectM instance. To remove the callback, use NULL.
  *
  * @param instance The projectM instance handle.
  * @param callback A pointer to the callback function.
- * @param user_data A pointer to any data that will be sent back in the callback, e.g. context information.
+ * @param user_data A pointer to any data that will be sent back in the callback, e.g. context
+ *                  information.
  */
 PROJECTM_EXPORT void projectm_set_preset_switch_failed_event_callback(projectm_handle instance,
                                                                       projectm_preset_switch_failed_event callback,

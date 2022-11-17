@@ -266,13 +266,13 @@ auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
         //if preset is done and we're not already switching
         if (m_timeKeeper->PresetProgressA() >= 1.0 && !m_timeKeeper->IsSmoothing())
         {
-            // Call preset change callback
+            PresetSwitchRequestedEvent(false);
         }
         else if (Settings().hardCutEnabled &&
                  (m_beatDetect->vol - m_beatDetect->volOld > Settings().hardCutSensitivity) &&
                  m_timeKeeper->CanHardCut())
         {
-            // Call preset change callback
+            PresetSwitchRequestedEvent(true);
         }
         m_presetChangeNotified = true;
     }
