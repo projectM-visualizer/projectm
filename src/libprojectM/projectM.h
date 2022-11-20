@@ -474,6 +474,17 @@ PROJECTM_EXPORT double projectm_get_soft_cut_duration(projectm_handle instance);
 PROJECTM_EXPORT void projectm_set_soft_cut_duration(projectm_handle instance, double seconds);
 
 /**
+ * @brief Returns the preset display duration before switching to the next using a soft cut.
+ *
+ * This can be considered as the maximum time a preset is displayed. If this time is reached,
+ * a smooth cut will be initiated. A hard cut, if any, will always happen before this time.
+ *
+ * @param instance The projectM instance handle.
+ * @return The currently set preset display duration in seconds.
+ */
+PROJECTM_EXPORT double projectm_get_preset_duration(projectm_handle instance);
+
+/**
  * @brief Sets the preset display duration before switching to the next using a soft cut.
  *
  * This can be considered as the maximum time a preset is displayed. If this time is reached,

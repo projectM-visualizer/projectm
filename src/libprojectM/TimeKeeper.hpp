@@ -64,6 +64,11 @@ public:
         m_presetDuration = seconds;
     }
 
+    inline auto PresetDuration() const -> double
+    {
+        return m_presetDuration;
+    }
+
     inline void ChangePresetDuration(double seconds)
     {
         m_presetDuration = seconds;
