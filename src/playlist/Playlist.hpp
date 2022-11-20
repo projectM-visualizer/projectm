@@ -4,11 +4,26 @@
 
 #include <cstdint>
 #include <limits>
+#include <random>
 #include <string>
 #include <vector>
 
 namespace ProjectM {
 namespace Playlist {
+
+/**
+ * Exception thrown by methods that require at least one item in the playlist to return a proper result.
+ */
+class PlaylistEmptyException : public std::exception
+{
+public:
+    /**
+     * Returns the exception message.
+     * @return The exception message.
+     */
+    const char* what() const noexcept override;
+};
+
 
 /**
  * @brief Playlist manager class.
@@ -41,6 +56,11 @@ public:
         Ascending, //!< Sort in ascending order.
         Descending //!< Sort in descending order.
     };
+
+    /**
+     * Constructor.
+     */
+    Playlist();
 
     /**
      * Destructor.
@@ -133,9 +153,42 @@ public:
      */
     virtual void Sort(uint32_t startIndex, uint32_t count, SortPredicate predicate, SortOrder order);
 
+    /**
+     * @brief Returns the next preset index that should be played.
+     *
+     * Each call will either increment the current index, or select a random preset, depending on
+     * the shuffle setting.
+     *
+     * @throws PlaylistEmptyException Thrown if the playlist is currently empty.
+     * @return The index of the next playlist item to be played.
+     */
+    auto NextPresetIndex() -> size_t;
+
+    /**
+     * @brief Returns the current playlist/preset index without changing the position.
+     * @throws PlaylistEmptyException Thrown if the playlist is currently empty.
+     * @return The current preset index being played.
+     */
+    auto PresetIndex() const -> size_t;
+
+    /**
+     * @brief Sets the playlist/preset index to the given value and returns the new index.
+     *
+     * Will wrap to 0 if the playlist size is smaller than the given value. Ignores the shuffle
+     * setting.
+     *
+     * @throws PlaylistEmptyException Thrown if the playlist is currently empty.
+     * @param presetIndex The new preset index to switch to.
+     * @return The newly set preset index, either presetIndex or 0 if out of bounds.
+     */
+    auto SetPresetIndex(size_t presetIndex) -> size_t;
+
 private:
-    std::vector<Item> m_items; //!< Items in the current playlist.
-    bool m_shuffle{false};     //!< True if shuffle mode is enabled, false to play presets in order.
+    std::vector<Item> m_items;   //!< Items in the current playlist.
+    bool m_shuffle{false};       //!< True if shuffle mode is enabled, false to play presets in order.
+    size_t m_currentPosition{0}; //!< Current playlist position.
+
+    std::default_random_engine m_randomGenerator;
 };
 
 } // namespace Playlist
