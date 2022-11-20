@@ -900,6 +900,11 @@ void ProjectM::SetPresetDuration(int seconds)
     m_timeKeeper->ChangePresetDuration(seconds);
 }
 
+auto ProjectM::PresetDuration() const -> double
+{
+    return m_timeKeeper->PresetDuration();
+}
+
 void ProjectM::SetPresetDuration(double seconds)
 {
     m_timeKeeper->ChangePresetDuration(seconds);

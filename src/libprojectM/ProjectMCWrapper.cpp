@@ -300,6 +300,12 @@ void projectm_set_soft_cut_duration(projectm_handle instance, double seconds)
     projectMInstance->SetSoftCutDuration(seconds);
 }
 
+double projectm_get_preset_duration(projectm_handle instance)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    return projectMInstance->PresetDuration();
+}
+
 void projectm_set_preset_duration(projectm_handle instance, double seconds)
 {
     auto projectMInstance = handle_to_instance(instance);

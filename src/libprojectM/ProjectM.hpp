@@ -151,6 +151,12 @@ public:
 
     void SetHardCutSensitivity(float sensitivity);
 
+    /**
+     * @brief Returns the currently set preset duration in seconds.
+     * @return The currently set preset duration in seconds.
+     */
+    auto PresetDuration() const -> double;
+
     void SetPresetDuration(int seconds);
 
     void SetPresetDuration(double seconds);
