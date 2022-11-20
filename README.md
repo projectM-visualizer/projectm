@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/projectM-visualizer/projectm.svg?branch=master)](https://travis-ci.org/projectM-visualizer/projectm)
 ![Discord Shield](https://discordapp.com/api/guilds/737206408482914387/widget.png?style=shield)
-[Chat with us on Discord](https://discord.gg/gaHtkQ3v)
+[Chat with us on Discord](https://discord.gg/mMrxAqaa3W)
 
 ![Logo](https://github.com/projectM-visualizer/projectm/raw/master/web/logo.png)
 
@@ -67,7 +67,7 @@ source-code and binary releases of the projectM development libraries and header
 
 ### Discord chat
 
-[Chat with us on Discord.](https://discord.gg/gaHtkQ3v)
+[Chat with us on Discord.](https://discord.gg/mMrxAqaa3W)
 
 ### Demo Video
 
@@ -170,7 +170,7 @@ and findings to the existing issue instead of opening a new one.
 
 ## Get in contact with us
 
-[Chat with us on Discord.](https://discord.gg/tpEuywB)
+[Chat with us on Discord.](https://discord.gg/mMrxAqaa3W)
 
 ## Contribute to projectM
 
