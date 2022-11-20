@@ -324,10 +324,16 @@ void projectm_set_mesh_size(projectm_handle instance, size_t width, size_t heigh
     projectMInstance->SetMeshSize(width, height);
 }
 
-size_t projectm_get_fps(projectm_handle instance)
+int32_t projectm_get_fps(projectm_handle instance)
 {
     auto projectMInstance = handle_to_instance(instance);
-    return projectMInstance->Settings().fps;
+    return projectMInstance->FramesPerSecond();
+}
+
+void projectm_set_fps(projectm_handle instance, int32_t fps)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->SetFramesPerSecond(fps);
 }
 
 const char* projectm_get_preset_path(projectm_handle instance)

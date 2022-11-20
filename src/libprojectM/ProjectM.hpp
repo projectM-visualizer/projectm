@@ -161,6 +161,18 @@ public:
 
     void SetPresetDuration(double seconds);
 
+    /**
+     * @brief Returns the current frames per second value.
+     * @return The current frames per second value.
+     */
+    auto FramesPerSecond() const -> int32_t;
+
+    /**
+     * @brief Sets a new current frames per second value.
+     * @param fps The new frames per second value.
+     */
+    void SetFramesPerSecond(int32_t fps);
+
     auto AspectCorrection() const -> bool;
 
     void SetAspectCorrection(bool enabled);

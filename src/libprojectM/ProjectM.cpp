@@ -910,6 +910,19 @@ void ProjectM::SetPresetDuration(double seconds)
     m_timeKeeper->ChangePresetDuration(seconds);
 }
 
+auto ProjectM::FramesPerSecond() const -> int32_t
+{
+    return m_settings.fps;
+}
+
+void ProjectM::SetFramesPerSecond(int32_t fps)
+{
+    m_settings.fps = fps;
+    m_renderer->setFPS(fps);
+    m_pipelineContext.fps = fps;
+    m_pipelineContext2.fps = fps;
+}
+
 auto ProjectM::AspectCorrection() const -> bool
 {
     return m_settings.aspectCorrection;
