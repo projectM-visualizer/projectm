@@ -513,11 +513,26 @@ PROJECTM_EXPORT void projectm_get_mesh_size(projectm_handle instance, size_t* wi
 PROJECTM_EXPORT void projectm_set_mesh_size(projectm_handle instance, size_t width, size_t height);
 
 /**
- * @brief Returns the target frames per second count.
- * @note This is not the actual FPS, but the targeted refresh framerate if the integrating application.
+ * @brief Returns the current/average frames per second.
+ *
+ * This value needs to be set by the application. If it wasn't set, a default value of 60 is used.
+ *
  * @param instance The projectM instance handle.
+ * @return The current/average frames per second.
  */
-PROJECTM_EXPORT size_t projectm_get_fps(projectm_handle instance);
+PROJECTM_EXPORT int32_t projectm_get_fps(projectm_handle instance);
+
+/**
+ * @brief Sets the current/average frames per second.
+ *
+ * Applications running projectM should update this value regularly and set it to the calculated
+ * (and possibly averaged) FPS value the output rendered with. The value is passed on to presets,
+ * which may choose to use it for calculations. It is not used in any other way by the library.
+ *
+ * @param instance The projectM instance handle.
+ * @param fps The current FPS value projectM is running with.
+ */
+PROJECTM_EXPORT void projectm_set_fps(projectm_handle instance, int32_t fps);
 
 /**
  * @brief Returns the search path for presets and textures.
