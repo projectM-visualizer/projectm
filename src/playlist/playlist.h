@@ -40,6 +40,26 @@ typedef enum
 void projectm_playlist_free_string_array(char** array);
 
 /**
+ * @brief Callback function that is executed if a preset change failed too often.
+ *
+ * Similar to the projectM API function, but will only be called if the preset switch failed
+ * multiple times in a row, e.g. due to missing files or broken presets. The application should
+ * decide what action to take.
+ *
+ * @note Do NOT call any functions that switch presets inside the callback, at it might
+ *       lead to infinite recursion and thus a stack overflow!
+ * @note The message pointer is only valid inside the callback. Make a copy if it need to be
+ *       retained for later use.
+ * @param preset_filename The filename of the failed preset.
+ * @param message The last error message.
+ * @param user_data A user-defined data pointer that was provided when registering the callback,
+ *                  e.g. context information.
+ */
+typedef void (*projectm_playlist_preset_switch_failed_event)(const char* preset_filename,
+                                                             const char* message, void* user_data);
+
+
+/**
  * @brief Creates a playlist manager for the given projectM instance
  *
  * Only one active playlist manager is supported per projectM instance. If multiple playlists use
@@ -62,6 +82,25 @@ projectm_playlist_handle projectm_playlist_create(projectm_handle projectm_insta
  * @param instance The playlist manager instance to destroy.
  */
 void projectm_playlist_destroy(projectm_playlist_handle instance);
+
+/**
+ * @brief Sets a callback function that will be called when a preset change failed.
+ *
+ * Only one callback can be registered per projectM instance. To remove the callback, use NULL.
+ *
+ * If the application want to receive projectM's analogous callback directly, use the
+ * projectm_set_preset_switch_failed_event_callback() function after calling
+ * projectm_playlist_create() or projectm_playlist_connect(), respectively, as these will both
+ * override the callback set in projectM.
+ *
+ * @param instance The playlist manager instance.
+ * @param callback A pointer to the callback function.
+ * @param user_data A pointer to any data that will be sent back in the callback, e.g. context
+ *                  information.
+ */
+void projectm_playlist_set_preset_switch_failed_event_callback(projectm_playlist_handle instance,
+                                                               projectm_playlist_preset_switch_failed_event callback,
+                                                               void* user_data);
 
 /**
  * @brief Connects the playlist manager to a projectM instance.
@@ -271,6 +310,39 @@ void projectm_playlist_set_shuffle(projectm_playlist_handle instance, bool shuff
  */
 void projectm_playlist_sort(projectm_playlist_handle instance, uint32_t start_index, uint32_t count,
                             projectm_playlist_sort_predicate predicate, projectm_playlist_sort_order order);
+
+/**
+ * @brief Sets the number of retries after failed preset switches.
+ * @note Don't set this value too high, as each retry is done recursively.
+ * @param instance The playlist manager instance.
+ * @param retry_count The number of retries after failed preset switches. Default is 5. Set to 0
+ *                    to simply forward the failure event from projectM.
+ */
+void projectm_playlist_set_retry_count(projectm_playlist_handle instance, uint32_t retry_count);
+
+/**
+ * @brief Returns the current playlist position.
+ * @param instance The playlist manager instance.
+ * @return The current playlist position. If the playlist is empty, 0 will be returned.
+ */
+uint32_t projectm_playlist_get_position(projectm_playlist_handle instance);
+
+/**
+ * @brief Plays the preset at the requested playlist position and returns the actual playlist index.
+ *
+ * If the requested position is out of bounds, the returned position will wrap to 0, effectively
+ * repeating the playlist as if shuffle was disabled. It has no effect if the playlist is empty.
+ *
+ * This method ignores the shuffle setting and will always jump to the requested index, given it is
+ * withing playlist bounds.
+ *
+ * @param instance The playlist manager instance.
+ * @param new_position The new position to jump to.
+ * @param hard_cut If true, the preset transition is instant. If true, a smooth transition is played.
+ * @return The new playlist position. If the playlist is empty, 0 will be returned.
+ */
+uint32_t projectm_playlist_set_position(projectm_playlist_handle instance, uint32_t new_position,
+                                        bool hard_cut);
 
 #ifdef __cplusplus
 }

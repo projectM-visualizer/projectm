@@ -1,17 +1,112 @@
 #include "PlaylistCWrapper.h"
 
-#include <limits>
-
 using ProjectM::Playlist::Playlist;
 
 PlaylistCWrapper::PlaylistCWrapper(projectm_handle projectMInstance)
+    : m_projectMInstance(projectMInstance)
 {
+    if (m_projectMInstance != nullptr)
+    {
+        projectm_set_preset_switch_requested_event_callback(m_projectMInstance, &OnPresetSwitchRequested, this);
+        projectm_set_preset_switch_failed_event_callback(m_projectMInstance, &OnPresetSwitchFailed, this);
+    }
 }
 
 
 void PlaylistCWrapper::Connect(projectm_handle projectMInstance)
 {
+    if (m_projectMInstance != nullptr)
+    {
+        projectm_set_preset_switch_requested_event_callback(m_projectMInstance, nullptr, nullptr);
+        projectm_set_preset_switch_failed_event_callback(m_projectMInstance, nullptr, nullptr);
+    }
+
     m_projectMInstance = projectMInstance;
+
+    if (m_projectMInstance != nullptr)
+    {
+        projectm_set_preset_switch_requested_event_callback(m_projectMInstance, &OnPresetSwitchRequested, this);
+        projectm_set_preset_switch_failed_event_callback(m_projectMInstance, &OnPresetSwitchFailed, this);
+    }
+}
+
+
+void PlaylistCWrapper::OnPresetSwitchRequested(bool isHardCut, void* userData)
+{
+    if (userData == nullptr)
+    {
+        return;
+    }
+
+    auto* playlist = reinterpret_cast<PlaylistCWrapper*>(userData);
+
+    try
+    {
+        playlist->PlayPresetIndex(playlist->NextPresetIndex(), isHardCut, true);
+    }
+    catch (ProjectM::Playlist::PlaylistEmptyException&)
+    {
+    }
+}
+
+
+void PlaylistCWrapper::OnPresetSwitchFailed(const char* presetFilename, const char* message, void* userData)
+{
+    if (userData == nullptr)
+    {
+        return;
+    }
+
+    auto* playlist = reinterpret_cast<PlaylistCWrapper*>(userData);
+
+    // Preset switch may fail due to broken presets, retry a few times before giving up.
+    if (playlist->m_presetSwitchFailedCount < playlist->m_presetSwitchRetryCount)
+    {
+        playlist->m_presetSwitchFailedCount++;
+        playlist->PlayPresetIndex(playlist->NextPresetIndex(), playlist->m_hardCutRequested, false);
+    }
+    else
+    {
+        if (playlist->m_presetSwitchFailedEventCallback != nullptr)
+        {
+            playlist->m_presetSwitchFailedEventCallback(presetFilename, message,
+                                                        playlist->m_presetSwitchFailedEventUserData);
+        }
+    }
+}
+
+
+void PlaylistCWrapper::SetRetryCount(uint32_t retryCount)
+{
+    m_presetSwitchRetryCount = retryCount;
+}
+
+
+void PlaylistCWrapper::SetPresetWitchFailedCallback(projectm_playlist_preset_switch_failed_event callback, void* userData)
+{
+    m_presetSwitchFailedEventCallback = callback;
+    m_presetSwitchFailedEventUserData = userData;
+}
+
+
+void PlaylistCWrapper::PlayPresetIndex(size_t index, bool hardCut, bool resetFailureCount)
+{
+    if (resetFailureCount)
+    {
+        m_presetSwitchFailedCount = 0;
+    }
+
+    m_hardCutRequested = hardCut;
+
+    const auto& playlistItems = Items();
+
+    if (playlistItems.size() <= index)
+    {
+        return;
+    }
+
+    projectm_load_preset_file(m_projectMInstance,
+                              playlistItems.at(index).Filename().c_str(), !hardCut);
 }
 
 
@@ -52,6 +147,15 @@ void projectm_playlist_destroy(projectm_playlist_handle instance)
 {
     auto* playlist = playlist_handle_to_instance(instance);
     delete playlist;
+}
+
+
+void projectm_playlist_set_preset_switch_failed_event_callback(projectm_playlist_handle instance,
+                                                               projectm_playlist_preset_switch_failed_event callback,
+                                                               void* user_data)
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+    playlist->SetPresetWitchFailedCallback(callback, user_data);
 }
 
 
@@ -247,4 +351,42 @@ void projectm_playlist_sort(projectm_playlist_handle instance, uint32_t start_in
     }
 
     playlist->Sort(start_index, count, predicatePlaylist, orderPlaylist);
+}
+
+
+void projectm_playlist_set_retry_count(projectm_playlist_handle instance, uint32_t retry_count)
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+    playlist->SetRetryCount(retry_count);
+}
+
+
+auto projectm_playlist_get_position(projectm_playlist_handle instance) -> uint32_t
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+    try
+    {
+        return playlist->PresetIndex();
+    }
+    catch (ProjectM::Playlist::PlaylistEmptyException&)
+    {
+        return 0;
+    }
+}
+
+
+auto projectm_playlist_set_position(projectm_playlist_handle instance, uint32_t new_position,
+                                    bool hard_cut) -> uint32_t
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+    try
+    {
+        auto newIndex = playlist->SetPresetIndex(new_position);
+        playlist->PlayPresetIndex(newIndex, hard_cut, true);
+        return newIndex;
+    }
+    catch (ProjectM::Playlist::PlaylistEmptyException&)
+    {
+        return 0;
+    }
 }

@@ -10,6 +10,7 @@ add_executable(projectM-playlist-unittest
         PlaylistCWrapperMock.cpp
         PlaylistCWrapperMock.h
         PlaylistTest.cpp
+        ProjectMAPIMocks.cpp
         )
 
 target_compile_definitions(projectM-playlist-unittest

@@ -9,6 +9,17 @@ using namespace FS_NAMESPACE::filesystem;
 namespace ProjectM {
 namespace Playlist {
 
+const char* PlaylistEmptyException::what() const noexcept
+{
+    return "Playlist is empty";
+}
+
+Playlist::Playlist()
+{
+    m_randomGenerator.seed(std::chrono::system_clock::now().time_since_epoch().count());
+}
+
+
 uint32_t Playlist::Size() const
 {
     return m_items.size();
@@ -157,7 +168,63 @@ void Playlist::Sort(uint32_t startIndex, uint32_t count,
                           return std::lexicographical_compare(rightFilename.begin(), rightFilename.end(),
                                                               leftFilename.begin(), leftFilename.end());
                   }
+
+                  return false;
               });
+}
+
+
+auto Playlist::NextPresetIndex() -> size_t
+{
+    if (m_items.empty())
+    {
+        throw PlaylistEmptyException();
+    }
+
+    if (m_shuffle)
+    {
+        std::uniform_int_distribution<size_t> randomDistribution(0, m_items.size());
+        m_currentPosition = randomDistribution(m_randomGenerator);
+    }
+    else
+    {
+        m_currentPosition++;
+        if (m_currentPosition >= m_items.size())
+        {
+            m_currentPosition = 0;
+        }
+    }
+
+    return m_currentPosition;
+}
+
+
+auto Playlist::PresetIndex() const -> size_t
+{
+    if (m_items.empty())
+    {
+        throw PlaylistEmptyException();
+    }
+
+    return m_currentPosition;
+}
+
+
+auto Playlist::SetPresetIndex(size_t presetIndex) -> size_t
+{
+    if (m_items.empty())
+    {
+        throw PlaylistEmptyException();
+    }
+
+    m_currentPosition = presetIndex;
+
+    if (m_currentPosition >= m_items.size())
+    {
+        m_currentPosition = 0;
+    }
+
+    return m_currentPosition;
 }
 
 
