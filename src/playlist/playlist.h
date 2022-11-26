@@ -373,6 +373,52 @@ uint32_t projectm_playlist_get_position(projectm_playlist_handle instance);
 uint32_t projectm_playlist_set_position(projectm_playlist_handle instance, uint32_t new_position,
                                         bool hard_cut);
 
+/**
+ * @brief Plays the next playlist item and returns the index of the new preset.
+ *
+ * If shuffle is on, it will select a random preset, otherwise the next in the playlist. If the
+ * end of the playlist is reached in continuous mode, it will wrap back to 0.
+ *
+ * The old playlist item is added to the history.
+ *
+ * @param instance The playlist manager instance.
+ * @param hard_cut If true, the preset transition is instant. If true, a smooth transition is played.
+ * @return The new playlist position. If the playlist is empty, 0 will be returned.
+ */
+uint32_t projectm_playlist_play_next(projectm_playlist_handle instance, bool hard_cut);
+
+/**
+ * @brief Plays the previous playlist item and returns the index of the new preset.
+ *
+ * If shuffle is on, it will select a random preset, otherwise the next in the playlist. If the
+ * end of the playlist is reached in continuous mode, it will wrap back to 0.
+ *
+ * The old playlist item is added to the history.
+ *
+ * @param instance The playlist manager instance.
+ * @param hard_cut If true, the preset transition is instant. If true, a smooth transition is played.
+ * @return The new playlist position. If the playlist is empty, 0 will be returned.
+ */
+uint32_t projectm_playlist_play_previous(projectm_playlist_handle instance, bool hard_cut);
+
+/**
+ * @brief Plays the last preset played in the history and returns the index of the preset.
+ *
+ * The history keeps track of the last 1000 presets and will go back in the history. The
+ * playback history will be cleared whenever the playlist items are changed.
+ *
+ * If the history is empty, this call behaves identical to projectm_playlist_play_previous(),
+ * but the item is not added to the history.
+ *
+ * Presets which failed to load are not recorded in the history and thus will be skipped when
+ * calling this method.
+ *
+ * @param instance The playlist manager instance.
+ * @param hard_cut If true, the preset transition is instant. If true, a smooth transition is played.
+ * @return The new playlist position. If the playlist is empty, 0 will be returned.
+ */
+uint32_t projectm_playlist_play_last(projectm_playlist_handle instance, bool hard_cut);
+
 #ifdef __cplusplus
 }
 // extern "C"
