@@ -30,6 +30,16 @@ typedef enum
 
 
 /**
+ * @brief Frees a char pointer returned by any of the playlist API functions.
+ *
+ * Please only use this function with char pointers returned by the playlist library, and don't use
+ * other projectM memory management functions with pointers returned by the playlist library.
+ *
+ * @param string A pointer to a string that should be freed.
+ */
+void projectm_playlist_free_string(char* string);
+
+/**
  * @brief Frees a string array returned by any of the playlist API functions.
  *
  * Please only use this function with pointers returned by the playlist library, and don't use
@@ -143,6 +153,18 @@ void projectm_playlist_clear(projectm_playlist_handle instance);
  *         is denoted by a null pointer.
  */
 char** projectm_playlist_items(projectm_playlist_handle instance);
+
+/**
+ * @brief Returns the name of a preset at the given index in the current playlist.
+ * @note Call projectm_playlist_free_string() when you're done using the return value.
+ * @note If you need to retrieve a major part of playlist filenames, use projectm_playlist_items()
+ *       instead.
+ * @param instance The playlist manager instance.
+ * @param index The index to retrieve the filename for.
+ * @return The filename of the requested preset, or NULL if the index was out of bounds or the
+ *         playlist is empty.
+ */
+char* projectm_playlist_item(projectm_playlist_handle instance, uint32_t index);
 
 /**
  * @brief Appends presets from the given path to the end of the current playlist.
@@ -310,6 +332,13 @@ void projectm_playlist_set_shuffle(projectm_playlist_handle instance, bool shuff
  */
 void projectm_playlist_sort(projectm_playlist_handle instance, uint32_t start_index, uint32_t count,
                             projectm_playlist_sort_predicate predicate, projectm_playlist_sort_order order);
+
+/**
+ * @brief Returns the number of retries after failed preset switches.
+ * @param instance The playlist manager instance.
+ * @return The number of retries after failed preset switches.
+ */
+uint32_t projectm_playlist_get_retry_count(projectm_playlist_handle instance);
 
 /**
  * @brief Sets the number of retries after failed preset switches.

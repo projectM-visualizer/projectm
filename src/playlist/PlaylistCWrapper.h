@@ -24,7 +24,7 @@ public:
      */
     virtual void Connect(projectm_handle projectMInstance);
 
-    void PlayPresetIndex(size_t index, bool hardCut, bool resetFailureCount);
+    virtual void PlayPresetIndex(size_t index, bool hardCut, bool resetFailureCount);
 
     /**
      * @brief Callback executed by projectM if a preset switch should be done.
@@ -46,9 +46,15 @@ public:
      * @brief Sets the retry count for preset switches before giving up.
      * @param retryCount The number of retries.
      */
-    void SetRetryCount(uint32_t retryCount);
+    virtual void SetRetryCount(uint32_t retryCount);
 
-    void SetPresetWitchFailedCallback(projectm_playlist_preset_switch_failed_event callback,
+    /**
+     * @brief Sets the retry count for preset switches before giving up.
+     * @param retryCount The number of retries.
+     */
+    virtual auto RetryCount() -> uint32_t;
+
+    virtual void SetPresetSwitchFailedCallback(projectm_playlist_preset_switch_failed_event callback,
                                       void* userData);
 
 private:

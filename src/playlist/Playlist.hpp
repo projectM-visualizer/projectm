@@ -74,6 +74,14 @@ public:
     virtual uint32_t Size() const;
 
     /**
+     * @brief Returns if the playlist is empty.
+     * Calling this is a bit more performant than comparing Size() to 0.
+     * Don't confuse with Clear(), this method does not clear the playlist.
+     * @return True if the playlist is empty, false if it contains at least one item.
+     */
+    virtual bool Empty() const;
+
+    /**
      * @brief Clears the current playlist.
      */
     virtual void Clear();
@@ -131,7 +139,7 @@ public:
      * @brief Enables or disabled shuffle mode.
      * @param enabled True to enable shuffle mode, false to disable.
      */
-    virtual void Shuffle(bool enabled);
+    virtual void SetShuffle(bool enabled);
 
     /**
      * @brief Returns the enable state of shuffle mode.
@@ -162,14 +170,14 @@ public:
      * @throws PlaylistEmptyException Thrown if the playlist is currently empty.
      * @return The index of the next playlist item to be played.
      */
-    auto NextPresetIndex() -> size_t;
+    virtual auto NextPresetIndex() -> size_t;
 
     /**
      * @brief Returns the current playlist/preset index without changing the position.
      * @throws PlaylistEmptyException Thrown if the playlist is currently empty.
      * @return The current preset index being played.
      */
-    auto PresetIndex() const -> size_t;
+    virtual auto PresetIndex() const -> size_t;
 
     /**
      * @brief Sets the playlist/preset index to the given value and returns the new index.
@@ -181,7 +189,7 @@ public:
      * @param presetIndex The new preset index to switch to.
      * @return The newly set preset index, either presetIndex or 0 if out of bounds.
      */
-    auto SetPresetIndex(size_t presetIndex) -> size_t;
+    virtual auto SetPresetIndex(size_t presetIndex) -> size_t;
 
 private:
     std::vector<Item> m_items;   //!< Items in the current playlist.
