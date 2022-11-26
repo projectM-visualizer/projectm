@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <list>
 #include <random>
 #include <string>
 #include <vector>
@@ -38,6 +39,11 @@ public:
      * Short-hand constant which can be used in AddItem() to add new presets at the end of the playlist.
      */
     static constexpr auto InsertAtEnd = std::numeric_limits<uint32_t>::max();
+
+    /**
+     * Maximum number of items in the playback history.
+     */
+    static constexpr size_t MaxHistoryItems = 1000;
 
     /**
      * Sort predicate.
@@ -173,6 +179,28 @@ public:
     virtual auto NextPresetIndex() -> size_t;
 
     /**
+     * @brief Returns the previous preset index in the playlist.
+     *
+     * Each call will either decrement the current index, or select a random preset, depending on
+     * the shuffle setting.
+     *
+     * @throws PlaylistEmptyException Thrown if the playlist is currently empty.
+     * @return The index of the previous playlist item.
+     */
+    virtual auto PreviousPresetIndex() -> size_t;
+
+    /**
+     * @brief Returns the last preset index that has been played.
+     *
+     * Each call will pop the last history item. If the history is empty, it will internally call
+     * PreviousPresetIndex(), but not add a history item.
+     *
+     * @throws PlaylistEmptyException Thrown if the playlist is currently empty.
+     * @return The index of the last (or previous) playlist item.
+     */
+    virtual auto LastPresetIndex() -> size_t;
+
+    /**
      * @brief Returns the current playlist/preset index without changing the position.
      * @throws PlaylistEmptyException Thrown if the playlist is currently empty.
      * @return The current preset index being played.
@@ -191,10 +219,22 @@ public:
      */
     virtual auto SetPresetIndex(size_t presetIndex) -> size_t;
 
+    /**
+     * @brief Removes the newest entry in the playback history.
+     * Useful if the last playlist item failed to load, so it won't get selected again.
+     */
+    virtual void RemoveLastHistoryEntry();
+
 private:
-    std::vector<Item> m_items;   //!< Items in the current playlist.
-    bool m_shuffle{false};       //!< True if shuffle mode is enabled, false to play presets in order.
-    size_t m_currentPosition{0}; //!< Current playlist position.
+    /**
+     * @brief Adds a preset to the history and trims the list if it gets too long.
+     */
+    void AddCurrentPresetIndexToHistory();
+
+    std::vector<Item> m_items;         //!< Items in the current playlist.
+    bool m_shuffle{false};             //!< True if shuffle mode is enabled, false to play presets in order.
+    size_t m_currentPosition{0};       //!< Current playlist position.
+    std::list<size_t> m_presetHistory; //!< The playback history.
 
     std::default_random_engine m_randomGenerator;
 };

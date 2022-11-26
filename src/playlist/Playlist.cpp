@@ -34,6 +34,7 @@ bool Playlist::Empty() const
 
 void Playlist::Clear()
 {
+    m_presetHistory.clear();
     m_items.clear();
 }
 
@@ -59,6 +60,7 @@ bool Playlist::AddItem(const std::string& filename, uint32_t index, bool allowDu
         }
     }
 
+    m_presetHistory.clear();
     if (index >= m_items.size())
     {
         m_items.emplace_back(filename);
@@ -76,6 +78,7 @@ auto Playlist::AddPath(const std::string& path, uint32_t index, bool recursive, 
 {
     uint32_t presetsAdded{0};
 
+    m_presetHistory.clear();
     if (recursive)
     {
         for (const auto& entry : recursive_directory_iterator(path))
@@ -124,6 +127,7 @@ auto Playlist::RemoveItem(uint32_t index) -> bool
         return false;
     }
 
+    m_presetHistory.clear();
     m_items.erase(m_items.cbegin() + index);
 
     return true;
@@ -145,6 +149,8 @@ auto Playlist::Shuffle() const -> bool
 void Playlist::Sort(uint32_t startIndex, uint32_t count,
                     Playlist::SortPredicate predicate, Playlist::SortOrder order)
 {
+    m_presetHistory.clear();
+
     std::sort(m_items.begin() + startIndex,
               m_items.begin() + startIndex + count,
               [predicate, order](const Item& left, const Item& right) {
@@ -187,6 +193,8 @@ auto Playlist::NextPresetIndex() -> size_t
         throw PlaylistEmptyException();
     }
 
+    AddCurrentPresetIndexToHistory();
+
     if (m_shuffle)
     {
         std::uniform_int_distribution<size_t> randomDistribution(0, m_items.size());
@@ -199,6 +207,58 @@ auto Playlist::NextPresetIndex() -> size_t
         {
             m_currentPosition = 0;
         }
+    }
+
+    return m_currentPosition;
+}
+
+
+auto Playlist::PreviousPresetIndex() -> size_t
+{
+    if (m_items.empty())
+    {
+        throw PlaylistEmptyException();
+    }
+
+    AddCurrentPresetIndexToHistory();
+
+    if (m_shuffle)
+    {
+        std::uniform_int_distribution<size_t> randomDistribution(0, m_items.size());
+        m_currentPosition = randomDistribution(m_randomGenerator);
+    }
+    else
+    {
+        if (m_currentPosition == 0)
+        {
+            m_currentPosition = m_items.size() -1;
+        }
+        else
+        {
+            m_currentPosition--;
+        }
+    }
+
+    return m_currentPosition;
+}
+
+auto Playlist::LastPresetIndex() -> size_t
+{
+    if (m_items.empty())
+    {
+        throw PlaylistEmptyException();
+    }
+
+    if (!m_presetHistory.empty())
+    {
+        m_currentPosition = m_presetHistory.back();
+        m_presetHistory.pop_back();
+    }
+    else
+    {
+        m_currentPosition = PreviousPresetIndex();
+        // Remove added history item again to prevent ping-pong behavior
+        m_presetHistory.pop_back();
     }
 
     return m_currentPosition;
@@ -223,6 +283,13 @@ auto Playlist::SetPresetIndex(size_t presetIndex) -> size_t
         throw PlaylistEmptyException();
     }
 
+    AddCurrentPresetIndexToHistory();
+
+    if (presetIndex == m_currentPosition)
+    {
+        return m_currentPosition;
+    }
+
     m_currentPosition = presetIndex;
 
     if (m_currentPosition >= m_items.size())
@@ -231,6 +298,31 @@ auto Playlist::SetPresetIndex(size_t presetIndex) -> size_t
     }
 
     return m_currentPosition;
+}
+
+
+void Playlist::AddCurrentPresetIndexToHistory()
+{
+    // No duplicate entries.
+    if (!m_presetHistory.empty() && m_currentPosition == m_presetHistory.back())
+    {
+        return;
+    }
+
+    m_presetHistory.push_back(m_currentPosition);
+    if (m_presetHistory.size() > MaxHistoryItems)
+    {
+        m_presetHistory.pop_front();
+    }
+}
+
+
+void Playlist::RemoveLastHistoryEntry()
+{
+    if (!m_presetHistory.empty())
+    {
+        m_presetHistory.pop_back();
+    }
 }
 
 

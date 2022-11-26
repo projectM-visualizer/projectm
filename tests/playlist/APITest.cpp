@@ -372,6 +372,9 @@ TEST(projectMPlaylistAPI, SetPosition)
         .Times(1);
     EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, false, true))
         .Times(1);
+    EXPECT_CALL(mockPlaylist, PresetIndex())
+        .Times(2)
+        .WillRepeatedly(Return(512));
 
     EXPECT_EQ(projectm_playlist_set_position(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 256, true), 512);
     EXPECT_EQ(projectm_playlist_set_position(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 256, false), 512);
@@ -388,4 +391,119 @@ TEST(projectMPlaylistAPI, SetPositionException)
 
     EXPECT_EQ(projectm_playlist_set_position(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 256, true), 0);
     EXPECT_EQ(projectm_playlist_set_position(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 256, false), 0);
+}
+
+
+TEST(projectMPlaylistAPI, PlayNext)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    EXPECT_CALL(mockPlaylist, NextPresetIndex())
+        .Times(2)
+        .WillRepeatedly(Return(512));
+    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, true, true))
+        .Times(1);
+    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, false, true))
+        .Times(1);
+    EXPECT_CALL(mockPlaylist, PresetIndex())
+        .Times(2)
+        .WillRepeatedly(Return(512));
+
+    EXPECT_EQ(projectm_playlist_play_next(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), true), 512);
+    EXPECT_EQ(projectm_playlist_play_next(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), false), 512);
+}
+
+
+TEST(projectMPlaylistAPI, PlayNextException)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    EXPECT_CALL(mockPlaylist, NextPresetIndex())
+        .Times(2)
+        .WillRepeatedly(Throw(ProjectM::Playlist::PlaylistEmptyException()));
+
+    EXPECT_EQ(projectm_playlist_play_next(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), true), 0);
+    EXPECT_EQ(projectm_playlist_play_next(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), false), 0);
+}
+
+
+TEST(projectMPlaylistAPI, PlayPrevious)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    EXPECT_CALL(mockPlaylist, PreviousPresetIndex())
+        .Times(2)
+        .WillRepeatedly(Return(512));
+    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, true, true))
+        .Times(1);
+    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, false, true))
+        .Times(1);
+    EXPECT_CALL(mockPlaylist, PresetIndex())
+        .Times(2)
+        .WillRepeatedly(Return(512));
+
+    EXPECT_EQ(projectm_playlist_play_previous(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), true), 512);
+    EXPECT_EQ(projectm_playlist_play_previous(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), false), 512);
+}
+
+
+TEST(projectMPlaylistAPI, PlayPreviousException)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    EXPECT_CALL(mockPlaylist, PreviousPresetIndex())
+        .Times(2)
+        .WillRepeatedly(Throw(ProjectM::Playlist::PlaylistEmptyException()));
+
+    EXPECT_EQ(projectm_playlist_play_previous(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), true), 0);
+    EXPECT_EQ(projectm_playlist_play_previous(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), false), 0);
+}
+
+
+TEST(projectMPlaylistAPI, PlayLast)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    EXPECT_CALL(mockPlaylist, PreviousPresetIndex())
+        .Times(2)
+        .WillRepeatedly(Return(512));
+    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, true, true))
+        .Times(1);
+    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, false, true))
+        .Times(1);
+    EXPECT_CALL(mockPlaylist, PresetIndex())
+        .Times(2)
+        .WillRepeatedly(Return(512));
+
+    EXPECT_EQ(projectm_playlist_play_previous(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), true), 512);
+    EXPECT_EQ(projectm_playlist_play_previous(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), false), 512);
+}
+
+
+TEST(projectMPlaylistAPI, PlayLastException)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    EXPECT_CALL(mockPlaylist, LastPresetIndex())
+        .Times(2)
+        .WillRepeatedly(Throw(ProjectM::Playlist::PlaylistEmptyException()));
+
+    EXPECT_EQ(projectm_playlist_play_last(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), true), 0);
+    EXPECT_EQ(projectm_playlist_play_last(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), false), 0);
+}
+
+
+TEST(projectMPlaylistAPI, SetPresetSwitchFailedCallback)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    projectm_playlist_preset_switch_failed_event dummyCallback = [](const char* preset_filename,
+                                                                    const char* message,
+                                                                    void* user_data) {};
+    void* dummyData{reinterpret_cast<void*>(348564)};
+
+    EXPECT_CALL(mockPlaylist, SetPresetSwitchFailedCallback(dummyCallback, dummyData))
+        .Times(1);
+
+    projectm_playlist_set_preset_switch_failed_event_callback(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), dummyCallback, dummyData);
 }

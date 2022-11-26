@@ -459,6 +459,101 @@ TEST(projectMPlaylistPlaylist, NextPresetIndexSequential)
 }
 
 
+TEST(projectMPlaylistPlaylist, PreviousPresetIndexEmptyPlaylist)
+{
+    Playlist playlist;
+
+    EXPECT_THROW(playlist.PreviousPresetIndex(), ProjectM::Playlist::PlaylistEmptyException);
+}
+
+
+TEST(projectMPlaylistPlaylist, PreviousPresetIndexShuffle)
+{
+    Playlist playlist;
+
+    playlist.SetShuffle(true);
+
+    EXPECT_TRUE(playlist.AddItem("/some/PresetZ.milk", Playlist::InsertAtEnd, false));
+    EXPECT_TRUE(playlist.AddItem("/some/PresetA.milk", Playlist::InsertAtEnd, false));
+
+    // Shuffle 100 times, this will have an (almost) 100% chance that both presets were played.
+    std::set<size_t> playlistIndices;
+    for (int i = 0; i < 100; i++)
+    {
+        EXPECT_NO_THROW(playlistIndices.insert(playlist.PreviousPresetIndex()));
+    }
+
+    EXPECT_TRUE(playlistIndices.find(0) != playlistIndices.end());
+    EXPECT_TRUE(playlistIndices.find(1) != playlistIndices.end());
+}
+
+
+TEST(projectMPlaylistPlaylist, PreviousPresetIndexSequential)
+{
+    Playlist playlist;
+
+    playlist.SetShuffle(false);
+
+    EXPECT_TRUE(playlist.AddItem("/some/PresetZ.milk", Playlist::InsertAtEnd, false));
+    EXPECT_TRUE(playlist.AddItem("/some/PresetA.milk", Playlist::InsertAtEnd, false));
+    EXPECT_TRUE(playlist.AddItem("/some/other/PresetC.milk", Playlist::InsertAtEnd, false));
+
+    EXPECT_EQ(playlist.PreviousPresetIndex(), 2);
+    EXPECT_EQ(playlist.PreviousPresetIndex(), 1);
+    EXPECT_EQ(playlist.PreviousPresetIndex(), 0);
+    EXPECT_EQ(playlist.PreviousPresetIndex(), 2);
+}
+
+
+TEST(projectMPlaylistPlaylist, LastPresetIndex)
+{
+    Playlist playlist;
+
+    playlist.SetShuffle(false);
+
+    EXPECT_TRUE(playlist.AddItem("/some/PresetZ.milk", Playlist::InsertAtEnd, false));
+    EXPECT_TRUE(playlist.AddItem("/some/PresetA.milk", Playlist::InsertAtEnd, false));
+    EXPECT_TRUE(playlist.AddItem("/some/other/PresetC.milk", Playlist::InsertAtEnd, false));
+    EXPECT_TRUE(playlist.AddItem("/the/last/Preset.milk", Playlist::InsertAtEnd, false));
+
+    EXPECT_EQ(playlist.SetPresetIndex(1), 1);
+    EXPECT_EQ(playlist.SetPresetIndex(2), 2);
+    EXPECT_EQ(playlist.SetPresetIndex(1), 1);
+    EXPECT_EQ(playlist.SetPresetIndex(1), 1);
+    EXPECT_EQ(playlist.SetPresetIndex(0), 0);
+
+    EXPECT_EQ(playlist.PresetIndex(), 0);
+
+    // Index 1 should only be added once here, even if played twice.
+    EXPECT_EQ(playlist.LastPresetIndex(), 1);
+    EXPECT_EQ(playlist.PresetIndex(), 1);
+    EXPECT_EQ(playlist.LastPresetIndex(), 2);
+    EXPECT_EQ(playlist.PresetIndex(), 2);
+    EXPECT_EQ(playlist.LastPresetIndex(), 1);
+    EXPECT_EQ(playlist.PresetIndex(), 1);
+
+    // Starting index 0 is always be in the history.
+    EXPECT_EQ(playlist.LastPresetIndex(), 0);
+    EXPECT_EQ(playlist.PresetIndex(), 0);
+
+    // History empty, wrap back to last item.
+    EXPECT_EQ(playlist.LastPresetIndex(), 3);
+    EXPECT_EQ(playlist.PresetIndex(), 3);
+
+    // History should stell be empty, go back one item.
+    EXPECT_EQ(playlist.LastPresetIndex(), 2);
+    EXPECT_EQ(playlist.PresetIndex(), 2);
+}
+
+
+TEST(projectMPlaylistPlaylist, LastPresetIndexEmptyPlaylist)
+{
+    Playlist playlist;
+
+    EXPECT_THROW(playlist.LastPresetIndex(), ProjectM::Playlist::PlaylistEmptyException);
+}
+
+
 TEST(projectMPlaylistPlaylist, SetPresetIndex)
 {
     Playlist playlist;
@@ -489,7 +584,7 @@ TEST(projectMPlaylistPlaylist, SetPresetIndexException)
 {
     Playlist playlist;
 
-    EXPECT_THROW(playlist.SetPresetIndex(0), ProjectM::Playlist::PlaylistEmptyException);;
+    EXPECT_THROW(playlist.SetPresetIndex(0), ProjectM::Playlist::PlaylistEmptyException);
 }
 
 
@@ -511,5 +606,24 @@ TEST(projectMPlaylistPlaylist, PresetIndexException)
 {
     Playlist playlist;
 
-    EXPECT_THROW(playlist.PresetIndex(), ProjectM::Playlist::PlaylistEmptyException);;
+    EXPECT_THROW(playlist.PresetIndex(), ProjectM::Playlist::PlaylistEmptyException);
+}
+
+
+TEST(projectMPlaylistPlaylist, RemoveLastHistoryEntry)
+{
+    Playlist playlist;
+
+    EXPECT_TRUE(playlist.AddItem("/some/PresetZ.milk", Playlist::InsertAtEnd, false));
+    EXPECT_TRUE(playlist.AddItem("/some/PresetA.milk", Playlist::InsertAtEnd, false));
+    EXPECT_TRUE(playlist.AddItem("/some/other/PresetC.milk", Playlist::InsertAtEnd, false));
+
+    EXPECT_EQ(playlist.SetPresetIndex(1), 1);
+    EXPECT_EQ(playlist.SetPresetIndex(2), 2);
+
+    // History: 0,1
+    playlist.RemoveLastHistoryEntry();
+    // History: 0
+
+    EXPECT_EQ(playlist.LastPresetIndex(), 0);
 }
