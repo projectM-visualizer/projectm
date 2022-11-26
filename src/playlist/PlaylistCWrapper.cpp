@@ -82,7 +82,13 @@ void PlaylistCWrapper::SetRetryCount(uint32_t retryCount)
 }
 
 
-void PlaylistCWrapper::SetPresetWitchFailedCallback(projectm_playlist_preset_switch_failed_event callback, void* userData)
+auto PlaylistCWrapper::RetryCount() -> uint32_t
+{
+    return m_presetSwitchRetryCount;
+}
+
+
+void PlaylistCWrapper::SetPresetSwitchFailedCallback(projectm_playlist_preset_switch_failed_event callback, void* userData)
 {
     m_presetSwitchFailedEventCallback = callback;
     m_presetSwitchFailedEventUserData = userData;
@@ -113,6 +119,12 @@ void PlaylistCWrapper::PlayPresetIndex(size_t index, bool hardCut, bool resetFai
 auto playlist_handle_to_instance(projectm_playlist_handle instance) -> PlaylistCWrapper*
 {
     return reinterpret_cast<PlaylistCWrapper*>(instance);
+}
+
+
+void projectm_playlist_free_string(char* string)
+{
+    delete[] string;
 }
 
 
@@ -155,7 +167,7 @@ void projectm_playlist_set_preset_switch_failed_event_callback(projectm_playlist
                                                                void* user_data)
 {
     auto* playlist = playlist_handle_to_instance(instance);
-    playlist->SetPresetWitchFailedCallback(callback, user_data);
+    playlist->SetPresetSwitchFailedCallback(callback, user_data);
 }
 
 
@@ -198,6 +210,23 @@ auto projectm_playlist_items(projectm_playlist_handle instance) -> char**
     }
 
     return array;
+}
+
+
+char* projectm_playlist_item(projectm_playlist_handle instance, uint32_t index)
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+
+    if (playlist->Empty() || index >= playlist->Size())
+    {
+        return nullptr;
+    }
+
+    auto filename = playlist->Items().at(index).Filename();
+    auto buffer = new char[filename.length() + 1]{};
+    filename.copy(buffer, filename.length());
+
+    return buffer;
 }
 
 
@@ -328,7 +357,7 @@ uint32_t projectm_playlist_remove_presets(projectm_playlist_handle instance, uin
 void projectm_playlist_set_shuffle(projectm_playlist_handle instance, bool shuffle)
 {
     auto* playlist = playlist_handle_to_instance(instance);
-    playlist->Shuffle(shuffle);
+    playlist->SetShuffle(shuffle);
 }
 
 
@@ -351,6 +380,13 @@ void projectm_playlist_sort(projectm_playlist_handle instance, uint32_t start_in
     }
 
     playlist->Sort(start_index, count, predicatePlaylist, orderPlaylist);
+}
+
+
+uint32_t projectm_playlist_get_retry_count(projectm_playlist_handle instance)
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+    return playlist->RetryCount();
 }
 
 

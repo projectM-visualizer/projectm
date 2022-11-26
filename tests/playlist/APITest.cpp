@@ -6,6 +6,7 @@
 
 using ::testing::Return;
 using ::testing::ReturnRef;
+using ::testing::Throw;
 
 /**
  * This suite only tests the API forwarding to the wrapper, not the actual playlist functionality!
@@ -15,7 +16,7 @@ using ::testing::ReturnRef;
  * functions to access the functionality. The extreme use of reinterpret_cast<>() in this test suite
  * should make that quite obvious.
  */
-TEST(projectMPlaylist, APICreate)
+TEST(projectMPlaylistAPI, Create)
 {
     auto* playlistHandle = projectm_playlist_create(nullptr);
 
@@ -25,7 +26,7 @@ TEST(projectMPlaylist, APICreate)
 }
 
 
-TEST(projectMPlaylist, APIConnect)
+TEST(projectMPlaylistAPI, Connect)
 {
     PlaylistCWrapperMock mockPlaylist;
 
@@ -41,7 +42,7 @@ TEST(projectMPlaylist, APIConnect)
 }
 
 
-TEST(projectMPlaylist, APISize)
+TEST(projectMPlaylistAPI, Size)
 {
     PlaylistCWrapperMock mockPlaylist;
 
@@ -53,7 +54,7 @@ TEST(projectMPlaylist, APISize)
 }
 
 
-TEST(projectMPlaylist, APIClear)
+TEST(projectMPlaylistAPI, Clear)
 {
     PlaylistCWrapperMock mockPlaylist;
 
@@ -64,7 +65,7 @@ TEST(projectMPlaylist, APIClear)
 }
 
 
-TEST(projectMPlaylist, APIItems)
+TEST(projectMPlaylistAPI, Items)
 {
     PlaylistCWrapperMock mockPlaylist;
 
@@ -88,7 +89,68 @@ TEST(projectMPlaylist, APIItems)
 }
 
 
-TEST(projectMPlaylist, APIAddPath)
+TEST(projectMPlaylistAPI, Item)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    std::vector<ProjectM::Playlist::Item> items{
+        ProjectM::Playlist::Item("/some/file"),
+        ProjectM::Playlist::Item("/another/file")};
+
+    EXPECT_CALL(mockPlaylist, Empty())
+        .Times(1)
+        .WillOnce(Return(false));
+    EXPECT_CALL(mockPlaylist, Size())
+        .Times(1)
+        .WillOnce(Return(2));
+    EXPECT_CALL(mockPlaylist, Items())
+        .Times(1)
+        .WillOnce(ReturnRef(items));
+
+    auto* returnedItem = projectm_playlist_item(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 1);
+    ASSERT_NE(returnedItem, nullptr);
+    EXPECT_STREQ(returnedItem, items.at(1).Filename().c_str());
+
+    projectm_playlist_free_string(returnedItem);
+}
+
+
+TEST(projectMPlaylistAPI, ItemEmptyPlaylist)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    std::vector<ProjectM::Playlist::Item> items{
+        ProjectM::Playlist::Item("/some/file"),
+        ProjectM::Playlist::Item("/another/file")};
+
+    EXPECT_CALL(mockPlaylist, Empty())
+        .Times(1)
+        .WillOnce(Return(true));
+
+    EXPECT_EQ(projectm_playlist_item(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 1), nullptr);
+}
+
+
+TEST(projectMPlaylistAPI, ItemIndexOutOfBounds)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    std::vector<ProjectM::Playlist::Item> items{
+        ProjectM::Playlist::Item("/some/file"),
+        ProjectM::Playlist::Item("/another/file")};
+
+    EXPECT_CALL(mockPlaylist, Empty())
+        .Times(1)
+        .WillOnce(Return(false));
+    EXPECT_CALL(mockPlaylist, Size())
+        .Times(1)
+        .WillOnce(Return(2));
+
+    EXPECT_EQ(projectm_playlist_item(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 5), nullptr);
+}
+
+
+TEST(projectMPlaylistAPI, AddPath)
 {
     PlaylistCWrapperMock mockPlaylist;
 
@@ -100,7 +162,7 @@ TEST(projectMPlaylist, APIAddPath)
 }
 
 
-TEST(projectMPlaylist, APIInsertPath)
+TEST(projectMPlaylistAPI, InsertPath)
 {
     PlaylistCWrapperMock mockPlaylist;
 
@@ -112,7 +174,7 @@ TEST(projectMPlaylist, APIInsertPath)
 }
 
 
-TEST(projectMPlaylist, APIAddPreset)
+TEST(projectMPlaylistAPI, AddPreset)
 {
     PlaylistCWrapperMock mockPlaylist;
 
@@ -124,7 +186,7 @@ TEST(projectMPlaylist, APIAddPreset)
 }
 
 
-TEST(projectMPlaylist, APIInsertPreset)
+TEST(projectMPlaylistAPI, InsertPreset)
 {
     PlaylistCWrapperMock mockPlaylist;
 
@@ -136,7 +198,7 @@ TEST(projectMPlaylist, APIInsertPreset)
 }
 
 
-TEST(projectMPlaylist, APIAddPresets)
+TEST(projectMPlaylistAPI, AddPresets)
 {
     PlaylistCWrapperMock mockPlaylist;
 
@@ -157,7 +219,7 @@ TEST(projectMPlaylist, APIAddPresets)
 }
 
 
-TEST(projectMPlaylist, APIInsertPresets)
+TEST(projectMPlaylistAPI, InsertPresets)
 {
     PlaylistCWrapperMock mockPlaylist;
 
@@ -180,7 +242,7 @@ TEST(projectMPlaylist, APIInsertPresets)
 }
 
 
-TEST(projectMPlaylist, APIRemovePreset)
+TEST(projectMPlaylistAPI, RemovePreset)
 {
     PlaylistCWrapperMock mockPlaylist;
 
@@ -194,7 +256,7 @@ TEST(projectMPlaylist, APIRemovePreset)
 }
 
 
-TEST(projectMPlaylist, APIRemovePresets)
+TEST(projectMPlaylistAPI, RemovePresets)
 {
     PlaylistCWrapperMock mockPlaylist;
 
@@ -208,13 +270,13 @@ TEST(projectMPlaylist, APIRemovePresets)
 }
 
 
-TEST(projectMPlaylist, APISetShuffle)
+TEST(projectMPlaylistAPI, SetShuffle)
 {
     PlaylistCWrapperMock mockPlaylist;
 
-    EXPECT_CALL(mockPlaylist, Shuffle(true))
+    EXPECT_CALL(mockPlaylist, SetShuffle(true))
         .Times(1);
-    EXPECT_CALL(mockPlaylist, Shuffle(false))
+    EXPECT_CALL(mockPlaylist, SetShuffle(false))
         .Times(1);
 
     projectm_playlist_set_shuffle(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), true);
@@ -222,7 +284,7 @@ TEST(projectMPlaylist, APISetShuffle)
 }
 
 
-TEST(projectMPlaylist, APISort)
+TEST(projectMPlaylistAPI, Sort)
 {
     using ProjectM::Playlist::Playlist;
 
@@ -249,4 +311,81 @@ TEST(projectMPlaylist, APISort)
                            static_cast<projectm_playlist_sort_predicate>(100), SORT_ORDER_ASCENDING);
     projectm_playlist_sort(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 0, 5000,
                            SORT_PREDICATE_FULL_PATH, static_cast<projectm_playlist_sort_order>(200));
+}
+
+
+TEST(projectMPlaylistAPI, GetRetryCount)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    EXPECT_CALL(mockPlaylist, RetryCount())
+        .Times(1)
+        .WillOnce(Return(5));
+
+    EXPECT_EQ(projectm_playlist_get_retry_count(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist)), 5);
+}
+
+
+TEST(projectMPlaylistAPI, SetRetryCount)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    EXPECT_CALL(mockPlaylist, SetRetryCount(5))
+        .Times(1);
+
+    projectm_playlist_set_retry_count(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 5);
+}
+
+
+TEST(projectMPlaylistAPI, GetPosition)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    EXPECT_CALL(mockPlaylist, PresetIndex())
+        .Times(1)
+        .WillOnce(Return(512));
+
+    EXPECT_EQ(projectm_playlist_get_position(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist)), 512);
+}
+
+
+TEST(projectMPlaylistAPI, GetPositionException)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    EXPECT_CALL(mockPlaylist, PresetIndex())
+        .Times(1)
+        .WillOnce(Throw(ProjectM::Playlist::PlaylistEmptyException()));
+
+    EXPECT_EQ(projectm_playlist_get_position(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist)), 0);
+}
+
+
+TEST(projectMPlaylistAPI, SetPosition)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    EXPECT_CALL(mockPlaylist, SetPresetIndex(256))
+        .Times(2)
+        .WillRepeatedly(Return(512));
+    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, true, true))
+        .Times(1);
+    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, false, true))
+        .Times(1);
+
+    EXPECT_EQ(projectm_playlist_set_position(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 256, true), 512);
+    EXPECT_EQ(projectm_playlist_set_position(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 256, false), 512);
+}
+
+
+TEST(projectMPlaylistAPI, SetPositionException)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    EXPECT_CALL(mockPlaylist, SetPresetIndex(256))
+        .Times(2)
+        .WillRepeatedly(Throw(ProjectM::Playlist::PlaylistEmptyException()));
+
+    EXPECT_EQ(projectm_playlist_set_position(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 256, true), 0);
+    EXPECT_EQ(projectm_playlist_set_position(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 256, false), 0);
 }

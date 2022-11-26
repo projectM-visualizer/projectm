@@ -26,6 +26,12 @@ uint32_t Playlist::Size() const
 }
 
 
+bool Playlist::Empty() const
+{
+    return m_items.empty();
+}
+
+
 void Playlist::Clear()
 {
     m_items.clear();
@@ -124,7 +130,7 @@ auto Playlist::RemoveItem(uint32_t index) -> bool
 }
 
 
-void Playlist::Shuffle(bool enabled)
+void Playlist::SetShuffle(bool enabled)
 {
     m_shuffle = enabled;
 }

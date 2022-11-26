@@ -18,7 +18,6 @@ public:
      */
     auto Filename() const -> std::string;
 
-
     /**
      * @brief Filename comparator.
      * @param other The preset filename to compare.

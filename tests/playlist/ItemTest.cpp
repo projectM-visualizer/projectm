@@ -2,13 +2,13 @@
 
 #include <gtest/gtest.h>
 
-TEST(projectMPlaylist, ItemCreate)
+TEST(projectMPlaylistItem, Create)
 {
     ASSERT_NO_THROW(ProjectM::Playlist::Item item("/some/file"));
 }
 
 
-TEST(projectMPlaylist, ItemGetFilename)
+TEST(projectMPlaylistItem, GetFilename)
 {
     ProjectM::Playlist::Item item("/some/file");
 
@@ -16,7 +16,7 @@ TEST(projectMPlaylist, ItemGetFilename)
 }
 
 
-TEST(projectMPlaylist, ItemFilenameEquality)
+TEST(projectMPlaylistItem, FilenameEquality)
 {
     ProjectM::Playlist::Item item("/some/file");
 
