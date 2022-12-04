@@ -263,9 +263,6 @@ private:
 
     void ResetEngine();
 
-    /// Initializes preset loading / management libraries
-    auto InitializePresetTools() -> void;
-
     void StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hardCut);
 
     void RecreateRenderer();

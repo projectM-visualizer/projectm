@@ -399,7 +399,17 @@ void ProjectM::Initialize()
                                                   m_beatDetect.get(),
                                                   m_textureSearchPaths);
 
-    InitializePresetTools();
+    m_presetFactoryManager.initialize(m_settings.meshX, m_settings.meshY);
+
+    /* Set the seed to the current time in seconds */
+    srand(time(nullptr));
+
+    // Load idle preset
+    LoadPresetFile("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk", false);
+    assert(m_activePreset);
+    m_renderer->SetPipeline(m_activePreset->pipeline());
+
+    ResetEngine();
 
 #if USE_THREADS
     m_workerSync.Reset();
@@ -438,16 +448,6 @@ void ProjectM::ResetOpenGL(size_t width, size_t height)
     {
         // ToDo: Add generic error callback
     }
-}
-
-auto ProjectM::InitializePresetTools() -> void
-{
-    /* Set the seed to the current time in seconds */
-    srand(time(nullptr));
-
-    m_renderer->SetPipeline(m_activePreset->pipeline());
-
-    ResetEngine();
 }
 
 void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hardCut)
