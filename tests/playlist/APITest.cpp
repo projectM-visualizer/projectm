@@ -493,6 +493,22 @@ TEST(projectMPlaylistAPI, PlayLastException)
 }
 
 
+TEST(projectMPlaylistAPI, SetPresetSwitchedCallback)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    projectm_playlist_preset_switched_event dummyCallback = [](bool is_hard_cut,
+                                                               uint32_t index,
+                                                               void* user_data) {};
+    void* dummyData{reinterpret_cast<void*>(2973246)};
+
+    EXPECT_CALL(mockPlaylist, SetPresetSwitchedCallback(dummyCallback, dummyData))
+        .Times(1);
+
+    projectm_playlist_set_preset_switched_event_callback(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), dummyCallback, dummyData);
+}
+
+
 TEST(projectMPlaylistAPI, SetPresetSwitchFailedCallback)
 {
     PlaylistCWrapperMock mockPlaylist;
