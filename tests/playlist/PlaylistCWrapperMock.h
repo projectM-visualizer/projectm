@@ -33,4 +33,6 @@ public:
     MOCK_METHOD(void, PlayPresetIndex, (size_t, bool, bool) );
     MOCK_METHOD(void, RemoveLastHistoryEntry, ());
     MOCK_METHOD(void, SetPresetSwitchFailedCallback, (projectm_playlist_preset_switch_failed_event, void*));
+    MOCK_METHOD(class ProjectM::Playlist::Filter&, Filter, ());
+    MOCK_METHOD(size_t, ApplyFilter, ());
 };

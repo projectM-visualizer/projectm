@@ -52,6 +52,11 @@ bool Playlist::AddItem(const std::string& filename, uint32_t index, bool allowDu
         return false;
     }
 
+    if (!m_filter.Passes(filename))
+    {
+        return false;
+    }
+
     if (!allowDuplicates)
     {
         if (std::find(m_items.begin(), m_items.end(), filename) != m_items.end())
@@ -301,6 +306,47 @@ auto Playlist::SetPresetIndex(size_t presetIndex) -> size_t
 }
 
 
+void Playlist::RemoveLastHistoryEntry()
+{
+    if (!m_presetHistory.empty())
+    {
+        m_presetHistory.pop_back();
+    }
+}
+
+
+auto Playlist::Filter() -> class Filter&
+{
+    return m_filter;
+}
+
+
+auto Playlist::ApplyFilter() -> size_t
+{
+    size_t itemsRemoved{};
+
+    for (auto it = begin(m_items); it != end(m_items);)
+    {
+        if (!m_filter.Passes(it->Filename()))
+        {
+            it = m_items.erase(it);
+            itemsRemoved++;
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    if (itemsRemoved != 0)
+    {
+        m_presetHistory.clear();
+    }
+
+    return itemsRemoved;
+}
+
+
 void Playlist::AddCurrentPresetIndexToHistory()
 {
     // No duplicate entries.
@@ -313,15 +359,6 @@ void Playlist::AddCurrentPresetIndexToHistory()
     if (m_presetHistory.size() > MaxHistoryItems)
     {
         m_presetHistory.pop_front();
-    }
-}
-
-
-void Playlist::RemoveLastHistoryEntry()
-{
-    if (!m_presetHistory.empty())
-    {
-        m_presetHistory.pop_back();
     }
 }
 

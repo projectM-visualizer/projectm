@@ -3,6 +3,8 @@ if(NOT ENABLE_PLAYLIST)
 endif()
 
 add_library(projectM_playlist STATIC
+        Filter.cpp
+        Filter.hpp
         Item.cpp
         Item.hpp
         Playlist.cpp

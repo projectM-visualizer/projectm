@@ -7,11 +7,10 @@ find_package(GTest 1.10 REQUIRED NO_MODULE)
 add_executable(projectM-playlist-unittest
         APITest.cpp
         ItemTest.cpp
-        PlaylistCWrapperMock.cpp
         PlaylistCWrapperMock.h
         PlaylistTest.cpp
         ProjectMAPIMocks.cpp
-        )
+        FilterTest.cpp)
 
 target_compile_definitions(projectM-playlist-unittest
         PRIVATE

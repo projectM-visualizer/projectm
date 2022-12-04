@@ -507,3 +507,65 @@ TEST(projectMPlaylistAPI, SetPresetSwitchFailedCallback)
 
     projectm_playlist_set_preset_switch_failed_event_callback(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), dummyCallback, dummyData);
 }
+
+
+TEST(projectMPlaylistAPI, SetFilter)
+{
+    PlaylistCWrapperMock mockPlaylist;
+    ProjectM::Playlist::Filter filter;
+
+    EXPECT_CALL(mockPlaylist, Filter())
+        .Times(1)
+        .WillOnce(ReturnRef(filter));
+
+    const char firstFilter[]{"-/some/BadPreset.milk"};
+    const char secondFilter[]{"+/another/AwesomePreset.milk"};
+    const char thirdFilter[]{"-/unwanted/Preset.milk"};
+    const char* filterList[]{firstFilter, secondFilter, thirdFilter};
+
+    projectm_playlist_set_filter(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), filterList, 3);
+
+    const auto& internalFilterList = filter.List();
+    ASSERT_EQ(internalFilterList.size(), 3);
+    EXPECT_EQ(internalFilterList.at(0), "-/some/BadPreset.milk");
+    EXPECT_EQ(internalFilterList.at(1), "+/another/AwesomePreset.milk");
+    EXPECT_EQ(internalFilterList.at(2), "-/unwanted/Preset.milk");
+}
+
+
+TEST(projectMPlaylistAPI, GetFilter)
+{
+    PlaylistCWrapperMock mockPlaylist;
+    ProjectM::Playlist::Filter filter;
+
+    filter.SetList({"-/some/BadPreset.milk",
+                    "+/another/AwesomePreset.milk",
+                    "-/unwanted/Preset.milk"});
+
+    EXPECT_CALL(mockPlaylist, Filter())
+        .Times(1)
+        .WillOnce(ReturnRef(filter));
+
+    size_t count{};
+    auto filterList = projectm_playlist_get_filter(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), &count);
+
+    ASSERT_EQ(count, 3);
+    ASSERT_NE(filterList, nullptr);
+    EXPECT_STREQ(filterList[0], "-/some/BadPreset.milk");
+    EXPECT_STREQ(filterList[1], "+/another/AwesomePreset.milk");
+    EXPECT_STREQ(filterList[2], "-/unwanted/Preset.milk");
+
+    projectm_playlist_free_string_array(filterList);
+}
+
+
+TEST(projectMPlaylistAPI, ApplyFilter)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    EXPECT_CALL(mockPlaylist, ApplyFilter())
+        .Times(1)
+        .WillOnce(Return(5));
+
+    EXPECT_EQ(projectm_playlist_apply_filter(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist)), 5);
+}

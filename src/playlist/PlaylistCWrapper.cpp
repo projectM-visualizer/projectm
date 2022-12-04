@@ -464,6 +464,7 @@ uint32_t projectm_playlist_play_previous(projectm_playlist_handle instance, bool
     }
 }
 
+
 uint32_t projectm_playlist_play_last(projectm_playlist_handle instance, bool hard_cut)
 {
     auto* playlist = playlist_handle_to_instance(instance);
@@ -477,4 +478,51 @@ uint32_t projectm_playlist_play_last(projectm_playlist_handle instance, bool har
     {
         return 0;
     }
+}
+
+
+void projectm_playlist_set_filter(projectm_playlist_handle instance, const char** filter_list,
+                                  size_t count)
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+
+    std::vector<std::string> filterList;
+    for (size_t index = 0; index < count; index++)
+    {
+        if (filter_list[index] == nullptr)
+        {
+            continue;
+        }
+        filterList.emplace_back(filter_list[index]);
+    }
+
+    playlist->Filter().SetList(filterList);
+}
+
+
+auto projectm_playlist_get_filter(projectm_playlist_handle instance, size_t* count) -> char**
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+
+    const auto& filterList = playlist->Filter().List();
+
+    auto* array = new char* [filterList.size() + 1] {};
+
+    int index{0};
+    for (const auto& filter : filterList)
+    {
+        array[index] = new char[filter.length() + 1]{};
+        filter.copy(array[index], filter.length());
+        index++;
+    }
+
+    *count = filterList.size();
+    return array;
+}
+
+
+auto projectm_playlist_apply_filter(projectm_playlist_handle instance) -> size_t
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+    return playlist->ApplyFilter();
 }
