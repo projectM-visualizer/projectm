@@ -86,20 +86,28 @@ auto Playlist::AddPath(const std::string& path, uint32_t index, bool recursive, 
     m_presetHistory.clear();
     if (recursive)
     {
-        for (const auto& entry : recursive_directory_iterator(path))
+        try
         {
-            if (is_regular_file(entry) && entry.path().extension() == ".milk")
+            for (const auto& entry : recursive_directory_iterator(path))
             {
-                uint32_t currentIndex{InsertAtEnd};
-                if (index < InsertAtEnd)
+                if (is_regular_file(entry) && entry.path().extension() == ".milk")
                 {
-                    currentIndex = index + presetsAdded;
-                }
-                if (AddItem(entry.path().string(), currentIndex, allowDuplicates))
-                {
-                    presetsAdded++;
+                    uint32_t currentIndex{InsertAtEnd};
+                    if (index < InsertAtEnd)
+                    {
+                        currentIndex = index + presetsAdded;
+                    }
+                    if (AddItem(entry.path().string(), currentIndex, allowDuplicates))
+                    {
+                        presetsAdded++;
+                    }
                 }
             }
+        }
+        catch (std::exception&)
+        {
+            // Todo: Add failure feedback
+            return presetsAdded;
         }
     }
     else
