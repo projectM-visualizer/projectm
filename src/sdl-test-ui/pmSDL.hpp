@@ -42,6 +42,7 @@
 // projectM
 #include <libprojectM/projectM.h>
 #include <libprojectM/sdltoprojectM.h>
+#include <playlist.h>
 #include <projectM-opengl.h>
 
 // projectM SDL
@@ -100,8 +101,8 @@
 class projectMSDL {
     
 public:
-    projectMSDL(SDL_GLContext glCtx, projectm_settings* settings, int flags);
-    projectMSDL(SDL_GLContext glCtx, const std::string& config_file, int flags);
+    projectMSDL(SDL_GLContext glCtx, projectm_settings* settings, const std::string& presetPath);
+    projectMSDL(SDL_GLContext glCtx, const std::string& config_file, const std::string& presetPath);
 
     ~projectMSDL();
 
@@ -136,7 +137,7 @@ public:
     SDL_GLContext glCtx{ nullptr };
 
 private:
-    static void presetSwitchedEvent(bool isHardCut, unsigned int index, void* context);
+    static void presetSwitchedEvent(bool isHardCut, uint32_t index, void* context);
 
     static void audioInputCallbackF32(void *userdata, unsigned char *stream, int len);
     static void audioInputCallbackS16(void *userdata, unsigned char *stream, int len);
@@ -146,6 +147,7 @@ private:
 
     projectm_handle _projectM{ nullptr };
     projectm_settings* _settings{ nullptr };
+    projectm_playlist_handle _playlist{ nullptr };
 
     SDL_Window *win{ nullptr };
     bool isFullScreen{ false };
@@ -156,6 +158,8 @@ private:
     GLuint m_vbo{ 0 };
     GLuint m_vao{ 0 };
     GLuint textureID{ 0 };
+
+    bool _shuffle{ true };
 
     // audio input device characteristics
     unsigned int NumAudioDevices{ 0 };

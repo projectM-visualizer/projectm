@@ -32,26 +32,34 @@
 
 #include <vector>
 
-projectMSDL::projectMSDL(SDL_GLContext glCtx, projectm_settings* settings, int flags)
+projectMSDL::projectMSDL(SDL_GLContext glCtx, projectm_settings* settings, const std::string& presetPath)
     : glCtx(glCtx)
-    , _projectM(projectm_create_settings(settings, flags))
+    , _projectM(projectm_create_settings(settings))
     , _settings(settings)
+    , _playlist(projectm_playlist_create(_projectM))
 {
     projectm_get_window_size(_projectM, &width, &height);
-    projectm_set_preset_switched_event_callback(_projectM, &projectMSDL::presetSwitchedEvent, static_cast<void*>(this));
+    projectm_playlist_set_preset_switched_event_callback(_playlist, &projectMSDL::presetSwitchedEvent, static_cast<void*>(this));
+    projectm_playlist_add_path(_playlist, presetPath.c_str(), true, false);
+    projectm_playlist_set_shuffle(_playlist, _shuffle);
 }
 
-projectMSDL::projectMSDL(SDL_GLContext glCtx, const std::string& config_file, int flags)
+projectMSDL::projectMSDL(SDL_GLContext glCtx, const std::string& config_file, const std::string& presetPath)
     : glCtx(glCtx)
-    , _projectM(projectm_create(config_file.c_str(), flags))
+    , _projectM(projectm_create(config_file.c_str()))
     , _settings(projectm_get_settings(_projectM))
+    , _playlist(projectm_playlist_create(_projectM))
 {
     projectm_get_window_size(_projectM, &width, &height);
-    projectm_set_preset_switched_event_callback(_projectM, &projectMSDL::presetSwitchedEvent, static_cast<void*>(this));
+    projectm_playlist_set_preset_switched_event_callback(_playlist, &projectMSDL::presetSwitchedEvent, static_cast<void*>(this));
+    projectm_playlist_add_path(_playlist, presetPath.c_str(), true, false);
+    projectm_playlist_set_shuffle(_playlist, _shuffle);
 }
 
 projectMSDL::~projectMSDL()
 {
+    projectm_playlist_destroy(_playlist);
+    _playlist = nullptr;
     projectm_free_settings(_settings);
     _settings = nullptr;
     projectm_destroy(_projectM);
@@ -154,12 +162,12 @@ void projectMSDL::scrollHandler(SDL_Event* sdl_evt)
     // handle mouse scroll wheel - up++
     if (sdl_evt->wheel.y > 0)
     {
-        projectm_select_previous_preset(_projectM, true);
+        projectm_playlist_play_previous(_playlist, true);
     }
     // handle mouse scroll wheel - down--
     if (sdl_evt->wheel.y < 0)
     {
-        projectm_select_next_preset(_projectM, true);
+        projectm_playlist_play_next(_playlist, true);
     }
 }
 
@@ -238,11 +246,21 @@ void projectMSDL::keyHandler(SDL_Event* sdl_evt)
                 return; // handled
             }
             break;
+        case SDLK_r:
+            // Use playlist shuffle to randomize.
+            projectm_playlist_set_shuffle(_playlist, true);
+            projectm_playlist_play_next(_playlist, true);
+            projectm_playlist_set_shuffle(_playlist, _shuffle);
+            break;
+        case SDLK_y:
+            _shuffle = !_shuffle;
+            projectm_playlist_set_shuffle(_playlist, _shuffle);
+            break;
         case SDLK_LEFT:
-            // selectPrevious(true);
+            projectm_playlist_play_previous(_playlist, true);
             break;
         case SDLK_RIGHT:
-            // selectNext(true);
+            projectm_playlist_play_next(_playlist, true);
             break;
         case SDLK_UP:
             break;
@@ -465,12 +483,12 @@ void projectMSDL::init(SDL_Window* window, const bool _renderToTexture)
 
 std::string projectMSDL::getActivePresetName()
 {
-    unsigned int index = 0;
-    if (projectm_get_selected_preset_index(_projectM, &index))
+    unsigned int index = projectm_playlist_get_position(_playlist);
+    if (index)
     {
-        auto presetName = projectm_get_preset_name(_projectM, index);
+        auto presetName = projectm_playlist_item(_playlist, index);
         std::string presetNameString(presetName);
-        projectm_free_string(presetName);
+        projectm_playlist_free_string(presetName);
         return presetNameString;
     }
     return {};
@@ -479,11 +497,11 @@ std::string projectMSDL::getActivePresetName()
 void projectMSDL::presetSwitchedEvent(bool isHardCut, unsigned int index, void* context)
 {
     auto app = reinterpret_cast<projectMSDL*>(context);
-    auto presetName = projectm_get_preset_name(app->_projectM, index);
+    auto presetName = projectm_playlist_item(app->_playlist, index);
     SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Displaying preset: %s\n", presetName);
 
     std::string newTitle = "projectM ➫ " + std::string(presetName);
-    projectm_free_string(presetName);
+    projectm_playlist_free_string(presetName);
 
     SDL_SetWindowTitle(app->win, newTitle.c_str());
 }

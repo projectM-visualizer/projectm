@@ -191,10 +191,11 @@ projectMSDL *setupSDLApp() {
 
     // load configuration file
     std::string configFilePath = getConfigFilePath(base_path);
+    std::string presetURL = base_path + "/presets";
 
     if (! configFilePath.empty()) {
         // found config file, use it
-        app = new projectMSDL(glCtx, configFilePath, 0);
+        app = new projectMSDL(glCtx, configFilePath, presetURL);
         SDL_Log("Using config from %s", configFilePath.c_str());
     } else {
         // use some sane defaults if config file not found
@@ -215,7 +216,6 @@ projectMSDL *setupSDLApp() {
         if (maxRefreshRate <= 60) maxRefreshRate = 60;
 
         float heightWidthRatio = (float)height / (float)width;
-        std::string presetURL = base_path + "presets";
         std::string menuFontURL = base_path + "presets";
         std::string titleFontURL = base_path + "presets";
 
@@ -232,13 +232,9 @@ projectMSDL *setupSDLApp() {
         settings->hard_cut_sensitivity = 1.0;
         settings->beat_sensitivity = 1.0;
         settings->aspect_correction = 1;
-        settings->shuffle_enabled = 1;
-        settings->soft_cut_ratings_enabled = 1; // ???
-        // get path to our app, use CWD or resource dir for presets/fonts/etc
-        settings->preset_path = projectm_alloc_string(presetURL.length() + 1);
-        strncpy(settings->preset_path, presetURL.c_str(), presetURL.length());
+
         // init with settings
-        app = new projectMSDL(glCtx, settings, 0);
+        app = new projectMSDL(glCtx, settings, presetURL);
     }
 
     // center window and full desktop screen

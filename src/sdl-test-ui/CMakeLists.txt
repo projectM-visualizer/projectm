@@ -17,6 +17,7 @@ add_executable(projectM-Test-UI
 target_link_libraries(projectM-Test-UI
         PRIVATE
         projectM::libprojectM
+        projectM::playlist
         GLM::GLM
         SDL2::SDL2
         SDL2::SDL2main
