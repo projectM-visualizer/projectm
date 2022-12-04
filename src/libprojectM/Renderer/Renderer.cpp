@@ -1,7 +1,6 @@
 #include "Renderer.hpp"
 #include "wipemalloc.h"
 #include "math.h"
-#include "KeyHandler.hpp"
 #include "TextureManager.hpp"
 #include "MilkdropWaveform.hpp"
 #include <iostream>
