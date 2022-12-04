@@ -244,7 +244,7 @@ auto Playlist::PreviousPresetIndex() -> size_t
     {
         if (m_currentPosition == 0)
         {
-            m_currentPosition = m_items.size() -1;
+            m_currentPosition = m_items.size() - 1;
         }
         else
         {

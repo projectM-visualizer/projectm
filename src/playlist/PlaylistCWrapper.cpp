@@ -93,6 +93,13 @@ auto PlaylistCWrapper::RetryCount() -> uint32_t
 }
 
 
+void PlaylistCWrapper::SetPresetSwitchedCallback(projectm_playlist_preset_switched_event callback, void* userData)
+{
+    m_presetSwitchedEventCallback = callback;
+    m_presetSwitchedEventUserData = userData;
+}
+
+
 void PlaylistCWrapper::SetPresetSwitchFailedCallback(projectm_playlist_preset_switch_failed_event callback, void* userData)
 {
     m_presetSwitchFailedEventCallback = callback;
@@ -118,6 +125,11 @@ void PlaylistCWrapper::PlayPresetIndex(size_t index, bool hardCut, bool resetFai
 
     projectm_load_preset_file(m_projectMInstance,
                               playlistItems.at(index).Filename().c_str(), !hardCut);
+
+    if (m_presetSwitchedEventCallback != nullptr)
+    {
+        m_presetSwitchedEventCallback(hardCut, index, m_presetSwitchedEventUserData);
+    }
 }
 
 
@@ -164,6 +176,15 @@ void projectm_playlist_destroy(projectm_playlist_handle instance)
 {
     auto* playlist = playlist_handle_to_instance(instance);
     delete playlist;
+}
+
+
+void projectm_playlist_set_preset_switched_event_callback(projectm_playlist_handle instance,
+                                                          projectm_playlist_preset_switched_event callback,
+                                                          void* user_data)
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+    playlist->SetPresetSwitchedCallback(callback, user_data);
 }
 
 

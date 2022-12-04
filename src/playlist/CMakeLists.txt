@@ -32,6 +32,8 @@ set_target_properties(projectM_playlist PROPERTIES
 # Adds fallback support to boost if std::filesystem is unavailable.
 include(FilesystemSupport.cmake)
 
+add_library(projectM::playlist ALIAS projectM_playlist)
+
 install(TARGETS projectM_playlist
         EXPORT libprojectMPlaylist
         LIBRARY DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime

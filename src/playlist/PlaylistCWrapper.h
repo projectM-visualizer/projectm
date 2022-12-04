@@ -54,8 +54,21 @@ public:
      */
     virtual auto RetryCount() -> uint32_t;
 
+    /**
+     * @brief Sets the preset switched callback.
+     * @param callback The callback pointer.
+     * @param userData The callback context data.
+     */
+    virtual void SetPresetSwitchedCallback(projectm_playlist_preset_switched_event callback,
+                                           void* userData);
+
+    /**
+     * @brief Sets the preset switch failed callback.
+     * @param callback The callback pointer.
+     * @param userData The callback context data.
+     */
     virtual void SetPresetSwitchFailedCallback(projectm_playlist_preset_switch_failed_event callback,
-                                      void* userData);
+                                               void* userData);
 
 private:
     projectm_handle m_projectMInstance{nullptr}; //!< The projectM instance handle this instance is connected to.
@@ -65,6 +78,9 @@ private:
 
     bool m_hardCutRequested{false}; //!< Stores the type of the last requested switch attempt.
 
+    projectm_playlist_preset_switched_event m_presetSwitchedEventCallback{nullptr}; //!< Preset switched callback pointer set by the application.
+    void* m_presetSwitchedEventUserData{nullptr};                                   //!< Context data pointer set by the application.
+
     projectm_playlist_preset_switch_failed_event m_presetSwitchFailedEventCallback{nullptr}; //!< Preset switch failed callback pointer set by the application.
-    void* m_presetSwitchFailedEventUserData{nullptr};                                         //!< Context data pointer set by the application.
+    void* m_presetSwitchFailedEventUserData{nullptr};                                        //!< Context data pointer set by the application.
 };
