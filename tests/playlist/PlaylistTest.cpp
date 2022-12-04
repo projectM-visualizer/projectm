@@ -627,3 +627,50 @@ TEST(projectMPlaylistPlaylist, RemoveLastHistoryEntry)
 
     EXPECT_EQ(playlist.LastPresetIndex(), 0);
 }
+
+
+TEST(projectMPlaylistPlaylist, AddItemWithFilter)
+{
+    Playlist playlist;
+
+    playlist.Filter().SetList({"-/**/Preset*.milk"});
+
+    EXPECT_FALSE(playlist.AddItem("/some/PresetZ.milk", Playlist::InsertAtEnd, false));
+    EXPECT_FALSE(playlist.AddItem("/some/PresetA.milk", Playlist::InsertAtEnd, false));
+    EXPECT_FALSE(playlist.AddItem("/some/other/PresetC.milk", Playlist::InsertAtEnd, false));
+    EXPECT_TRUE(playlist.AddItem("/some/MyFavorite.milk", Playlist::InsertAtEnd, false));
+
+    ASSERT_EQ(playlist.Size(), 1);
+}
+
+
+TEST(projectMPlaylistPlaylist, AddPathWithFilter)
+{
+    Playlist playlist;
+
+    playlist.Filter().SetList({"-**/presets/Test_*.milk"});
+
+    EXPECT_EQ(playlist.AddPath(PROJECTM_PLAYLIST_TEST_DATA_DIR "/presets", 0, true, false), 1);
+
+    ASSERT_EQ(playlist.Size(), 1);
+}
+
+
+TEST(projectMPlaylistPlaylist, ApplyFilter)
+{
+    Playlist playlist;
+
+    // Remove Test_A on load
+    playlist.Filter().SetList({"-Test_A.milk"});
+
+    EXPECT_EQ(playlist.AddPath(PROJECTM_PLAYLIST_TEST_DATA_DIR "/presets", 0, true, false), 3);
+    ASSERT_EQ(playlist.Size(), 3);
+
+    // Apply new filter that only removes Test_B
+    playlist.Filter().SetList({"-Test_B.milk"});
+
+    EXPECT_EQ(playlist.ApplyFilter(), 1);
+
+    // Test_A will not reappear.
+    ASSERT_EQ(playlist.Size(), 2);
+}

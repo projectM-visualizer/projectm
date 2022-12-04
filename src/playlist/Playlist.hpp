@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Filter.hpp"
 #include "Item.hpp"
 
 #include <cstdint>
@@ -225,13 +226,29 @@ public:
      */
     virtual void RemoveLastHistoryEntry();
 
+    /**
+     * @brief Returns the current playlist filter list.
+     * @return The filter list for the current playlist.
+     */
+    virtual auto Filter() -> class Filter&;
+
+    /**
+     * @brief Applies the current filter list to the existing playlist.
+     *
+     * Note this function only removes items. Previously filtered items are not added again.
+     *
+     * @return The number of filtered (removed) items.
+     */
+    virtual auto ApplyFilter() -> size_t;
+
 private:
     /**
      * @brief Adds a preset to the history and trims the list if it gets too long.
      */
     void AddCurrentPresetIndexToHistory();
 
-    std::vector<Item> m_items;         //!< Items in the current playlist.
+    std::vector<Item> m_items;         //!< All items in the current playlist.
+    class Filter m_filter;             //!< Item filter.
     bool m_shuffle{false};             //!< True if shuffle mode is enabled, false to play presets in order.
     size_t m_currentPosition{0};       //!< Current playlist position.
     std::list<size_t> m_presetHistory; //!< The playback history.
