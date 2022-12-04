@@ -12,8 +12,7 @@ int projectMSDL::initAudioInput() {
     want.freq = 44100;
     want.format = AUDIO_F32;  // float
     want.channels = 2;  // mono might be better?
-    // lower might reduce latency
-    want.samples = projectm_pcm_get_max_samples();
+    want.samples = want.freq / 60;
     want.callback = projectMSDL::audioInputCallbackF32;
     want.userdata = this;
 
