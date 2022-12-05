@@ -1,5 +1,9 @@
 #include "PresetFactory.hpp"
 
+#ifdef DEBUG
+#include <iostream>
+#endif
+
 const std::string PresetFactory::IDLE_PRESET_PROTOCOL("idle");
 
 std::string PresetFactory::Protocol(const std::string& url, std::string& path)

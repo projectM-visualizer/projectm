@@ -229,7 +229,7 @@ MilkdropPresetFactory::LoadPresetFromFile(const std::string& filename)
     {
         return IdlePresets::allocate(this, presetOutputs);
     }
-    else if (protocol == "" or protocol == "file")
+    else if (protocol == "" || protocol == "file")
     {
         return std::make_unique<MilkdropPreset>(this, path, presetOutputs);
     }

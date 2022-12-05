@@ -1,8 +1,10 @@
 #pragma once
 
-#include <utility>
-
 #include "PresetFactory.hpp"
+
+#include <map>
+#include <utility>
+#include <vector>
 
 /// A simple exception class to strongly type all preset factory related issues
 class PresetFactoryException : public std::exception

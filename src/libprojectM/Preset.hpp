@@ -1,8 +1,10 @@
 #pragma once
 
-#include <Renderer/BeatDetect.hpp>
-#include <Renderer/Pipeline.hpp>
-#include <Renderer/PipelineContext.hpp>
+#include <string>
+
+class BeatDetect;
+class Pipeline;
+class PipelineContext;
 
 class Preset
 {

@@ -4,7 +4,7 @@
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU
-* License as published by the Free Software Foundation; either
+ * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful,
@@ -18,35 +18,33 @@
  * See 'LICENSE.txt' included within this release
  *
  */
-/* parser.c */
 
-#include <stdio.h>
-#include <string>
+#include "Parser.hpp"
+
+#include "BuiltinFuncs.hpp"
+#include "CustomShape.hpp"
+#include "CustomWave.hpp"
+#include "Eval.hpp"
+#include "Expr.hpp"
+#include "Func.hpp"
+#include "InitCond.hpp"
+#include "MilkdropPresetFactory.hpp"
+#include "Param.hpp"
+#include "ParamUtils.hpp"
+#include "PerFrameEqn.hpp"
+#include "PerPixelEqn.hpp"
+#include "fatal.h"
+#include "wipemalloc.h"
+
+#include <array>
 #include <cstring>
 #include <iostream>
 #include <locale>
-#include <stdlib.h>
-
-#include "fatal.h"
-
-#include "CustomWave.hpp"
-#include "CustomShape.hpp"
-#include "Expr.hpp"
-#include "Eval.hpp"
-#include "Func.hpp"
-#include "InitCond.hpp"
-#include "Param.hpp"
-#include "Parser.hpp"
-#include "PerFrameEqn.hpp"
-#include "PerPixelEqn.hpp"
 #include <map>
-#include "ParamUtils.hpp"
-
-#include "wipemalloc.h"
-#include <iostream>
 #include <sstream>
-#include "BuiltinFuncs.hpp"
-#include "MilkdropPresetFactory.hpp"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
 
 /* Grabs the next token from the file. The second argument points
    to the raw string */
