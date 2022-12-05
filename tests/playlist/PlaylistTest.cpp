@@ -661,13 +661,13 @@ TEST(projectMPlaylistPlaylist, ApplyFilter)
     Playlist playlist;
 
     // Remove Test_A on load
-    playlist.Filter().SetList({"-Test_A.milk"});
+    playlist.Filter().SetList({"-**/Test_A.milk"});
 
     EXPECT_EQ(playlist.AddPath(PROJECTM_PLAYLIST_TEST_DATA_DIR "/presets", 0, true, false), 3);
     ASSERT_EQ(playlist.Size(), 3);
 
     // Apply new filter that only removes Test_B
-    playlist.Filter().SetList({"-Test_B.milk"});
+    playlist.Filter().SetList({"-**/Test_B.milk"});
 
     EXPECT_EQ(playlist.ApplyFilter(), 1);
 
