@@ -43,12 +43,12 @@
 #include <libprojectM/projectM.h>
 #include <libprojectM/sdltoprojectM.h>
 #include <playlist.h>
-#include <projectM-opengl.h>
 
 // projectM SDL
-#include "setup.hpp"
-#include "loopback.hpp"
 #include "audioCapture.hpp"
+#include "loopback.hpp"
+#include "opengl.h"
+#include "setup.hpp"
 
 
 #if defined _MSC_VER
@@ -89,7 +89,11 @@
 #ifndef DATADIR_PATH
     #ifdef DEBUG
         #define DATADIR_PATH "."
+#ifndef _WIN32
         #warning "DATADIR_PATH is not defined - falling back to ./"
+#else
+        #pragma warning "DATADIR_PATH is not defined - falling back to ./"
+#endif /** _WIN32 */
     #else
         #define DATADIR_PATH "/usr/local/share/projectM"
 #ifndef _WIN32

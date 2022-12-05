@@ -11,8 +11,12 @@
 //
 #include "PresetFactoryManager.hpp"
 
+#include "Common.hpp"
+
 #include <MilkdropPresetFactory/MilkdropPresetFactory.hpp>
 
+#include <cassert>
+#include <iostream>
 #include <sstream>
 
 PresetFactoryManager::~PresetFactoryManager()
