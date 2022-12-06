@@ -28,11 +28,14 @@
 #include "Preset.hpp"
 #include "PresetFactoryManager.hpp"
 #include "Renderer.hpp"
+#include "Renderer/PipelineContext.hpp"
 #include "TimeKeeper.hpp"
 
 #include <iostream>
 
 ProjectM::ProjectM(const std::string& configurationFilename)
+    : m_pipelineContext(std::make_unique<class PipelineContext>())
+    , m_pipelineContext2(std::make_unique<class PipelineContext>())
 {
     ReadConfig(configurationFilename);
     Reset();
@@ -40,6 +43,8 @@ ProjectM::ProjectM(const std::string& configurationFilename)
 }
 
 ProjectM::ProjectM(const class Settings& settings)
+    : m_pipelineContext(std::make_unique<class PipelineContext>())
+    , m_pipelineContext2(std::make_unique<class PipelineContext>())
 {
     ReadSettings(settings);
     Reset();
@@ -348,12 +353,12 @@ void ProjectM::RenderFrameEndOnSeparatePasses(Pipeline* pipeline)
 
 auto ProjectM::PipelineContext() -> class PipelineContext&
 {
-    return m_pipelineContext;
+    return *m_pipelineContext;
 }
 
 auto ProjectM::PipelineContext2() -> class PipelineContext&
 {
-    return m_pipelineContext2;
+    return *m_pipelineContext2;
 }
 
 void ProjectM::Reset()
@@ -457,10 +462,11 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
         return;
     }
 
-    try {
+    try
+    {
         m_renderer->SetPipeline(preset->pipeline());
     }
-    catch(const RenderException& ex)
+    catch (const RenderException& ex)
     {
         PresetSwitchFailedEvent(preset->Filename(), ex.message());
         return;
@@ -587,8 +593,8 @@ void ProjectM::SetFramesPerSecond(int32_t fps)
 {
     m_settings.fps = fps;
     m_renderer->setFPS(fps);
-    m_pipelineContext.fps = fps;
-    m_pipelineContext2.fps = fps;
+    m_pipelineContext->fps = fps;
+    m_pipelineContext2->fps = fps;
 }
 
 auto ProjectM::AspectCorrection() const -> bool
