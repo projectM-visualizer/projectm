@@ -45,8 +45,6 @@
 
 #include "BackgroundWorker.h"
 
-#include "Renderer/PipelineContext.hpp"
-
 #include <mutex>
 #include <thread>
 
@@ -65,6 +63,8 @@ class Preset;
 class TimeKeeper;
 
 class Pipeline;
+
+class PipelineContext;
 
 class ProjectM
 {
@@ -287,8 +287,8 @@ private:
 
     PresetFactoryManager m_presetFactoryManager; //!< Provides access to all available preset factories.
 
-    class PipelineContext m_pipelineContext;  //!< Pipeline context for the first/current preset.
-    class PipelineContext m_pipelineContext2; //!< Pipeline context for the next/transitioning preset.
+    std::unique_ptr<class PipelineContext> m_pipelineContext;  //!< Pipeline context for the first/current preset.
+    std::unique_ptr<class PipelineContext> m_pipelineContext2; //!< Pipeline context for the next/transitioning preset.
 
     std::unique_ptr<Renderer> m_renderer;     //!< The Preset renderer.
     std::unique_ptr<BeatDetect> m_beatDetect; //!< The beat detection class.
