@@ -154,21 +154,8 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
         throw ShaderException("Preset shader is missing \"shader_body\" entry point.");
     }
 
-    // replace "}" with return statement (this can probably be optimized for the GLSL conversion...)
-    found = program.rfind('}');
-    if (found != std::string::npos)
-    {
-        //std::cout << "last '}' found at: " << int(found) << std::endl;
-        program.replace(int(found), 1, "_return_value = float4(ret.xyz, 1.0);\n"
-                                       "}\n");
-    }
-    else
-    {
-        throw ShaderException("Preset shader has no closing brace.");
-    }
-
-    // replace "{" with some variable declarations
-    found = program.find('{',found);
+    // replace the "{" immediately following shader_body with some variable declarations
+    found = program.find('{', found);
     if (found != std::string::npos)
     {
         //std::cout << "first '{' found at: " << int(found) << std::endl;
@@ -181,6 +168,20 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     {
         throw ShaderException("Preset shader has no opening braces.");
     }
+
+    // replace "}" with return statement (this can probably be optimized for the GLSL conversion...)
+    found = program.rfind('}');
+    if (found != std::string::npos)
+    {
+        //std::cout << "last '}' found at: " << int(found) << std::endl;
+        program.replace(int(found), 1, "_return_value = float4(ret.xyz, 1.0);\n"
+                                                     "}\n");
+    }
+    else
+    {
+        throw ShaderException("Preset shader has no closing brace.");
+    }
+
 
     // Find matching closing brace and cut off excess text after shader's main function
     int bracesOpen = 1;
