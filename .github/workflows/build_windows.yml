@@ -1,0 +1,41 @@
+name: windows_x64
+
+on:
+  push:
+      branches: "*"
+    
+  pull_request:
+      branches: "*"
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: vcpkg --triplet=x64-windows install glew gtest
+
+      - name: Configure Build (MD)
+        run: cmake -G "Visual Studio 17 2022" -A "X64" -S "${{ github.workspace }}" -B "${{ github.workspace }}/cmake-build" -DCMAKE_TOOLCHAIN_FILE="${Env:VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded$<$<CONFIG:Debug>:Debug>DLL" -DCMAKE_VERBOSE_MAKEFILE=YES -DBUILD_TESTING=YES
+
+      - name: Build Debug
+        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --parallel
+
+      # - name: Run Unit Tests
+      #   run: ctest --test-dir "${{ github.workspace }}/cmake-build" --verbose --build-config "Debug"
+
+      - name: Build Release
+        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --parallel
+
+      - name: Install
+        run: |
+          cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --target INSTALL
+          cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target INSTALL
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+            name: projectm-windows-latest
+            path: install/*
