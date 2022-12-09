@@ -1,0 +1,60 @@
+name: emscripten_x32
+
+on:
+  push:
+      branches: "*"
+    
+  pull_request:
+      branches: "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup emsdk
+        uses: mymindstorm/setup-emsdk@v11
+        with:
+          # Make sure to set a version number!
+          version: 3.1.27
+          # This is the name of the cache folder.
+          # The cache folder will be placed in the build directory,
+          #  so make sure it doesn't conflict with anything!
+          actions-cache-folder: 'emsdk-cache'
+
+      - name: Verify EMSDK
+        run: emcc -v
+
+      - name: Install Packages
+        run: sudo apt-get install -y libgl1-mesa-dev mesa-common-dev libsdl2-dev libglm-dev llvm-dev ninja-build
+
+      - name: Build GoogleTest From Source
+        run: |
+          git clone https://github.com/anomievision/build-gtest.git ${{ github.workspace }}/build-gtest
+          cd ${{ github.workspace }}/build-gtest && ./setup.sh && ./build-emscripten.sh
+
+      - name: Configure Build
+        run: emcmake cmake -G "Unix Makefiles" -S "${{ github.workspace }}" -B "${{ github.workspace }}/cmake-build" -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" -DCMAKE_VERBOSE_MAKEFILE=YES -DBUILD_TESTING=YES -DGTest_DIR="${{ github.workspace }}/build-gtest/dist/emscripten/lib/lib/cmake/GTest"
+
+      - name: Build Debug
+        run: emmake cmake --build "${{ github.workspace }}/cmake-build" --parallel
+
+      # - name: Run Unit Tests
+      #   run: ctest --test-dir "${{ github.workspace }}/cmake-build" --verbose --build-config "Debug"
+
+      # - name: Build Release
+      #   run: emcmake cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --parallel
+
+      - name: Install
+        run: |
+          cd "${{ github.workspace }}/cmake-build" && emmake make install
+          
+        # emcmake cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target install
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+            name: projectm-emscripten-latest
+            path: install/*
