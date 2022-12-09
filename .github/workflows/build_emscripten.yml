@@ -42,8 +42,8 @@ jobs:
       - name: Build Debug
         run: emmake cmake --build "${{ github.workspace }}/cmake-build" --parallel
 
-      - name: Run Unit Tests
-        run: ctest --test-dir "${{ github.workspace }}/cmake-build" --verbose --build-config "Debug"
+      # - name: Run Unit Tests
+      #   run: ctest --test-dir "${{ github.workspace }}/cmake-build" --verbose --build-config "Debug"
 
       # - name: Build Release
       #   run: emcmake cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --parallel
