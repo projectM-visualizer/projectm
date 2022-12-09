@@ -89,6 +89,7 @@ if(ENABLE_EMSCRIPTEN)
         "SHELL:-s MIN_WEBGL_VERSION=2"
         "SHELL:-s MAX_WEBGL_VERSION=2"
         "SHELL:-s ALLOW_MEMORY_GROWTH=1"
+        "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
         )
 
     add_link_options(
@@ -97,6 +98,7 @@ if(ENABLE_EMSCRIPTEN)
         "SHELL:-s MAX_WEBGL_VERSION=2"
         "SHELL:-s FULL_ES2=1"
         "SHELL:-s ALLOW_MEMORY_GROWTH=1"
+        "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
         )
 
     if(ENABLE_THREADING)
