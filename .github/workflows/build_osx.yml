@@ -9,6 +9,7 @@ on:
 
 jobs:
   build:
+    name: osx_build
     runs-on: macos-latest
 
     steps:
@@ -23,8 +24,8 @@ jobs:
       - name: Build Debug
         run: cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --parallel
 
-      # - name: Run Unit Tests
-      #   run: ctest --test-dir "${{ github.workspace }}/cmake-build" --verbose --build-config "Debug"
+      - name: Run Unit Tests
+        run: ctest --test-dir "${{ github.workspace }}/cmake-build" --verbose --build-config "Debug"
 
       - name: Build Release
         run: cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --parallel

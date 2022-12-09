@@ -9,13 +9,14 @@ on:
 
 jobs:
   build:
+    name: linux_build
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Install Packages
-        run: sudo apt-get install -y libgl1-mesa-dev mesa-common-dev libsdl2-dev libglm-dev llvm-dev libgtest-dev ninja-build
+        run: sudo apt-get install -y libgl1-mesa-dev mesa-common-dev libsdl2-dev libglm-dev llvm-dev libgtest-dev libgmock-dev ninja-build
 
       - name: Configure Build
         run: cmake -G "Ninja Multi-Config" -S "${{ github.workspace }}" -B "${{ github.workspace }}/cmake-build" -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" -DCMAKE_VERBOSE_MAKEFILE=YES -DBUILD_TESTING=YES
@@ -23,8 +24,8 @@ jobs:
       - name: Build Debug
         run: cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --parallel
 
-      # - name: Run Unit Tests
-      #   run: ctest --test-dir "${{ github.workspace }}/cmake-build" --verbose --build-config "Debug"
+      - name: Run Unit Tests
+        run: ctest --test-dir "${{ github.workspace }}/cmake-build" --verbose --build-config "Debug"
 
       - name: Build Release
         run: cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --parallel
