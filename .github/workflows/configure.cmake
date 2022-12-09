@@ -1,4 +1,16 @@
-if("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten")
+    execute_process(COMMAND "${CMAKE_COMMAND}"
+            -G "Unix Makefiles"
+            -S "$ENV{GITHUB_WORKSPACE}"
+            -B "$ENV{GITHUB_WORKSPACE}/cmake-build"
+            -DENABLE_EMSCRIPTEN=ON
+            -DCMAKE_VERBOSE_MAKEFILE=YES
+            -DCMAKE_BUILD_TYPE=$ENV{BUILD_TYPE}
+            "-DCMAKE_INSTALL_PREFIX=$ENV{GITHUB_WORKSPACE}/cmake-install"
+
+            RESULT_VARIABLE result
+            )
+elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
     execute_process(COMMAND "${CMAKE_COMMAND}"
             -G "Visual Studio 17 2022"
             -A "X64"

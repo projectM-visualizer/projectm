@@ -26,6 +26,7 @@ elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
             libsdl2-dev
             libglm-dev
             llvm-dev
+            rename
 
             RESULT_VARIABLE result
             )

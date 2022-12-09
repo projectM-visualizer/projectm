@@ -1,22 +1,22 @@
-name: CMake Build
+name: build
 
-on: [ push, pull_request ]
+on:
+  push:
+      branches: "*"
+    
+  pull_request:
+      branches: "*"
 
 env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ windows-latest, ubuntu-latest, macos-latest ]
+  windows:
+    name: build-projectm-windows
+    runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install Prerequisites
         run: cmake -P ${{ github.workspace }}/.github/workflows/install_prerequisites.cmake
@@ -30,8 +30,108 @@ jobs:
       - name: Package
         run: cmake -P ${{ github.workspace }}/.github/workflows/package.cmake
 
+      - name: Rename package
+        run: mv package/projectM* package/projectm-windows-x64.zip
+
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.os }}
-          path: package/projectM-*
+            name: projectm-windows-latest
+            path: package/projectm-windows-x64.zip
+
+  linux:
+    name: build-projectm-linux
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Prerequisites
+        run: cmake -P ${{ github.workspace }}/.github/workflows/install_prerequisites.cmake
+
+      - name: Configure CMake
+        run: cmake -P ${{ github.workspace }}/.github/workflows/configure.cmake
+
+      - name: Build
+        run: cmake -P ${{ github.workspace }}/.github/workflows/build.cmake
+
+      - name: Package
+        run: cmake -P ${{ github.workspace }}/.github/workflows/package.cmake
+
+      - name: Rename package
+        run: mv package/projectM* package/projectm-linux-x64.tar.gz
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+            name: projectm-linux-latest
+            path: package/projectm-linux-x64.tar.gz
+
+  macos:
+    name: build-projectm-macos
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Prerequisites
+        run: cmake -P ${{ github.workspace }}/.github/workflows/install_prerequisites.cmake
+
+      - name: Configure CMake
+        run: cmake -P ${{ github.workspace }}/.github/workflows/configure.cmake
+
+      - name: Build
+        run: cmake -P ${{ github.workspace }}/.github/workflows/build.cmake
+
+      - name: Package
+        run: cmake -P ${{ github.workspace }}/.github/workflows/package.cmake
+
+      - name: Rename package
+        run: mv package/projectM* package/projectm-macos-x64.tar.gz
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+            name: projectm-macos-latest
+            path: package/projectm-macos-x64.tar.gz
+
+  emscripten:
+    name: build-projectm-emscripten
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup emsdk
+        uses: mymindstorm/setup-emsdk@v11
+        with:
+          # Make sure to set a version number!
+          version: 3.1.20
+          # This is the name of the cache folder.
+          # The cache folder will be placed in the build directory,
+          #  so make sure it doesn't conflict with anything!
+          actions-cache-folder: 'emsdk-cache'
+
+      - name: Verify
+        run: emcc -v
+
+      - name: Install Prerequisites
+        run: emcmake cmake -P ${{ github.workspace }}/.github/workflows/install_prerequisites.cmake
+
+      - name: Configure CMake
+        run: emcmake cmake -P ${{ github.workspace }}/.github/workflows/configure.cmake
+
+      - name: Build
+        run: emcmake cmake -P ${{ github.workspace }}/.github/workflows/build.cmake
+
+      - name: Package
+        run: emcmake cmake -P ${{ github.workspace }}/.github/workflows/package.cmake
+
+      - name: Rename package
+        run: mv package/projectM* package/projectm-emscripten-x32.tar.gz
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+            name: projectm-emscripten-latest
+            path: package/projectm-emscripten-x32.tar.gz
