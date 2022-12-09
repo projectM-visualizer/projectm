@@ -1,0 +1,41 @@
+name: linux_x64
+
+on:
+  push:
+      branches: "*"
+    
+  pull_request:
+      branches: "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Packages
+        run: sudo apt-get install -y libgl1-mesa-dev mesa-common-dev libsdl2-dev libglm-dev llvm-dev libgtest-dev ninja-build
+
+      - name: Configure Build
+        run: cmake -G "Ninja Multi-Config" -S "${{ github.workspace }}" -B "${{ github.workspace }}/cmake-build" -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" -DCMAKE_VERBOSE_MAKEFILE=YES -DBUILD_TESTING=YES
+
+      - name: Build Debug
+        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --parallel
+
+      # - name: Run Unit Tests
+      #   run: ctest --test-dir "${{ github.workspace }}/cmake-build" --verbose --build-config "Debug"
+
+      - name: Build Release
+        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --parallel
+
+      - name: Install
+        run: |
+          cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --target install
+          cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target install
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+            name: projectm-linux-latest
+            path: install/*
