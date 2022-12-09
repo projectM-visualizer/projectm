@@ -76,6 +76,7 @@ TEST(PCM, AddDataStereoFloat)
 
 TEST(PCM, DISABLED_FastFourierTransformLowFrequency)
 {
+    // Test currently fails for unknown reasons. Will fix later.
     PcmMock pcm;
 
     size_t constexpr samples = 1024;
