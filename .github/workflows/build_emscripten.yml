@@ -2,10 +2,14 @@ name: emscripten
 
 on:
   push:
-      branches: "*"
+      branches: 
+        - "*"
+      tags:
+        - "*"
     
   pull_request:
-      branches: "*"
+      branches: 
+        - "*"
 
 jobs:
   build:
