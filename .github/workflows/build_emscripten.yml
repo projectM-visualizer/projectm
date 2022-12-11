@@ -1,4 +1,4 @@
-name: emscripten_x32
+name: emscripten
 
 on:
   push:
