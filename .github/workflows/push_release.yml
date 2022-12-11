@@ -1,0 +1,140 @@
+# 1) download artifacts from each action and zip up
+# 2) get all commits between last version and new version use as release context
+# 3) auto create github release based on tag with "*-release"
+
+name: push_release
+
+on:
+  push:
+    tags:
+      - "*-release"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Wait On Linux Build
+        uses: tomchv/wait-my-workflow@v1.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: 'linux_build'
+          ref: ${{ github.sha }}
+          intervalSeconds: 30
+          timeoutSeconds: 3600
+
+      - name: Wait On Emscripten Build
+        uses: tomchv/wait-my-workflow@v1.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: 'emscripten_build'
+          ref: ${{ github.sha }}
+          intervalSeconds: 30
+          timeoutSeconds: 3600
+
+      - name: Wait On macOs Build
+        uses: tomchv/wait-my-workflow@v1.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: 'osx_build'
+          ref: ${{ github.sha }}
+          intervalSeconds: 30
+          timeoutSeconds: 3600
+
+      - name: Wait On Windows Build
+        uses: tomchv/wait-my-workflow@v1.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: 'windows_build'
+          ref: ${{ github.sha }}
+          intervalSeconds: 60
+          timeoutSeconds: 3600
+
+      - name: Download Artifacts From Linux Build
+        id: download-linux-artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+            github_token: ${{secrets.GITHUB_TOKEN}}
+            workflow: build_linux.yml
+            workflow_conclusion: success
+            path: artifacts
+            commit: ${{ github.sha }}
+
+      - name: Create Linux Package
+        run: |
+          cd ${{ github.workspace }}/artifacts/projectm-linux-latest
+          tar -czvf projectm-linux-x64.tar.gz *
+          mv projectm-linux-x64.tar.gz ${{ github.workspace }}/projectm-linux-x64-${{ env.TAG }}.tar.gz
+
+      - name: Download Artifacts From Emscripten Build
+        id: download-emscripten-artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: build_emscripten.yml
+          workflow_conclusion: success
+          path: artifacts
+          commit: ${{ github.sha }}
+          skip_unpack: true
+
+      - name: Create Emscripten Package
+        run: |
+          mv ${{ github.workspace }}/artifacts/projectm-emscripten-latest.zip ${{ github.workspace }}/projectm-emscripten-${{ env.TAG }}.zip
+
+      - name: Download Artifacts From macOS Build
+        id: download-osx-artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: build_osx.yml
+          workflow_conclusion: success
+          path: artifacts
+          commit: ${{ github.sha }}
+
+      - name: Create macOs Package
+        run: |
+          cd ${{ github.workspace }}/artifacts/projectm-osx-latest
+          tar -czvf projectm-osx-x64.tar.gz *
+          mv projectm-osx-x64.tar.gz ${{ github.workspace }}/projectm-osx-x64-${{ env.TAG }}.tar.gz
+
+      - name: Download Artifacts From Windows Build
+        id: download-windows-artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: build_windows.yml
+          workflow_conclusion: success
+          path: artifacts
+          commit: ${{ github.sha }}
+          skip_unpack: true
+
+      - name: Create Windows Package
+        run: |
+          mv ${{ github.workspace }}/artifacts/projectm-windows-latest.zip ${{ github.workspace }}/projectm-windows-x64-${{ env.TAG }}.zip
+
+      - name: Display Ready Packages
+        run: |
+          ls -la ${{ github.workspace }}
+
+      # - name: Build Changelog
+      #   id: github_release
+      #   uses: mikepenz/release-changelog-builder-action@v3
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ env.TAG }}
+          tag_name: ${{ env.TAG }}
+          # body: |
+          #   ${{steps.github_release.outputs.changelog}}
+          draft: true
+          prerelease: false
+          fail_on_unmatched_files: true
+          files: |
+            projectm-linux-x64-${{ env.TAG }}.tar.gz
+            projectm-emscripten-${{ env.TAG }}.zip
+            projectm-osx-x64-${{ env.TAG }}.tar.gz
+            projectm-windows-x64-${{ env.TAG }}.zip
+            
