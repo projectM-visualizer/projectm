@@ -2,10 +2,14 @@ name: linux_x64
 
 on:
   push:
-      branches: "*"
+      branches: 
+        - "*"
+      tags:
+        - "*"
     
   pull_request:
-      branches: "*"
+      branches: 
+        - "*"
 
 jobs:
   build:
