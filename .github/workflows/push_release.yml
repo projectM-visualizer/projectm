@@ -1,7 +1,3 @@
-# 1) download artifacts from each action and zip up
-# 2) get all commits between last version and new version use as release context
-# 3) auto create github release based on tag with "*-release"
-
 name: push_release
 
 on:
