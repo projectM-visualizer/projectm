@@ -524,7 +524,7 @@ auto ProjectM::TextureSize() const -> size_t
 
 void ProjectM::SetBeatSensitivity(float sensitivity)
 {
-    m_beatDetect->beatSensitivity = sensitivity;
+    m_beatDetect->beatSensitivity = std::min(std::max(0.0f, sensitivity), 2.0f);
 }
 
 auto ProjectM::GetBeatSensitivity() const -> float
