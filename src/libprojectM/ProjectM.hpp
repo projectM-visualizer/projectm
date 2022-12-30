@@ -132,6 +132,16 @@ public:
 
     void ResetOpenGL(size_t width, size_t height);
 
+    /**
+     * @brief Sets the texture paths used to find images for presets.
+     *
+     * Setting new texture paths will clear the texture manager cache and reload textures.
+     * This can cause lags in rendering.
+     *
+     * @param texturePaths A list of paths projectM will look for texture images, in order.
+     */
+    void SetTexturePaths(std::vector<std::string> texturePaths);
+
     void ResetTextures();
 
     void RenderFrame();

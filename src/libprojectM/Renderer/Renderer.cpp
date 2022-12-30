@@ -133,6 +133,8 @@ Renderer::Renderer(int width, int height, int gx, int gy,
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    ResetTextures();
 }
 
 void Renderer::SetPipeline(Pipeline& pipeline)
@@ -152,11 +154,13 @@ void Renderer::SetPipeline(Pipeline& pipeline)
 
 void Renderer::ResetTextures()
 {
-    m_textureManager->Clear();
+    m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths, m_textureSizeX, m_textureSizeY);
+}
 
-	reset(m_viewportWidth, m_viewportHeight);
-
-    m_textureManager->Preload();
+void Renderer::SetTextureSearchPaths(std::vector<std::string>& textureSearchPaths)
+{
+    m_textureSearchPaths = textureSearchPaths;
+    ResetTextures();
 }
 
 void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipelineContext)
@@ -403,7 +407,7 @@ void Renderer::reset(int w, int h)
 
 	InitCompositeShaderVertex();
 
-    m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths, m_textureSizeX, m_textureSizeY);
+    ResetTextures();
 
     m_shaderEngine.setParams(m_textureSizeX, m_textureSizeY, m_fAspectX, m_fAspectY, m_beatDetect, m_textureManager.get());
     m_shaderEngine.reset();

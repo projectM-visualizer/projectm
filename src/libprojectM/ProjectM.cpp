@@ -108,6 +108,12 @@ auto ProjectM::InitRenderToTexture() -> unsigned
     return m_renderer->initRenderToTexture();
 }
 
+void ProjectM::SetTexturePaths(std::vector<std::string> texturePaths)
+{
+    m_textureSearchPaths = std::move(texturePaths);
+    m_renderer->SetTextureSearchPaths(m_textureSearchPaths);
+}
+
 void ProjectM::ResetTextures()
 {
     m_renderer->ResetTextures();

@@ -172,24 +172,12 @@ typedef void (*projectm_preset_switch_requested_event)(bool is_hard_cut, void* u
 typedef void (*projectm_preset_switch_failed_event)(const char* preset_filename,
                                                     const char* message, void* user_data);
 
-
 /**
- * @brief Creates a new projectM instance, reading settings from the given file.
- * @param setting_file_path A path to the settings file to read the configuration from.
- *                          If NULL or an empty path are provided, default settings will be used.
+ * @brief Creates a new projectM instance.
  * @return A projectM handle for the newly created instance that must be used in subsequent API calls.
  *         NULL if the instance could not be created successfully.
  */
-PROJECTM_EXPORT projectm_handle projectm_create(const char* setting_file_path);
-
-/**
- * @brief Creates a new projectM instance with given settings.
- * @param settings A pointer to a projectm_settings_t with the settings to be used by the new instance.
- *                 If this pointer is NULL, default settings will be used.
- * @return A projectM handle for the newly created instance that must be used in subsequent API calls.
- *         NULL if the instance could not be created successfully.
- */
-PROJECTM_EXPORT projectm_handle projectm_create_settings(const projectm_settings* settings);
+PROJECTM_EXPORT projectm_handle projectm_create();
 
 /**
  * @brief Destroys the given instance and frees the resources.
@@ -265,9 +253,24 @@ PROJECTM_EXPORT void projectm_set_preset_switch_failed_event_callback(projectm_h
                                                                       void* user_data);
 
 /**
+ * @brief Sets the texture search paths.
+ *
+ * Calling this method will clear and reload all textures, including the main rendering texture.
+ * Can cause a small delay/lag in rendering. Only use if texture paths were changed.
+ *
+ * @param instance The projectM instance handle.
+ * @param texture_search_paths A list of texture search paths.
+ * @param count The number of paths in the list.
+ */
+PROJECTM_EXPORT void projectm_set_texture_search_paths(projectm_handle instance,
+                                                       const char** texture_search_paths,
+                                                       size_t count);
+
+/**
  * @brief Reloads all textures.
  *
- * Also resets the OpenGL renderer without changing the viewport size. Useful if preset paths were changed.
+ * Calling this method will clear and reload all textures, including the main rendering texture.
+ * Can cause a small delay/lag in rendering. Only use if texture paths were changed.
  *
  * @param instance The projectM instance handle.
  */

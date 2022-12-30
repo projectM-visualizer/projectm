@@ -176,6 +176,22 @@ void projectm_reset_gl(projectm_handle instance, int width, int height)
     projectMInstance->ResetOpenGL(width, height);
 }
 
+void projectm_set_texture_search_paths(projectm_handle instance,
+                                       const char** texture_search_paths,
+                                       size_t count)
+{
+    auto projectMInstance = handle_to_instance(instance);
+
+    std::vector<std::string> texturePaths;
+
+    for (size_t index = 0; index < count; index++)
+    {
+        texturePaths.emplace_back(texture_search_paths[index]);
+    }
+
+    projectMInstance->SetTexturePaths(texturePaths);
+}
+
 void projectm_reset_textures(projectm_handle instance)
 {
     auto projectMInstance = handle_to_instance(instance);
