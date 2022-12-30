@@ -67,30 +67,7 @@ class PipelineContext;
 class ProjectM
 {
 public:
-    class Settings
-    {
-    public:
-        size_t meshX{32};
-        size_t meshY{24};
-        size_t fps{35};
-        size_t textureSize{512};
-        size_t windowWidth{512};
-        size_t windowHeight{512};
-        std::string texturePath;
-        std::string dataPath;
-        double presetDuration{15.0};
-        double softCutDuration{10.0};
-        double hardCutDuration{60.0};
-        bool hardCutEnabled{false};
-        float hardCutSensitivity{2.0};
-        float beatSensitivity{1.0};
-        bool aspectCorrection{true};
-        float easterEgg{0.0};
-    };
-
-    explicit ProjectM(const std::string& configurationFilename);
-
-    explicit ProjectM(const class Settings& configurationFilename);
+    ProjectM();
 
     virtual ~ProjectM();
 
@@ -184,13 +161,13 @@ public:
      * @brief Returns the current frames per second value.
      * @return The current frames per second value.
      */
-    auto FramesPerSecond() const -> int32_t;
+    auto TargetFramesPerSecond() const -> int32_t;
 
     /**
      * @brief Sets a new current frames per second value.
      * @param fps The new frames per second value.
      */
-    void SetFramesPerSecond(int32_t fps);
+    void SetTargetFramesPerSecond(int32_t fps);
 
     auto AspectCorrection() const -> bool;
 
@@ -211,12 +188,6 @@ public:
     void TouchDestroy(float touchX, float touchY);
 
     void TouchDestroyAll();
-
-    auto Settings() const -> const class Settings&;
-
-    /// Writes a Settings configuration to the specified file
-    static auto WriteConfig(const std::string& configurationFilename,
-                            const class Settings& settings) -> bool;
 
     /// Turn on or off a lock that prevents projectM from switching to another preset
     void SetPresetLocked(bool locked);
@@ -255,10 +226,6 @@ private:
 
     auto PipelineContext2() -> class PipelineContext&;
 
-    void ReadConfig(const std::string& configurationFilename);
-
-    void ReadSettings(const class Settings& settings);
-
     void Initialize();
 
     void Reset();
@@ -269,6 +236,8 @@ private:
 
     void RecreateRenderer();
 
+    void LoadIdlePreset();
+
 #if USE_THREADS
 
     void ThreadWorker();
@@ -277,7 +246,20 @@ private:
 
     class Pcm m_pcm; //!< Audio data buffer and analyzer instance.
 
-    class Settings m_settings; //!< The projectM Settings.
+    size_t m_meshX{32}; //!< Per-point mesh horizontal resolution.
+    size_t m_meshY{24}; //!< Per-point mesh vertical resolution.
+    size_t m_targetFps{35}; //!< Target frames per second.
+    size_t m_textureSize{512}; //!< Render texture size.
+    size_t m_windowWidth{0}; //!< Render window width. If 0, nothing is rendered.
+    size_t m_windowHeight{0}; //!< Render window height. If 0, nothing is rendered.
+    double m_presetDuration{30.0}; //!< Preset duration in seconds.
+    double m_softCutDuration{3.0}; //!< Soft cut transition time.
+    double m_hardCutDuration{20.0}; //!< Time after which a hard cut can happen at the earliest.
+    bool m_hardCutEnabled{false}; //!< If true, hard cuts based on beat detection are enabled.
+    float m_hardCutSensitivity{2.0}; //!< Loudness sensitivity value for hard cuts.
+    float m_beatSensitivity{1.0}; //!< General beat sensitivity modifier for presets.
+    bool m_aspectCorrection{true}; //!< If true, corrects aspect ratio for non-rectangular windows.
+    float m_easterEgg{0.0}; //!< Random preset duration modifier. See TimeKeeper class.
 
     std::vector<std::string> m_textureSearchPaths; ///!< List of paths to search for texture files
 

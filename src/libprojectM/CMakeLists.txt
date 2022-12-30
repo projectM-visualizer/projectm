@@ -37,8 +37,6 @@ add_subdirectory(Renderer)
 add_library(projectM_main OBJECT
         "${PROJECTM_EXPORT_HEADER}"
         Common.hpp
-        ConfigFile.cpp
-        ConfigFile.h
         fatal.h
         fftsg.cpp
         fftsg.h

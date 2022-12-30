@@ -21,14 +21,19 @@
 
 PresetFactoryManager::~PresetFactoryManager()
 {
+    ClearFactories();
+}
+
+void PresetFactoryManager::ClearFactories()
+{
+    m_factoryMap.clear();
     for (std::vector<PresetFactory*>::iterator pos = m_factoryList.begin();
          pos != m_factoryList.end(); ++pos)
     {
         assert(*pos);
         delete (*pos);
     }
-
-    m_initialized = false;
+    m_factoryList.clear();
 }
 
 void PresetFactoryManager::initialize(int meshX, int meshY)
@@ -36,20 +41,10 @@ void PresetFactoryManager::initialize(int meshX, int meshY)
     m_meshX = meshX;
     m_meshY = meshY;
 
-    if (!m_initialized)
-    {
-        m_initialized = true;
-    }
-    else
-    {
-        std::cout << "already initialized " << std::endl;
-        return;
-    }
+    ClearFactories();
 
-    PresetFactory* factory;
-
-    factory = new MilkdropPresetFactory(m_meshX, m_meshY);
-    registerFactory(factory->supportedExtensions(), factory);
+    auto* milkdropFactory = new MilkdropPresetFactory(m_meshX, m_meshY);
+    registerFactory(milkdropFactory->supportedExtensions(), milkdropFactory);
 }
 
 // Current behavior if a conflict is occurs is to override the previous request

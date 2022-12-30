@@ -1,5 +1,7 @@
 #include "setup.hpp"
 
+#include "ConfigFile.h"
+
 #include <SDL2/SDL_hints.h>
 
 #include <chrono>
@@ -193,48 +195,29 @@ projectMSDL *setupSDLApp() {
     std::string configFilePath = getConfigFilePath(base_path);
     std::string presetURL = base_path + "/presets";
 
-    if (! configFilePath.empty()) {
-        // found config file, use it
-        app = new projectMSDL(glCtx, configFilePath, presetURL);
+    app = new projectMSDL(glCtx, presetURL);
+
+    if (! configFilePath.empty())
+    {
+        // found config file, load it
         SDL_Log("Using config from %s", configFilePath.c_str());
-    } else {
-        // use some sane defaults if config file not found
-        base_path = SDL_GetBasePath();
-        SDL_Log("Config file not found, using built-in settings. Data directory=%s\n", base_path.c_str());
 
-        // Get max refresh rate from attached displays to use as built-in max FPS.
-        int i = 0;
-        int maxRefreshRate = 0;
-        SDL_DisplayMode current;
-        for (i = 0; i < SDL_GetNumVideoDisplays(); ++i)
-        {
-            if (SDL_GetCurrentDisplayMode(i, &current) == 0)
-            {
-                if (current.refresh_rate > maxRefreshRate) maxRefreshRate = current.refresh_rate;
-            }
-        }
-        if (maxRefreshRate <= 60) maxRefreshRate = 60;
+        ConfigFile config(configFilePath);
+        auto* projectMHandle = app->projectM();
 
-        float heightWidthRatio = (float)height / (float)width;
-        std::string menuFontURL = base_path + "presets";
-        std::string titleFontURL = base_path + "presets";
+        projectm_set_mesh_size(projectMHandle, config.read<size_t>("Mesh X", 32), config.read<size_t>("Mesh Y", 24));
+        SDL_SetWindowSize(win, config.read<size_t>("Window Width", 1024), config.read<size_t>("Window Height", 768));
+        projectm_set_soft_cut_duration(projectMHandle, config.read<double>("Smooth Preset Duration", config.read<int>("Smooth Transition Duration", 3)));
+        projectm_set_preset_duration(projectMHandle, config.read<double>("Preset Duration", 30));
+        projectm_set_easter_egg(projectMHandle, config.read<float>("Easter Egg Parameter", 0.0));
+        projectm_set_hard_cut_enabled(projectMHandle,  config.read<bool>("Hard Cuts Enabled", false));
+        projectm_set_hard_cut_duration(projectMHandle, config.read<double>("Hard Cut Duration", 60));
+        projectm_set_hard_cut_sensitivity(projectMHandle, config.read<float>("Hard Cut Sensitivity", 1.0));
+        projectm_set_beat_sensitivity(projectMHandle, config.read<float>("Beat Sensitivity", 1.0));
+        projectm_set_aspect_correction(projectMHandle, config.read<bool>("Aspect Correction", true));
+        projectm_set_fps(projectMHandle, config.read<int32_t>("FPS", 60));
 
-        auto settings = projectm_alloc_settings();
-        settings->window_width = width;
-        settings->window_height = height;
-        settings->mesh_x = 128;
-        settings->mesh_y = settings->mesh_x * heightWidthRatio;
-        settings->fps = maxRefreshRate;
-        settings->soft_cut_duration = 3; // seconds
-        settings->preset_duration = 22; // seconds
-        settings->hard_cut_enabled = true;
-        settings->hard_cut_duration = 60;
-        settings->hard_cut_sensitivity = 1.0;
-        settings->beat_sensitivity = 1.0;
-        settings->aspect_correction = 1;
-
-        // init with settings
-        app = new projectMSDL(glCtx, settings, presetURL);
+        app->setFps(config.read<size_t>("FPS", 60));
     }
 
     // center window and full desktop screen

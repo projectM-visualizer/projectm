@@ -22,7 +22,6 @@
 #include "ProjectM.hpp"
 
 #include "BeatDetect.hpp"
-#include "ConfigFile.h"
 #include "PCM.hpp" //Sound data handler (buffering, FFT, etc.)
 #include "PipelineMerger.hpp"
 #include "Preset.hpp"
@@ -31,24 +30,12 @@
 #include "Renderer/PipelineContext.hpp"
 #include "TimeKeeper.hpp"
 
-#include <iostream>
 
-ProjectM::ProjectM(const std::string& configurationFilename)
+ProjectM::ProjectM()
     : m_pipelineContext(std::make_unique<class PipelineContext>())
     , m_pipelineContext2(std::make_unique<class PipelineContext>())
 {
-    ReadConfig(configurationFilename);
-    Reset();
-    ResetOpenGL(m_settings.windowWidth, m_settings.windowHeight);
-}
-
-ProjectM::ProjectM(const class Settings& settings)
-    : m_pipelineContext(std::make_unique<class PipelineContext>())
-    , m_pipelineContext2(std::make_unique<class PipelineContext>())
-{
-    ReadSettings(settings);
-    Reset();
-    ResetOpenGL(m_settings.windowWidth, m_settings.windowHeight);
+    Initialize();
 }
 
 ProjectM::~ProjectM()
@@ -119,101 +106,10 @@ void ProjectM::ResetTextures()
     m_renderer->ResetTextures();
 }
 
-
-auto ProjectM::WriteConfig(const std::string& configurationFilename, const class Settings& settings) -> bool
-{
-
-    ConfigFile config(configurationFilename);
-
-    config.add("Mesh X", settings.meshX);
-    config.add("Mesh Y", settings.meshY);
-    config.add("Texture Size", settings.textureSize);
-    config.add("FPS", settings.fps);
-    config.add("Window Width", settings.windowWidth);
-    config.add("Window Height", settings.windowHeight);
-    config.add("Smooth Preset Duration", settings.softCutDuration);
-    config.add("Preset Duration", settings.presetDuration);
-    config.add("Hard Cut Sensitivity", settings.beatSensitivity);
-    config.add("Aspect Correction", settings.aspectCorrection);
-    config.add("Easter Egg Parameter", settings.easterEgg);
-    std::fstream file(configurationFilename.c_str(), std::ios_base::trunc | std::ios_base::out);
-    if (file)
-    {
-        file << config;
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-
-void ProjectM::ReadConfig(const std::string& configurationFilename)
-{
-    std::cout << "[projectM] config file: " << configurationFilename << std::endl;
-
-    ConfigFile config(configurationFilename);
-    m_settings.meshX = config.read<int>("Mesh X", 32);
-    m_settings.meshY = config.read<int>("Mesh Y", 24);
-    m_settings.textureSize = config.read<int>("Texture Size", 512);
-    m_settings.fps = config.read<int>("FPS", 35);
-    m_settings.windowWidth = config.read<int>("Window Width", 512);
-    m_settings.windowHeight = config.read<int>("Window Height", 512);
-    m_settings.softCutDuration = config.read<double>("Smooth Preset Duration", config.read<int>("Smooth Transition Duration", 10));
-    m_settings.presetDuration = config.read<double>("Preset Duration", 15);
-    m_settings.easterEgg = config.read<float>("Easter Egg Parameter", 0.0);
-
-    // Hard Cuts are preset transitions that occur when your music becomes louder. They only occur after a hard cut duration threshold has passed.
-    m_settings.hardCutEnabled = config.read<bool>("Hard Cuts Enabled", false);
-    // Hard Cut duration is the number of seconds before you become eligible for a hard cut.
-    m_settings.hardCutDuration = config.read<double>("Hard Cut Duration", 60);
-    // Hard Cut sensitivity is the volume difference before a "hard cut" is triggered.
-    m_settings.hardCutSensitivity = config.read<float>("Hard Cut Sensitivity", 1.0);
-
-    // Beat Sensitivity impacts how reactive your visualizations are to volume, bass, mid-range, and treble.
-    // Preset authors have developed their visualizations with the default of 1.0.
-    m_settings.beatSensitivity = config.read<float>("Beat Sensitivity", 1.0);
-
-    m_settings.aspectCorrection = config.read<bool>("Aspect Correction", true);
-
-    Initialize();
-}
-
-
-void ProjectM::ReadSettings(const class Settings& settings)
-{
-    m_settings.meshX = settings.meshX;
-    m_settings.meshY = settings.meshY;
-    m_settings.textureSize = settings.textureSize;
-    m_settings.fps = settings.fps;
-    m_settings.windowWidth = settings.windowWidth;
-    m_settings.windowHeight = settings.windowHeight;
-    m_settings.softCutDuration = settings.softCutDuration;
-    m_settings.presetDuration = settings.presetDuration;
-
-    m_settings.texturePath = settings.texturePath;
-    m_settings.dataPath = settings.dataPath;
-
-    m_settings.easterEgg = settings.easterEgg;
-
-    m_settings.hardCutEnabled = settings.hardCutEnabled;
-    m_settings.hardCutDuration = settings.hardCutDuration;
-    m_settings.hardCutSensitivity = settings.hardCutSensitivity;
-
-    m_settings.beatSensitivity = settings.beatSensitivity;
-
-    m_settings.aspectCorrection = settings.aspectCorrection;
-
-    Initialize();
-}
-
-
 void ProjectM::DumpDebugImageOnNextFrame()
 {
     m_renderer->writeNextFrameToFile = true;
 }
-
 
 #if USE_THREADS
 
@@ -244,6 +140,12 @@ void ProjectM::EvaluateSecondPreset()
 
 void ProjectM::RenderFrame()
 {
+    // Don't render if window area is zero.
+    if (m_windowWidth == 0 || m_windowHeight == 0)
+    {
+        return;
+    }
+
     Pipeline pipeline;
     Pipeline* comboPipeline = RenderFrameOnlyPass1(&pipeline);
 
@@ -279,8 +181,8 @@ auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
         {
             PresetSwitchRequestedEvent(false);
         }
-        else if (Settings().hardCutEnabled &&
-                 (m_beatDetect->vol - m_beatDetect->volOld > Settings().hardCutSensitivity) &&
+        else if (m_hardCutEnabled &&
+                 (m_beatDetect->vol - m_beatDetect->volOld > m_hardCutSensitivity) &&
                  m_timeKeeper->CanHardCut())
         {
             PresetSwitchRequestedEvent(true);
@@ -304,7 +206,7 @@ auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
         EvaluateSecondPreset();
 #endif
 
-        pipeline->setStaticPerPixel(Settings().meshX, Settings().meshY);
+        pipeline->setStaticPerPixel(m_meshX, m_meshY);
 
         PipelineMerger::mergePipelines(
             m_activePreset->pipeline(),
@@ -369,7 +271,7 @@ void ProjectM::Reset()
 {
     this->m_count = 0;
 
-    m_presetFactoryManager.initialize(m_settings.meshX, m_settings.meshY);
+    m_presetFactoryManager.initialize(m_meshX, m_meshY);
 
     ResetEngine();
 }
@@ -377,10 +279,10 @@ void ProjectM::Reset()
 void ProjectM::Initialize()
 {
     /** Initialise start time */
-    m_timeKeeper = std::make_unique<TimeKeeper>(m_settings.presetDuration,
-                                                m_settings.softCutDuration,
-                                                m_settings.hardCutDuration,
-                                                m_settings.easterEgg);
+    m_timeKeeper = std::make_unique<TimeKeeper>(m_presetDuration,
+                                                m_softCutDuration,
+                                                m_hardCutDuration,
+                                                m_easterEgg);
 
     /** Nullify frame stash */
 
@@ -390,35 +292,20 @@ void ProjectM::Initialize()
 
     m_beatDetect = std::make_unique<BeatDetect>(m_pcm);
 
-    // Create texture search path list
-    if (!m_settings.texturePath.empty())
-    {
-        m_textureSearchPaths.emplace_back(m_settings.texturePath);
-    }
-    if (!m_settings.dataPath.empty())
-    {
-        m_textureSearchPaths.emplace_back(m_settings.dataPath + pathSeparator + "presets");
-        m_textureSearchPaths.emplace_back(m_settings.dataPath + pathSeparator + "textures");
-    }
-
-    this->m_renderer = std::make_unique<Renderer>(m_settings.windowWidth,
-                                                  m_settings.windowHeight,
-                                                  m_settings.meshX,
-                                                  m_settings.meshY,
+    this->m_renderer = std::make_unique<Renderer>(m_windowWidth,
+                                                  m_windowHeight,
+                                                  m_meshX,
+                                                  m_meshY,
                                                   m_beatDetect.get(),
                                                   m_textureSearchPaths);
 
-    m_presetFactoryManager.initialize(m_settings.meshX, m_settings.meshY);
+    m_presetFactoryManager.initialize(m_meshX, m_meshY);
 
     /* Set the seed to the current time in seconds */
     srand(time(nullptr));
 
-    // Load idle preset
-    LoadPresetFile("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk", false);
-    assert(m_activePreset);
-    m_renderer->SetPipeline(m_activePreset->pipeline());
-
     ResetEngine();
+    LoadIdlePreset();
 
 #if USE_THREADS
     m_workerSync.Reset();
@@ -428,8 +315,15 @@ void ProjectM::Initialize()
     m_timeKeeper->StartPreset();
 
     // ToDo: Calculate the real FPS instead
-    PipelineContext().fps = static_cast<int>(m_settings.fps);
-    PipelineContext2().fps = static_cast<int>(m_settings.fps);
+    PipelineContext().fps = static_cast<int>(m_targetFps);
+    PipelineContext2().fps = static_cast<int>(m_targetFps);
+}
+
+void ProjectM::LoadIdlePreset()
+{
+    LoadPresetFile("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk", false);
+    assert(m_activePreset);
+    m_renderer->SetPipeline(m_activePreset->pipeline());
 }
 
 /* Reinitializes the engine variables to a default (conservative and sane) value */
@@ -439,7 +333,7 @@ void ProjectM::ResetEngine()
     if (m_beatDetect != NULL)
     {
         m_beatDetect->Reset();
-        m_beatDetect->beatSensitivity = m_settings.beatSensitivity;
+        m_beatDetect->beatSensitivity = m_beatSensitivity;
     }
 }
 
@@ -447,8 +341,8 @@ void ProjectM::ResetEngine()
 void ProjectM::ResetOpenGL(size_t width, size_t height)
 {
     /** Stash the new dimensions */
-    m_settings.windowWidth = width;
-    m_settings.windowHeight = height;
+    m_windowWidth = width;
+    m_windowHeight = height;
     try
     {
         m_renderer->reset(width, height);
@@ -493,12 +387,12 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
 
 auto ProjectM::WindowWidth() -> int
 {
-    return m_settings.windowWidth;
+    return m_windowWidth;
 }
 
 auto ProjectM::WindowHeight() -> int
 {
-    return m_settings.windowHeight;
+    return m_windowHeight;
 }
 
 void ProjectM::SetPresetLocked(bool locked)
@@ -516,14 +410,14 @@ auto ProjectM::PresetLocked() const -> bool
 
 void ProjectM::SetTextureSize(size_t size)
 {
-    m_settings.textureSize = size;
+    m_textureSize = size;
 
     RecreateRenderer();
 }
 
 auto ProjectM::TextureSize() const -> size_t
 {
-    return m_settings.textureSize;
+    return m_textureSize;
 }
 
 void ProjectM::SetBeatSensitivity(float sensitivity)
@@ -538,44 +432,44 @@ auto ProjectM::GetBeatSensitivity() const -> float
 
 auto ProjectM::SoftCutDuration() const -> double
 {
-    return m_settings.softCutDuration;
+    return m_softCutDuration;
 }
 
 void ProjectM::SetSoftCutDuration(double seconds)
 {
-    m_settings.softCutDuration = seconds;
+    m_softCutDuration = seconds;
     m_timeKeeper->ChangeSoftCutDuration(seconds);
 }
 
 auto ProjectM::HardCutDuration() const -> double
 {
-    return m_settings.hardCutDuration;
+    return m_hardCutDuration;
 }
 
 void ProjectM::SetHardCutDuration(double seconds)
 {
-    m_settings.hardCutDuration = static_cast<int>(seconds);
+    m_hardCutDuration = static_cast<int>(seconds);
     m_timeKeeper->ChangeHardCutDuration(seconds);
 }
 
 auto ProjectM::HardCutEnabled() const -> bool
 {
-    return m_settings.hardCutEnabled;
+    return m_hardCutEnabled;
 }
 
 void ProjectM::SetHardCutEnabled(bool enabled)
 {
-    m_settings.hardCutEnabled = enabled;
+    m_hardCutEnabled = enabled;
 }
 
 auto ProjectM::HardCutSensitivity() const -> float
 {
-    return m_settings.hardCutSensitivity;
+    return m_hardCutSensitivity;
 }
 
 void ProjectM::SetHardCutSensitivity(float sensitivity)
 {
-    m_settings.hardCutSensitivity = sensitivity;
+    m_hardCutSensitivity = sensitivity;
 }
 
 void ProjectM::SetPresetDuration(double seconds)
@@ -588,14 +482,14 @@ auto ProjectM::PresetDuration() const -> double
     return m_timeKeeper->PresetDuration();
 }
 
-auto ProjectM::FramesPerSecond() const -> int32_t
+auto ProjectM::TargetFramesPerSecond() const -> int32_t
 {
-    return m_settings.fps;
+    return m_targetFps;
 }
 
-void ProjectM::SetFramesPerSecond(int32_t fps)
+void ProjectM::SetTargetFramesPerSecond(int32_t fps)
 {
-    m_settings.fps = fps;
+    m_targetFps = fps;
     m_renderer->setFPS(fps);
     m_pipelineContext->fps = fps;
     m_pipelineContext2->fps = fps;
@@ -603,48 +497,50 @@ void ProjectM::SetFramesPerSecond(int32_t fps)
 
 auto ProjectM::AspectCorrection() const -> bool
 {
-    return m_settings.aspectCorrection;
+    return m_aspectCorrection;
 }
 
 void ProjectM::SetAspectCorrection(bool enabled)
 {
-    m_settings.aspectCorrection = enabled;
+    m_aspectCorrection = enabled;
     m_renderer->correction = enabled;
 }
 
 auto ProjectM::EasterEgg() const -> float
 {
-    return m_settings.easterEgg;
+    return m_easterEgg;
 }
 
 void ProjectM::SetEasterEgg(float value)
 {
-    m_settings.easterEgg = value;
+    m_easterEgg = value;
     m_timeKeeper->ChangeEasterEgg(value);
 }
 
 void ProjectM::MeshSize(size_t& meshResolutionX, size_t& meshResolutionY) const
 {
-    meshResolutionX = m_settings.meshX;
-    meshResolutionY = m_settings.meshY;
+    meshResolutionX = m_meshX;
+    meshResolutionY = m_meshY;
 }
 
 void ProjectM::SetMeshSize(size_t meshResolutionX, size_t meshResolutionY)
 {
-    m_settings.meshX = meshResolutionX;
-    m_settings.meshY = meshResolutionY;
+    m_meshX = meshResolutionX;
+    m_meshY = meshResolutionY;
 
-    RecreateRenderer();
+    // Update mesh size in all sorts of classes.
+    m_renderer->SetPerPixelMeshSize(m_meshX, m_meshY);
+    m_presetFactoryManager.initialize(m_meshX, m_meshY);
+
+    // Unload all presets and reload idle preset
+    m_activePreset.reset();
+    m_transitioningPreset.reset();
+    LoadIdlePreset();
 }
 
 auto ProjectM::Pcm() -> class Pcm&
 {
     return m_pcm;
-}
-
-auto ProjectM::Settings() const -> const class ProjectM::Settings&
-{
-    return m_settings;
 }
 
 void ProjectM::Touch(float touchX, float touchY, int pressure, int touchType)
@@ -662,7 +558,6 @@ void ProjectM::TouchDrag(float touchX, float touchY, int pressure)
         m_renderer->touchDrag(touchX, touchY, pressure);
     }
 }
-
 
 void ProjectM::TouchDestroy(float touchX, float touchY)
 {
@@ -682,7 +577,7 @@ void ProjectM::TouchDestroyAll()
 
 void ProjectM::RecreateRenderer()
 {
-    m_renderer = std::make_unique<Renderer>(m_settings.windowWidth, m_settings.windowHeight,
-                                            m_settings.meshX, m_settings.meshY,
+    m_renderer = std::make_unique<Renderer>(m_windowWidth, m_windowHeight,
+                                            m_meshX, m_meshY,
                                             m_beatDetect.get(), m_textureSearchPaths);
 }

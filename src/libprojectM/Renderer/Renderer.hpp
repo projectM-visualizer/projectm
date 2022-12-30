@@ -63,15 +63,15 @@ class Renderer
 
 public:
   Renderer() = delete;
-  Renderer(int width, int height, int gx, int gy, BeatDetect* beatDetect, std::vector<std::string>& textureSearchPaths);
+  Renderer(int viewportWidth, int viewportHeight, int meshX, int meshY, BeatDetect* beatDetect, std::vector<std::string>& textureSearchPaths);
   ~Renderer();
 
-  void RenderFrame(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void RenderFrameOnlyPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void RenderFrameOnlyPass2(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void ResetTextures();
   void SetTextureSearchPaths(std::vector<std::string>& textureSearchPaths);
-  void reset(int w, int h);
+  void SetPerPixelMeshSize(int meshX, int meshY);
+  void reset(int viewportWidth, int viewportHeight);
   GLuint initRenderToTexture();
 
   bool timeCheck(const milliseconds currentTime, const milliseconds lastTime, const double difference);
@@ -122,6 +122,7 @@ private:
     void Pass2(const Pipeline& pipeline, const PipelineContext& pipelineContext);
     void CompositeShaderOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext);
     void CompositeOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext);
+    void ResetPerPointMeshBuffer();
 
     int nearestPower2(int value);
 

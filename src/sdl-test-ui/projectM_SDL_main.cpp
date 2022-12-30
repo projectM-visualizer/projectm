@@ -42,7 +42,7 @@ static int mainLoop(void *userData) {
 #endif
     
     // frame rate limiter
-    int fps = app->settings()->fps;
+    int fps = app->fps();
     if (fps <= 0)
         fps = 60;
     const Uint32 frame_delay = 1000/fps;
@@ -76,25 +76,6 @@ int main(int argc, char *argv[]) {
     
     int status = mainLoop(&app);
 
-//    SDL_Thread *mainLoopThread;
-//    int threadReturnValue;
-//
-//    mainLoopThread = SDL_CreateThread(mainLoop, "MainLoop", &app);
-//
-//    if (NULL == mainLoopThread) {
-//        printf("SDL_CreateThread failed: %s\n", SDL_GetError());
-//        return PROJECTM_ERROR;
-//    } else {
-//        SDL_WaitThread(mainLoopThread, &threadReturnValue);
-//        printf("Thread returned value: %d\n", threadReturnValue);
-//    }
-    
-    // Write back config with current app settings (if we loaded from a config file to begin with)
-    std::string configFilePath = getConfigFilePath(DATADIR_PATH);
-    if (!configFilePath.empty()) {
-        projectm_write_config(configFilePath.c_str(), app->settings());
-    }
-    
     // cleanup
     SDL_GL_DeleteContext(app->_openGlContext);
 #if !FAKE_AUDIO
