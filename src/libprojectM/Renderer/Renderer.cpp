@@ -19,35 +19,15 @@ using namespace std::chrono;
 
 class Preset;
 
-Renderer::Renderer(int width, int height, int gx, int gy,
+Renderer::Renderer(int viewportWidth, int viewportHeight, int meshX, int meshY,
                    BeatDetect* beatDetect, std::vector<std::string>& textureSearchPaths)
-    : m_perPixelMesh(gx, gy)
+    : m_perPixelMesh(meshX, meshY)
     , m_beatDetect(beatDetect)
-    , m_viewportWidth(width)
-    , m_viewportHeight(height)
+    , m_viewportWidth(viewportWidth)
+    , m_viewportHeight(viewportHeight)
     , m_textureSearchPaths(textureSearchPaths)
 {
-	int size = (m_perPixelMesh.height - 1) * m_perPixelMesh.width * 4 * 2;
-    m_perPointMeshBuffer = static_cast<float *>(wipemalloc(size * sizeof(float)));
-
-	for (int j = 0; j < m_perPixelMesh.height - 1; j++)
-	{
-		int base = j * m_perPixelMesh.width * 4 * 2;
-
-
-		for (int i = 0; i < m_perPixelMesh.width; i++)
-		{
-			int index = j * m_perPixelMesh.width + i;
-			int index2 = (j + 1) * m_perPixelMesh.width + i;
-
-			int strip = base + i * 8;
-            m_perPointMeshBuffer[strip + 0] = m_perPixelMesh.identity[index].x;
-            m_perPointMeshBuffer[strip + 1] = m_perPixelMesh.identity[index].y;
-
-            m_perPointMeshBuffer[strip + 4] = m_perPixelMesh.identity[index2].x;
-            m_perPointMeshBuffer[strip + 5] = m_perPixelMesh.identity[index2].y;
-		}
-	}
+    ResetPerPointMeshBuffer();
 
     m_renderContext.programID_v2f_c4f = m_shaderEngine.programID_v2f_c4f;
     m_renderContext.programID_v2f_c4f_t2f = m_shaderEngine.programID_v2f_c4f_t2f;
@@ -163,6 +143,12 @@ void Renderer::SetTextureSearchPaths(std::vector<std::string>& textureSearchPath
     ResetTextures();
 }
 
+void Renderer::SetPerPixelMeshSize(int meshX, int meshY)
+{
+    m_perPixelMesh = PerPixelMesh(meshX, meshY);
+    ResetPerPointMeshBuffer();
+}
+
 void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
 	totalframes++;
@@ -233,7 +219,7 @@ void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineCo
 	//video texture memory and render fullscreen.
 
 	/** Reset the viewport size */
-    glViewport(0, 0, this->m_viewportWidth, this->m_viewportHeight);
+    glViewport(0, 0, m_viewportWidth, m_viewportHeight);
 
 	if (m_shaderEngine.enableCompositeShader(m_currentPipeline->compositeShader, pipeline, pipelineContext))
 	{
@@ -243,14 +229,6 @@ void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineCo
 	{
 		CompositeOutput(pipeline, pipelineContext);
 	}
-}
-
-void Renderer::RenderFrame(const Pipeline& pipeline,
-                           const PipelineContext& pipelineContext)
-{
-	RenderFrameOnlyPass1(pipeline, pipelineContext);
-
-	Pass2(pipeline, pipelineContext);
 }
 
 void Renderer::RenderFrameOnlyPass1(const Pipeline& pipeline, const PipelineContext& pipelineContext)
@@ -375,10 +353,10 @@ Renderer::~Renderer()
 	glDeleteTextures(1, &textureRenderToTexture);
 }
 
-void Renderer::reset(int w, int h)
+void Renderer::reset(int viewportWidth, int viewportHeight)
 {
-	this->m_viewportWidth = w;
-	this->m_viewportHeight = h;
+	m_viewportWidth = viewportWidth;
+	m_viewportHeight = viewportHeight;
 
 	glCullFace(GL_BACK);
 
@@ -388,12 +366,12 @@ void Renderer::reset(int w, int h)
 
 	glClearColor(0, 0, 0, 0);
 
-	glViewport(0, 0, w, h);
+	glViewport(0, 0, viewportWidth, viewportHeight);
 
 	glEnable(GL_BLEND);
 
-    m_textureSizeX = w;
-    m_textureSizeY = h;
+    m_textureSizeX = viewportWidth;
+    m_textureSizeY = viewportHeight;
 
 	// snap to 16x16 blocks
     m_textureSizeX = ((m_textureSizeX - 15) / 16) * 16;
@@ -413,7 +391,10 @@ void Renderer::reset(int w, int h)
     m_shaderEngine.reset();
     try
     {
-        m_shaderEngine.loadPresetShaders(*m_currentPipeline);
+        if (m_currentPipeline)
+        {
+            m_shaderEngine.loadPresetShaders(*m_currentPipeline);
+        }
     }
     catch(const ShaderException& ex)
     {
@@ -880,4 +861,34 @@ void Renderer::CompositeShaderOutput(const Pipeline& pipeline, const PipelineCon
 	glBindVertexArray(0);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void Renderer::ResetPerPointMeshBuffer()
+{
+    if (m_perPointMeshBuffer != nullptr)
+    {
+        wipefree(m_perPointMeshBuffer);
+    }
+
+    int size = (m_perPixelMesh.height - 1) * m_perPixelMesh.width * 4 * 2;
+    m_perPointMeshBuffer = static_cast<float *>(wipemalloc(size * sizeof(float)));
+
+    for (int j = 0; j < m_perPixelMesh.height - 1; j++)
+    {
+        int base = j * m_perPixelMesh.width * 4 * 2;
+
+
+        for (int i = 0; i < m_perPixelMesh.width; i++)
+        {
+            int index = j * m_perPixelMesh.width + i;
+            int index2 = (j + 1) * m_perPixelMesh.width + i;
+
+            int strip = base + i * 8;
+            m_perPointMeshBuffer[strip + 0] = m_perPixelMesh.identity[index].x;
+            m_perPointMeshBuffer[strip + 1] = m_perPixelMesh.identity[index].y;
+
+            m_perPointMeshBuffer[strip + 4] = m_perPixelMesh.identity[index2].x;
+            m_perPointMeshBuffer[strip + 5] = m_perPixelMesh.identity[index2].y;
+        }
+    }
 }

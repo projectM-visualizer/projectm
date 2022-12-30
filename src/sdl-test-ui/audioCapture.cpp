@@ -138,3 +138,4 @@ void projectMSDL::endAudioCapture() {
     SDL_PauseAudioDevice(_audioDeviceId, true);
     SDL_CloseAudioDevice(_audioDeviceId);
 }
+

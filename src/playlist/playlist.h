@@ -52,7 +52,7 @@ void projectm_playlist_free_string_array(char** array);
 /**
  * @brief Callback function that is executed on each preset change.
  *
- * Can be used for example to update the application window title. Applications must not
+ * Can be used for example to UpdateMeshSize the application window title. Applications must not
  * switch presets inside this callback, as it can lead to infinite recursion.
  *
  * @param is_hard_cut True if the preset was switched using a hard cut via beat detection.

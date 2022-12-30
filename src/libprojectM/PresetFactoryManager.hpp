@@ -89,4 +89,5 @@ private:
 
     mutable std::map<std::string, PresetFactory*> m_factoryMap;
     mutable std::vector<PresetFactory*> m_factoryList;
+    void ClearFactories();
 };

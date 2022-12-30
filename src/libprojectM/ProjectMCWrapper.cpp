@@ -6,31 +6,21 @@
 #include <utility>
 #include <sstream>
 
-projectMWrapper::projectMWrapper(std::string configFile)
-    : ProjectM(std::move(configFile))
-{
-}
-
-projectMWrapper::projectMWrapper(class ProjectM::Settings settings)
-    : ProjectM(std::move(settings))
-{
-}
-
 void projectMWrapper::PresetSwitchRequestedEvent(bool isHardCut) const
 {
-    if (_presetSwitchRequestedEventCallback)
+    if (m_presetSwitchRequestedEventCallback)
     {
-        _presetSwitchRequestedEventCallback(isHardCut, _presetSwitchRequestedEventUserData);
+        m_presetSwitchRequestedEventCallback(isHardCut, m_presetSwitchRequestedEventUserData);
     }
 }
 
 void projectMWrapper::PresetSwitchFailedEvent(const std::string& presetFilename,
                                               const std::string& failureMessage) const
 {
-    if (_presetSwitchFailedEventCallback)
+    if (m_presetSwitchFailedEventCallback)
     {
-        _presetSwitchFailedEventCallback(presetFilename.c_str(),
-                                         failureMessage.c_str(), _presetSwitchFailedEventUserData);
+        m_presetSwitchFailedEventCallback(presetFilename.c_str(),
+                                         failureMessage.c_str(), m_presetSwitchFailedEventUserData);
     }
 }
 
@@ -66,65 +56,11 @@ void projectm_free_string(const char* str)
     delete[] str;
 }
 
-projectm_settings* projectm_alloc_settings()
+projectm_handle projectm_create()
 {
     try
     {
-        return new projectm_settings{};
-    }
-    catch (...)
-    {
-        return nullptr;
-    }
-}
-
-void projectm_free_settings(const projectm_settings* settings)
-{
-    if (settings)
-    {
-        projectm_free_string(settings->texture_path);
-        projectm_free_string(settings->data_path);
-    }
-
-    delete settings;
-}
-
-projectm_handle projectm_create(const char* setting_file_path)
-{
-    try
-    {
-        auto projectMInstance = new projectMWrapper(std::string(setting_file_path));
-        return reinterpret_cast<projectm_handle>(projectMInstance);
-    }
-    catch (...)
-    {
-        return nullptr;
-    }
-}
-
-projectm_handle projectm_create_settings(const projectm_settings* settings)
-{
-    try
-    {
-        class ProjectM::Settings cppSettings;
-        cppSettings.meshX = settings->mesh_x;
-        cppSettings.meshY = settings->mesh_y;
-        cppSettings.fps = settings->fps;
-        cppSettings.textureSize = settings->texture_size;
-        cppSettings.windowWidth = settings->window_width;
-        cppSettings.windowHeight = settings->window_height;
-        cppSettings.texturePath = settings->texture_path ? settings->texture_path : "";
-        cppSettings.dataPath = settings->data_path ? settings->data_path : "";
-        cppSettings.softCutDuration = settings->soft_cut_duration;
-        cppSettings.presetDuration = settings->preset_duration;
-        cppSettings.hardCutEnabled = settings->hard_cut_enabled;
-        cppSettings.hardCutDuration = settings->hard_cut_duration;
-        cppSettings.hardCutSensitivity = settings->hard_cut_sensitivity;
-        cppSettings.beatSensitivity = settings->beat_sensitivity;
-        cppSettings.aspectCorrection = settings->aspect_correction;
-        cppSettings.easterEgg = settings->easter_egg;
-
-        auto projectMInstance = new projectMWrapper(cppSettings);
+        auto projectMInstance = new projectMWrapper();
         return reinterpret_cast<projectm_handle>(projectMInstance);
     }
     catch (...)
@@ -158,16 +94,16 @@ void projectm_set_preset_switch_requested_event_callback(projectm_handle instanc
                                                          projectm_preset_switch_requested_event callback, void* user_data)
 {
     auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->_presetSwitchRequestedEventCallback = callback;
-    projectMInstance->_presetSwitchRequestedEventUserData = user_data;
+    projectMInstance->m_presetSwitchRequestedEventCallback = callback;
+    projectMInstance->m_presetSwitchRequestedEventUserData = user_data;
 }
 
 void projectm_set_preset_switch_failed_event_callback(projectm_handle instance,
                                                       projectm_preset_switch_failed_event callback, void* user_data)
 {
     auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->_presetSwitchFailedEventCallback = callback;
-    projectMInstance->_presetSwitchFailedEventUserData = user_data;
+    projectMInstance->m_presetSwitchFailedEventCallback = callback;
+    projectMInstance->m_presetSwitchFailedEventUserData = user_data;
 }
 
 void projectm_reset_gl(projectm_handle instance, int width, int height)
@@ -309,25 +245,13 @@ void projectm_set_mesh_size(projectm_handle instance, size_t width, size_t heigh
 int32_t projectm_get_fps(projectm_handle instance)
 {
     auto projectMInstance = handle_to_instance(instance);
-    return projectMInstance->FramesPerSecond();
+    return projectMInstance->TargetFramesPerSecond();
 }
 
 void projectm_set_fps(projectm_handle instance, int32_t fps)
 {
     auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->SetFramesPerSecond(fps);
-}
-
-const char* projectm_get_texture_path(projectm_handle instance)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    return projectm_alloc_string_from_std_string(projectMInstance->Settings().texturePath);
-}
-
-const char* projectm_get_data_path(projectm_handle instance)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    return projectm_alloc_string_from_std_string(projectMInstance->Settings().dataPath);
+    projectMInstance->SetTargetFramesPerSecond(fps);
 }
 
 void projectm_set_aspect_correction(projectm_handle instance, bool enabled)
@@ -376,55 +300,6 @@ void projectm_touch_destroy_all(projectm_handle instance)
 {
     auto projectMInstance = handle_to_instance(instance);
     projectMInstance->TouchDestroyAll();
-}
-
-projectm_settings* projectm_get_settings(projectm_handle instance)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    const auto& settings = projectMInstance->Settings();
-
-    auto settingsStruct = projectm_alloc_settings();
-    settingsStruct->mesh_x = settings.meshX;
-    settingsStruct->mesh_y = settings.meshY;
-    settingsStruct->fps = settings.fps;
-    settingsStruct->texture_size = settings.textureSize;
-    settingsStruct->window_width = settings.windowWidth;
-    settingsStruct->window_height = settings.windowHeight;
-    settingsStruct->texture_path = projectm_alloc_string_from_std_string(settings.texturePath);
-    settingsStruct->data_path = projectm_alloc_string_from_std_string(settings.dataPath);
-    settingsStruct->soft_cut_duration = settings.softCutDuration;
-    settingsStruct->preset_duration = settings.presetDuration;
-    settingsStruct->hard_cut_enabled = settings.hardCutEnabled;
-    settingsStruct->hard_cut_duration = settings.hardCutDuration;
-    settingsStruct->hard_cut_sensitivity = settings.hardCutSensitivity;
-    settingsStruct->beat_sensitivity = settings.beatSensitivity;
-    settingsStruct->aspect_correction = settings.aspectCorrection;
-    settingsStruct->easter_egg = settings.easterEgg;
-
-    return settingsStruct;
-}
-
-void projectm_write_config(const char* config_file, const projectm_settings* settings)
-{
-    class ProjectM::Settings cppSettings;
-    cppSettings.meshX = settings->mesh_x;
-    cppSettings.meshY = settings->mesh_y;
-    cppSettings.fps = settings->fps;
-    cppSettings.textureSize = settings->texture_size;
-    cppSettings.windowWidth = settings->window_width;
-    cppSettings.windowHeight = settings->window_height;
-    cppSettings.texturePath = settings->texture_path ? settings->texture_path : "";
-    cppSettings.dataPath = settings->data_path ? settings->data_path : "";
-    cppSettings.softCutDuration = settings->soft_cut_duration;
-    cppSettings.presetDuration = settings->preset_duration;
-    cppSettings.hardCutEnabled = settings->hard_cut_enabled;
-    cppSettings.hardCutDuration = settings->hard_cut_duration;
-    cppSettings.hardCutSensitivity = settings->hard_cut_sensitivity;
-    cppSettings.beatSensitivity = settings->beat_sensitivity;
-    cppSettings.aspectCorrection = settings->aspect_correction;
-    cppSettings.easterEgg = settings->easter_egg;
-
-    ProjectM::WriteConfig(config_file, cppSettings);
 }
 
 bool projectm_get_preset_locked(projectm_handle instance)

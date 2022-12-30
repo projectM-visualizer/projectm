@@ -32,22 +32,9 @@
 
 #include <vector>
 
-projectMSDL::projectMSDL(SDL_GLContext glCtx, projectm_settings* settings, const std::string& presetPath)
+projectMSDL::projectMSDL(SDL_GLContext glCtx, const std::string& presetPath)
     : _openGlContext(glCtx)
-    , _projectM(projectm_create_settings(settings))
-    , _settings(settings)
-    , _playlist(projectm_playlist_create(_projectM))
-{
-    projectm_get_window_size(_projectM, &_width, &_height);
-    projectm_playlist_set_preset_switched_event_callback(_playlist, &projectMSDL::presetSwitchedEvent, static_cast<void*>(this));
-    projectm_playlist_add_path(_playlist, presetPath.c_str(), true, false);
-    projectm_playlist_set_shuffle(_playlist, _shuffle);
-}
-
-projectMSDL::projectMSDL(SDL_GLContext glCtx, const std::string& config_file, const std::string& presetPath)
-    : _openGlContext(glCtx)
-    , _projectM(projectm_create(config_file.c_str()))
-    , _settings(projectm_get_settings(_projectM))
+    , _projectM(projectm_create())
     , _playlist(projectm_playlist_create(_projectM))
 {
     projectm_get_window_size(_projectM, &_width, &_height);
@@ -60,8 +47,6 @@ projectMSDL::~projectMSDL()
 {
     projectm_playlist_destroy(_playlist);
     _playlist = nullptr;
-    projectm_free_settings(_settings);
-    _settings = nullptr;
     projectm_destroy(_projectM);
     _projectM = nullptr;
 }
@@ -81,10 +66,8 @@ void projectMSDL::stretchMonitors()
 
         int mostXLeft = 0;
         int mostXRight = 0;
-        int mostWide = 0;
         int mostYUp = 0;
         int mostYDown = 0;
-        int mostHigh = 0;
 
         for (int i = 0; i < displayCount; i++)
         {
@@ -109,8 +92,8 @@ void projectMSDL::stretchMonitors()
             }
         }
 
-        mostWide = abs(mostXLeft) + abs(mostXRight);
-        mostHigh = abs(mostYUp) + abs(mostYDown);
+        int mostWide = abs(mostXLeft) + abs(mostXRight);
+        int mostHigh = abs(mostYUp) + abs(mostYDown);
 
         SDL_SetWindowPosition(_sdlWindow, mostXLeft, mostYUp);
         SDL_SetWindowSize(_sdlWindow, mostWide, mostHigh);
@@ -502,9 +485,14 @@ projectm_handle projectMSDL::projectM()
     return _projectM;
 }
 
-const projectm_settings* projectMSDL::settings()
+void projectMSDL::setFps(size_t fps)
 {
-    return _settings;
+    _fps = fps;
+}
+
+size_t projectMSDL::fps() const
+{
+    return _fps;
 }
 
 void projectMSDL::UpdateWindowTitle()

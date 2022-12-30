@@ -35,38 +35,6 @@ struct projectm;                          //!< Opaque projectM instance type.
 typedef struct projectm* projectm_handle; //!< A pointer to the opaque projectM instance.
 
 /**
- * @brief projectM instance settings.
- *
- * <p>Use this struct to provide settings for projectM, for example if your application handles projectM configuration
- * internally instead of using the default configuration file.</p>
- *
- * <p>Always allocate the struct using the projectm_alloc_settings() and free it with the projectm_free_settings()
- * function.</p>
- *
- * <p>To allocate memory for char* members, always use projectm_alloc_string(). If any pointer is not NULL,
- * projectm_free_settings() will automatically call projectm_free_string() on it. If you free it on your own, remember
- * to reset the pointer to NULL after doing so!</p>
- */
-typedef struct PROJECTM_EXPORT projectm_settings_s {
-    int mesh_x;                 //!< Per-pixel mesh X resolution.
-    int mesh_y;                 //!< Per-pixel mesh Y resolution.
-    int fps;                    //!< Target rendering frames per second.
-    int texture_size;           //!< Size of the render texture. Must be a power of 2.
-    int window_width;           //!< Width of the rendering viewport.
-    int window_height;          //!< Height of the rendering viewport.
-    char* texture_path;         //!< Additional path with texture files for use in presets.
-    char* data_path;            //!< Path to data files like default textures and presets.
-    double preset_duration;     //!< Display duration for each preset in seconds.
-    double soft_cut_duration;   //!< Blend-over duration between two presets in seconds.
-    double hard_cut_duration;   //!< Minimum time in seconds a preset is displayed before a hard cut can happen.
-    bool hard_cut_enabled;      //!< Set to true to enable fast beat-driven preset switches.
-    float hard_cut_sensitivity; //!< Beat sensitivity value that must be surpassed for a hard cut.
-    float beat_sensitivity;     //!< Beat sensitivity. Standard sensitivity is 1.0.
-    bool aspect_correction;     //!< Use aspect ration correction in presets that support it.
-    float easter_egg;           //!< Used as the "sigma" value for a gaussian RNG to randomize preset duration. Unused on Windows.
-} projectm_settings;
-
-/**
  * For specifying audio data format.
  */
 typedef enum
@@ -122,32 +90,6 @@ PROJECTM_EXPORT char* projectm_alloc_string(unsigned int length);
  * @param settings A pointer returned by projectm_alloc_string().
  */
 PROJECTM_EXPORT void projectm_free_string(const char* str);
-
-/**
- * @brief Allocates memory for a projectm_settings struct and returns the pointer.
- *
- * <p>This will not allocate memory for the char* members in the struct. These will be set to NULL initially.
- * To store a string in these members, use projectm_alloc_string() to allocate the required memory. Do not use
- * malloc()!</p>
- *
- * <p>To free the allocated memory, call projectm_free_settings(). Do not use free()!</p>
- *
- * @return A pointer to a zero-initialized projectm_settings struct.
- */
-PROJECTM_EXPORT projectm_settings* projectm_alloc_settings();
-
-/**
- * @brief Frees the memory of an allocated projectm_settings structure.
- *
- * <p>Frees the memory allocated by a call to projectm_alloc_settings() or any
- * projectm_settings pointer returned by an API call. Any non-null char pointers
- * will also be free'd using projectm_free_string().</p>
- *
- * <p>Do not use free() to delete the pointer!</p>
- *
- * @param settings A pointer returned by projectm_alloc_settings().
- */
-PROJECTM_EXPORT void projectm_free_settings(const projectm_settings* settings);
 
 /**
  * @brief Callback function that is executed whenever projectM wants to switch to a new preset.
@@ -434,7 +376,7 @@ PROJECTM_EXPORT void projectm_get_mesh_size(projectm_handle instance, size_t* wi
 
 /**
  * @brief Sets the per-pixel equation mesh size in units.
- * @note This will recreate the renderer.
+ * @note This will currently remove any active presets and reload the default "idle" preset.
  * @param instance The projectM instance handle.
  * @param width The new width of the mesh.
  * @param height The new height of the mesh.
@@ -454,7 +396,7 @@ PROJECTM_EXPORT int32_t projectm_get_fps(projectm_handle instance);
 /**
  * @brief Sets the current/average frames per second.
  *
- * Applications running projectM should update this value regularly and set it to the calculated
+ * Applications running projectM should UpdateMeshSize this value regularly and set it to the calculated
  * (and possibly averaged) FPS value the output rendered with. The value is passed on to presets,
  * which may choose to use it for calculations. It is not used in any other way by the library.
  *
@@ -462,20 +404,6 @@ PROJECTM_EXPORT int32_t projectm_get_fps(projectm_handle instance);
  * @param fps The current FPS value projectM is running with.
  */
 PROJECTM_EXPORT void projectm_set_fps(projectm_handle instance, int32_t fps);
-
-/**
- * @brief Returns the search path for additional textures.
- * @param instance The projectM instance handle.
- * @return The path used to search for additional textures.
- */
-PROJECTM_EXPORT const char* projectm_get_texture_path(projectm_handle instance);
-
-/**
- * @brief Returns the path projectM uses to search for additional data.
- * @param instance The projectM instance handle.
- * @return The data dir path.
- */
-PROJECTM_EXPORT const char* projectm_get_data_path(projectm_handle instance);
 
 /**
  * @brief Enabled or disables aspect ratio correction in presets that support it.
@@ -559,24 +487,6 @@ PROJECTM_EXPORT void projectm_touch_destroy(projectm_handle instance, float x, f
 PROJECTM_EXPORT void projectm_touch_destroy_all(projectm_handle instance);
 
 /**
- * @brief Returns a structure with the current projectM settings.
- * @param instance The projectM instance handle.
- * @return A struct with all currently used settings.
- */
-PROJECTM_EXPORT projectm_settings* projectm_get_settings(projectm_handle instance);
-
-/**
- * @brief Saves the given settings struct into a file.
- *
- * The file can be loaded during projectM initialization. This is useful if the application needs to
- * keep settings separate from the global system/user configuration.
- *
- * @param config_file The filename to store the settings in.
- * @param settings The settings struct to store.
- */
-PROJECTM_EXPORT void projectm_write_config(const char* config_file, const projectm_settings* settings);
-
-/**
  * @brief Returns whether the current preset is locked or not.
  * @param instance The projectM instance handle.
  * @return True if the preset lock is enabled, false otherwise.
@@ -616,7 +526,7 @@ PROJECTM_EXPORT void projectm_set_window_size(projectm_handle instance, size_t w
 /**
  * @brief Returns the maximum number of audio samples that can be stored.
  *
- * Each PCM data update should not exceed this number of samples. If more samples
+ * Each PCM data UpdateMeshSize should not exceed this number of samples. If more samples
  * are added, only this number of samples is stored and the remainder discarded.
  *
  * @return The number of audio samples that are stored, per channel.
