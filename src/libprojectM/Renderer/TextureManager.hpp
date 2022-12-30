@@ -21,8 +21,6 @@ public:
     TextureManager(std::vector<std::string>& textureSearchPaths, int texSizeX, int texSizeY);
     ~TextureManager();
 
-    void Clear();
-    void Preload();
     TextureSamplerDesc tryLoadingTexture(const std::string name);
     TextureSamplerDesc getTexture(const std::string fullName, const GLenum defaultWrap, const GLenum defaultFilter);
     const Texture* getMainTexture() const;
@@ -32,6 +30,9 @@ public:
     void clearRandomTextures();
 
 private:
+    void Clear();
+    void Preload();
+
     TextureSamplerDesc loadTexture(const std::string name, const std::string imageUrl);
     void ExtractTextureSettings(const std::string qualifiedName, GLint& _wrap_mode, GLint& _filter_mode, std::string& name);
 

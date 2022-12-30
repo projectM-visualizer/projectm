@@ -70,6 +70,7 @@ public:
   void RenderFrameOnlyPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void RenderFrameOnlyPass2(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void ResetTextures();
+  void SetTextureSearchPaths(std::vector<std::string>& textureSearchPaths);
   void reset(int w, int h);
   GLuint initRenderToTexture();
 
