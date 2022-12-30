@@ -229,12 +229,7 @@ void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineCo
 	//video texture memory and render fullscreen.
 
 	/** Reset the viewport size */
-	if (textureRenderToTexture)
-	{
-		glViewport(0, 0, m_textureSizeX, m_textureSizeY);
-	}
-	else
-		glViewport(m_viewStartX, m_viewStartY, this->m_viewportWidth, this->m_viewportHeight);
+    glViewport(0, 0, this->m_viewportWidth, this->m_viewportHeight);
 
 	if (m_shaderEngine.enableCompositeShader(m_currentPipeline->compositeShader, pipeline, pipelineContext))
 	{
@@ -268,16 +263,9 @@ void Renderer::RenderFrameOnlyPass1(const Pipeline& pipeline, const PipelineCont
 }
 
 
-void Renderer::RenderFrameOnlyPass2(const Pipeline& pipeline, const PipelineContext& pipelineContext, int xoffset,
-                                    int yoffset, int eye)
+void Renderer::RenderFrameOnlyPass2(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
-	/* draw in a certain range of the screen */
-    m_viewStartX = xoffset;
-    m_viewStartY = yoffset;
-	// ignore eye
 	Pass2(pipeline, pipelineContext);
-    m_viewStartX = 0;
-    m_viewStartY = 0;
 }
 
 
@@ -396,7 +384,7 @@ void Renderer::reset(int w, int h)
 
 	glClearColor(0, 0, 0, 0);
 
-	glViewport(m_viewStartX, m_viewStartY, w, h);
+	glViewport(0, 0, w, h);
 
 	glEnable(GL_BLEND);
 

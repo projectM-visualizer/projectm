@@ -237,7 +237,7 @@ private:
      */
     auto RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*;
 
-    void RenderFrameOnlyPass2(Pipeline* pipeline, int offsetX, int offsetY);
+    void RenderFrameOnlyPass2(Pipeline* pipeline);
 
     void RenderFrameEndOnSeparatePasses(Pipeline* pipeline);
 
