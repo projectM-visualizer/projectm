@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
     }
     
     // cleanup
-    SDL_GL_DeleteContext(app->glCtx);
+    SDL_GL_DeleteContext(app->_openGlContext);
 #if !FAKE_AUDIO
     if (!app->wasapi) // not currently using WASAPI, so we need to endAudioCapture.
         app->endAudioCapture();
