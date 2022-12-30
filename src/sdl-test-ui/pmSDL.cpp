@@ -33,24 +33,24 @@
 #include <vector>
 
 projectMSDL::projectMSDL(SDL_GLContext glCtx, projectm_settings* settings, const std::string& presetPath)
-    : glCtx(glCtx)
+    : _openGlContext(glCtx)
     , _projectM(projectm_create_settings(settings))
     , _settings(settings)
     , _playlist(projectm_playlist_create(_projectM))
 {
-    projectm_get_window_size(_projectM, &width, &height);
+    projectm_get_window_size(_projectM, &_width, &_height);
     projectm_playlist_set_preset_switched_event_callback(_playlist, &projectMSDL::presetSwitchedEvent, static_cast<void*>(this));
     projectm_playlist_add_path(_playlist, presetPath.c_str(), true, false);
     projectm_playlist_set_shuffle(_playlist, _shuffle);
 }
 
 projectMSDL::projectMSDL(SDL_GLContext glCtx, const std::string& config_file, const std::string& presetPath)
-    : glCtx(glCtx)
+    : _openGlContext(glCtx)
     , _projectM(projectm_create(config_file.c_str()))
     , _settings(projectm_get_settings(_projectM))
     , _playlist(projectm_playlist_create(_projectM))
 {
-    projectm_get_window_size(_projectM, &width, &height);
+    projectm_get_window_size(_projectM, &_width, &_height);
     projectm_playlist_set_preset_switched_event_callback(_playlist, &projectMSDL::presetSwitchedEvent, static_cast<void*>(this));
     projectm_playlist_add_path(_playlist, presetPath.c_str(), true, false);
     projectm_playlist_set_shuffle(_playlist, _shuffle);
@@ -112,8 +112,8 @@ void projectMSDL::stretchMonitors()
         mostWide = abs(mostXLeft) + abs(mostXRight);
         mostHigh = abs(mostYUp) + abs(mostYDown);
 
-        SDL_SetWindowPosition(win, mostXLeft, mostYUp);
-        SDL_SetWindowSize(win, mostWide, mostHigh);
+        SDL_SetWindowPosition(_sdlWindow, mostXLeft, mostYUp);
+        SDL_SetWindowSize(_sdlWindow, mostWide, mostHigh);
     }
 }
 
@@ -121,7 +121,7 @@ void projectMSDL::stretchMonitors()
 void projectMSDL::nextMonitor()
 {
     int displayCount = SDL_GetNumVideoDisplays();
-    int currentWindowIndex = SDL_GetWindowDisplayIndex(win);
+    int currentWindowIndex = SDL_GetWindowDisplayIndex(_sdlWindow);
     if (displayCount >= 2)
     {
         std::vector<SDL_Rect> displayBounds;
@@ -136,24 +136,24 @@ void projectMSDL::nextMonitor()
             displayBounds.push_back(SDL_Rect());
             SDL_GetDisplayBounds(i, &displayBounds.back());
         }
-        SDL_SetWindowPosition(win, displayBounds[nextWindow].x, displayBounds[nextWindow].y);
-        SDL_SetWindowSize(win, displayBounds[nextWindow].w, displayBounds[nextWindow].h);
+        SDL_SetWindowPosition(_sdlWindow, displayBounds[nextWindow].x, displayBounds[nextWindow].y);
+        SDL_SetWindowSize(_sdlWindow, displayBounds[nextWindow].w, displayBounds[nextWindow].h);
     }
 }
 
 void projectMSDL::toggleFullScreen()
 {
-    if (isFullScreen)
+    if (_isFullScreen)
     {
-        SDL_SetWindowFullscreen(win, 0);
-        isFullScreen = false;
+        SDL_SetWindowFullscreen(_sdlWindow, 0);
+        _isFullScreen = false;
         SDL_ShowCursor(true);
     }
     else
     {
         SDL_ShowCursor(false);
-        SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN_DESKTOP);
-        isFullScreen = true;
+        SDL_SetWindowFullscreen(_sdlWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+        _isFullScreen = true;
     }
 }
 
@@ -173,9 +173,6 @@ void projectMSDL::scrollHandler(SDL_Event* sdl_evt)
 
 void projectMSDL::keyHandler(SDL_Event* sdl_evt)
 {
-    projectMEvent evt;
-    projectMKeycode key;
-    projectMModifier mod;
     SDL_Keymod sdl_mod = (SDL_Keymod) sdl_evt->key.keysym.mod;
     SDL_Keycode sdl_keycode = sdl_evt->key.keysym.sym;
 
@@ -188,6 +185,9 @@ void projectMSDL::keyHandler(SDL_Event* sdl_evt)
     // handle keyboard input (for our app first, then projectM)
     switch (sdl_keycode)
     {
+        case SDLK_a:
+            projectm_set_aspect_correction(_projectM, !projectm_get_aspect_correction(_projectM));
+            break;
 
         case SDLK_q:
             if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
@@ -197,6 +197,7 @@ void projectMSDL::keyHandler(SDL_Event* sdl_evt)
                 return;
             }
             break;
+
         case SDLK_i:
             if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
             {
@@ -204,6 +205,7 @@ void projectMSDL::keyHandler(SDL_Event* sdl_evt)
                 return; // handled
             }
             break;
+
         case SDLK_s:
             if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
             {
@@ -223,6 +225,7 @@ void projectMSDL::keyHandler(SDL_Event* sdl_evt)
 #endif
                 return; // handled
             }
+
         case SDLK_m:
             if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
             {
@@ -232,8 +235,9 @@ void projectMSDL::keyHandler(SDL_Event* sdl_evt)
                 nextMonitor();
 #endif
                 this->stretch = false; // if we are switching monitors, ensure we disable monitor stretching.
-                return; // handled
+                return;                // handled
             }
+
         case SDLK_f:
             if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
             {
@@ -243,84 +247,67 @@ void projectMSDL::keyHandler(SDL_Event* sdl_evt)
                 toggleFullScreen();
 #endif
                 this->stretch = false; // if we are toggling fullscreen, ensure we disable monitor stretching.
-                return; // handled
+                return;                // handled
             }
             break;
+
         case SDLK_r:
             // Use playlist shuffle to randomize.
             projectm_playlist_set_shuffle(_playlist, true);
             projectm_playlist_play_next(_playlist, true);
             projectm_playlist_set_shuffle(_playlist, _shuffle);
             break;
+
         case SDLK_y:
             _shuffle = !_shuffle;
             projectm_playlist_set_shuffle(_playlist, _shuffle);
             break;
+
         case SDLK_LEFT:
             projectm_playlist_play_previous(_playlist, true);
             break;
+
         case SDLK_RIGHT:
             projectm_playlist_play_next(_playlist, true);
             break;
+
         case SDLK_UP:
+            projectm_set_beat_sensitivity(_projectM, projectm_get_beat_sensitivity(_projectM) + 0.01f);
             break;
+
         case SDLK_DOWN:
+            projectm_set_beat_sensitivity(_projectM, projectm_get_beat_sensitivity(_projectM) - 0.01f);
             break;
-
-        case SDLK_F3:
-            break;
-
 
         case SDLK_SPACE:
-            projectm_lock_preset(_projectM, !projectm_is_preset_locked(_projectM));
+            projectm_set_preset_locked(_projectM, !projectm_get_preset_locked(_projectM));
+            UpdateWindowTitle();
             break;
-        case SDLK_F1:
-            break;
-        case SDLK_DELETE:
-            /*
-            try {
-                if (selectedPresetIndex(index)) {
-                    DeleteFile(
-                        LPCSTR(
-                            getPresetURL(index).c_str()
-                        )
-                    );
-                }
-            }
-            catch (const std::exception & e) {
-                printf("Delete failed");
-            }
-            */
-            break;
+
     }
-    // translate into projectM codes and perform default projectM handler
-    evt = sdl2pmEvent(sdl_evt);
-    mod = sdl2pmModifier(sdl_mod);
-    key = sdl2pmKeycode(sdl_keycode, sdl_mod);
-    projectm_key_handler(_projectM, evt, key, mod);
 }
 
 void projectMSDL::addFakePCM()
 {
     int i;
-    int16_t pcm_data[2*512];
+    int16_t pcm_data[2 * 512];
     /** Produce some fake PCM data to stuff into projectM */
     for (i = 0; i < 512; i++)
     {
         if (i % 2 == 0)
         {
-            pcm_data[2*i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
-            pcm_data[2*i+1] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
+            pcm_data[2 * i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
+            pcm_data[2 * i + 1] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
         }
         else
         {
-            pcm_data[2*i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
-            pcm_data[2*i+1] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
+            pcm_data[2 * i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
+            pcm_data[2 * i + 1] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
         }
         if (i % 2 == 1)
         {
-            pcm_data[2*i] = -pcm_data[2*i];
-            pcm_data[2*i+1] = -pcm_data[2*i+1];
+            pcm_data[2 * i] = -pcm_data[2 * i];
+            pcm_data[2 * i + 1] = -pcm_data[2 * i + 1];
         }
     }
 
@@ -330,16 +317,17 @@ void projectMSDL::addFakePCM()
 
 void projectMSDL::resize(unsigned int width_, unsigned int height_)
 {
-    width = width_;
-    height = height_;
+    _width = width_;
+    _height = height_;
 
-		// Hide cursor if window size equals desktop size
-	  SDL_DisplayMode dm;
-	  if (SDL_GetDesktopDisplayMode(0, &dm) == 0) {
-		    SDL_ShowCursor(isFullScreen ? SDL_DISABLE : SDL_ENABLE);
-	  }
+    // Hide cursor if window size equals desktop size
+    SDL_DisplayMode dm;
+    if (SDL_GetDesktopDisplayMode(0, &dm) == 0)
+    {
+        SDL_ShowCursor(_isFullScreen ? SDL_DISABLE : SDL_ENABLE);
+    }
 
-	  projectm_set_window_size(_projectM, width, height);
+    projectm_set_window_size(_projectM, _width, _height);
 }
 
 void projectMSDL::pollEvent()
@@ -357,7 +345,7 @@ void projectMSDL::pollEvent()
         {
             case SDL_WINDOWEVENT:
                 int h, w;
-                SDL_GL_GetDrawableSize(win, &w, &h);
+                SDL_GL_GetDrawableSize(_sdlWindow, &w, &h);
                 switch (evt.window.event)
                 {
                     case SDL_WINDOWEVENT_RESIZED:
@@ -370,9 +358,11 @@ void projectMSDL::pollEvent()
                 break;
             case SDL_MOUSEWHEEL:
                 scrollHandler(&evt);
+
             case SDL_KEYDOWN:
                 keyHandler(&evt);
                 break;
+
             case SDL_MOUSEBUTTONDOWN:
                 if (evt.button.button == SDL_BUTTON_LEFT)
                 {
@@ -382,8 +372,8 @@ void projectMSDL::pollEvent()
                         // Get mouse coorindates when you click.
                         SDL_GetMouseState(&mousex, &mousey);
                         // Scale those coordinates. libProjectM supports a scale of 0.1 instead of absolute pixel coordinates.
-                        mousexscale = (mousex / (float) width);
-                        mouseyscale = ((height - mousey) / (float) height);
+                        mousexscale = (mousex / (float) _width);
+                        mouseyscale = ((_height - mousey) / (float) _height);
                         // Touch. By not supplying a touch type, we will default to random.
                         touch(mousexscale, mouseyscale, mousepressure);
                         mouseDown = true;
@@ -405,16 +395,18 @@ void projectMSDL::pollEvent()
                     SDL_GetMouseState(&mousex, &mousey);
 
                     // Scale those coordinates. libProjectM supports a scale of 0.1 instead of absolute pixel coordinates.
-                    mousexscale = (mousex / (float) width);
-                    mouseyscale = ((height - mousey) / (float) height);
+                    mousexscale = (mousex / (float) _width);
+                    mouseyscale = ((_height - mousey) / (float) _height);
 
                     // Destroy at the coordinates we clicked.
                     touchDestroy(mousexscale, mouseyscale);
                 }
                 break;
+
             case SDL_MOUSEBUTTONUP:
                 mouseDown = false;
                 break;
+
             case SDL_QUIT:
                 done = true;
                 break;
@@ -427,8 +419,8 @@ void projectMSDL::pollEvent()
         // Get mouse coordinates when you click.
         SDL_GetMouseState(&mousex, &mousey);
         // Scale those coordinates. libProjectM supports a scale of 0.1 instead of absolute pixel coordinates.
-        mousexscale = (mousex / (float) width);
-        mouseyscale = ((height - mousey) / (float) height);
+        mousexscale = (mousex / (float) _width);
+        mouseyscale = ((_height - mousey) / (float) _height);
         // Drag Touch.
         touchDrag(mousexscale, mouseyscale, mousepressure);
     }
@@ -467,19 +459,18 @@ void projectMSDL::renderFrame()
 
     projectm_render_frame(_projectM);
 
-    SDL_GL_SwapWindow(win);
+    SDL_GL_SwapWindow(_sdlWindow);
 }
 
 void projectMSDL::init(SDL_Window* window, const bool _renderToTexture)
 {
-    win = window;
-    projectm_set_window_size(_projectM, width, height);
+    _sdlWindow = window;
+    projectm_set_window_size(_projectM, _width, _height);
 
 #ifdef WASAPI_LOOPBACK
     wasapi = true;
 #endif
 }
-
 
 std::string projectMSDL::getActivePresetName()
 {
@@ -500,10 +491,10 @@ void projectMSDL::presetSwitchedEvent(bool isHardCut, unsigned int index, void* 
     auto presetName = projectm_playlist_item(app->_playlist, index);
     SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Displaying preset: %s\n", presetName);
 
-    std::string newTitle = "projectM ➫ " + std::string(presetName);
+    app->_presetName = presetName;
     projectm_playlist_free_string(presetName);
 
-    SDL_SetWindowTitle(app->win, newTitle.c_str());
+    app->UpdateWindowTitle();
 }
 
 projectm_handle projectMSDL::projectM()
@@ -514,4 +505,14 @@ projectm_handle projectMSDL::projectM()
 const projectm_settings* projectMSDL::settings()
 {
     return _settings;
+}
+
+void projectMSDL::UpdateWindowTitle()
+{
+    std::string title = "projectM ➫ " + _presetName;
+    if (projectm_get_preset_locked(_projectM))
+    {
+        title.append(" [locked]");
+    }
+    SDL_SetWindowTitle(_sdlWindow, title.c_str());
 }

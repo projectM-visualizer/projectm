@@ -25,10 +25,9 @@
 *
 */
 
+#pragma once
 
-#ifndef pmSDL_hpp
-#define pmSDL_hpp
-
+#include <SDL2/SDL.h>
 
 // Disable LOOPBACK and FAKE audio to enable microphone input
 #ifdef _WIN32
@@ -41,7 +40,6 @@
 
 // projectM
 #include <libprojectM/projectM.h>
-#include <libprojectM/sdltoprojectM.h>
 #include <playlist.h>
 
 // projectM SDL
@@ -138,13 +136,14 @@ public:
     bool fakeAudio{ false }; // Used to track fake audio, so we can turn it off and on.
     bool stretch{ false }; // used for toggling stretch mode
 
-    SDL_GLContext glCtx{ nullptr };
+    SDL_GLContext _openGlContext{ nullptr };
 
 private:
     static void presetSwitchedEvent(bool isHardCut, uint32_t index, void* context);
 
     static void audioInputCallbackF32(void *userdata, unsigned char *stream, int len);
-    static void audioInputCallbackS16(void *userdata, unsigned char *stream, int len);
+
+    void UpdateWindowTitle();
 
     void scrollHandler(SDL_Event *);
     void keyHandler(SDL_Event *);
@@ -153,28 +152,19 @@ private:
     projectm_settings* _settings{ nullptr };
     projectm_playlist_handle _playlist{ nullptr };
 
-    SDL_Window *win{ nullptr };
-    bool isFullScreen{ false };
-    SDL_AudioDeviceID audioInputDevice{ 0 };
-    size_t width{ 0 };
-    size_t height{ 0 };
-    GLuint programID{ 0 };
-    GLuint m_vbo{ 0 };
-    GLuint m_vao{ 0 };
-    GLuint textureID{ 0 };
+    SDL_Window* _sdlWindow{ nullptr };
+    bool _isFullScreen{ false };
+    size_t _width{ 0 };
+    size_t _height{ 0 };
 
     bool _shuffle{ true };
 
     // audio input device characteristics
-    unsigned int NumAudioDevices{ 0 };
-    int CurAudioDevice{ 0 };            // SDL's device indexes are 0-based, -1 means "system default"
-    unsigned short audioChannelsCount{ 0 };
-    unsigned short audioSampleRate{ 0 };
-    unsigned short audioSampleCount{ 0 };
-    SDL_AudioFormat audioFormat{ 0 };
-    SDL_AudioDeviceID audioDeviceID{ 0 };
-    int selectedAudioDevice{ 0 };
+    unsigned int _numAudioDevices{ 0 };
+    int _curAudioDevice{ 0 };            // SDL's device indexes are 0-based, -1 means "system default"
+    unsigned short _audioChannelsCount{ 0 };
+    SDL_AudioDeviceID _audioDeviceId{ 0 };
+    int _selectedAudioDevice{ 0 };
+
+    std::string _presetName; //!< Current preset name
 };
-
-
-#endif /* pmSDL_hpp */
