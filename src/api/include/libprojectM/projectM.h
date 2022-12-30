@@ -21,7 +21,6 @@
 
 #pragma once
 
-#include "libprojectM/event.h"
 #include "libprojectM/projectM_export.h"
 
 #include <stdbool.h>
@@ -294,39 +293,6 @@ PROJECTM_EXPORT void projectm_render_frame(projectm_handle instance);
  * @return A GLuint value with the texture ID projectM will render to.
  */
 PROJECTM_EXPORT unsigned int projectm_init_render_to_texture(projectm_handle instance);
-
-/**
- * @brief Key handler that processes user input.
- *
- * <p>This method can be used to send user input in the host application to projectM, for example
- * to switch presets, display the help and search menus or change settings like beat sensitivity.</p>
- *
- * <p>All actions executed by the key handler can also be run programmatically if the host application
- * is not able to redirect keyboard input to projectM.</p>
- *
- * @param instance The projectM instance handle.
- * @param event The key event, valid are either PROJECTM_KEYUP or PROJECTM_KEYDOWN.
- * @param keycode The key code, mapped to a value of the projectMKeycode enumeration.
- * @param modifier The key modifier as a value from the projectMModifier.
- */
-PROJECTM_EXPORT void projectm_key_handler(projectm_handle instance, projectMEvent event,
-                                          projectMKeycode keycode, projectMModifier modifier);
-
-/**
- * @brief Default key handler that processes user input.
- *
- * <p>This method can be used to send user input in the host application to projectM, for example
- * to switch presets, display the help and search menus or change settings like beat sensitivity.</p>
- *
- * <p>All actions executed by the key handler can also be run programmatically if the host application
- * is not able to redirect keyboard input to projectM.</p>
- *
- * @param instance The projectM instance handle.
- * @param event The key event, valid are either PROJECTM_KEYUP or PROJECTM_KEYDOWN.
- * @param keycode The key code, mapped to a value of the projectMKeycode enumeration.
- */
-PROJECTM_EXPORT void projectm_default_key_handler(projectm_handle instance, projectMEvent event,
-                                                  projectMKeycode keycode);
 
 /**
  * @brief Returns the size of the internal render texture.
@@ -608,6 +574,13 @@ PROJECTM_EXPORT projectm_settings* projectm_get_settings(projectm_handle instanc
 PROJECTM_EXPORT void projectm_write_config(const char* config_file, const projectm_settings* settings);
 
 /**
+ * @brief Returns whether the current preset is locked or not.
+ * @param instance The projectM instance handle.
+ * @return True if the preset lock is enabled, false otherwise.
+ */
+PROJECTM_EXPORT bool projectm_get_preset_locked(projectm_handle instance);
+
+/**
  * @brief Locks or unlocks the current preset.
  *
  * Locking effectively disables automatic preset transitions, both hard and soft cuts. Programmatic
@@ -616,14 +589,7 @@ PROJECTM_EXPORT void projectm_write_config(const char* config_file, const projec
  * @param instance The projectM instance handle.
  * @param lock True to lock the current preset, false to enable automatic transitions.
  */
-PROJECTM_EXPORT void projectm_lock_preset(projectm_handle instance, bool lock);
-
-/**
- * @brief Returns whether the current preset is locked or not.
- * @param instance The projectM instance handle.
- * @return True if the preset lock is enabled, false otherwise.
- */
-PROJECTM_EXPORT bool projectm_is_preset_locked(projectm_handle instance);
+PROJECTM_EXPORT void projectm_set_preset_locked(projectm_handle instance, bool lock);
 
 /**
  * @brief Returns the current viewport size in pixels.

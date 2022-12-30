@@ -194,19 +194,6 @@ unsigned int projectm_init_render_to_texture(projectm_handle instance)
     return projectMInstance->InitRenderToTexture();
 }
 
-void projectm_key_handler(projectm_handle instance, projectMEvent event, projectMKeycode keycode,
-                          projectMModifier modifier)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->KeyHandler(event, keycode, modifier);
-}
-
-void projectm_default_key_handler(projectm_handle instance, projectMEvent event, projectMKeycode keycode)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->DefaultKeyHandler(event, keycode);
-}
-
 size_t projectm_get_texture_size(projectm_handle instance)
 {
     auto projectMInstance = handle_to_instance(instance);
@@ -424,16 +411,16 @@ void projectm_write_config(const char* config_file, const projectm_settings* set
     ProjectM::WriteConfig(config_file, cppSettings);
 }
 
-void projectm_lock_preset(projectm_handle instance, bool lock)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->SetPresetLocked(lock);
-}
-
-bool projectm_is_preset_locked(projectm_handle instance)
+bool projectm_get_preset_locked(projectm_handle instance)
 {
     auto projectMInstance = handle_to_instance(instance);
     return projectMInstance->PresetLocked();
+}
+
+void projectm_set_preset_locked(projectm_handle instance, bool lock)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->SetPresetLocked(lock);
 }
 
 void projectm_get_window_size(projectm_handle instance, size_t* width, size_t* height)

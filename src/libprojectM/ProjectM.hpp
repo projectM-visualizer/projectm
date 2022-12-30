@@ -25,8 +25,6 @@
 #include "PresetFactoryManager.hpp"
 #include "fatal.h"
 
-#include "libprojectM/event.h"
-
 #ifdef _WIN32
 
 #ifdef _MSC_VER
@@ -140,10 +138,6 @@ public:
 
     auto InitRenderToTexture() -> unsigned;
 
-    void KeyHandler(projectMEvent event,
-                    projectMKeycode keyCode,
-                    projectMModifier modifier);
-
     void SetTextureSize(size_t size);
 
     auto TextureSize() const -> size_t;
@@ -225,8 +219,6 @@ public:
     auto WindowWidth() -> int;
 
     auto WindowHeight() -> int;
-
-    void DefaultKeyHandler(projectMEvent event, projectMKeycode keycode);
 
     /**
      * @brief Dumps a debug image to the working dir when the next frame is rendered.

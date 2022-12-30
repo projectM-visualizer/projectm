@@ -46,8 +46,6 @@ add_library(projectM_main OBJECT
         gltext.h
         HungarianMethod.hpp
         IdleTextures.hpp
-        KeyHandler.cpp
-        KeyHandler.hpp
         PCM.cpp
         PCM.hpp
         PipelineMerger.cpp

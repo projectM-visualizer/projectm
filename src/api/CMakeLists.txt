@@ -3,10 +3,7 @@ add_library(projectM_api INTERFACE)
 target_sources(projectM_api
         PRIVATE
         "${PROJECTM_EXPORT_HEADER}"
-        include/libprojectM/event.h
-        include/libprojectM/lvtoprojectM.h
         include/libprojectM/projectM.h
-        include/libprojectM/sdltoprojectM.h
         )
 
 set_target_properties(projectM_api PROPERTIES
