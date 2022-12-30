@@ -68,7 +68,7 @@ public:
 
   void RenderFrame(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void RenderFrameOnlyPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext);
-  void RenderFrameOnlyPass2(const Pipeline &pipeline, const PipelineContext &pipelineContext,int xoffset,int yoffset,int eye);
+  void RenderFrameOnlyPass2(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void ResetTextures();
   void reset(int w, int h);
   GLuint initRenderToTexture();
@@ -140,21 +140,6 @@ private:
     std::string m_fps;
 
     float* m_perPointMeshBuffer{nullptr};
-
-    /**
-       * @brief View start x position
-       *
-       * <p>Normally 0, but could be different if doing a subset of the window - like for virtual reality</p>
-       */
-    int m_viewStartX{0};
-
-    /**
-       * @brief View start y position
-       *
-       * <p>Normally 0, but could be different if doing a subset of the window - like
-       * for virtual reality. These are currently set only for rendering to the screen, not to the textbuffer.</p>
-      */
-    int m_viewStartY{0};
 
     int m_viewportWidth{0};
     int m_viewportHeight{0};

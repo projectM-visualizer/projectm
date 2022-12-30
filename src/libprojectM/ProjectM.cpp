@@ -241,7 +241,7 @@ void ProjectM::RenderFrame()
     Pipeline pipeline;
     Pipeline* comboPipeline = RenderFrameOnlyPass1(&pipeline);
 
-    RenderFrameOnlyPass2(comboPipeline, 0, 0);
+    RenderFrameOnlyPass2(comboPipeline);
 
     ProjectM::RenderFrameEndOnSeparatePasses(comboPipeline);
 }
@@ -323,9 +323,7 @@ auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
     return nullptr; // indicating no transition
 }
 
-void ProjectM::RenderFrameOnlyPass2(Pipeline* pipeline,
-                                    int offsetX,
-                                    int offsetY)
+void ProjectM::RenderFrameOnlyPass2(Pipeline* pipeline)
 {
     if (pipeline == nullptr)
     {
@@ -333,7 +331,7 @@ void ProjectM::RenderFrameOnlyPass2(Pipeline* pipeline,
         pipeline = &m_activePreset->pipeline();
     }
 
-    m_renderer->RenderFrameOnlyPass2(*pipeline, PipelineContext(), offsetX, offsetY, 0);
+    m_renderer->RenderFrameOnlyPass2(*pipeline, PipelineContext());
 }
 
 void ProjectM::RenderFrameEndOnSeparatePasses(Pipeline* pipeline)
