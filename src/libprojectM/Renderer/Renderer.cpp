@@ -135,6 +135,7 @@ void Renderer::SetPipeline(Pipeline& pipeline)
 void Renderer::ResetTextures()
 {
     m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths, m_textureSizeX, m_textureSizeY);
+    m_shaderEngine.setParams(m_textureSizeX, m_textureSizeY, m_fAspectX, m_fAspectY, m_beatDetect, m_textureManager.get());
 }
 
 void Renderer::SetTextureSearchPaths(std::vector<std::string>& textureSearchPaths)
@@ -387,7 +388,6 @@ void Renderer::reset(int viewportWidth, int viewportHeight)
 
     ResetTextures();
 
-    m_shaderEngine.setParams(m_textureSizeX, m_textureSizeY, m_fAspectX, m_fAspectY, m_beatDetect, m_textureManager.get());
     m_shaderEngine.reset();
     try
     {
