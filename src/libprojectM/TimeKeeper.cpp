@@ -73,12 +73,12 @@ double TimeKeeper::PresetProgressA()
         return 1.0;
     }
 
-    return (m_currentTime - m_presetTimeA) / m_presetDurationA;
+    return std::min((m_currentTime - m_presetTimeA) / m_presetDurationA, 1.0);
 }
 
 double TimeKeeper::PresetProgressB()
 {
-    return (m_currentTime - m_presetTimeB) / m_presetDurationB;
+    return std::min((m_currentTime - m_presetTimeB) / m_presetDurationB, 1.0);
 }
 
 int TimeKeeper::PresetFrameB()
