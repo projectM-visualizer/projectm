@@ -270,6 +270,18 @@ TEST(projectMPlaylistAPI, RemovePresets)
 }
 
 
+TEST(projectMPlaylistAPI, GetShuffle)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    EXPECT_CALL(mockPlaylist, Shuffle())
+        .Times(1)
+        .WillOnce(Return(true));
+
+    EXPECT_TRUE(projectm_playlist_get_shuffle(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist)));
+}
+
+
 TEST(projectMPlaylistAPI, SetShuffle)
 {
     PlaylistCWrapperMock mockPlaylist;

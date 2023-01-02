@@ -332,6 +332,13 @@ uint32_t projectm_playlist_remove_presets(projectm_playlist_handle instance, uin
                                           uint32_t count);
 
 /**
+ * @brief Retrieves the current state of shuffle mode.
+ * @param instance The playlist manager instance.
+ * @return True if shuffle mode is enabled, false otherwise.
+ */
+bool projectm_playlist_get_shuffle(projectm_playlist_handle instance);
+
+/**
  * @brief Enable or disable shuffle mode.
  * @param instance The playlist manager instance.
  * @param shuffle True to enable random shuffling, false to play presets in playlist order.

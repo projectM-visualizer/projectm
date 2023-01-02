@@ -380,6 +380,13 @@ uint32_t projectm_playlist_remove_presets(projectm_playlist_handle instance, uin
 }
 
 
+bool projectm_playlist_get_shuffle(projectm_playlist_handle instance)
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+    return playlist->Shuffle();
+}
+
+
 void projectm_playlist_set_shuffle(projectm_playlist_handle instance, bool shuffle)
 {
     auto* playlist = playlist_handle_to_instance(instance);
