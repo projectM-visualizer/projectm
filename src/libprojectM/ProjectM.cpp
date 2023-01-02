@@ -179,48 +179,49 @@ auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
         //if preset is done and we're not already switching
         if (m_timeKeeper->PresetProgressA() >= 1.0 && !m_timeKeeper->IsSmoothing())
         {
+            m_presetChangeNotified = true;
             PresetSwitchRequestedEvent(false);
         }
         else if (m_hardCutEnabled &&
                  (m_beatDetect->vol - m_beatDetect->volOld > m_hardCutSensitivity) &&
                  m_timeKeeper->CanHardCut())
         {
+            m_presetChangeNotified = true;
             PresetSwitchRequestedEvent(true);
         }
-        m_presetChangeNotified = true;
     }
 
 
-    if (m_timeKeeper->IsSmoothing() && m_timeKeeper->SmoothRatio() <= 1.0 && m_transitioningPreset != nullptr)
+    if (m_timeKeeper->IsSmoothing() && m_transitioningPreset != nullptr)
     {
+        if (m_timeKeeper->SmoothRatio() <= 1.0)
+        {
 #if USE_THREADS
-        m_workerSync.WakeUpBackgroundTask();
+            m_workerSync.WakeUpBackgroundTask();
 #endif
 
-        m_activePreset->Render(*m_beatDetect, PipelineContext());
+            m_activePreset->Render(*m_beatDetect, PipelineContext());
 
 #if USE_THREADS
-        // FIXME: Instead of waiting after a single render pass, check every frame if it's done.
-        m_workerSync.WaitForBackgroundTaskToFinish();
+            // FIXME: Instead of waiting after a single render pass, check every frame if it's done.
+            m_workerSync.WaitForBackgroundTaskToFinish();
 #else
-        EvaluateSecondPreset();
+            EvaluateSecondPreset();
 #endif
 
-        pipeline->setStaticPerPixel(m_meshX, m_meshY);
+            pipeline->setStaticPerPixel(m_meshX, m_meshY);
 
-        PipelineMerger::mergePipelines(
-            m_activePreset->pipeline(),
-            m_transitioningPreset->pipeline(),
-            *pipeline,
-            m_timeKeeper->SmoothRatio());
+            PipelineMerger::mergePipelines(
+                m_activePreset->pipeline(),
+                m_transitioningPreset->pipeline(),
+                *pipeline,
+                m_timeKeeper->SmoothRatio());
 
-        m_renderer->RenderFrameOnlyPass1(*pipeline, PipelineContext());
+            m_renderer->RenderFrameOnlyPass1(*pipeline, PipelineContext());
 
-        return pipeline;
-    }
+            return pipeline;
+        }
 
-    if (m_timeKeeper->IsSmoothing() && m_timeKeeper->SmoothRatio() > 1.0)
-    {
         m_activePreset = std::move(m_transitioningPreset);
         m_timeKeeper->EndSmoothing();
     }
@@ -355,6 +356,8 @@ void ProjectM::ResetOpenGL(size_t width, size_t height)
 
 void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hardCut)
 {
+    m_presetChangeNotified = m_presetLocked;
+
     if (preset == nullptr)
     {
         return;
@@ -378,11 +381,8 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
     else
     {
         m_transitioningPreset = std::move(preset);
-        m_timeKeeper->StartPreset();
         m_timeKeeper->StartSmoothing();
     }
-
-    m_presetChangeNotified = m_presetLocked;
 }
 
 auto ProjectM::WindowWidth() -> int
