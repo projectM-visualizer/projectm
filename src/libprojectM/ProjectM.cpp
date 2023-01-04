@@ -191,24 +191,17 @@ auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
         }
     }
 
-
     if (m_timeKeeper->IsSmoothing() && m_transitioningPreset != nullptr)
     {
+#if USE_THREADS
+        m_workerSync.WakeUpBackgroundTask();
+        // FIXME: Instead of waiting after a single render pass, check every frame if it's done.
+        m_workerSync.WaitForBackgroundTaskToFinish();
+#endif
+        EvaluateSecondPreset();
+
         if (m_timeKeeper->SmoothRatio() <= 1.0)
         {
-#if USE_THREADS
-            m_workerSync.WakeUpBackgroundTask();
-#endif
-
-            m_activePreset->Render(*m_beatDetect, PipelineContext());
-
-#if USE_THREADS
-            // FIXME: Instead of waiting after a single render pass, check every frame if it's done.
-            m_workerSync.WaitForBackgroundTaskToFinish();
-#else
-            EvaluateSecondPreset();
-#endif
-
             pipeline->setStaticPerPixel(m_meshX, m_meshY);
 
             PipelineMerger::mergePipelines(
