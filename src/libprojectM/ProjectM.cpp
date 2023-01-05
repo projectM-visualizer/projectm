@@ -95,7 +95,7 @@ void ProjectM::LoadPresetData(std::istream& presetData, bool smoothTransition)
 
     try
     {
-        StartPresetTransition(m_presetFactoryManager.CreatePresetFromStream("milk", presetData), !smoothTransition);
+        StartPresetTransition(m_presetFactoryManager.CreatePresetFromStream(".milk", presetData), !smoothTransition);
     }
     catch (const PresetFactoryException& ex)
     {
