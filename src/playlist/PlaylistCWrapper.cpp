@@ -218,21 +218,26 @@ void projectm_playlist_clear(projectm_playlist_handle instance)
 }
 
 
-auto projectm_playlist_items(projectm_playlist_handle instance) -> char**
+auto projectm_playlist_items(projectm_playlist_handle instance, uint32_t start, uint32_t count) -> char**
 {
     auto* playlist = playlist_handle_to_instance(instance);
 
-    auto& items = playlist->Items();
+    const auto& items = playlist->Items();
 
-    auto* array = new char* [items.size() + 1] {};
-
-    int index{0};
-    for (const auto& item : items)
+    if (start >= items.size())
     {
-        auto filename = item.Filename();
-        array[index] = new char[filename.length() + 1]{};
-        filename.copy(array[index], filename.length());
-        index++;
+        auto* array = new char* [1] {};
+        return array;
+    }
+
+    size_t endPos = std::min(static_cast<size_t>(start + count), items.size());
+    auto* array = new char* [endPos - start + 1] {};
+
+    for (size_t index{start}; index < endPos; index++)
+    {
+        auto filename = items[index].Filename();
+        array[index - start] = new char[filename.length() + 1]{};
+        filename.copy(array[index - start], filename.length());
     }
 
     return array;
