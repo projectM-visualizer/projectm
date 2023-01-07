@@ -65,7 +65,7 @@ TEST(projectMPlaylistAPI, Clear)
 }
 
 
-TEST(projectMPlaylistAPI, Items)
+TEST(projectMPlaylistAPI, ItemsAll)
 {
     PlaylistCWrapperMock mockPlaylist;
 
@@ -77,13 +77,68 @@ TEST(projectMPlaylistAPI, Items)
         .Times(1)
         .WillOnce(ReturnRef(items));
 
-    auto* returnedItems = projectm_playlist_items(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist));
+    // Passing INT_MAX as count should make the function always return all elements.
+    auto* returnedItems = projectm_playlist_items(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 0, std::numeric_limits<uint32_t>::max());
     ASSERT_NE(returnedItems, nullptr);
     ASSERT_NE(*returnedItems, nullptr);
     EXPECT_STREQ(*returnedItems, items.at(0).Filename().c_str());
     ASSERT_NE(*(returnedItems + 1), nullptr);
     EXPECT_STREQ(*(returnedItems + 1), items.at(1).Filename().c_str());
     EXPECT_EQ(*(returnedItems + 2), nullptr);
+
+    projectm_playlist_free_string_array(returnedItems);
+}
+
+
+TEST(projectMPlaylistAPI, ItemsPartial)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    std::vector<ProjectM::Playlist::Item> items{
+        ProjectM::Playlist::Item("/some/file"),
+        ProjectM::Playlist::Item("/another/file1"),
+        ProjectM::Playlist::Item("/another/file2"),
+        ProjectM::Playlist::Item("/another/file3"),
+        ProjectM::Playlist::Item("/another/file4"),
+        ProjectM::Playlist::Item("/another/file5")};
+
+    EXPECT_CALL(mockPlaylist, Items())
+        .Times(1)
+        .WillOnce(ReturnRef(items));
+
+    auto* returnedItems = projectm_playlist_items(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 1, 3);
+    ASSERT_NE(returnedItems, nullptr);
+    ASSERT_NE(*returnedItems, nullptr);
+    EXPECT_STREQ(*returnedItems, items.at(1).Filename().c_str());
+    ASSERT_NE(*(returnedItems + 1), nullptr);
+    EXPECT_STREQ(*(returnedItems + 1), items.at(2).Filename().c_str());
+    EXPECT_NE(*(returnedItems + 2), nullptr);
+    EXPECT_STREQ(*(returnedItems + 2), items.at(3).Filename().c_str());
+    EXPECT_EQ(*(returnedItems + 3), nullptr);
+
+    projectm_playlist_free_string_array(returnedItems);
+}
+
+
+TEST(projectMPlaylistAPI, ItemsOutOfRange)
+{
+    PlaylistCWrapperMock mockPlaylist;
+
+    std::vector<ProjectM::Playlist::Item> items{
+        ProjectM::Playlist::Item("/some/file"),
+        ProjectM::Playlist::Item("/another/file1"),
+        ProjectM::Playlist::Item("/another/file2"),
+        ProjectM::Playlist::Item("/another/file3"),
+        ProjectM::Playlist::Item("/another/file4"),
+        ProjectM::Playlist::Item("/another/file5")};
+
+    EXPECT_CALL(mockPlaylist, Items())
+        .Times(1)
+        .WillOnce(ReturnRef(items));
+
+    auto* returnedItems = projectm_playlist_items(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 10, 10);
+    ASSERT_NE(returnedItems, nullptr);
+    ASSERT_EQ(*returnedItems, nullptr);
 
     projectm_playlist_free_string_array(returnedItems);
 }

@@ -172,15 +172,23 @@ uint32_t projectm_playlist_size(projectm_playlist_handle instance);
 void projectm_playlist_clear(projectm_playlist_handle instance);
 
 /**
- * @brief Returns a list of all preset files in the current playlist, in order.
+ * @brief Returns a list of preset files inside the given range of the current playlist, in order.
+ *
+ * This function can be used to return the whole playlist to save it to a file, or just a part of
+ * it for use in virtual lists. If less elements than given in @a count are available, only the
+ * remainder of items after the starting index are returned. If the starting index equals or exceeds
+ * the playlist size, an empty list is returned.
+ *
  * @note Call projectm_playlist_free_string_array() when you're done using the list.
- * @note Ideally, don't rely on the playlist size to iterate over the filenames. Instead, look for
- *       the terminating null pointer to abort the loop.
+ * @note Ideally, don't rely on the value provided as count to iterate over the filenames.
+ *       Instead, look for the terminating null pointer to abort the loop.
  * @param instance The playlist manager instance.
+ * @param start The zero-based starting index of the range to return.
+ * @param count The maximum number if items to return.
  * @return A pointer to a list of char pointers, each containing a single preset. The last entry
  *         is denoted by a null pointer.
  */
-char** projectm_playlist_items(projectm_playlist_handle instance);
+char** projectm_playlist_items(projectm_playlist_handle instance, uint32_t start, uint32_t count);
 
 /**
  * @brief Returns the name of a preset at the given index in the current playlist.
