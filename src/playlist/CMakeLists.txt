@@ -2,7 +2,7 @@ if(NOT ENABLE_PLAYLIST)
     return()
 endif()
 
-add_library(projectM_playlist STATIC
+add_library(projectM_playlist_main OBJECT
         Filter.cpp
         Filter.hpp
         Item.cpp
@@ -14,25 +14,76 @@ add_library(projectM_playlist STATIC
         playlist.h
         )
 
+target_include_directories(projectM_playlist_main
+        PUBLIC
+        ${CMAKE_CURRENT_BINARY_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        )
+
+target_link_libraries(projectM_playlist_main
+        PUBLIC
+        libprojectM::projectM
+        )
+
+add_library(projectM_playlist
+        ${PROJECTM_DUMMY_SOURCE_FILE} # CMake needs at least one "real" source file.
+        $<TARGET_OBJECTS:projectM_playlist_main>
+        )
+
+set_target_properties(projectM_playlist PROPERTIES
+        VERSION "${PROJECTM_LIB_VERSION}"
+        SOVERSION "${PROJECTM_SO_VERSION}"
+        EXPORT_NAME playlist
+        FOLDER libprojectM
+        )
+
 target_include_directories(projectM_playlist
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+        "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}>"
         )
 
 target_link_libraries(projectM_playlist
         PUBLIC
-        projectM::API
+        libprojectM::projectM
         )
 
-set_target_properties(projectM_playlist PROPERTIES
-        EXPORT_NAME playlist
-        FOLDER libprojectM
+if(BUILD_SHARED_LIBS)
+    target_compile_definitions(projectM_playlist
+            PRIVATE
+            projectM_api_EXPORTS
+            )
+
+    target_link_libraries(projectM_playlist
+            PUBLIC
+            ${CMAKE_DL_LIBS}
+            )
+else()
+    target_compile_definitions(projectM_playlist
+            PUBLIC
+            PROJECTM_STATIC_DEFINE
+            )
+
+    set_target_properties(projectM_playlist PROPERTIES
+            OUTPUT_NAME $<IF:$<PLATFORM_ID:Windows>,libprojectM_playlist,projectM_playlist>
+            FOLDER libprojectM
+            )
+endif()
+
+include(GenerateExportHeader)
+
+set(PROJECTM_PLAYLIST_EXPORT_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/projectM_playlist_export.h")
+
+generate_export_header(projectM_playlist
+        BASE_NAME projectM_playlist
+        EXPORT_FILE_NAME "${PROJECTM_PLAYLIST_EXPORT_HEADER}"
         )
 
 # Adds fallback support to boost if std::filesystem is unavailable.
 include(FilesystemSupport.cmake)
 
-add_library(projectM::playlist ALIAS projectM_playlist)
+add_library(libprojectM::playlist ALIAS projectM_playlist)
 
 install(TARGETS projectM_playlist
         EXPORT libprojectMPlaylist
@@ -44,6 +95,7 @@ install(TARGETS projectM_playlist
 
 install(FILES
         playlist.h
+        "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/projectM_playlist_export.h"
         DESTINATION "${PROJECTM_INCLUDE_DIR}/libprojectM"
         COMPONENT Devel
         )

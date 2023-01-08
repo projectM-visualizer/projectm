@@ -1,6 +1,7 @@
 #pragma once
 
 #include "libprojectM/projectM.h"
+#include "libprojectM/projectM_playlist_export.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,7 +38,7 @@ typedef enum
  *
  * @param string A pointer to a string that should be freed.
  */
-void projectm_playlist_free_string(char* string);
+PROJECTM_PLAYLIST_EXPORT void projectm_playlist_free_string(char* string);
 
 /**
  * @brief Frees a string array returned by any of the playlist API functions.
@@ -47,7 +48,7 @@ void projectm_playlist_free_string(char* string);
  *
  * @param array The pointer to the array of strings that should be freed.
  */
-void projectm_playlist_free_string_array(char** array);
+PROJECTM_PLAYLIST_EXPORT void projectm_playlist_free_string_array(char** array);
 
 /**
  * @brief Callback function that is executed on each preset change.
@@ -96,7 +97,7 @@ typedef void (*projectm_playlist_preset_switch_failed_event)(const char* preset_
  *                 created playlist instance unconnected.
  * @return An opaque pointer to the newly created playlist manager instance. Null if creation failed.
  */
-projectm_playlist_handle projectm_playlist_create(projectm_handle projectm_instance);
+PROJECTM_PLAYLIST_EXPORT projectm_playlist_handle projectm_playlist_create(projectm_handle projectm_instance);
 
 /**
  * @brief Destroys a previously created playlist manager.
@@ -105,7 +106,7 @@ projectm_playlist_handle projectm_playlist_create(projectm_handle projectm_insta
  *
  * @param instance The playlist manager instance to destroy.
  */
-void projectm_playlist_destroy(projectm_playlist_handle instance);
+PROJECTM_PLAYLIST_EXPORT void projectm_playlist_destroy(projectm_playlist_handle instance);
 
 /**
  * @brief Sets a callback function that will be called when a preset changes.
@@ -117,7 +118,7 @@ void projectm_playlist_destroy(projectm_playlist_handle instance);
  * @param user_data A pointer to any data that will be sent back in the callback, e.g. context
  *                  information.
  */
-void projectm_playlist_set_preset_switched_event_callback(projectm_playlist_handle instance,
+PROJECTM_PLAYLIST_EXPORT void projectm_playlist_set_preset_switched_event_callback(projectm_playlist_handle instance,
                                                           projectm_playlist_preset_switched_event callback,
                                                           void* user_data);
 
@@ -136,7 +137,7 @@ void projectm_playlist_set_preset_switched_event_callback(projectm_playlist_hand
  * @param user_data A pointer to any data that will be sent back in the callback, e.g. context
  *                  information.
  */
-void projectm_playlist_set_preset_switch_failed_event_callback(projectm_playlist_handle instance,
+PROJECTM_PLAYLIST_EXPORT void projectm_playlist_set_preset_switch_failed_event_callback(projectm_playlist_handle instance,
                                                                projectm_playlist_preset_switch_failed_event callback,
                                                                void* user_data);
 
@@ -156,20 +157,20 @@ void projectm_playlist_set_preset_switch_failed_event_callback(projectm_playlist
  * @param projectm_instance The projectM instance to connect to. Can be a null pointer to remove
  *                          an existing binding and clear the projectM preset switch callback.
  */
-void projectm_playlist_connect(projectm_playlist_handle instance, projectm_handle projectm_instance);
+PROJECTM_PLAYLIST_EXPORT void projectm_playlist_connect(projectm_playlist_handle instance, projectm_handle projectm_instance);
 
 /**
  * @brief Returns the number of presets in the current playlist.
  * @param instance The playlist manager instance.
  * @return The number of presets in the current playlist.
  */
-uint32_t projectm_playlist_size(projectm_playlist_handle instance);
+PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_size(projectm_playlist_handle instance);
 
 /**
  * @brief Clears the playlist.
  * @param instance The playlist manager instance to clear.
  */
-void projectm_playlist_clear(projectm_playlist_handle instance);
+PROJECTM_PLAYLIST_EXPORT void projectm_playlist_clear(projectm_playlist_handle instance);
 
 /**
  * @brief Returns a list of preset files inside the given range of the current playlist, in order.
@@ -188,7 +189,7 @@ void projectm_playlist_clear(projectm_playlist_handle instance);
  * @return A pointer to a list of char pointers, each containing a single preset. The last entry
  *         is denoted by a null pointer.
  */
-char** projectm_playlist_items(projectm_playlist_handle instance, uint32_t start, uint32_t count);
+PROJECTM_PLAYLIST_EXPORT char** projectm_playlist_items(projectm_playlist_handle instance, uint32_t start, uint32_t count);
 
 /**
  * @brief Returns the name of a preset at the given index in the current playlist.
@@ -200,7 +201,7 @@ char** projectm_playlist_items(projectm_playlist_handle instance, uint32_t start
  * @return The filename of the requested preset, or NULL if the index was out of bounds or the
  *         playlist is empty.
  */
-char* projectm_playlist_item(projectm_playlist_handle instance, uint32_t index);
+PROJECTM_PLAYLIST_EXPORT char* projectm_playlist_item(projectm_playlist_handle instance, uint32_t index);
 
 /**
  * @brief Appends presets from the given path to the end of the current playlist.
@@ -218,7 +219,7 @@ char* projectm_playlist_item(projectm_playlist_handle instance, uint32_t index);
  *                         added that do not already exist in the current playlist.
  * @return The number of files added. 0 may indicate issues scanning the path.
  */
-uint32_t projectm_playlist_add_path(projectm_playlist_handle instance, const char* path,
+PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_add_path(projectm_playlist_handle instance, const char* path,
                                     bool recurse_subdirs, bool allow_duplicates);
 
 
@@ -240,7 +241,7 @@ uint32_t projectm_playlist_add_path(projectm_playlist_handle instance, const cha
  *                         added that do not already exist in the current playlist.
  * @return The number of files added. 0 may indicate issues scanning the path.
  */
-uint32_t projectm_playlist_insert_path(projectm_playlist_handle instance, const char* path,
+PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_insert_path(projectm_playlist_handle instance, const char* path,
                                        uint32_t index, bool recurse_subdirs, bool allow_duplicates);
 
 /**
@@ -256,7 +257,7 @@ uint32_t projectm_playlist_insert_path(projectm_playlist_handle instance, const 
  * @return True if the file was added to the playlist, false if the file was a duplicate and
  *         allow_duplicates was set to false.
  */
-bool projectm_playlist_add_preset(projectm_playlist_handle instance, const char* filename,
+PROJECTM_PLAYLIST_EXPORT bool projectm_playlist_add_preset(projectm_playlist_handle instance, const char* filename,
                                   bool allow_duplicates);
 
 /**
@@ -277,7 +278,7 @@ bool projectm_playlist_add_preset(projectm_playlist_handle instance, const char*
  * @return True if the file was added to the playlist, false if the file was a duplicate and
  *         allow_duplicates was set to false.
  */
-bool projectm_playlist_insert_preset(projectm_playlist_handle instance, const char* filename,
+PROJECTM_PLAYLIST_EXPORT bool projectm_playlist_insert_preset(projectm_playlist_handle instance, const char* filename,
                                      uint32_t index, bool allow_duplicates);
 
 /**
@@ -293,7 +294,7 @@ bool projectm_playlist_insert_preset(projectm_playlist_handle instance, const ch
  *                         current playlist.
  * @return The number of files added to the playlist. Ranges between 0 and count.
  */
-uint32_t projectm_playlist_add_presets(projectm_playlist_handle instance, const char** filenames,
+PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_add_presets(projectm_playlist_handle instance, const char** filenames,
                                        uint32_t count, bool allow_duplicates);
 
 /**
@@ -314,7 +315,7 @@ uint32_t projectm_playlist_add_presets(projectm_playlist_handle instance, const 
  *                         current playlist.
  * @return The number of files added to the playlist. Ranges between 0 and count.
  */
-uint32_t projectm_playlist_insert_presets(projectm_playlist_handle instance, const char** filenames,
+PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_insert_presets(projectm_playlist_handle instance, const char** filenames,
                                           uint32_t count, unsigned int index, bool allow_duplicates);
 
 /**
@@ -325,7 +326,7 @@ uint32_t projectm_playlist_insert_presets(projectm_playlist_handle instance, con
  *              removed.
  * @return True if the preset was removed from the playlist, false if the index was out of range.
  */
-bool projectm_playlist_remove_preset(projectm_playlist_handle instance, uint32_t index);
+PROJECTM_PLAYLIST_EXPORT bool projectm_playlist_remove_preset(projectm_playlist_handle instance, uint32_t index);
 
 /**
  * @brief Removes a number of presets from the playlist from the specified position.
@@ -336,7 +337,7 @@ bool projectm_playlist_remove_preset(projectm_playlist_handle instance, uint32_t
  * @param count The number of presets to remove from the given index.
  * @return The number of presets removed from the playlist.
  */
-uint32_t projectm_playlist_remove_presets(projectm_playlist_handle instance, uint32_t index,
+PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_remove_presets(projectm_playlist_handle instance, uint32_t index,
                                           uint32_t count);
 
 /**
@@ -344,14 +345,14 @@ uint32_t projectm_playlist_remove_presets(projectm_playlist_handle instance, uin
  * @param instance The playlist manager instance.
  * @return True if shuffle mode is enabled, false otherwise.
  */
-bool projectm_playlist_get_shuffle(projectm_playlist_handle instance);
+PROJECTM_PLAYLIST_EXPORT bool projectm_playlist_get_shuffle(projectm_playlist_handle instance);
 
 /**
  * @brief Enable or disable shuffle mode.
  * @param instance The playlist manager instance.
  * @param shuffle True to enable random shuffling, false to play presets in playlist order.
  */
-void projectm_playlist_set_shuffle(projectm_playlist_handle instance, bool shuffle);
+PROJECTM_PLAYLIST_EXPORT void projectm_playlist_set_shuffle(projectm_playlist_handle instance, bool shuffle);
 
 /**
  * @brief Sorts part or the whole playlist according to the given predicate and order.
@@ -373,7 +374,7 @@ void projectm_playlist_set_shuffle(projectm_playlist_handle instance, bool shuff
  * @param predicate The predicate to use for sorting. Default is SORT_PREDICATE_FULL_PATH.
  * @param order The sort order. Default is SORT_ORDER_ASCENDING.
  */
-void projectm_playlist_sort(projectm_playlist_handle instance, uint32_t start_index, uint32_t count,
+PROJECTM_PLAYLIST_EXPORT void projectm_playlist_sort(projectm_playlist_handle instance, uint32_t start_index, uint32_t count,
                             projectm_playlist_sort_predicate predicate, projectm_playlist_sort_order order);
 
 /**
@@ -381,7 +382,7 @@ void projectm_playlist_sort(projectm_playlist_handle instance, uint32_t start_in
  * @param instance The playlist manager instance.
  * @return The number of retries after failed preset switches.
  */
-uint32_t projectm_playlist_get_retry_count(projectm_playlist_handle instance);
+PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_get_retry_count(projectm_playlist_handle instance);
 
 /**
  * @brief Sets the number of retries after failed preset switches.
@@ -390,14 +391,14 @@ uint32_t projectm_playlist_get_retry_count(projectm_playlist_handle instance);
  * @param retry_count The number of retries after failed preset switches. Default is 5. Set to 0
  *                    to simply forward the failure event from projectM.
  */
-void projectm_playlist_set_retry_count(projectm_playlist_handle instance, uint32_t retry_count);
+PROJECTM_PLAYLIST_EXPORT void projectm_playlist_set_retry_count(projectm_playlist_handle instance, uint32_t retry_count);
 
 /**
  * @brief Returns the current playlist position.
  * @param instance The playlist manager instance.
  * @return The current playlist position. If the playlist is empty, 0 will be returned.
  */
-uint32_t projectm_playlist_get_position(projectm_playlist_handle instance);
+PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_get_position(projectm_playlist_handle instance);
 
 /**
  * @brief Plays the preset at the requested playlist position and returns the actual playlist index.
@@ -413,7 +414,7 @@ uint32_t projectm_playlist_get_position(projectm_playlist_handle instance);
  * @param hard_cut If true, the preset transition is instant. If true, a smooth transition is played.
  * @return The new playlist position. If the playlist is empty, 0 will be returned.
  */
-uint32_t projectm_playlist_set_position(projectm_playlist_handle instance, uint32_t new_position,
+PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_set_position(projectm_playlist_handle instance, uint32_t new_position,
                                         bool hard_cut);
 
 /**
@@ -428,7 +429,7 @@ uint32_t projectm_playlist_set_position(projectm_playlist_handle instance, uint3
  * @param hard_cut If true, the preset transition is instant. If true, a smooth transition is played.
  * @return The new playlist position. If the playlist is empty, 0 will be returned.
  */
-uint32_t projectm_playlist_play_next(projectm_playlist_handle instance, bool hard_cut);
+PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_play_next(projectm_playlist_handle instance, bool hard_cut);
 
 /**
  * @brief Plays the previous playlist item and returns the index of the new preset.
@@ -442,7 +443,7 @@ uint32_t projectm_playlist_play_next(projectm_playlist_handle instance, bool har
  * @param hard_cut If true, the preset transition is instant. If true, a smooth transition is played.
  * @return The new playlist position. If the playlist is empty, 0 will be returned.
  */
-uint32_t projectm_playlist_play_previous(projectm_playlist_handle instance, bool hard_cut);
+PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_play_previous(projectm_playlist_handle instance, bool hard_cut);
 
 /**
  * @brief Plays the last preset played in the history and returns the index of the preset.
@@ -460,7 +461,7 @@ uint32_t projectm_playlist_play_previous(projectm_playlist_handle instance, bool
  * @param hard_cut If true, the preset transition is instant. If true, a smooth transition is played.
  * @return The new playlist position. If the playlist is empty, 0 will be returned.
  */
-uint32_t projectm_playlist_play_last(projectm_playlist_handle instance, bool hard_cut);
+PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_play_last(projectm_playlist_handle instance, bool hard_cut);
 
 /**
  * @brief Sets a new filter list.
@@ -499,7 +500,7 @@ uint32_t projectm_playlist_play_last(projectm_playlist_handle instance, bool har
  * @param filter_list An array with filter strings.
  * @param count The size of the filter array.
  */
-void projectm_playlist_set_filter(projectm_playlist_handle instance, const char** filter_list,
+PROJECTM_PLAYLIST_EXPORT void projectm_playlist_set_filter(projectm_playlist_handle instance, const char** filter_list,
                                   size_t count);
 
 /**
@@ -512,7 +513,7 @@ void projectm_playlist_set_filter(projectm_playlist_handle instance, const char*
  * @param[out] count The size of the filter array.
  * @return An array with filter strings.
  */
-char** projectm_playlist_get_filter(projectm_playlist_handle instance, size_t* count);
+PROJECTM_PLAYLIST_EXPORT char** projectm_playlist_get_filter(projectm_playlist_handle instance, size_t* count);
 
 /**
  * @brief Applies the current filter list to the existing playlist.
@@ -523,7 +524,7 @@ char** projectm_playlist_get_filter(projectm_playlist_handle instance, size_t* c
  * @param instance The playlist manager instance.
  * @return The number of removed items.
  */
-size_t projectm_playlist_apply_filter(projectm_playlist_handle instance);
+PROJECTM_PLAYLIST_EXPORT size_t projectm_playlist_apply_filter(projectm_playlist_handle instance);
 
 #ifdef __cplusplus
 }

@@ -392,37 +392,3 @@ Param * Param::createUser( const std::string &name )
 {
     return new _FloatParam( name );
 }
-
-
-// TESTS
-
-
-#include <TestRunner.hpp>
-
-#ifndef NDEBUG
-
-struct ParamTest : public Test
-{
-    ParamTest() : Test("ParamTest")
-    {}
-
-public:
-    bool test() override
-    {
-        return true;
-    }
-};
-
-Test* Param::test()
-{
-    return new ParamTest();
-}
-
-#else
-
-Test* Param::test()
-{
-    return nullptr;
-}
-
-#endif

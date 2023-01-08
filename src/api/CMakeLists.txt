@@ -27,7 +27,7 @@ generate_export_header(projectM_api
         EXPORT_FILE_NAME "${PROJECTM_EXPORT_HEADER}"
         )
 
-add_library(projectM::API ALIAS projectM_api)
+add_library(libprojectM::API ALIAS projectM_api)
 
 
 install(TARGETS projectM_api
