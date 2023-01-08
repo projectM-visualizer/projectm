@@ -12,14 +12,18 @@ if(NOT "@ENABLE_EMSCRIPTEN@") # ENABLE_EMSCRIPTEN
         find_dependency(OpenGL)
     endif()
 endif()
+if("@ENABLE_LLVM@") # ENABLE_LLVM
+    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+    find_dependency(LLVM)
+endif()
 if("@ENABLE_OPENMP@") # ENABLE_OPENMP
-   find_dependency(OpenMP)
+    find_dependency(OpenMP)
 endif()
 if("@ENABLE_THREADING@") # ENABLE_THREADING
-    find_dependency(Threads)
+     find_dependency(Threads)
 endif()
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    find_dependency(GLEW)
+     find_dependency(GLEW)
 endif()
 
 set(_libprojectM_FIND_PARTS_REQUIRED)

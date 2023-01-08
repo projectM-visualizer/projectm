@@ -17,7 +17,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
             STBI_NO_DDS
             projectM_FONT_MENU="${CMAKE_SOURCE_DIR}/fonts/VeraMono.ttf"
             projectM_FONT_TITLE="${CMAKE_SOURCE_DIR}/fonts/Vera.ttf"
-            )
+    )
 endif()
 
 # List of targets used in export().
@@ -32,16 +32,9 @@ set(EXPORTED_TARGETS
 add_subdirectory(MilkdropPresetFactory)
 add_subdirectory(Renderer)
 
-# CMake cannot combine multiple static libraries using target_link_libraries.
-# This syntax will pull in the compiled object files into the final library.
 add_library(projectM_main OBJECT
         "${PROJECTM_EXPORT_HEADER}"
         Common.hpp
-        fatal.h
-        fftsg.cpp
-        fftsg.h
-        glError.h
-        gltext.h
         HungarianMethod.hpp
         IdleTextures.hpp
         PCM.cpp
@@ -55,15 +48,29 @@ add_library(projectM_main OBJECT
         PresetFactoryManager.hpp
         ProjectM.cpp
         ProjectM.hpp
-        projectM-opengl.h
+        ProjectMCWrapper.cpp
+        ProjectMCWrapper.hpp
         RandomNumberGenerators.hpp
-        resource.h
-        TestRunner.cpp
-        TestRunner.hpp
         TimeKeeper.cpp
         TimeKeeper.hpp
+        fatal.h
+        fftsg.cpp
+        fftsg.h
+        glError.h
+        gltext.h
+        projectM-opengl.h
+        resource.h
         wipemalloc.cpp
         wipemalloc.h
+        )
+
+target_link_libraries(projectM_main
+        PUBLIC
+        MilkdropPresetFactory
+        Renderer
+        hlslparser
+        SOIL2
+        libprojectM::API
         )
 
 target_include_directories(projectM_main
@@ -76,28 +83,79 @@ target_include_directories(projectM_main
         "${MSVC_EXTRA_INCLUDE_DIR}"
         )
 
-target_link_libraries(projectM_main
-        PRIVATE
-        GLM::GLM
-        PUBLIC
-        ${PROJECTM_OPENGL_LIBRARIES}
-        PUBLIC
-        projectM::API
+# CMake cannot combine multiple static libraries using target_link_libraries.
+# This syntax will pull in the compiled object files into the final library.
+add_library(projectM
+        ${PROJECTM_DUMMY_SOURCE_FILE} # CMake needs at least one "real" source file.
+        $<TARGET_OBJECTS:MilkdropPresetFactory>
+        $<TARGET_OBJECTS:Renderer>
+        $<TARGET_OBJECTS:hlslparser>
+        $<TARGET_OBJECTS:SOIL2>
+        $<TARGET_OBJECTS:projectM_main>
         )
 
-if (ENABLE_STATIC_LIB)
-    include(libprojectM_static.cmake)
+target_include_directories(projectM
+        PUBLIC
+        "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}>"
+        )
+
+target_link_libraries(projectM
+        PUBLIC
+        ${PROJECTM_OPENGL_LIBRARIES}
+        libprojectM::API
+        )
+
+if(ENABLE_LLVM)
+    target_link_libraries(projectM
+            PUBLIC
+            LLVM::LLVM
+            )
 endif()
 
-if(ENABLE_SHARED_LIB)
-    include(libprojectM_shared.cmake)
+if(ENABLE_OPENMP)
+    target_link_libraries(projectM
+            PUBLIC
+            OpenMP::OpenMP_CXX
+            )
 endif()
 
-if(ENABLE_SHARED_LINKING)
-    add_library(projectM::libprojectM ALIAS projectM_shared)
+set_target_properties(projectM PROPERTIES
+        VERSION "${PROJECTM_LIB_VERSION}"
+        SOVERSION "${PROJECTM_SO_VERSION}"
+        FOLDER libprojectM
+        )
+
+if(BUILD_SHARED_LIBS)
+    target_compile_definitions(projectM
+            PRIVATE
+            projectM_api_EXPORTS
+            )
+
+    target_link_libraries(projectM
+            PUBLIC
+            ${CMAKE_DL_LIBS}
+            )
 else()
-    add_library(projectM::libprojectM ALIAS projectM_static)
+    target_compile_definitions(projectM
+            PUBLIC
+            PROJECTM_STATIC_DEFINE
+            )
+
+    set_target_properties(projectM PROPERTIES
+            OUTPUT_NAME $<IF:$<PLATFORM_ID:Windows>,libprojectM,projectM>
+            FOLDER libprojectM
+            )
 endif()
+
+add_library(libprojectM::projectM ALIAS projectM)
+
+install(TARGETS projectM
+        EXPORT libprojectMTargets
+        LIBRARY DESTINATION "${PROJECTM_LIB_DIR}"
+        RUNTIME DESTINATION "${PROJECTM_LIB_DIR}"
+        ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}"
+        COMPONENT Runtime
+        )
 
 if(ENABLE_CXX_INTERFACE)
     install(FILES
@@ -116,7 +174,7 @@ endif()
 # For use from a local projectM build tree (without installing)
 export(TARGETS
         projectM_api
-        ${EXPORTED_TARGETS}
+        projectM
         NAMESPACE libprojectM::
         FILE projectM-exports.cmake
         )
@@ -152,6 +210,15 @@ if(NOT ENABLE_EMSCRIPTEN AND ENABLE_GLES)
             )
 endif()
 
+if(ENABLE_LLVM)
+    install(FILES
+            "${CMAKE_SOURCE_DIR}/cmake/gles/FindLLVM.cmake"
+            DESTINATION "${PROJECTM_LIB_DIR}/cmake/libprojectM"
+            COMPONENT Devel
+            )
+endif()
+
+
 install(EXPORT libprojectMTargets
         FILE libprojectMTargets.cmake
         NAMESPACE libprojectM::
@@ -159,3 +226,24 @@ install(EXPORT libprojectMTargets
         COMPONENT Devel
         )
 
+# pkg-config export, only supports static library on UNIX systems.
+if(UNIX AND NOT BUILD_SHARED_LIBS)
+    macro(set_pkg_config_path varname path)
+        if(IS_ABSOLUTE "${path}")
+            set(${varname} "${path}")
+        else()
+            set(${varname} "\${prefix}/${path}")
+        endif()
+    endmacro()
+
+    set(PKGCONFIG_PREFIX "${CMAKE_INSTALL_PREFIX}")
+    set_pkg_config_path(PKGCONFIG_LIB_DIR "${PROJECTM_LIB_DIR}")
+    set_pkg_config_path(PKGCONFIG_INCLUDE_DIR "${PROJECTM_INCLUDE_DIR}")
+    set_pkg_config_path(PKGCONFIG_DATADIR_PATH "${PROJECTM_DATADIR_PATH}")
+
+    configure_file(libprojectM.pc.cmake.in "${CMAKE_BINARY_DIR}/libprojectM.pc" @ONLY)
+    install(FILES "${CMAKE_BINARY_DIR}/libprojectM.pc"
+            DESTINATION "${PROJECTM_LIB_DIR}/pkgconfig"
+            COMPONENT Devel
+            )
+endif()

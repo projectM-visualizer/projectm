@@ -2,6 +2,12 @@ find_package(GTest 1.10 REQUIRED NO_MODULE)
 
 add_executable(projectM-unittest
         PCMTest.cpp
+
+        $<TARGET_OBJECTS:MilkdropPresetFactory>
+        $<TARGET_OBJECTS:Renderer>
+        $<TARGET_OBJECTS:hlslparser>
+        $<TARGET_OBJECTS:SOIL2>
+        $<TARGET_OBJECTS:projectM_main>
         )
 
 target_compile_definitions(projectM-unittest
@@ -18,7 +24,7 @@ target_include_directories(projectM-unittest
 
 target_link_libraries(projectM-unittest
         PRIVATE
-        projectM_static
+        projectM_main
         GTest::gtest
         GTest::gtest_main
         )
