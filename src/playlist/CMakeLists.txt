@@ -16,13 +16,13 @@ add_library(projectM_playlist_main OBJECT
 
 target_include_directories(projectM_playlist_main
         PUBLIC
-        ${CMAKE_CURRENT_BINARY_DIR}/include
-        ${CMAKE_CURRENT_SOURCE_DIR}
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         )
 
 target_link_libraries(projectM_playlist_main
-        PUBLIC
-        libprojectM::projectM
+        PRIVATE
+        libprojectM::API
         )
 
 add_library(projectM_playlist
