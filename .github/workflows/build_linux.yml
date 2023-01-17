@@ -20,7 +20,9 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Install Packages
-        run: sudo apt-get install -y libgl1-mesa-dev mesa-common-dev libsdl2-dev libglm-dev llvm-dev libgtest-dev libgmock-dev ninja-build
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1-mesa-dev mesa-common-dev libsdl2-dev libglm-dev llvm-dev libgtest-dev libgmock-dev ninja-build
 
       - name: Configure Build
         run: cmake -G "Ninja Multi-Config" -S "${{ github.workspace }}" -B "${{ github.workspace }}/cmake-build" -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" -DCMAKE_VERBOSE_MAKEFILE=YES -DBUILD_TESTING=YES

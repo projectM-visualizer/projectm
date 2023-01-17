@@ -103,7 +103,6 @@ int TimeKeeper::PresetTimeA()
 
 double TimeKeeper::sampledPresetDuration()
 {
-    return std::max<double>(1, std::min<double>(60, RandomNumberGenerators::gaussian
-        (m_presetDuration, m_easterEgg)));
+    return std::max<double>(1, RandomNumberGenerators::gaussian(m_presetDuration, m_easterEgg));
 
 }

@@ -1,3 +1,8 @@
+/**
+ * @file playlist.h
+ *
+ * Optional playlist API for libprojectM.
+ */
 #pragma once
 
 #include "libprojectM/projectM.h"
@@ -93,8 +98,8 @@ typedef void (*projectm_playlist_preset_switch_failed_event)(const char* preset_
  *
  * To switch to another playlist, use the projectm_playlist_connect() method.
  *
- * @param instance The projectM instance to connect to. Can be a null pointer to leave the newly
- *                 created playlist instance unconnected.
+ * @param projectm_instance The projectM instance to connect to. Can be a null pointer to leave the newly
+ *                          created playlist instance unconnected.
  * @return An opaque pointer to the newly created playlist manager instance. Null if creation failed.
  */
 PROJECTM_PLAYLIST_EXPORT projectm_playlist_handle projectm_playlist_create(projectm_handle projectm_instance);
