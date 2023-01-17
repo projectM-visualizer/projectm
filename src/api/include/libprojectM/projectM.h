@@ -1,4 +1,6 @@
-/*
+/**
+ * @file projectM.h
+ *
  * projectM -- Milkdrop-esque visualisation SDK
  * Copyright (C)2003-2021 projectM Team
  *
@@ -87,7 +89,7 @@ PROJECTM_EXPORT char* projectm_alloc_string(unsigned int length);
  *
  * <p>Do not use free() to delete the pointer!</p>
  *
- * @param settings A pointer returned by projectm_alloc_string().
+ * @param str A pointer returned by projectm_alloc_string().
  */
 PROJECTM_EXPORT void projectm_free_string(const char* str);
 
