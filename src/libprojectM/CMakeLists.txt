@@ -73,6 +73,13 @@ target_link_libraries(projectM_main
         libprojectM::API
         )
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    target_link_libraries(projectM_main
+            PUBLIC
+            "-framework CoreFoundation"
+            )
+endif()
+
 target_include_directories(projectM_main
         PRIVATE
         "${CMAKE_SOURCE_DIR}/src"
@@ -104,6 +111,13 @@ target_link_libraries(projectM
         ${PROJECTM_OPENGL_LIBRARIES}
         libprojectM::API
         )
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    target_link_libraries(projectM
+        PUBLIC
+        "-framework CoreFoundation"
+        )
+endif()
 
 if(ENABLE_LLVM)
     target_link_libraries(projectM
