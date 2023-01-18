@@ -1,9 +1,10 @@
 /**
- * @file projectM.h
+ * @file playlist.h
  * @copyright 2003-2023 projectM Team
- * @brief Convenience include file that includes all other API headers.
+ * @brief Optional playlist API for libprojectM.
  *
  * projectM -- Milkdrop-esque visualisation SDK
+ * Copyright (C)2003-2023 projectM Team
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,11 +25,10 @@
 
 #pragma once
 
-#include "libprojectM/audio.h"
-#include "libprojectM/callbacks.h"
-#include "libprojectM/core.h"
-#include "libprojectM/debug.h"
-#include "libprojectM/memory.h"
-#include "libprojectM/parameters.h"
-#include "libprojectM/render_opengl.h"
-#include "libprojectM/touch.h"
+#include "libprojectM/playlist_callbacks.h"
+#include "libprojectM/playlist_core.h"
+#include "libprojectM/playlist_filter.h"
+#include "libprojectM/playlist_items.h"
+#include "libprojectM/playlist_memory.h"
+#include "libprojectM/playlist_playback.h"
+#include "libprojectM/playlist_types.h"

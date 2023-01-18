@@ -3,7 +3,12 @@ add_library(projectM_api INTERFACE)
 target_sources(projectM_api
         PRIVATE
         "${PROJECTM_EXPORT_HEADER}"
+        include/libprojectM/audio.h
+        include/libprojectM/callbacks.h
+        include/libprojectM/debug.h
+        include/libprojectM/memory.h
         include/libprojectM/projectM.h
+        include/libprojectM/types.h
         )
 
 set_target_properties(projectM_api PROPERTIES

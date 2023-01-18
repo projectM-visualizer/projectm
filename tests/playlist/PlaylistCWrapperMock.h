@@ -1,6 +1,6 @@
 #pragma once
 
-#include <PlaylistCWrapper.h>
+#include <PlaylistCWrapper.hpp>
 
 #include <gmock/gmock.h>
 
