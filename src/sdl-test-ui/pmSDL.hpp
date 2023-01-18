@@ -39,8 +39,8 @@
 #define STEREOSCOPIC_SBS 0
 
 // projectM
+#include <libprojectM/playlist.h>
 #include <libprojectM/projectM.h>
-#include <playlist.h>
 
 // projectM SDL
 #include "audioCapture.hpp"

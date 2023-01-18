@@ -1,9 +1,10 @@
 /**
- * @file projectM.h
+ * @file debug.h
  * @copyright 2003-2023 projectM Team
- * @brief Convenience include file that includes all other API headers.
+ * @brief Debug functions for both libprojectM and preset developers.
  *
  * projectM -- Milkdrop-esque visualisation SDK
+ * Copyright (C)2003-2023 projectM Team
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,11 +25,21 @@
 
 #pragma once
 
-#include "libprojectM/audio.h"
-#include "libprojectM/callbacks.h"
-#include "libprojectM/core.h"
-#include "libprojectM/debug.h"
-#include "libprojectM/memory.h"
-#include "libprojectM/parameters.h"
-#include "libprojectM/render_opengl.h"
-#include "libprojectM/touch.h"
+#include "libprojectM/types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * @brief Writes a .bmp framedump after rendering the next main texture, before shaders are applied.
+ *
+ * The image is written to the current working directory and is named "frame_texture_contents-[date].bmp".
+ *
+ * @param instance The projectM instance handle.
+ */
+PROJECTM_EXPORT void projectm_write_debug_image_on_next_frame(projectm_handle instance);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif

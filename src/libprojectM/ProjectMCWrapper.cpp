@@ -134,13 +134,13 @@ void projectm_reset_textures(projectm_handle instance)
     projectMInstance->ResetTextures();
 }
 
-void projectm_render_frame(projectm_handle instance)
+void projectm_opengl_render_frame(projectm_handle instance)
 {
     auto projectMInstance = handle_to_instance(instance);
     projectMInstance->RenderFrame();
 }
 
-unsigned int projectm_init_render_to_texture(projectm_handle instance)
+unsigned int projectm_opengl_init_render_to_texture(projectm_handle instance)
 {
     auto projectMInstance = handle_to_instance(instance);
     return projectMInstance->InitRenderToTexture();

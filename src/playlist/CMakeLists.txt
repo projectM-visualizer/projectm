@@ -10,14 +10,22 @@ add_library(projectM_playlist_main OBJECT
         Playlist.cpp
         Playlist.hpp
         PlaylistCWrapper.cpp
-        PlaylistCWrapper.h
-        playlist.h
+        PlaylistCWrapper.hpp
+        api/libprojectM/playlist.h
+        api/libprojectM/playlist_callbacks.h
+        api/libprojectM/playlist_core.h
+        api/libprojectM/playlist_filter.h
+        api/libprojectM/playlist_items.h
+        api/libprojectM/playlist_memory.h
+        api/libprojectM/playlist_playback.h
+        api/libprojectM/playlist_types.h
         )
 
 target_include_directories(projectM_playlist_main
         PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/api>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
         )
 
 target_link_libraries(projectM_playlist_main
@@ -39,7 +47,7 @@ set_target_properties(projectM_playlist PROPERTIES
 
 target_include_directories(projectM_playlist
         PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/api>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
         "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}>"
         )
@@ -94,9 +102,13 @@ install(TARGETS projectM_playlist
         )
 
 install(FILES
-        playlist.h
         "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/projectM_playlist_export.h"
         DESTINATION "${PROJECTM_INCLUDE_DIR}/libprojectM"
+        COMPONENT Devel
+        )
+
+install(DIRECTORY api/libprojectM
+        DESTINATION "${PROJECTM_INCLUDE_DIR}"
         COMPONENT Devel
         )
 
