@@ -262,6 +262,13 @@ if(UNIX)
         set(PKGCONFIG_LIBS "${PKGCONFIG_LIBS} -L${LLVM_LIB_DIR} ${LLVM_LIBRARIES}")
     endif()
 
+    if(ENABLE_OPENMP)
+        set(PKGCONFIG_FLAGS "${PKGCONFIG_FLAGS} ${OpenMP_CXX_FLAGS}")
+        foreach(_library ${OpenMP_CXX_LIBRARIES})
+            set(PKGCONFIG_LIBS "${PKGCONFIG_LIBS} -l${_library}")
+        endforeach()
+    endif()
+
     set(PKGCONFIG_PACKAGE_NAME "libprojectM")
     set(PKGCONFIG_PACKAGE_DESCRIPTION "projectM Music Visualizer")
     set(PKGCONFIG_PACKAGE_REQUIREMENTS_ALL "opengl")
