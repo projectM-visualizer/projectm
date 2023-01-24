@@ -66,8 +66,8 @@
 /* Define USE_GLES */
 #cmakedefine01 USE_GLES
 
-/* Define USE_THREADS */
-#cmakedefine01 USE_THREADS
+/* Define PROJECTM_USE_THREADS */
+#cmakedefine01 PROJECTM_USE_THREADS
 
 /* Version number of package */
 #define VERSION "@PROJECT_VERSION@"

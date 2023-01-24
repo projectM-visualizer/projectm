@@ -161,7 +161,7 @@ else()
 
     if(ENABLE_THREADING)
         find_package(Threads REQUIRED)
-        set(USE_THREADS YES)
+        set(PROJECTM_USE_THREADS YES)
     endif()
 
     if(ENABLE_LLVM)

@@ -30,7 +30,7 @@
 #include "Renderer/PipelineContext.hpp"
 #include "TimeKeeper.hpp"
 
-#if USE_THREADS
+#if PROJECTM_USE_THREADS
 
 #include "libprojectM/BackgroundWorker.hpp"
 
@@ -40,7 +40,7 @@ ProjectM::ProjectM()
     : m_presetFactoryManager(std::make_unique<PresetFactoryManager>())
     , m_pipelineContext(std::make_unique<class PipelineContext>())
     , m_pipelineContext2(std::make_unique<class PipelineContext>())
-#if USE_THREADS
+#if PROJECTM_USE_THREADS
     , m_workerSync(std::make_unique<BackgroundWorkerSync>())
 #endif
 {
@@ -49,7 +49,7 @@ ProjectM::ProjectM()
 
 ProjectM::~ProjectM()
 {
-#if USE_THREADS
+#if PROJECTM_USE_THREADS
     m_workerSync->FinishUp();
     m_workerThread.join();
 #endif
@@ -120,7 +120,7 @@ void ProjectM::DumpDebugImageOnNextFrame()
     m_renderer->writeNextFrameToFile = true;
 }
 
-#if USE_THREADS
+#if PROJECTM_USE_THREADS
 
 void ProjectM::ThreadWorker()
 {
@@ -166,7 +166,7 @@ void ProjectM::RenderFrame()
 
 auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
 {
-#if USE_THREADS
+#if PROJECTM_USE_THREADS
     std::lock_guard<std::recursive_mutex> guard(m_presetSwitchMutex);
 #endif
 
@@ -202,7 +202,7 @@ auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
 
     if (m_timeKeeper->IsSmoothing() && m_transitioningPreset != nullptr)
     {
-#if USE_THREADS
+#if PROJECTM_USE_THREADS
         m_workerSync->WakeUpBackgroundTask();
         // FIXME: Instead of waiting after a single render pass, check every frame if it's done.
         m_workerSync->WaitForBackgroundTaskToFinish();
@@ -310,7 +310,7 @@ void ProjectM::Initialize()
     ResetEngine();
     LoadIdlePreset();
 
-#if USE_THREADS
+#if PROJECTM_USE_THREADS
     m_workerSync->Reset();
     m_workerThread = std::thread(&ProjectM::ThreadWorker, this);
 #endif

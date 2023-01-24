@@ -39,7 +39,7 @@
 #include <string>
 #include <vector>
 
-#if USE_THREADS
+#if PROJECTM_USE_THREADS
 
 #include <mutex>
 #include <thread>
@@ -240,7 +240,7 @@ private:
 
     void LoadIdlePreset();
 
-#if USE_THREADS
+#if PROJECTM_USE_THREADS
 
     void ThreadWorker();
 
@@ -282,7 +282,7 @@ private:
     std::unique_ptr<Preset> m_transitioningPreset; //!< Destination preset when smooth preset switching.
     std::unique_ptr<TimeKeeper> m_timeKeeper;      //!< Keeps the different timers used to render and switch presets.
 
-#if USE_THREADS
+#if PROJECTM_USE_THREADS
     mutable std::recursive_mutex m_presetSwitchMutex;   //!< Mutex for locking preset switching while rendering and vice versa.
     std::thread m_workerThread;                         //!< Background worker for preloading presets.
     std::unique_ptr<BackgroundWorkerSync> m_workerSync; //!< Background work synchronizer.
