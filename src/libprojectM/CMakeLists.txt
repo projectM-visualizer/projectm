@@ -170,6 +170,13 @@ install(TARGETS projectM
         )
 
 if(ENABLE_CXX_INTERFACE)
+    if(ENABLE_THREADING)
+        target_compile_definitions(projectM
+                INTERFACE
+                PROJECTM_USE_THREADS
+                )
+    endif()
+
     set_source_files_properties(ProjectM.cpp PCM.cpp PROPERTIES
             COMPILE_DEFINITIONS projectM_api_EXPORTS
             )
