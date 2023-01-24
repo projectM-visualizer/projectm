@@ -18,14 +18,8 @@
  * See 'LICENSE.txt' included within this release
  *
  */
-/**
- * $Id$
- *
- * $Log$
- */
 
-#ifndef COMMON_HPP
-#define COMMON_HPP
+#pragma once
 
 #include <algorithm>
 #include <cassert>
@@ -93,5 +87,3 @@ inline auto ParseFilename(const std::string& filename) -> std::string
 
     return filename.substr(start + 1, filename.length());
 }
-
-#endif
