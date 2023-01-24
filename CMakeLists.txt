@@ -25,16 +25,22 @@ if(ENABLE_DEBUG_POSTFIX)
     set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Output file debug postfix. Default is \"d\".")
 endif()
 
-# The API (SO) and detailed library versions for the shared library.
-set(PROJECTM_SO_VERSION "4")
-set(PROJECTM_LIB_VERSION "4.0.0")
-
 project(libprojectM
         LANGUAGES C CXX
-        VERSION 3.99
+        VERSION 3.99.0
         )
 
+# The API (SO) version for the shared library. Should be incremented whenever the binary interface changes
+# in a non-backwards-compatible way, e.g. changing parameters or return values of existing functions or removing
+# functions. Adding new function should be okay if documented.
+set(PROJECTM_SO_VERSION "4")
+
+# The actual (full) library version of projectM
+set(PROJECTM_LIB_VERSION "${CMAKE_PROJECT_VERSION}")
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
+include(VCSVersion)
 
 set(PROJECTM_BIN_DIR "bin" CACHE STRING "Executable installation directory, relative to the install prefix.")
 set(PROJECTM_LIB_DIR "lib" CACHE STRING "Library installation directory, relative to the install prefix.")
