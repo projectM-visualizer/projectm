@@ -33,6 +33,10 @@ extern "C" {
 
 /**
  * @brief Creates a new projectM instance.
+ *
+ * If this function returns NULL, in most cases the OpenGL context is not initialized, not made
+ * current or insufficient to render projectM visuals.
+ *
  * @return A projectM handle for the newly created instance that must be used in subsequent API calls.
  *         NULL if the instance could not be created successfully.
  */
