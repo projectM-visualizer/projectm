@@ -1,6 +1,9 @@
 #include "StaticGlShaders.h"
+
 #include "projectM-opengl.h"
+
 #include <cstring>
+#include <stdexcept>
 
 
 namespace {
@@ -755,6 +758,11 @@ void main(){
 StaticGlShaders::StaticGlShaders(bool use_gles) : use_gles_(use_gles) {
     version_ = QueryGlslVersion();
 
+    if (version_.major == 0)
+    {
+        throw std::runtime_error("Could not retrieve OpenGL shader language version. Is OpenGL available and the context initialized?");
+    }
+
     if (use_gles_) {
         // If GLES is specified, override the version header.
         version_header_ = "#version 300 es";
@@ -785,8 +793,14 @@ StaticGlShaders::GlslVersion StaticGlShaders::QueryGlslVersion() {
     int major = 3;  /* 3.0 is default */
     int minor = 0;
 
-    std::string glsl_version_string = reinterpret_cast<const char *>(
-        glGetString(GL_SHADING_LANGUAGE_VERSION));
+    const char* shaderLanguageVersion = reinterpret_cast<const char *>(glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+    if (shaderLanguageVersion == nullptr)
+    {
+        return GlslVersion{0, 0};
+    }
+
+    std::string glsl_version_string{shaderLanguageVersion};
 
     size_t version_len = glsl_version_string.length();
     /* make a c version of the string and do the conversion to integers manually just for this case */
