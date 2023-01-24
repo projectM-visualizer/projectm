@@ -13,6 +13,11 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_POSITION_INDEPENDENT_CODE YES)
 
+# Don't export any symbols except those explicitly exported.
+set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
+set(CMAKE_C_VISIBILITY_PRESET hidden)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 option(ENABLE_DEBUG_POSTFIX "Add \"d\" after library names for debug builds" ON)
