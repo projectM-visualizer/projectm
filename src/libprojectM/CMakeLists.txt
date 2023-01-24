@@ -140,9 +140,8 @@ set_target_properties(projectM PROPERTIES
         )
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(projectM
-            PRIVATE
-            projectM_api_EXPORTS
+    set_source_files_properties(ProjectMCWrapper.cpp PROPERTIES
+            COMPILE_DEFINITIONS projectM_api_EXPORTS
             )
 
     target_link_libraries(projectM
@@ -150,9 +149,8 @@ if(BUILD_SHARED_LIBS)
             ${CMAKE_DL_LIBS}
             )
 else()
-    target_compile_definitions(projectM
-            PUBLIC
-            PROJECTM_STATIC_DEFINE
+    set_source_files_properties(ProjectMCWrapper.cpp PROPERTIES
+            COMPILE_DEFINITIONS PROJECTM_STATIC_DEFINE
             )
 
     set_target_properties(projectM PROPERTIES
@@ -172,13 +170,22 @@ install(TARGETS projectM
         )
 
 if(ENABLE_CXX_INTERFACE)
+    set_source_files_properties(ProjectM.cpp PCM.cpp PROPERTIES
+            COMPILE_DEFINITIONS projectM_api_EXPORTS
+            )
+
     install(FILES
             Common.hpp
             PCM.hpp
-            fatal.h
             ProjectM.hpp
             DESTINATION "${PROJECTM_INCLUDE_DIR}/libprojectM"
             COMPONENT Devel
+            )
+else()
+    # Set PROJECTM_STATIC_EXPORT for C++ implementations to use project default visibility
+    # and no dllimport/dllexport.
+    set_source_files_properties(ProjectM.cpp PCM.cpp PROPERTIES
+            COMPILE_DEFINITIONS PROJECTM_STATIC_DEFINE
             )
 endif()
 

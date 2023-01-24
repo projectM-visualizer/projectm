@@ -20,10 +20,10 @@
  */
 #pragma once
 
-#include "Common.hpp"
-#include "PCM.hpp"
-#include "PresetFactoryManager.hpp"
-#include "fatal.h"
+#include "libprojectM/projectM_export.h"
+
+#include "libprojectM/Common.hpp"
+#include "libprojectM/PCM.hpp"
 
 #ifdef _WIN32
 
@@ -41,12 +41,12 @@
 
 #if USE_THREADS
 
-#include "BackgroundWorker.h"
-
 #include <mutex>
 #include <thread>
 
 #endif
+
+class BackgroundWorkerSync;
 
 class BeatDetect;
 
@@ -64,7 +64,9 @@ class Pipeline;
 
 class PipelineContext;
 
-class ProjectM
+class PresetFactoryManager;
+
+PROJECTM_EXPORT class ProjectM
 {
 public:
     ProjectM();
@@ -246,43 +248,43 @@ private:
 
     class Pcm m_pcm; //!< Audio data buffer and analyzer instance.
 
-    size_t m_meshX{32}; //!< Per-point mesh horizontal resolution.
-    size_t m_meshY{24}; //!< Per-point mesh vertical resolution.
-    size_t m_targetFps{35}; //!< Target frames per second.
-    size_t m_textureSize{512}; //!< Render texture size.
-    size_t m_windowWidth{0}; //!< Render window width. If 0, nothing is rendered.
-    size_t m_windowHeight{0}; //!< Render window height. If 0, nothing is rendered.
-    double m_presetDuration{30.0}; //!< Preset duration in seconds.
-    double m_softCutDuration{3.0}; //!< Soft cut transition time.
-    double m_hardCutDuration{20.0}; //!< Time after which a hard cut can happen at the earliest.
-    bool m_hardCutEnabled{false}; //!< If true, hard cuts based on beat detection are enabled.
+    size_t m_meshX{32};              //!< Per-point mesh horizontal resolution.
+    size_t m_meshY{24};              //!< Per-point mesh vertical resolution.
+    size_t m_targetFps{35};          //!< Target frames per second.
+    size_t m_textureSize{512};       //!< Render texture size.
+    size_t m_windowWidth{0};         //!< Render window width. If 0, nothing is rendered.
+    size_t m_windowHeight{0};        //!< Render window height. If 0, nothing is rendered.
+    double m_presetDuration{30.0};   //!< Preset duration in seconds.
+    double m_softCutDuration{3.0};   //!< Soft cut transition time.
+    double m_hardCutDuration{20.0};  //!< Time after which a hard cut can happen at the earliest.
+    bool m_hardCutEnabled{false};    //!< If true, hard cuts based on beat detection are enabled.
     float m_hardCutSensitivity{2.0}; //!< Loudness sensitivity value for hard cuts.
-    float m_beatSensitivity{1.0}; //!< General beat sensitivity modifier for presets.
-    bool m_aspectCorrection{true}; //!< If true, corrects aspect ratio for non-rectangular windows.
-    float m_easterEgg{0.0}; //!< Random preset duration modifier. See TimeKeeper class.
+    float m_beatSensitivity{1.0};    //!< General beat sensitivity modifier for presets.
+    bool m_aspectCorrection{true};   //!< If true, corrects aspect ratio for non-rectangular windows.
+    float m_easterEgg{0.0};          //!< Random preset duration modifier. See TimeKeeper class.
 
     std::vector<std::string> m_textureSearchPaths; ///!< List of paths to search for texture files
 
     /** Timing information */
     int m_count{0}; //!< Rendered frame count since start
 
-    bool m_presetLocked{false}; //!< If true, the preset change event will not be sent.
+    bool m_presetLocked{false};         //!< If true, the preset change event will not be sent.
     bool m_presetChangeNotified{false}; //!< Stores whether the user has been notified that projectM wants to switch the preset.
 
-    PresetFactoryManager m_presetFactoryManager; //!< Provides access to all available preset factories.
+    std::unique_ptr<PresetFactoryManager> m_presetFactoryManager; //!< Provides access to all available preset factories.
 
     std::unique_ptr<class PipelineContext> m_pipelineContext;  //!< Pipeline context for the first/current preset.
     std::unique_ptr<class PipelineContext> m_pipelineContext2; //!< Pipeline context for the next/transitioning preset.
 
-    std::unique_ptr<Renderer> m_renderer;     //!< The Preset renderer.
-    std::unique_ptr<BeatDetect> m_beatDetect; //!< The beat detection class.
-    std::unique_ptr<Preset> m_activePreset;   //!< Currently loaded preset.
-    std::unique_ptr<Preset> m_transitioningPreset;  //!< Destination preset when smooth preset switching.
-    std::unique_ptr<TimeKeeper> m_timeKeeper; //!< Keeps the different timers used to render and switch presets.
+    std::unique_ptr<Renderer> m_renderer;          //!< The Preset renderer.
+    std::unique_ptr<BeatDetect> m_beatDetect;      //!< The beat detection class.
+    std::unique_ptr<Preset> m_activePreset;        //!< Currently loaded preset.
+    std::unique_ptr<Preset> m_transitioningPreset; //!< Destination preset when smooth preset switching.
+    std::unique_ptr<TimeKeeper> m_timeKeeper;      //!< Keeps the different timers used to render and switch presets.
 
 #if USE_THREADS
-    mutable std::recursive_mutex m_presetSwitchMutex; //!< Mutex for locking preset switching while rendering and vice versa.
-    std::thread m_workerThread;                       //!< Background worker for preloading presets.
-    BackgroundWorkerSync m_workerSync;                //!< Background work synchronizer.
+    mutable std::recursive_mutex m_presetSwitchMutex;   //!< Mutex for locking preset switching while rendering and vice versa.
+    std::thread m_workerThread;                         //!< Background worker for preloading presets.
+    std::unique_ptr<BackgroundWorkerSync> m_workerSync; //!< Background work synchronizer.
 #endif
 };

@@ -30,10 +30,19 @@
 #include "Renderer/PipelineContext.hpp"
 #include "TimeKeeper.hpp"
 
+#if USE_THREADS
+
+#include "libprojectM/BackgroundWorker.hpp"
+
+#endif
 
 ProjectM::ProjectM()
-    : m_pipelineContext(std::make_unique<class PipelineContext>())
+    : m_presetFactoryManager(std::make_unique<PresetFactoryManager>())
+    , m_pipelineContext(std::make_unique<class PipelineContext>())
     , m_pipelineContext2(std::make_unique<class PipelineContext>())
+#if USE_THREADS
+    , m_workerSync(std::make_unique<BackgroundWorkerSync>())
+#endif
 {
     Initialize();
 }
@@ -41,7 +50,7 @@ ProjectM::ProjectM()
 ProjectM::~ProjectM()
 {
 #if USE_THREADS
-    m_workerSync.FinishUp();
+    m_workerSync->FinishUp();
     m_workerThread.join();
 #endif
 }
@@ -64,7 +73,7 @@ void ProjectM::LoadPresetFile(const std::string& presetFilename, bool smoothTran
 
     try
     {
-        StartPresetTransition(m_presetFactoryManager.CreatePresetFromFile(presetFilename), !smoothTransition);
+        StartPresetTransition(m_presetFactoryManager->CreatePresetFromFile(presetFilename), !smoothTransition);
     }
     catch (const PresetFactoryException& ex)
     {
@@ -82,7 +91,7 @@ void ProjectM::LoadPresetData(std::istream& presetData, bool smoothTransition)
 
     try
     {
-        StartPresetTransition(m_presetFactoryManager.CreatePresetFromStream(".milk", presetData), !smoothTransition);
+        StartPresetTransition(m_presetFactoryManager->CreatePresetFromStream(".milk", presetData), !smoothTransition);
     }
     catch (const PresetFactoryException& ex)
     {
@@ -117,12 +126,12 @@ void ProjectM::ThreadWorker()
 {
     while (true)
     {
-        if (!m_workerSync.WaitForWork())
+        if (!m_workerSync->WaitForWork())
         {
             return;
         }
         EvaluateSecondPreset();
-        m_workerSync.FinishedWork();
+        m_workerSync->FinishedWork();
     }
 }
 
@@ -194,9 +203,9 @@ auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
     if (m_timeKeeper->IsSmoothing() && m_transitioningPreset != nullptr)
     {
 #if USE_THREADS
-        m_workerSync.WakeUpBackgroundTask();
+        m_workerSync->WakeUpBackgroundTask();
         // FIXME: Instead of waiting after a single render pass, check every frame if it's done.
-        m_workerSync.WaitForBackgroundTaskToFinish();
+        m_workerSync->WaitForBackgroundTaskToFinish();
 #endif
         EvaluateSecondPreset();
 
@@ -265,7 +274,7 @@ void ProjectM::Reset()
 {
     this->m_count = 0;
 
-    m_presetFactoryManager.initialize(m_meshX, m_meshY);
+    m_presetFactoryManager->initialize(m_meshX, m_meshY);
 
     ResetEngine();
 }
@@ -293,7 +302,7 @@ void ProjectM::Initialize()
                                                   m_beatDetect.get(),
                                                   m_textureSearchPaths);
 
-    m_presetFactoryManager.initialize(m_meshX, m_meshY);
+    m_presetFactoryManager->initialize(m_meshX, m_meshY);
 
     /* Set the seed to the current time in seconds */
     srand(time(nullptr));
@@ -302,7 +311,7 @@ void ProjectM::Initialize()
     LoadIdlePreset();
 
 #if USE_THREADS
-    m_workerSync.Reset();
+    m_workerSync->Reset();
     m_workerThread = std::thread(&ProjectM::ThreadWorker, this);
 #endif
 
@@ -523,7 +532,7 @@ void ProjectM::SetMeshSize(size_t meshResolutionX, size_t meshResolutionY)
 
     // Update mesh size in all sorts of classes.
     m_renderer->SetPerPixelMeshSize(m_meshX, m_meshY);
-    m_presetFactoryManager.initialize(m_meshX, m_meshY);
+    m_presetFactoryManager->initialize(m_meshX, m_meshY);
 
     // Unload all presets and reload idle preset
     m_activePreset.reset();

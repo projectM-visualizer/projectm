@@ -26,8 +26,9 @@
  * $Log$
  */
 
-#ifndef _PCM_H
-#define _PCM_H
+#pragma once
+
+#include "libprojectM/projectM_export.h"
 
 #include <array>
 #include <cstdint>
@@ -46,7 +47,7 @@ enum CHANNEL
     CHANNEL_1 = 1
 };
 
-class Pcm
+PROJECTM_EXPORT class Pcm
 {
 public:
     /* maximum number of sound samples that are actually stored. */
@@ -155,5 +156,3 @@ private:
     double m_level{1.f};
     AutoLevel m_leveler{};
 };
-
-#endif /** !_PCM_H */
