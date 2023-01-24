@@ -20,9 +20,9 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-option(ENABLE_DEBUG_POSTFIX "Add \"d\" after library names for debug builds" ON)
+option(ENABLE_DEBUG_POSTFIX "Add \"d\" (by default) after library names for debug builds." ON)
 if(ENABLE_DEBUG_POSTFIX)
-    set(CMAKE_DEBUG_POSTFIX d)
+    set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Output file debug postfix. Default is \"d\".")
 endif()
 
 # The API (SO) and detailed library versions for the shared library.
@@ -244,10 +244,10 @@ message(STATUS "    Tests:                   ${BUILD_TESTING}")
 message(STATUS "")
 
 if(ENABLE_CXX_INTERFACE)
-    message(AUTHOR_WARNING "This build is configured to export all C++ symbols in the shared library.\n"
+    message(AUTHOR_WARNING
+            "This build is configured to export C++ symbols for ProjectM and PCM classes in the shared library.\n"
             "Using C++ STL types across library borders only works if all components were built "
             "with the exact same toolchain and C++ language level, otherwise it will cause crashes.\n"
-            "Enabling this option will not export additional symbols in Windows DLL builds.\n"
             "Only use this if you know what you're doing. You have been warned!"
             )
 endif()

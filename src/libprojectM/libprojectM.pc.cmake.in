@@ -7,7 +7,7 @@ sysconfdir=@PKGCONFIG_DATADIR_PATH@
 
 Name: libprojectM
 Version: @PROJECT_VERSION@
-Description: projectM - OpenGL Milkdrop
-Requires:
-Libs: -L${libdir} -l:projectM.a
-Cflags: -I${includedir} -DPROJECTM_STATIC_DEFINE
+Description: projectM Music Visualizer
+Requires: opengl
+Libs: -L${libdir} -l:@PKGCONFIG_PROJECTM_LIBRARY@ @PKGCONFIG_LIBS@
+Cflags: -I${includedir} @PKGCONFIG_FLAGS@
