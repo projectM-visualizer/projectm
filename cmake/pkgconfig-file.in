@@ -5,9 +5,9 @@ includedir=@PKGCONFIG_INCLUDE_DIR@
 pkgdatadir=@PKGCONFIG_DATADIR_PATH@
 sysconfdir=@PKGCONFIG_DATADIR_PATH@
 
-Name: libprojectM
+Name: @PKGCONFIG_PACKAGE_NAME@
 Version: @PROJECT_VERSION@
-Description: projectM Music Visualizer
-Requires: opengl
+Description: @PKGCONFIG_PACKAGE_DESCRIPTION@
+Requires: @PKGCONFIG_PACKAGE_REQUIREMENTS@
 Libs: -L${libdir} -l:@PKGCONFIG_PROJECTM_LIBRARY@ @PKGCONFIG_LIBS@
 Cflags: -I${includedir} @PKGCONFIG_FLAGS@

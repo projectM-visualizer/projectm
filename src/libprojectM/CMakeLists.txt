@@ -256,49 +256,16 @@ install(EXPORT libprojectMTargets
 
 # pkg-config export, only supported on UNIX systems.
 if(UNIX)
-    macro(set_pkg_config_path varname path)
-        if(IS_ABSOLUTE "${path}")
-            set(${varname} "${path}")
-        else()
-            set(${varname} "\${prefix}/${path}")
-        endif()
-    endmacro()
-
-    set(PKGCONFIG_PREFIX "${CMAKE_INSTALL_PREFIX}")
-    set_pkg_config_path(PKGCONFIG_LIB_DIR "${PROJECTM_LIB_DIR}")
-    set_pkg_config_path(PKGCONFIG_INCLUDE_DIR "${PROJECTM_INCLUDE_DIR}")
-    set_pkg_config_path(PKGCONFIG_DATADIR_PATH "${PROJECTM_DATADIR_PATH}")
-
-    set(PKGCONFIG_FLAGS "")
-    set(PKGCONFIG_LIBS "")
-
-    # Get exported target defines
-    get_target_property(_exported_defines projectM INTERFACE_COMPILE_DEFINITIONS)
-    if(_exported_defines)
-        foreach(_define ${_exported_defines})
-            set(PKGCONFIG_FLAGS "${PKGCONFIG_FLAGS} -D${_define}")
-        endforeach()
-    endif()
+    include(GeneratePkgConfigFiles)
 
     if(ENABLE_LLVM)
         set(PKGCONFIG_LIBS "${PKGCONFIG_LIBS} -L${LLVM_LIB_DIR} ${LLVM_LIBRARIES}")
     endif()
 
-    # Using different package name for debug and release, as pkg-config doesn't support
-    # multi-config packages such as CMake provides.
-    set(PKGCONFIG_PROJECTM_LIBRARY "projectM")
-    configure_file(libprojectM.pc.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/libprojectM.pc" @ONLY)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libprojectM.pc"
-            CONFIGURATIONS Release;RelWithDebInfo;MinSizeRel
-            DESTINATION "${PROJECTM_LIB_DIR}/pkgconfig"
-            COMPONENT Devel
-            )
+    set(PKGCONFIG_PACKAGE_NAME "libprojectM")
+    set(PKGCONFIG_PACKAGE_DESCRIPTION "projectM Music Visualizer")
+    set(PKGCONFIG_PACKAGE_REQUIREMENTS_ALL "opengl")
 
-    set(PKGCONFIG_PROJECTM_LIBRARY "projectM${CMAKE_DEBUG_POSTFIX}")
-    configure_file(libprojectM.pc.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/libprojectMd.pc" @ONLY)
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libprojectMd.pc"
-            CONFIGURATIONS Debug
-            DESTINATION "${PROJECTM_LIB_DIR}/pkgconfig"
-            COMPONENT Devel
-            )
+    generate_pkg_config_files(projectM libprojectM)
+
 endif()

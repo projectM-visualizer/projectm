@@ -141,3 +141,15 @@ install(EXPORT libprojectMPlaylist
         DESTINATION "${PROJECTM_LIB_DIR}/cmake/libprojectMPlaylist"
         COMPONENT Devel
         )
+
+# pkg-config export, only supported on UNIX systems.
+if(UNIX)
+    include(GeneratePkgConfigFiles)
+
+    set(PKGCONFIG_PACKAGE_NAME "libprojectM-playlist")
+    set(PKGCONFIG_PACKAGE_DESCRIPTION "projectM Playlist Library")
+    set(PKGCONFIG_PACKAGE_REQUIREMENTS_RELEASE "libprojectM")
+    set(PKGCONFIG_PACKAGE_REQUIREMENTS_DEBUG "libprojectM-debug")
+
+    generate_pkg_config_files(projectM_playlist libprojectM-playlist)
+endif()
