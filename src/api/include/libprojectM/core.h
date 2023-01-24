@@ -93,6 +93,39 @@ PROJECTM_EXPORT void projectm_load_preset_data(projectm_handle instance, const c
  */
 PROJECTM_EXPORT void projectm_reset_textures(projectm_handle instance);
 
+/**
+ * @brief Returns the runtime library version components as individual integers.
+ *
+ * Components which aren't required can be set to NULL.
+ *
+ * @param major A pointer to an int that will be set to the major version.
+ * @param minor A pointer to an int that will be set to the minor version.
+ * @param patch A pointer to an int that will be set to the patch version.
+ */
+PROJECTM_EXPORT void projectm_get_version_components(int* major, int* minor, int* patch);
+
+/**
+ * @brief Returns the runtime library version as a string.
+ *
+ * Remember to call  @a projectm_free_string() on the returned pointer if the data is no longer
+ * needed.
+ *
+ * @return The library version in the format major.minor.patch.
+ */
+PROJECTM_EXPORT char* projectm_get_version_string();
+
+/**
+ * @brief Returns the VCS revision from which the projectM library was built.
+ *
+ * Can be any text, will mostly contain a Git commit hash. Useful to report bugs.
+ *
+ * Remember to call  @a projectm_free_string() on the returned pointer if the data is no longer
+ * needed.
+ *
+ * @return The VCS revision number the projectM library was built from.
+ */
+PROJECTM_EXPORT char* projectm_get_vcs_version_string();
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

@@ -23,6 +23,8 @@ target_include_directories(projectM_api
         "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}>"
         )
 
+configure_file(version.h.in "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/version.h" @ONLY)
+
 include(GenerateExportHeader)
 
 set(PROJECTM_EXPORT_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/projectM_export.h")
@@ -45,6 +47,7 @@ install(TARGETS projectM_api
 
 install(FILES
         "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/projectM_export.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/version.h"
         DESTINATION "${PROJECTM_INCLUDE_DIR}/libprojectM"
         COMPONENT Devel
         )

@@ -32,3 +32,4 @@
 #include "libprojectM/parameters.h"
 #include "libprojectM/render_opengl.h"
 #include "libprojectM/touch.h"
+#include "libprojectM/version.h"

@@ -106,12 +106,6 @@ void projectm_set_preset_switch_failed_event_callback(projectm_handle instance,
     projectMInstance->m_presetSwitchFailedEventUserData = user_data;
 }
 
-void projectm_reset_gl(projectm_handle instance, int width, int height)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->ResetOpenGL(width, height);
-}
-
 void projectm_set_texture_search_paths(projectm_handle instance,
                                        const char** texture_search_paths,
                                        size_t count)
@@ -132,6 +126,38 @@ void projectm_reset_textures(projectm_handle instance)
 {
     auto projectMInstance = handle_to_instance(instance);
     projectMInstance->ResetTextures();
+}
+
+void projectm_get_version_components(int* major, int* minor, int* patch)
+{
+    if (major != nullptr)
+    {
+        *major = PROJECTM_VERSION_MAJOR;
+    }
+    if (minor != nullptr)
+    {
+        *minor = PROJECTM_VERSION_MINOR;
+    }
+    if (patch != nullptr)
+    {
+        *patch = PROJECTM_VERSION_PATCH;
+    }
+}
+
+char* projectm_get_version_string()
+{
+    auto versionLength = strlen(PROJECTM_VERSION_STRING);
+    auto buffer = projectm_alloc_string(versionLength + 1);
+    strncpy(buffer, PROJECTM_VERSION_STRING, versionLength);
+    return buffer;
+}
+
+char* projectm_get_vcs_version_string()
+{
+    auto versionLength = strlen(PROJECTM_VERSION_VCS);
+    auto buffer = projectm_alloc_string(versionLength + 1);
+    strncpy(buffer, PROJECTM_VERSION_VCS, versionLength);
+    return buffer;
 }
 
 void projectm_opengl_render_frame(projectm_handle instance)
