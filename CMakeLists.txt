@@ -21,7 +21,7 @@ endif()
 
 project(libprojectM
         LANGUAGES C CXX
-        VERSION 3.99.0
+        VERSION 4.0.0
         )
 
 # The API (SO) version for the shared library. Should be incremented whenever the binary interface changes
