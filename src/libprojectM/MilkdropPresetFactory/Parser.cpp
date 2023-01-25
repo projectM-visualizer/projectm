@@ -854,7 +854,7 @@ Expr * Parser::_parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Milkd
     if (*string == 0)
     {
       if (PARSE_DEBUG) printf("parse_gen_expr: empty string coupled with terminal (LINE %d) \n", line_count);
-      if (nullptr == tree_expr && (token==tEOF||token==tEOL))
+      if (nullptr == tree_expr && (token == tEOF || token == tEOL || token == tSemiColon))
       {
         // we will get here if we have a completely empty line e.g. "shape_1_per_frame1=shpt ="
         // we return 0 because returning NULL would indicate an error
