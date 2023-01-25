@@ -165,8 +165,8 @@ private:
 
     std::vector<MilkdropWaveform> m_waveformList;
 
-    int m_textureSizeX{0};
-    int m_textureSizeY{0};
+    int m_mainTextureSizeX{0};
+    int m_mainTextureSizeY{0};
 
     float m_fAspectX{1.0};
     float m_fAspectY{1.0};
