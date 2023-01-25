@@ -41,10 +41,11 @@ set(PROJECTM_LIB_VERSION "${CMAKE_PROJECT_VERSION}")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 include(VCSVersion)
+include(GNUInstallDirs)
 
-set(PROJECTM_BIN_DIR "bin" CACHE STRING "Executable installation directory, relative to the install prefix.")
-set(PROJECTM_LIB_DIR "lib" CACHE STRING "Library installation directory, relative to the install prefix.")
-set(PROJECTM_INCLUDE_DIR "include" CACHE STRING "Header installation directory, relative to the install prefix.")
+set(PROJECTM_BIN_DIR "${CMAKE_INSTALL_BINDIR}" CACHE STRING "Executable installation directory, relative to the install prefix.")
+set(PROJECTM_LIB_DIR "${CMAKE_INSTALL_LIBDIR}" CACHE STRING "Library installation directory, relative to the install prefix.")
+set(PROJECTM_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}" CACHE STRING "Header installation directory, relative to the install prefix.")
 
 # Dummy file for merged static libs.
 set(PROJECTM_DUMMY_SOURCE_FILE "${CMAKE_BINARY_DIR}/dummy.cpp")
