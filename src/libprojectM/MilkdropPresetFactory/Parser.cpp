@@ -429,7 +429,6 @@ int Parser::parse_line(std::istream &  fs, MilkdropPreset * preset)
   case tEq:
     lastLinePrefix = std::string(eqn_string);
     if (PARSE_DEBUG) std::cout << "last line prefix = \"" << eqn_string << "\"" << std::endl;
-    // std::cerr << "parse_line: tEQ case, fs.peek()=\'" << fs.peek() << "\'" << std::endl;
     if (!fs)
       return PROJECTM_PARSE_ERROR;
 
@@ -449,7 +448,6 @@ int Parser::parse_line(std::istream &  fs, MilkdropPreset * preset)
 	/* CASE: WARP CODE */
 	if (!strncmp(eqn_string, WARP_STRING, WARP_STRING_LENGTH))
 	{
-		//std::cout << "parsing warp string block\n" << std::endl;
 		parse_string_block(fs, &preset->presetOutputs().warpShader.programSource);
 		return PROJECTM_SUCCESS;
 	}
@@ -458,7 +456,6 @@ int Parser::parse_line(std::istream &  fs, MilkdropPreset * preset)
 	/* CASE: COMPOSITE CODE */
 	if (!strncmp(eqn_string, COMPOSITE_STRING, COMPOSITE_STRING_LENGTH))
 	{
-		//std::cout << "parsing composite string block\n" << std::endl;
 		parse_string_block(fs, &preset->presetOutputs().compositeShader.programSource);
 		return PROJECTM_SUCCESS;
 	}
@@ -797,7 +794,6 @@ Expr * Parser::_parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Milkd
        multiplication operator. For now treat it as an error */
     if (*string != 0)
     {
-      std::cerr << "token prefix is " << *string << std::endl;
       if (PARSE_DEBUG) printf("parse_gen_expr: implicit multiplication case unimplemented!\n");
       if (tree_expr)
         Expr::delete_expr(tree_expr);
@@ -1003,10 +999,8 @@ Expr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Milkdr
   Expr *gen_expr = _parse_gen_expr( fs, tree_expr, preset );
   if (nullptr == gen_expr)
     return nullptr;
-  //std::cout << gen_expr << std::endl;
   Expr *opt = Expr::optimize(gen_expr);
   gen_expr = nullptr;
-  //std::cout << opt << std::endl << std::endl;
   return opt;
 }
 
@@ -1586,9 +1580,6 @@ void Parser::parse_string_block(std::istream &  fs, std::string * out_string) {
 	std::set<char> skipList;
 	skipList.insert('`');
 	readStringUntil(fs, out_string, false, skipList);
-
-	//std::cout << "out_string:\n " << *out_string << "\n" << std::endl;
-
 }
 
 InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, MilkdropPreset * preset, std::map<std::string,Param*> * database)
