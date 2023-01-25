@@ -42,6 +42,7 @@
 #include <locale>
 #include <map>
 #include <sstream>
+#include <stdexcept>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -936,7 +937,10 @@ Expr * Parser::_parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Milkd
             return NULL;
           }
       }
-      assert(param);
+      if (param == NULL)
+      {
+          throw std::runtime_error("Preset parsing failed: custom parameter is NULL in line " + std::to_string(line_count));
+      }
 
       if (PARSE_DEBUG)
       {
@@ -1238,7 +1242,10 @@ Expr * Parser::parse_infix_op(std::istream &  fs, token_t token, TreeExpr * tree
   case tComma:
     if (PARSE_DEBUG) printf("parse_infix_op: terminal found (LINE %d)\n", line_count);
     gen_expr = tree_expr;
-    assert(gen_expr);
+    if (gen_expr == NULL)
+    {
+      throw std::runtime_error("Preset parse error: Unexpected terminal character in line " + std::to_string(line_count));
+    }
     return gen_expr;
   default:
     if (PARSE_DEBUG) printf("parse_infix_op: operator or terminal expected, but not found (LINE %d)\n", line_count);
