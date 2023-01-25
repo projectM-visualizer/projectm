@@ -255,7 +255,8 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
 
             if (texDesc.first == NULL)
             {
-                if (lowerCaseName.substr(0, 4) == "rand" || lowerCaseName.substr(2, 5) == "_rand")
+                if ((lowerCaseName.size() >= 4 && lowerCaseName.substr(0, 4) == "rand") ||
+                    (lowerCaseName.size() >= 5 && lowerCaseName.substr(2, 5) == "_rand"))
                 {
                     texDesc = textureManager->getRandomTextureName(sampler);
                 }
