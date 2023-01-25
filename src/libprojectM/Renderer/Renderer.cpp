@@ -134,8 +134,8 @@ void Renderer::SetPipeline(Pipeline& pipeline)
 
 void Renderer::ResetTextures()
 {
-    m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths, m_textureSizeX, m_textureSizeY);
-    m_shaderEngine.setParams(m_textureSizeX, m_textureSizeY, m_fAspectX, m_fAspectY, m_beatDetect, m_textureManager.get());
+    m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths, m_mainTextureSizeX, m_mainTextureSizeY);
+    m_shaderEngine.setParams(m_mainTextureSizeX, m_mainTextureSizeY, m_fAspectX, m_fAspectY, m_beatDetect, m_textureManager.get());
 }
 
 void Renderer::SetTextureSearchPaths(std::vector<std::string>& textureSearchPaths)
@@ -154,7 +154,7 @@ void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipel
 {
 	totalframes++;
 
-	glViewport(0, 0, m_textureSizeX, m_textureSizeY);
+	glViewport(0, 0, m_mainTextureSizeX, m_mainTextureSizeY);
 
     m_renderContext.mat_ortho = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -40.0f, 40.0f);
 }
@@ -162,7 +162,7 @@ void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipel
 void Renderer::RenderItems(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
     m_renderContext.time = pipelineContext.time;
-    m_renderContext.texsize = nearestPower2(std::max(m_textureSizeX, m_textureSizeY));
+    m_renderContext.texsize = nearestPower2(std::max(m_mainTextureSizeX, m_mainTextureSizeY));
     m_renderContext.viewportSizeX = m_viewportWidth;
     m_renderContext.viewportSizeY = m_viewportHeight;
     m_renderContext.aspectX = m_fAspectX;
@@ -371,15 +371,15 @@ void Renderer::reset(int viewportWidth, int viewportHeight)
 
 	glEnable(GL_BLEND);
 
-    m_textureSizeX = viewportWidth;
-    m_textureSizeY = viewportHeight;
+    m_mainTextureSizeX = viewportWidth;
+    m_mainTextureSizeY = viewportHeight;
 
 	// snap to 16x16 blocks
-    m_textureSizeX = ((m_textureSizeX - 15) / 16) * 16;
-    m_textureSizeY = ((m_textureSizeY - 15) / 16) * 16;
+    m_mainTextureSizeX = ((m_mainTextureSizeX - 15) / 16) * 16;
+    m_mainTextureSizeY = ((m_mainTextureSizeY - 15) / 16) * 16;
 
-	m_fAspectX = (m_textureSizeY > m_textureSizeX) ? static_cast<float>(m_textureSizeX) / static_cast<float>(m_textureSizeY) : 1.0f;
-	m_fAspectY = (m_textureSizeX > m_textureSizeY) ? static_cast<float>(m_textureSizeY) / static_cast<float>(m_textureSizeX) : 1.0f;
+	m_fAspectX = (m_mainTextureSizeY > m_mainTextureSizeX) ? static_cast<float>(m_mainTextureSizeX) / static_cast<float>(m_mainTextureSizeY) : 1.0f;
+	m_fAspectY = (m_mainTextureSizeX > m_mainTextureSizeY) ? static_cast<float>(m_mainTextureSizeY) / static_cast<float>(m_mainTextureSizeX) : 1.0f;
 
     m_fInvAspectX = 1.0f / m_fAspectX;
     m_fInvAspectY = 1.0f / m_fAspectY;
