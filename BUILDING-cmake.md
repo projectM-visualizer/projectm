@@ -6,21 +6,36 @@ This file contains in-depth information for building with the CMake build system
 
 Want to build it fast?
 
-Required tools: `cmake`. 
+Required tools and dependencies:
+
+- CMake 3.20 or higher.
+- A working toolchain, e.g. Visual Studio on Windows or the `build-essentials` package on Ubuntu Linux.
+- Main OpenGL libraries and development files.
+- The `GLEW` Library on Windows.
+
+To use the library in other projects, it is required to install it. Use `CMAKE_INSTALL_PREFIX` to specify the
+installation directory.
+
+From the project root, execute:
 
 ```shell
 mkdir build
 cd build
-cmake ..
-make -j8
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/path/to/install-dir
+cmake --build . --target install --config Release
 ```
 
-Output binaries will be in `build/src/...`.
+If the build succeeded, you should now have the projectM libraries and include files in the specified install dir.
 
-SDL2 binary can be found in `build/src/projectM-sdl/projectMSDL`.
+To use the library in other CMake projects, simply point the build to your install dir by adding it
+to `CMAKE_PREFIX_PATH` and call `find_package(libprojectM)` in the other project's `CMakeLists.txt`.
 
+If you use other build systems, you have to specify the include and library paths manually.
 
 ## Selecting a specific project file generator
+
+Building libprojectM does not require any specific CMake generator. It should work with any available generator, single-
+and multi-config.
 
 To specify a CMake generator, use the `-G` switch, followed by the generator name. Some newer generators take an
 additional architecture using the `-A` switch. To list all available generators available on your current platform,
@@ -78,25 +93,35 @@ CMake has no built-in way of printing all available configuration options. You c
 top-level `CMakeLists.txt` which contains a block of `option` and `cmake_dependent_option` commands, or use one of the
 available CMake UIs which will display the options after configuring the project once.
 
-### Boolean switches
+### Important build switches
 
-The following table also gives you an overview of the available options and their defaults. All options accept a boolean
+The following table also gives you an overview of important build options and their defaults. All options accept a
+boolean
 value (`YES`/`NO`, `TRUE`/`FALSE`, `ON`/`OFF` or `1`/`0`) and can be provided on the configuration-phase command line
 using the `-D` switch.
 
-| CMake option            | Default | Required dependencies | Description                                                                                                |
-|-------------------------|---------|-----------------------|------------------------------------------------------------------------------------------------------------|
-| `ENABLE_DEBUG_PREFIX`   | `ON`    |                       | Adds `d` to the name of any binary file in debug builds.                                                   |
-| `ENABLE_EMSCRIPTEN`     | `OFF`   | `GLES`, `Emscripten`  | Build for the web using Emscripten.                                                                        |
-| `ENABLE_SDL`            | `ON`    | `SDL2`                | Builds and installs the standalone SDL visualizer application. Also required for Emscripten and the tests. |
-| `ENABLE_GLES`           | `OFF`   | `GLES`                | Use OpenGL ES 3 profile for rendering instead of the Core profile.                                         |
-| `ENABLE_THREADING`      | `ON`    | `pthreads`            | Enable multithreading support. If enabled, will cause an error if pthreads are not available.              |
-| `ENABLE_PRESETS`        | `ON`    |                       | Installs several thousand shipped presets.                                                                 |
-| `ENABLE_PULSEAUDIO`     | `OFF`   | `Qt5`, `Pulseaudio`   | Build the Qt5-based Pulseaudio visualizer application.                                                     |
-| `ENABLE_JACK`           | `OFF`   | `Qt5`, `JACK`         | Build the Qt5-based JACK visualizer application.                                                           |
-| `ENABLE_LIBVISUAL`      | `OFF`   | `libvisual-0.4`       | Build the libvisual plug-in/actor library.                                                                 |
-| `ENABLE_TESTING`        | `OFF`   | `SDL2`                | Builds the unit tests.                                                                                     |
-| `ENABLE_LLVM`           | `OFF`   | `LLVM`                | Enables experimental LLVM JIT support.                                                                     |
+| CMake option        | Default | Required dependencies | Description                                                                                 |
+|---------------------|---------|-----------------------|---------------------------------------------------------------------------------------------|
+| `BUILD_TESTING`     | `OFF`   |                       | Builds the unit tests.                                                                      |
+| `BUILD_SHARED_LIBS` | `ON`    |                       | Build projectM as shared libraries. If `OFF`, build static libraries.                       |
+| `ENABLE_PLAYLIST`   | `ON`    |                       | Builds and installs the playlist library.                                                   |
+| `ENABLE_EMSCRIPTEN` | `OFF`   | `Emscripten`          | Build for the web using Emscripten. Only supports build as a static library and using GLES. |
+
+### Experimental and application-dependent build switches
+
+The following table contains a list of build options which are only useful in special circumstances, e.g. when
+developing libprojectM, trying experimental features or building the library for a special use-case/environment.
+
+| CMake option           | Default | Required dependencies | Description                                                                                                                                                   |
+|------------------------|---------|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ENABLE_SDL_UI`        | `ON`    | `SDL2`                | Builds the SDL-based test application. Only used for development testing, will not be installed.                                                              |
+| `ENABLE_GLES`          | `OFF`   | `GLES`                | Use OpenGL ES 3 profile for rendering instead of the Core profile.                                                                                            |
+| `ENABLE_THREADING`     | `ON`    |                       | Enable multithreading support for preset loading if available.                                                                                                |
+| `ENABLE_OPENMP`        | `ON`    | `OpenMP`              | Enable OpenMP support if available.                                                                                                                           |
+| `ENABLE_DEBUG_POSTFIX` | `ON`    |                       | Adds `d` (by default) to the name of any binary file in debug builds.                                                                                         |
+| `ENABLE_SYSTEM_GLM`    | `OFF`   |                       | Builds against a system-installed GLM library.                                                                                                                |
+| `ENABLE_LLVM`          | `OFF`   | `LLVM`                | Enables **highly experimental** LLVM JIT support. Will most probably not build, as the LLVM API changes frequently.                                           |
+| `ENABLE_CXX_INTERFACE` | `OFF`   |                       | Exports symbols for the `ProjectM` and `PCM` C++ classes and installs the additional the headers. Using the C++ interface is not recommended and unsupported. |
 
 ### Path options
 
@@ -105,15 +130,23 @@ the following options are appended to the value
 of [`CMAKE_INSTALL_PREFIX`](https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html) (which, on most UNIX
 platforms, defaults to `/usr/local`):
 
-| CMake option            | Default          | Description                                                                      |
-|-------------------------|------------------|----------------------------------------------------------------------------------|
-| `PROJECTM_BIN_DIR`      | `bin`            | Directory where executables (e.g. the SDL standalone application) are installed. |
-| `PROJECTM_LIB_DIR`      | `lib`            | Directory where libprojectM is installed[<sup>[*]</sup>](#libvisual-path).       |
-| `PROJECTM_INCLUDE_DIR`  | `include`        | Directory where the libprojectM include files will be installed under.           |
-| `PROJECTM_DATADIR_PATH` | `share/projectM` | Directory where the default configuration and presets are installed under.       |
+| CMake option           | Default        | Description                                                                                |
+|------------------------|----------------|--------------------------------------------------------------------------------------------|
+| `CMAKE_INSTALL_PREFIX` | (OS dependent) | Base directory where the projectM libraries, includes and support files will be installed. |
+| `PROJECTM_BIN_DIR`     | `bin`          | Directory where executables (e.g. the SDL standalone application) are installed.           |
+| `PROJECTM_LIB_DIR`     | `lib[64]`      | Directory where libprojectM is installed.                                                  |
+| `PROJECTM_INCLUDE_DIR` | `include`      | Directory where the libprojectM include files will be installed under.                     |
 
-<a name="libvisual-path"></a>[*]: The libvisual projectM plug-in install location is determined automatically via
-pkgconfig and not influenced by this option.
+### Other options
+
+Various other options for specific needs.
+
+| CMake option               | Default                                | Description                                                                                                       |
+|----------------------------|----------------------------------------|-------------------------------------------------------------------------------------------------------------------|
+| `CMAKE_DEBUG_POSTFIX`      | `d` (if `ENABLE_DEBUG_POSTFIX` is set) | Postfix appended to debug libraries.                                                                              |
+| `CMAKE_INSTALL_BINDIR`     | `bin`                                  | Another way to specify the binary installation directory. Used as default value for `PROJECTM_BIN_DIR`.           |
+| `CMAKE_INSTALL_LIBDIR`     | `lib` or `lib64`                       | Another way to specify the library installation directory. Used as default value for `PROJECTM_LIB_DIR`.          |
+| `CMAKE_INSTALL_INCLUDEDIR` | `include`                              | Another way to specify the include file installation directory. Used as default value for `PROJECTM_INCLUDE_DIR`. |
 
 ## Always perform out-of-tree builds!
 
@@ -168,8 +201,8 @@ several reasons:
    deleting the build directory).
 3. For some configurations, even Release build artifacts may contain debug symbols until they are installed.
 
-It is fine to build and run executables from the build directory for development and debugging. For packaging, always
-use the `install` target and copy files from there.
+It is fine to build and run executables from the build directory for development and debugging. For packaging or using
+libprojectM in other projects, always use the `install` target and copy files from there.
 
 ### Generated files
 
@@ -185,13 +218,8 @@ In the top-level build directory, CMake creates a few files that are present on 
 - The top-level project file for use with the selected build toolset, e.g. `Makefile`, `build.ninja`, `projectm.sln`
   or `projectm.xcodeproj`, plus additional toolset-specific files.
 
-The projectM build files generate additional files used in the build and install phases:
-
-- `config.inp`: The default configuration file, by default installed to `<prefix>/share/projectM`.
-- `libprojectM.pc`: Package configuration file for use with `pkgconfig`.
-- `include/config.h`: A forced include file that contains macro definitions to enable or disable certain code features
-  based on the build configuration and availability of platform headers and features. Similar to the
-  autoheader-generated file.
+The projectM build files generate additional files used in the build and install phases. These are scattered over the
+build tree, but installed into the proper directories. Do not try and gather these files yourself from the build tree.
 
 ### Subdirectory structure
 
@@ -199,6 +227,8 @@ The rest of the directory structure generally resembles the source tree. Source 
 a `CMakeLists.txt` file will also be created in the build tree with the same relative path. Each of these subdirectories
 contains a `CMakeFiles` directory with CMake-internal data, generated project files for the select toolset, e.g.
 makefiles and any temporary compile artifacts.
+
+The directory structure is created by CMake and may change depending on the generator and CMake version used.
 
 ### Executable and library locations
 
@@ -213,62 +243,35 @@ on Windows.
 
 ## Using libprojectM in other CMake projects
 
-The projectM library can be used as a static library and, on non-Windows platforms, as a shared library in other
-CMake-based projects to provide embedded audio visualization. There are two ways:
+The projectM library can be used as a static library or shared library in other CMake-based projects to provide embedded
+audio visualization. It is highly recommended to build projectM as shared libraries for maximum compatibility and LGPL
+compliance.
 
-- Importing the library CMake targets directly from the build tree without installation.
-- Using the library from an installed location or package with the provided CMake package config files.
+The build directory is not structured in a way that other projects can make use of it. Use the `install` target to copy
+all required files to the configured installation prefix. You can customize the subdirectories for libraries, includes
+and binaries using the `PROJECTM_<X>>_DIR` variables when configuring the CMake project.
 
 ### Importing libprojectM targets from the build tree
 
-This approach is useful for projects that either require more in-depth access to the projectM library files, especially
-to headers that are not installed as part of the public API. This might cause issues if the internal headers change, but
-gives a broader set of features and more control to the developer.
+This approach is not recommended, but can be useful for projects that either require more in-depth access to the
+projectM library files, especially to headers that are not installed as part of the public API. This might cause issues
+if the internal headers change, but gives a broader set of features and more control to the developer.
 
-To use the targets, follow these steps:
-
-- Configure the build directory as needed.
-- Build the required library targets `projectM_static` and `projectM_shared` as needed, or simply everything.
-- Include the file `src/libprojectM/projectM-exports.cmake` from the projectM build tree in your project.
-
-All targets and their interface properties are now defined and can be used.
-
-#### Example
-
-```cmake
-# libprojectM.a/.lib is already built.
-set(PROJECTM_BUILD_DIR "/some/path/to/projectM/build")
-include("${PROJECTM_BUILD_DIR}/src/libprojectM/projectM-exports.cmake")
-
-add_executable(MyApp main.cpp)
-
-target_link_libraries(MyApp PRIVATE libprojectM::static)
-```
-
-This will also add all projectM include directories to the target's source files, pointing to the respective projectM
-source directories.
-
-Look at the generated file in the build tree if you need more details about the available targets.
+Please refer to the [`ExternalProject`](https://cmake.org/cmake/help/latest/module/ExternalProject.html) CMake module
+documentation on how to set up the libprojectM build system for use in another project.
 
 ### Importing libprojectM targets from an installed version
 
-This is the recommended way of importing libprojectM in your project. This project installs a set of CMake files
-in `<PREFIX>/<LIBDIR>/cmake/libprojectM`, containing target definitions, version and dependency checks as well as any
-additional libraries required for linking. Other projects then use CMake's `find_package` command to search for these
-files in [different locations](https://cmake.org/cmake/help/latest/command/find_package.html#search-procedure).
+This is the recommended and supported way of importing libprojectM in your project. This project installs a set of CMake
+files in `<PREFIX>/<LIBDIR>/cmake/libprojectM`, containing target definitions, version and dependency checks as well as
+any additional libraries required for linking. Other projects then use CMake's `find_package` command to search for
+these files in [different locations](https://cmake.org/cmake/help/latest/command/find_package.html#search-procedure).
 
 In the case projectM libraries and headers are not installed in any system search path, you need to add either the
 install prefix path (the top-level install dir) or the directory containing the libraries (the `lib` dir by default) to
 the [`CMAKE_PREFIX_PATH`](https://cmake.org/cmake/help/latest/variable/CMAKE_PREFIX_PATH.html) list.
 
-If the package was found, you can then link against one of these provided targets:
-
-- `libprojectM::static` - The static library (`.a` or `.lib`).
-- `libprojectM::shared` - The shared library (`.so`, `.dylib` or `.dll`).
-
-Note that the availability of the targets depend on the platform and build configuration, so only one of those might be
-available. You can check with `if(TARGET libprojectM::static)` and `if(TARGET libprojectM::shared)` to select the
-available or preferred one.
+If the package was found, you can then link against libprojectM by using the `libprojectM::projectM` target.
 
 Depending on how the package was built, targets might be available for multiple configurations or only `Release`. CMake
 will automatically select the most appropriate one to link.
@@ -276,21 +279,35 @@ will automatically select the most appropriate one to link.
 Include dirs, additional link dependencies and possible compiler options will be propagated to any target the library is
 linked to.
 
-#### Example
+#### Using the optional playlist library
 
-Links the shared library preferably, with fallback to static:
+If you want to use the optional playlist library, you need to specifically request it as a component:
 
 ```cmake
-find_package(libprojectM REQUIRED)
+find_package(libprojectM COMPONENTS Playlist)
+```
 
-if(TARGET libprojectM::shared)
-    set(PROJECTM_LINK_TARGET libprojectM::shared)
-else()
-    # If this target is also unavailable, CMake will error out on target_link_libraries().
-    set(PROJECTM_LINK_TARGET libprojectM::static)
+You can either use `REQUIRED` to force a fatal error if the component cannot be found or check if the target exists
+using:
+
+```cmake
+if(TARGET libprojectM::playlist)
+    # ...
 endif()
+```
+
+If you link the playlist library, the main `libprojectM::projectM` target will be linked automatically as a dependency.
+
+#### Example
+
+Searches for projectM and the playlist library and links both to the application:
+
+```cmake
+find_package(libprojectM REQUIRED COMPONENTS Playlist)
 
 add_executable(MyApp main.cpp)
 
-target_link_libraries(MyApp PRIVATE ${PROJECTM_LINK_TARGET})
+target_link_libraries(MyApp PRIVATE
+        libprojectM::Playlist
+        )
 ```
