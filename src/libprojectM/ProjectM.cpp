@@ -115,8 +115,9 @@ void ProjectM::ResetTextures()
     m_renderer->ResetTextures();
 }
 
-void ProjectM::DumpDebugImageOnNextFrame()
+void ProjectM::DumpDebugImageOnNextFrame(const std::string& outputFile)
 {
+    m_renderer->frameDumpOutputFile = outputFile;
     m_renderer->writeNextFrameToFile = true;
 }
 
