@@ -127,10 +127,6 @@ public:
 
     auto InitRenderToTexture() -> unsigned;
 
-    void SetTextureSize(size_t size);
-
-    auto TextureSize() const -> size_t;
-
     void SetBeatSensitivity(float sensitivity);
 
     auto GetBeatSensitivity() const -> float;
@@ -251,7 +247,6 @@ private:
     size_t m_meshX{32};              //!< Per-point mesh horizontal resolution.
     size_t m_meshY{24};              //!< Per-point mesh vertical resolution.
     size_t m_targetFps{35};          //!< Target frames per second.
-    size_t m_textureSize{512};       //!< Render texture size.
     size_t m_windowWidth{0};         //!< Render window width. If 0, nothing is rendered.
     size_t m_windowHeight{0};        //!< Render window height. If 0, nothing is rendered.
     double m_presetDuration{30.0};   //!< Preset duration in seconds.

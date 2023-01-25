@@ -46,21 +46,6 @@ PROJECTM_EXPORT void projectm_set_texture_search_paths(projectm_handle instance,
                                                        size_t count);
 
 /**
- * @brief Changes the size of the internal render texture.
- * @note This will recreate the internal renderer.
- * @param instance The projectM instance handle.
- * @param size The new size of the render texture. Must be a power of 2.
- */
-PROJECTM_EXPORT void projectm_set_texture_size(projectm_handle instance, size_t size);
-
-/**
- * @brief Returns the size of the internal render texture.
- * @param instance The projectM instance handle.
- * @return The size of the internal rendering texture.
- */
-PROJECTM_EXPORT size_t projectm_get_texture_size(projectm_handle instance);
-
-/**
  * @brief Sets the beat sensitivity.
  *
  * The beat sensitivity to be used.

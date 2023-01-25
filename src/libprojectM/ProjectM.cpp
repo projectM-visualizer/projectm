@@ -411,18 +411,6 @@ auto ProjectM::PresetLocked() const -> bool
     return m_presetLocked;
 }
 
-void ProjectM::SetTextureSize(size_t size)
-{
-    m_textureSize = size;
-
-    RecreateRenderer();
-}
-
-auto ProjectM::TextureSize() const -> size_t
-{
-    return m_textureSize;
-}
-
 void ProjectM::SetBeatSensitivity(float sensitivity)
 {
     m_beatDetect->beatSensitivity = std::min(std::max(0.0f, sensitivity), 2.0f);
