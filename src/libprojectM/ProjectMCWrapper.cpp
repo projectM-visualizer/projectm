@@ -172,18 +172,6 @@ unsigned int projectm_opengl_init_render_to_texture(projectm_handle instance)
     return projectMInstance->InitRenderToTexture();
 }
 
-size_t projectm_get_texture_size(projectm_handle instance)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    return projectMInstance->TextureSize();
-}
-
-void projectm_set_texture_size(projectm_handle instance, size_t size)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->SetTextureSize(size);
-}
-
 void projectm_set_beat_sensitivity(projectm_handle instance, float sensitivity)
 {
     auto projectMInstance = handle_to_instance(instance);
