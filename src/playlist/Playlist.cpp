@@ -162,6 +162,16 @@ auto Playlist::Shuffle() const -> bool
 void Playlist::Sort(uint32_t startIndex, uint32_t count,
                     Playlist::SortPredicate predicate, Playlist::SortOrder order)
 {
+    if (startIndex >= m_items.size())
+    {
+        return;
+    }
+
+    if (startIndex + count >= m_items.size())
+    {
+        count = m_items.size() - startIndex;
+    }
+
     m_presetHistory.clear();
 
     std::sort(m_items.begin() + startIndex,

@@ -411,6 +411,52 @@ TEST(projectMPlaylistPlaylist, SortFilenameOnlyDescending)
 }
 
 
+TEST(projectMPlaylistPlaylist, SortOutOfBoundsStart)
+{
+    Playlist playlist;
+    EXPECT_TRUE(playlist.AddItem("/some/PresetZ.milk", Playlist::InsertAtEnd, false));
+    EXPECT_TRUE(playlist.AddItem("/some/PresetA.milk", Playlist::InsertAtEnd, false));
+    EXPECT_TRUE(playlist.AddItem("/some/other/PresetC.milk", Playlist::InsertAtEnd, false));
+    EXPECT_TRUE(playlist.AddItem("/yet/another/PresetD.milk", Playlist::InsertAtEnd, false));
+
+    ASSERT_EQ(playlist.Size(), 4);
+
+    playlist.Sort(std::numeric_limits<uint32_t>::max(), 1, Playlist::SortPredicate::FilenameOnly, Playlist::SortOrder::Ascending);
+
+    ASSERT_EQ(playlist.Size(), 4);
+
+    const auto& items = playlist.Items();
+    ASSERT_EQ(items.size(), 4);
+    EXPECT_EQ(items.at(0).Filename(), "/some/PresetZ.milk");
+    EXPECT_EQ(items.at(1).Filename(), "/some/PresetA.milk");
+    EXPECT_EQ(items.at(2).Filename(), "/some/other/PresetC.milk");
+    EXPECT_EQ(items.at(3).Filename(), "/yet/another/PresetD.milk");
+}
+
+
+TEST(projectMPlaylistPlaylist, SortOutOfBoundsCount)
+{
+    Playlist playlist;
+    EXPECT_TRUE(playlist.AddItem("/some/PresetZ.milk", Playlist::InsertAtEnd, false));
+    EXPECT_TRUE(playlist.AddItem("/some/PresetA.milk", Playlist::InsertAtEnd, false));
+    EXPECT_TRUE(playlist.AddItem("/some/other/PresetC.milk", Playlist::InsertAtEnd, false));
+    EXPECT_TRUE(playlist.AddItem("/yet/another/PresetD.milk", Playlist::InsertAtEnd, false));
+
+    ASSERT_EQ(playlist.Size(), 4);
+
+    playlist.Sort(0, std::numeric_limits<uint32_t>::max(), Playlist::SortPredicate::FilenameOnly, Playlist::SortOrder::Ascending);
+
+    ASSERT_EQ(playlist.Size(), 4);
+
+    const auto& items = playlist.Items();
+    ASSERT_EQ(items.size(), 4);
+    EXPECT_EQ(items.at(0).Filename(), "/some/PresetA.milk");
+    EXPECT_EQ(items.at(1).Filename(), "/some/other/PresetC.milk");
+    EXPECT_EQ(items.at(2).Filename(), "/yet/another/PresetD.milk");
+    EXPECT_EQ(items.at(3).Filename(), "/some/PresetZ.milk");
+}
+
+
 TEST(projectMPlaylistPlaylist, NextPresetIndexEmptyPlaylist)
 {
     Playlist playlist;
