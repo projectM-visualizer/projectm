@@ -123,11 +123,7 @@ private:
     void CompositeShaderOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext);
     void CompositeOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext);
     void ResetPerPointMeshBuffer();
-
     int nearestPower2(int value);
-
-    GLuint textureRenderToTexture{0};
-
     void InitCompositeShaderVertex();
     float SquishToCenter(float x, float fExp);
     void UvToMathSpace(float u, float v, float* rad, float* ang);

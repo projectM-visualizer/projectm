@@ -352,8 +352,6 @@ Renderer::~Renderer()
 
 	glDeleteBuffers(1, &m_vboCompositeOutput);
 	glDeleteVertexArrays(1, &m_vaoCompositeOutput);
-
-	glDeleteTextures(1, &textureRenderToTexture);
 }
 
 void Renderer::reset(int viewportWidth, int viewportHeight)
