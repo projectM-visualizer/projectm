@@ -166,12 +166,6 @@ void projectm_opengl_render_frame(projectm_handle instance)
     projectMInstance->RenderFrame();
 }
 
-unsigned int projectm_opengl_init_render_to_texture(projectm_handle instance)
-{
-    auto projectMInstance = handle_to_instance(instance);
-    return projectMInstance->InitRenderToTexture();
-}
-
 void projectm_set_beat_sensitivity(projectm_handle instance, float sensitivity)
 {
     auto projectMInstance = handle_to_instance(instance);

@@ -72,7 +72,6 @@ public:
   void SetTextureSearchPaths(std::vector<std::string>& textureSearchPaths);
   void SetPerPixelMeshSize(int meshX, int meshY);
   void reset(int viewportWidth, int viewportHeight);
-  GLuint initRenderToTexture();
 
   bool timeCheck(const milliseconds currentTime, const milliseconds lastTime, const double difference);
 

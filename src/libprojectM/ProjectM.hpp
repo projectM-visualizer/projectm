@@ -125,8 +125,6 @@ public:
 
     void RenderFrame();
 
-    auto InitRenderToTexture() -> unsigned;
-
     void SetBeatSensitivity(float sensitivity);
 
     auto GetBeatSensitivity() const -> float;
