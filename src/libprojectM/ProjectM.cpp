@@ -99,11 +99,6 @@ void ProjectM::LoadPresetData(std::istream& presetData, bool smoothTransition)
     }
 }
 
-auto ProjectM::InitRenderToTexture() -> unsigned
-{
-    return m_renderer->initRenderToTexture();
-}
-
 void ProjectM::SetTexturePaths(std::vector<std::string> texturePaths)
 {
     m_textureSearchPaths = std::move(texturePaths);

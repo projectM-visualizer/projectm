@@ -408,25 +408,6 @@ void Renderer::reset(int viewportWidth, int viewportHeight)
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 
-GLuint Renderer::initRenderToTexture()
-{
-	if (textureRenderToTexture == 0)
-	{
-		glGenTextures(1, &textureRenderToTexture);
-		glBindTexture(GL_TEXTURE_2D, textureRenderToTexture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_textureSizeX, m_textureSizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-
-	return textureRenderToTexture;
-}
-
-float title_y;
-
 bool Renderer::timeCheck(const milliseconds currentTime, const milliseconds lastTime, const double difference) {
 	milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime);
 	double diff = ms.count();

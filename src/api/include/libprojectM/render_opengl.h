@@ -41,17 +41,6 @@ extern "C" {
  */
 PROJECTM_EXPORT void projectm_opengl_render_frame(projectm_handle instance);
 
-/**
- * @brief Enables render-to-texture.
- *
- * Useful if projectM output will be part of a more complex OpenGL scene. The size of the texture is determined by the
- * given viewport size and the dimensions should be a power of 2.
- *
- * @param instance The projectM instance handle.
- * @return A GLuint value with the texture ID projectM will render to.
- */
-PROJECTM_EXPORT unsigned int projectm_opengl_init_render_to_texture(projectm_handle instance);
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
