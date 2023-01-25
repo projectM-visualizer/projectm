@@ -104,6 +104,7 @@ public:
     bool correction{ true };
 
     bool writeNextFrameToFile{ false };
+    std::string frameDumpOutputFile;
 
     milliseconds lastTimeFPS{ nowMilliseconds() };
     milliseconds currentTimeFPS{ nowMilliseconds() };

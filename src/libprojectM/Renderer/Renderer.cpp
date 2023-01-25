@@ -204,11 +204,13 @@ void Renderer::RenderTouch(const Pipeline& pipeline, const PipelineContext& pipe
 void Renderer::FinishPass1()
 {
     m_textureManager->updateMainTexture();
-	if(writeNextFrameToFile) {
-		debugWriteMainTextureToFile();
-		writeNextFrameToFile = false;
-    }
 
+    if (writeNextFrameToFile)
+    {
+        debugWriteMainTextureToFile();
+        writeNextFrameToFile = false;
+        frameDumpOutputFile = "";
+    }
 }
 
 void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineContext)
@@ -530,36 +532,41 @@ void Renderer::touchDestroyAll()
     m_waveformList.clear();
 }
 
-void Renderer::debugWriteMainTextureToFile() const {
-	GLuint fbo;
-	auto mainTexture = m_textureManager->getMainTexture();
+void Renderer::debugWriteMainTextureToFile() const
+{
+    std::string outputFile = frameDumpOutputFile;
+    if (outputFile.empty())
+    {
+        static constexpr char prefix[] = "frame_texture_contents-";
+        static constexpr auto prefixLen = sizeof(prefix) - 1;
+        constexpr auto fileNameMaxLength = 150;
+        constexpr auto fileExtensionLength = 4;
+        std::vector<char> fileNameBuffer;
+        fileNameBuffer.resize(fileNameMaxLength);
+        std::memcpy(fileNameBuffer.data(), prefix, prefixLen);
+        auto t = std::time(nullptr);
+        auto tm = *std::localtime(&t);
+        const auto bytesWritten = std::strftime(fileNameBuffer.data() + prefixLen, fileNameMaxLength - prefixLen, "%Y-%m-%d-%H:%M:%S", &tm);
+        const auto offset = prefixLen + bytesWritten;
+        const auto spaceLeft = fileNameMaxLength - offset;
+        std::snprintf(fileNameBuffer.data() + offset, spaceLeft - fileExtensionLength, "-%d.bmp", totalframes);
+        outputFile = std::string(fileNameBuffer.data());
+    }
 
-	const auto safeWriteFile = [](const auto frameNumber, auto data, const auto width, const auto height) {
-		static const std::string prefix{"frame_texture_contents-"};
-		const auto prefixLen = prefix.size();
-		constexpr auto fileNameMaxLength = 150;
-		constexpr auto fileExtensionLength = 4;
-		char fileNameBuffer[fileNameMaxLength];
-		std::memcpy(fileNameBuffer, prefix.data(), prefixLen);
-		auto t = std::time(nullptr);
-		auto tm = *std::localtime(&t);
-		const auto bytesWritten = std::strftime(fileNameBuffer + prefixLen, fileNameMaxLength - prefixLen, "%Y-%m-%d-%H:%M:%S", &tm);
-		const auto offset = prefixLen + bytesWritten;
-		const auto spaceLeft = fileNameMaxLength - offset;
-		std::snprintf(fileNameBuffer + offset, spaceLeft - fileExtensionLength, "%d.bmp", frameNumber);
-		stbi_write_bmp( fileNameBuffer, width, height, 4, data);
-	};
+    GLuint fbo;
+    auto mainTexture = m_textureManager->getMainTexture();
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mainTexture->texID, 0);
+    auto dataSize = mainTexture->width * mainTexture->height * 3;
+    GLubyte* pixels = new GLubyte[dataSize];
+    glReadPixels(0, 0, mainTexture->width, mainTexture->height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDeleteFramebuffers(1, &fbo);
 
-	glGenFramebuffers(1, &fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mainTexture->texID, 0);
-	auto dataSize = mainTexture->width * mainTexture->height * 4;
-	GLubyte* pixels = new GLubyte[dataSize];
-	glReadPixels(0, 0, mainTexture->width, mainTexture->height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glDeleteFramebuffers(1, &fbo);
-	safeWriteFile(totalframes, pixels, mainTexture->width, mainTexture->height);
-	delete[] pixels;
+    stbi_write_bmp(outputFile.c_str(), mainTexture->width, mainTexture->height, 3, pixels);
+
+    delete[] pixels;
 }
 
 void Renderer::UpdateContext(PipelineContext& context)

@@ -388,9 +388,15 @@ auto projectm_pcm_add_uint8(projectm_handle instance, const uint8_t* samples, un
     PcmAdd(instance, samples, count, channels);
 }
 
-auto projectm_write_debug_image_on_next_frame(projectm_handle instance) -> void
+auto projectm_write_debug_image_on_next_frame(projectm_handle instance, const char* output_file) -> void
 {
     auto* projectMInstance = handle_to_instance(instance);
 
-    projectMInstance->DumpDebugImageOnNextFrame();
+    std::string outputFile;
+    if (output_file)
+    {
+        outputFile = output_file;
+    }
+
+    projectMInstance->DumpDebugImageOnNextFrame(outputFile);
 }

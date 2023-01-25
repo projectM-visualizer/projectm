@@ -208,7 +208,7 @@ public:
      *
      * The main texture is dumped after render pass 1, e.g. before shaders are applied.
      */
-    void DumpDebugImageOnNextFrame();
+    void DumpDebugImageOnNextFrame(const std::string& outputFile);
 
 private:
     void EvaluateSecondPreset();
