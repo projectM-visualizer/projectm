@@ -99,12 +99,12 @@ install(TARGETS projectM_playlist
         LIBRARY DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
         RUNTIME DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
         ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Devel
-        PUBLIC_HEADER DESTINATION "${PROJECTM_INCLUDE_DIR}/libprojectM" COMPONENT Devel
+        PUBLIC_HEADER DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4.0" COMPONENT Devel
         )
 
 install(FILES
         "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/projectM_playlist_export.h"
-        DESTINATION "${PROJECTM_INCLUDE_DIR}/libprojectM"
+        DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4.0"
         COMPONENT Devel
         )
 

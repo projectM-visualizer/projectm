@@ -186,7 +186,7 @@ if(ENABLE_CXX_INTERFACE)
             Common.hpp
             PCM.hpp
             ProjectM.hpp
-            DESTINATION "${PROJECTM_INCLUDE_DIR}/libprojectM"
+            DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4.0"
             COMPONENT Devel
             )
 else()
