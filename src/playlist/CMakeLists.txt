@@ -43,6 +43,7 @@ set_target_properties(projectM_playlist PROPERTIES
         SOVERSION "${PROJECTM_SO_VERSION}"
         EXPORT_NAME playlist
         FOLDER libprojectM
+        OUTPUT_NAME projectM-4.0-playlist
         )
 
 target_include_directories(projectM_playlist
