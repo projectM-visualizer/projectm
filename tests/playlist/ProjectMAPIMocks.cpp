@@ -3,8 +3,8 @@
  * in their implementation in this test suite.
  */
 
-#include <libprojectM/projectM.h>
-#include <libprojectM/projectM_export.h>
+#include <projectM-4.0/projectM.h>
+#include <projectM-4.0/projectM_export.h>
 
 PROJECTM_EXPORT void projectm_set_preset_switch_requested_event_callback(projectm_handle instance,
                                                          projectm_preset_switch_requested_event callback,
