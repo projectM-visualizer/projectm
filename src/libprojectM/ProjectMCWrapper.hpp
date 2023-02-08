@@ -23,7 +23,7 @@
 
 #include "ProjectM.hpp"
 
-#include "libprojectM/projectM.h"
+#include "projectM-4.0/projectM.h"
 
 class projectMWrapper : public ProjectM
 {

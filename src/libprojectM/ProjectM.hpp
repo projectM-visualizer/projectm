@@ -20,7 +20,7 @@
  */
 #pragma once
 
-#include "libprojectM/projectM_export.h"
+#include "projectM-4.0/projectM_export.h"
 
 #include "libprojectM/Common.hpp"
 #include "libprojectM/PCM.hpp"
