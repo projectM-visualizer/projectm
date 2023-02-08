@@ -24,12 +24,12 @@
 
 #pragma once
 
-#include "libprojectM/audio.h"
-#include "libprojectM/callbacks.h"
-#include "libprojectM/core.h"
-#include "libprojectM/debug.h"
-#include "libprojectM/memory.h"
-#include "libprojectM/parameters.h"
-#include "libprojectM/render_opengl.h"
-#include "libprojectM/touch.h"
-#include "libprojectM/version.h"
+#include "projectM-4.0/audio.h"
+#include "projectM-4.0/callbacks.h"
+#include "projectM-4.0/core.h"
+#include "projectM-4.0/debug.h"
+#include "projectM-4.0/memory.h"
+#include "projectM-4.0/parameters.h"
+#include "projectM-4.0/render_opengl.h"
+#include "projectM-4.0/touch.h"
+#include "projectM-4.0/version.h"

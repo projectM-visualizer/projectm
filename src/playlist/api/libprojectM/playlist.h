@@ -25,10 +25,10 @@
 
 #pragma once
 
-#include "libprojectM/playlist_callbacks.h"
-#include "libprojectM/playlist_core.h"
-#include "libprojectM/playlist_filter.h"
-#include "libprojectM/playlist_items.h"
-#include "libprojectM/playlist_memory.h"
-#include "libprojectM/playlist_playback.h"
-#include "libprojectM/playlist_types.h"
+#include "projectM-4.0/playlist_callbacks.h"
+#include "projectM-4.0/playlist_core.h"
+#include "projectM-4.0/playlist_filter.h"
+#include "projectM-4.0/playlist_items.h"
+#include "projectM-4.0/playlist_memory.h"
+#include "projectM-4.0/playlist_playback.h"
+#include "projectM-4.0/playlist_types.h"

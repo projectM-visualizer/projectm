@@ -1,6 +1,6 @@
 #pragma once
 
-#include "libprojectM/playlist.h"
+#include "projectM-4.0/playlist.h"
 
 #include "Playlist.hpp"
 
