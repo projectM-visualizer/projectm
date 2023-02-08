@@ -23,9 +23,12 @@ macro(GENERATE_PKG_CONFIG_FILES target package_name)
             endforeach()
         endif()
 
+        # Get name for "-l:<name>" linker flags
+        get_target_property(_lib_name ${target} OUTPUT_NAME)
+
         # Using different package name for debug and release, as pkg-config doesn't support
         # multi-config packages such as CMake provides. It's a mess.
-        set(PKGCONFIG_PROJECTM_LIBRARY "${target}")
+        set(PKGCONFIG_PROJECTM_LIBRARY "${_lib_name}")
         set(PKGCONFIG_PACKAGE_REQUIREMENTS "${PKGCONFIG_PACKAGE_REQUIREMENTS_ALL} ${PKGCONFIG_PACKAGE_REQUIREMENTS_RELEASE}")
         configure_file(${CMAKE_SOURCE_DIR}/cmake/pkgconfig-file.in "${CMAKE_CURRENT_BINARY_DIR}/${package_name}.pc" @ONLY)
         install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${package_name}.pc"
@@ -34,7 +37,7 @@ macro(GENERATE_PKG_CONFIG_FILES target package_name)
                 COMPONENT Devel
                 )
 
-        set(PKGCONFIG_PROJECTM_LIBRARY "${target}${CMAKE_DEBUG_POSTFIX}")
+        set(PKGCONFIG_PROJECTM_LIBRARY "${_lib_name}${CMAKE_DEBUG_POSTFIX}")
         set(PKGCONFIG_PACKAGE_REQUIREMENTS "${PKGCONFIG_PACKAGE_REQUIREMENTS_ALL} ${PKGCONFIG_PACKAGE_REQUIREMENTS_DEBUG}")
         configure_file(${CMAKE_SOURCE_DIR}/cmake/pkgconfig-file.in "${CMAKE_CURRENT_BINARY_DIR}/${package_name}-debug.pc" @ONLY)
         install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${package_name}-debug.pc"
@@ -43,6 +46,7 @@ macro(GENERATE_PKG_CONFIG_FILES target package_name)
                 COMPONENT Devel
                 )
 
+        unset(_lib_name)
         unset(_output_name)
         unset(_exported_defines)
     endif()
