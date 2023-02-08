@@ -3,12 +3,12 @@ add_library(projectM_api INTERFACE)
 target_sources(projectM_api
         PRIVATE
         "${PROJECTM_EXPORT_HEADER}"
-        include/libprojectM/audio.h
-        include/libprojectM/callbacks.h
-        include/libprojectM/debug.h
-        include/libprojectM/memory.h
-        include/libprojectM/projectM.h
-        include/libprojectM/types.h
+        include/projectM-4.0/audio.h
+        include/projectM-4.0/callbacks.h
+        include/projectM-4.0/debug.h
+        include/projectM-4.0/memory.h
+        include/projectM-4.0/projectM.h
+        include/projectM-4.0/types.h
         )
 
 set_target_properties(projectM_api PROPERTIES
@@ -23,11 +23,11 @@ target_include_directories(projectM_api
         "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}>"
         )
 
-configure_file(version.h.in "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/version.h" @ONLY)
+configure_file(version.h.in "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4.0/version.h" @ONLY)
 
 include(GenerateExportHeader)
 
-set(PROJECTM_EXPORT_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/projectM_export.h")
+set(PROJECTM_EXPORT_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4.0/projectM_export.h")
 
 generate_export_header(projectM_api
         BASE_NAME projectM
@@ -46,13 +46,13 @@ install(TARGETS projectM_api
         )
 
 install(FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/projectM_export.h"
-        "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/version.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4.0/projectM_export.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4.0/version.h"
         DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4.0"
         COMPONENT Devel
         )
 
-install(DIRECTORY include/libprojectM
+install(DIRECTORY include/projectM-4.0
         DESTINATION "${PROJECTM_INCLUDE_DIR}"
         COMPONENT Devel
         )
