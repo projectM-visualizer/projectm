@@ -137,6 +137,7 @@ set_target_properties(projectM PROPERTIES
         VERSION "${PROJECTM_LIB_VERSION}"
         SOVERSION "${PROJECTM_SO_VERSION}"
         FOLDER libprojectM
+        OUTPUT_NAME projectM-4.0
         )
 
 if(BUILD_SHARED_LIBS)
