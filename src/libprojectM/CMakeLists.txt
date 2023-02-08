@@ -269,10 +269,10 @@ if(UNIX)
         endforeach()
     endif()
 
-    set(PKGCONFIG_PACKAGE_NAME "libprojectM")
+    set(PKGCONFIG_PACKAGE_NAME "projectM-4.0")
     set(PKGCONFIG_PACKAGE_DESCRIPTION "projectM Music Visualizer")
     set(PKGCONFIG_PACKAGE_REQUIREMENTS_ALL "opengl")
 
-    generate_pkg_config_files(projectM libprojectM)
+    generate_pkg_config_files(projectM projectM-4.0)
 
 endif()
