@@ -11,14 +11,14 @@ add_library(projectM_playlist_main OBJECT
         Playlist.hpp
         PlaylistCWrapper.cpp
         PlaylistCWrapper.hpp
-        api/libprojectM/playlist.h
-        api/libprojectM/playlist_callbacks.h
-        api/libprojectM/playlist_core.h
-        api/libprojectM/playlist_filter.h
-        api/libprojectM/playlist_items.h
-        api/libprojectM/playlist_memory.h
-        api/libprojectM/playlist_playback.h
-        api/libprojectM/playlist_types.h
+        api/projectM-4.0/playlist.h
+        api/projectM-4.0/playlist_callbacks.h
+        api/projectM-4.0/playlist_core.h
+        api/projectM-4.0/playlist_filter.h
+        api/projectM-4.0/playlist_items.h
+        api/projectM-4.0/playlist_memory.h
+        api/projectM-4.0/playlist_playback.h
+        api/projectM-4.0/playlist_types.h
         )
 
 target_include_directories(projectM_playlist_main
@@ -108,7 +108,7 @@ install(FILES
         COMPONENT Devel
         )
 
-install(DIRECTORY api/libprojectM
+install(DIRECTORY api/projectM-4.0
         DESTINATION "${PROJECTM_INCLUDE_DIR}"
         COMPONENT Devel
         )
