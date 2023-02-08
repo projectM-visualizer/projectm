@@ -82,7 +82,7 @@ endif()
 
 include(GenerateExportHeader)
 
-set(PROJECTM_PLAYLIST_EXPORT_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/projectM_playlist_export.h")
+set(PROJECTM_PLAYLIST_EXPORT_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4.0/projectM_playlist_export.h")
 
 generate_export_header(projectM_playlist
         BASE_NAME projectM_playlist
@@ -103,7 +103,7 @@ install(TARGETS projectM_playlist
         )
 
 install(FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/projectM_playlist_export.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4.0/projectM_playlist_export.h"
         DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4.0"
         COMPONENT Devel
         )
