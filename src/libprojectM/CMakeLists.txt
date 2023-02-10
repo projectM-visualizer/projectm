@@ -249,7 +249,7 @@ endif()
 
 
 install(EXPORT libprojectMTargets
-        FILE libprojectMTargets.cmake
+        FILE projectM4Targets.cmake
         NAMESPACE libprojectM::
         DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
         COMPONENT Devel
