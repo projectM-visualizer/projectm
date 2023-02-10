@@ -118,20 +118,20 @@ install(DIRECTORY api/projectM-4
 include(CMakePackageConfigHelpers)
 
 write_basic_package_version_file(
-        "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/libprojectMPlaylistConfigVersion.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/projectM4PlaylistConfigVersion.cmake"
         VERSION ${PROJECT_VERSION}
         COMPATIBILITY AnyNewerVersion
 )
 
-configure_package_config_file(libprojectMPlaylistConfig.cmake.in
-        "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/libprojectMPlaylistConfig.cmake"
+configure_package_config_file(projectM4PlaylistConfig.cmake.in
+        "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/projectM4PlaylistConfig.cmake"
         INSTALL_DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4Playlist"
         PATH_VARS PROJECTM_BIN_DIR PROJECTM_INCLUDE_DIR
         )
 
 install(FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/libprojectMPlaylistConfigVersion.cmake"
-        "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/libprojectMPlaylistConfig.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/projectM4PlaylistConfigVersion.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/projectM4PlaylistConfig.cmake"
         DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4Playlist"
         COMPONENT Devel
         )
