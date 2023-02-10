@@ -220,21 +220,21 @@ write_basic_package_version_file(
 
 configure_package_config_file(libprojectMConfig.cmake.in
         "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/libprojectMConfig.cmake"
-        INSTALL_DESTINATION "${PROJECTM_LIB_DIR}/cmake/libprojectM"
+        INSTALL_DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
         PATH_VARS PROJECTM_BIN_DIR PROJECTM_INCLUDE_DIR
         )
 
 install(FILES
         "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/libprojectMConfigVersion.cmake"
         "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/libprojectMConfig.cmake"
-        DESTINATION "${PROJECTM_LIB_DIR}/cmake/libprojectM"
+        DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
         COMPONENT Devel
         )
 
 if(NOT ENABLE_EMSCRIPTEN AND ENABLE_GLES)
     install(FILES
             "${CMAKE_SOURCE_DIR}/cmake/gles/FindOpenGL.cmake"
-            DESTINATION "${PROJECTM_LIB_DIR}/cmake/libprojectM"
+            DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
             COMPONENT Devel
             )
 endif()
@@ -242,7 +242,7 @@ endif()
 if(ENABLE_LLVM)
     install(FILES
             "${CMAKE_SOURCE_DIR}/cmake/gles/FindLLVM.cmake"
-            DESTINATION "${PROJECTM_LIB_DIR}/cmake/libprojectM"
+            DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
             COMPONENT Devel
             )
 endif()
@@ -251,7 +251,7 @@ endif()
 install(EXPORT libprojectMTargets
         FILE libprojectMTargets.cmake
         NAMESPACE libprojectM::
-        DESTINATION "${PROJECTM_LIB_DIR}/cmake/libprojectM"
+        DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
         COMPONENT Devel
         )
 

@@ -125,21 +125,21 @@ write_basic_package_version_file(
 
 configure_package_config_file(libprojectMPlaylistConfig.cmake.in
         "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/libprojectMPlaylistConfig.cmake"
-        INSTALL_DESTINATION "${PROJECTM_LIB_DIR}/cmake/libprojectMPlaylist"
+        INSTALL_DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4Playlist"
         PATH_VARS PROJECTM_BIN_DIR PROJECTM_INCLUDE_DIR
         )
 
 install(FILES
         "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/libprojectMPlaylistConfigVersion.cmake"
         "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/libprojectMPlaylistConfig.cmake"
-        DESTINATION "${PROJECTM_LIB_DIR}/cmake/libprojectMPlaylist"
+        DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4Playlist"
         COMPONENT Devel
         )
 
 install(EXPORT libprojectMPlaylist
         FILE libprojectMPlaylistTargets.cmake
         NAMESPACE libprojectM::
-        DESTINATION "${PROJECTM_LIB_DIR}/cmake/libprojectMPlaylist"
+        DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4Playlist"
         COMPONENT Devel
         )
 
