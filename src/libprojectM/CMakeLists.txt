@@ -137,7 +137,7 @@ set_target_properties(projectM PROPERTIES
         VERSION "${PROJECTM_LIB_VERSION}"
         SOVERSION "${PROJECTM_SO_VERSION}"
         FOLDER libprojectM
-        OUTPUT_NAME projectM-4.0
+        OUTPUT_NAME projectM-4
         )
 
 if(BUILD_SHARED_LIBS)
@@ -186,7 +186,7 @@ if(ENABLE_CXX_INTERFACE)
             Common.hpp
             PCM.hpp
             ProjectM.hpp
-            DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4.0"
+            DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4"
             COMPONENT Devel
             )
 else()
@@ -270,10 +270,10 @@ if(UNIX)
         endforeach()
     endif()
 
-    set(PKGCONFIG_PACKAGE_NAME "projectM-4.0")
+    set(PKGCONFIG_PACKAGE_NAME "projectM-4")
     set(PKGCONFIG_PACKAGE_DESCRIPTION "projectM Music Visualizer")
     set(PKGCONFIG_PACKAGE_REQUIREMENTS_ALL "opengl")
 
-    generate_pkg_config_files(projectM projectM-4.0)
+    generate_pkg_config_files(projectM projectM-4)
 
 endif()

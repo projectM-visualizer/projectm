@@ -11,14 +11,14 @@ add_library(projectM_playlist_main OBJECT
         Playlist.hpp
         PlaylistCWrapper.cpp
         PlaylistCWrapper.hpp
-        api/projectM-4.0/playlist.h
-        api/projectM-4.0/playlist_callbacks.h
-        api/projectM-4.0/playlist_core.h
-        api/projectM-4.0/playlist_filter.h
-        api/projectM-4.0/playlist_items.h
-        api/projectM-4.0/playlist_memory.h
-        api/projectM-4.0/playlist_playback.h
-        api/projectM-4.0/playlist_types.h
+        api/projectM-4/playlist.h
+        api/projectM-4/playlist_callbacks.h
+        api/projectM-4/playlist_core.h
+        api/projectM-4/playlist_filter.h
+        api/projectM-4/playlist_items.h
+        api/projectM-4/playlist_memory.h
+        api/projectM-4/playlist_playback.h
+        api/projectM-4/playlist_types.h
         )
 
 target_include_directories(projectM_playlist_main
@@ -43,7 +43,7 @@ set_target_properties(projectM_playlist PROPERTIES
         SOVERSION "${PROJECTM_SO_VERSION}"
         EXPORT_NAME playlist
         FOLDER libprojectM
-        OUTPUT_NAME projectM-4.0-playlist
+        OUTPUT_NAME projectM-4-playlist
         )
 
 target_include_directories(projectM_playlist
@@ -82,7 +82,7 @@ endif()
 
 include(GenerateExportHeader)
 
-set(PROJECTM_PLAYLIST_EXPORT_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4.0/projectM_playlist_export.h")
+set(PROJECTM_PLAYLIST_EXPORT_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4/projectM_playlist_export.h")
 
 generate_export_header(projectM_playlist
         BASE_NAME projectM_playlist
@@ -99,16 +99,16 @@ install(TARGETS projectM_playlist
         LIBRARY DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
         RUNTIME DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
         ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Devel
-        PUBLIC_HEADER DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4.0" COMPONENT Devel
+        PUBLIC_HEADER DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4" COMPONENT Devel
         )
 
 install(FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4.0/projectM_playlist_export.h"
-        DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4.0"
+        "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4/projectM_playlist_export.h"
+        DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4"
         COMPONENT Devel
         )
 
-install(DIRECTORY api/projectM-4.0
+install(DIRECTORY api/projectM-4
         DESTINATION "${PROJECTM_INCLUDE_DIR}"
         COMPONENT Devel
         )
@@ -147,10 +147,10 @@ install(EXPORT libprojectMPlaylist
 if(UNIX)
     include(GeneratePkgConfigFiles)
 
-    set(PKGCONFIG_PACKAGE_NAME "projectM-4.0-playlist")
+    set(PKGCONFIG_PACKAGE_NAME "projectM-4-playlist")
     set(PKGCONFIG_PACKAGE_DESCRIPTION "projectM Playlist Library")
-    set(PKGCONFIG_PACKAGE_REQUIREMENTS_RELEASE "projectM-4.0")
+    set(PKGCONFIG_PACKAGE_REQUIREMENTS_RELEASE "projectM-4")
     set(PKGCONFIG_PACKAGE_REQUIREMENTS_DEBUG "libprojectM-debug")
 
-    generate_pkg_config_files(projectM_playlist projectM-4.0-playlist)
+    generate_pkg_config_files(projectM_playlist projectM-4-playlist)
 endif()

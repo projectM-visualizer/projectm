@@ -1,7 +1,7 @@
 #include "PlaylistCWrapper.hpp"
 
-#include "projectM-4.0/callbacks.h"
-#include "projectM-4.0/core.h"
+#include "projectM-4/callbacks.h"
+#include "projectM-4/core.h"
 
 using ProjectM::Playlist::Playlist;
 

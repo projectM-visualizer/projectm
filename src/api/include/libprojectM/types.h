@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "projectM-4.0/projectM_export.h"
+#include "projectM-4/projectM_export.h"
 
 #ifdef __cplusplus
 extern "C" {

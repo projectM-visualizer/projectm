@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "projectM-4.0/projectM_playlist_export.h"
+#include "projectM-4/projectM_playlist_export.h"
 
 #ifdef __cplusplus
 extern "C" {
