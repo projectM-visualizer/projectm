@@ -263,7 +263,7 @@ documentation on how to set up the libprojectM build system for use in another p
 ### Importing libprojectM targets from an installed version
 
 This is the recommended and supported way of importing libprojectM in your project. This project installs a set of CMake
-files in `<PREFIX>/<LIBDIR>/cmake/libprojectM`, containing target definitions, version and dependency checks as well as
+files in `<PREFIX>/<LIBDIR>/cmake/projectM4`, containing target definitions, version and dependency checks as well as
 any additional libraries required for linking. Other projects then use CMake's `find_package` command to search for
 these files in [different locations](https://cmake.org/cmake/help/latest/command/find_package.html#search-procedure).
 
