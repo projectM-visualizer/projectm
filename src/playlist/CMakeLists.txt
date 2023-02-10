@@ -137,7 +137,7 @@ install(FILES
         )
 
 install(EXPORT libprojectMPlaylist
-        FILE libprojectMPlaylistTargets.cmake
+        FILE projectM4PlaylistTargets.cmake
         NAMESPACE libprojectM::
         DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4Playlist"
         COMPONENT Devel
