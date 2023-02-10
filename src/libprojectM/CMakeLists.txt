@@ -213,20 +213,20 @@ export(TARGETS
 include(CMakePackageConfigHelpers)
 
 write_basic_package_version_file(
-        "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/libprojectMConfigVersion.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4ConfigVersion.cmake"
         VERSION ${PROJECT_VERSION}
         COMPATIBILITY AnyNewerVersion
 )
 
-configure_package_config_file(libprojectMConfig.cmake.in
-        "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/libprojectMConfig.cmake"
+configure_package_config_file(projectM4Config.cmake.in
+        "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4Config.cmake"
         INSTALL_DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
         PATH_VARS PROJECTM_BIN_DIR PROJECTM_INCLUDE_DIR
         )
 
 install(FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/libprojectMConfigVersion.cmake"
-        "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/libprojectMConfig.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4ConfigVersion.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4Config.cmake"
         DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
         COMPONENT Devel
         )
