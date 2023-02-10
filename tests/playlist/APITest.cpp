@@ -1,6 +1,6 @@
 #include "PlaylistCWrapperMock.h"
 
-#include <api/projectM-4.0/playlist.h>
+#include <api/projectM-4/playlist.h>
 
 #include <gtest/gtest.h>
 
