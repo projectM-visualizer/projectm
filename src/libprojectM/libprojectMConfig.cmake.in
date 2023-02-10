@@ -1,4 +1,4 @@
-set(libprojectM_VERSION @PROJECT_VERSION@)
+set(projectM4_VERSION @PROJECT_VERSION@)
 
 @PACKAGE_INIT@
 
@@ -26,35 +26,35 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
      find_dependency(GLEW)
 endif()
 
-set(_libprojectM_FIND_PARTS_REQUIRED)
-if(libprojectM_FIND_REQUIRED)
-    set(_libprojectM_FIND_PARTS_REQUIRED REQUIRED)
+set(_projectM4_FIND_PARTS_REQUIRED)
+if(projectM4_FIND_REQUIRED)
+    set(_projectM4_FIND_PARTS_REQUIRED REQUIRED)
 endif()
-set(_libprojectM_FIND_PARTS_QUIET)
-if(libprojectM_FIND_QUIETLY)
-    set(_libprojectM_FIND_PARTS_QUIET QUIET)
+set(_projectM4_FIND_PARTS_QUIET)
+if(projectM4_FIND_QUIETLY)
+    set(_projectM4_FIND_PARTS_QUIET QUIET)
 endif()
 
-include("${CMAKE_CURRENT_LIST_DIR}/libprojectMTargets.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/projectM4Targets.cmake")
 
-if(libprojectM_FIND_COMPONENTS)
-    foreach(component ${libprojectM_FIND_COMPONENTS})
-        find_package(libprojectM${component}
-            ${_libprojectM_FIND_PARTS_REQUIRED}
-            ${_libprojectM_FIND_PARTS_QUIET}
+if(projectM4_FIND_COMPONENTS)
+    foreach(component ${projectM4_FIND_COMPONENTS})
+        find_package(projectM4${component}
+            ${_projectM4_FIND_PARTS_REQUIRED}
+            ${_projectM4_FIND_PARTS_QUIET}
             )
 
-        if(NOT libprojectM${component}_FOUND)
-            if (libprojectM_FIND_REQUIRED_${component})
-                set(_libprojectM_NOTFOUND_MESSAGE "${_libprojectM_NOTFOUND_MESSAGE}Failed to find libprojectM component \"${component}\" config file\n")
-            elseif(NOT libprojectM_FIND_QUIETLY)
-                message(WARNING "Failed to find libprojectM component \"${component}\" config file")
+        if(NOT projectM4${component}_FOUND)
+            if (projectM4_FIND_REQUIRED_${component})
+                set(_projectM4_NOTFOUND_MESSAGE "${_libprojectM_NOTFOUND_MESSAGE}Failed to find libprojectM component \"${component}\" config file\n")
+            elseif(NOT projectM4_FIND_QUIETLY)
+                message(WARNING "Failed to find projectM4 component \"${component}\" config file")
             endif()
         endif()
     endforeach()
 endif()
 
-if (_libprojectM_NOTFOUND_MESSAGE)
-    set(libprojectM_NOT_FOUND_MESSAGE "${_libprojectM_NOTFOUND_MESSAGE}")
-    set(libprojectM_FOUND False)
+if (_projectM4_NOTFOUND_MESSAGE)
+    set(projectM4_NOT_FOUND_MESSAGE "${_libprojectM_NOTFOUND_MESSAGE}")
+    set(projectM4_FOUND False)
 endif()
