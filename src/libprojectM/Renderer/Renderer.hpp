@@ -1,13 +1,14 @@
 #ifndef Renderer_HPP
 #define Renderer_HPP
 
-#include "BeatDetect.hpp"
-#include "MilkdropWaveform.hpp"
-#include "PerPixelMesh.hpp"
+#include "Audio/BeatDetect.hpp"
 #include "Pipeline.hpp"
 #include "ShaderEngine.hpp"
 #include "Transformation.hpp"
 #include "projectM-opengl.h"
+
+#include "MilkdropPreset/PerPixelMesh.hpp"
+#include "MilkdropPreset/Waveform.hpp"
 
 #include <chrono>
 #include <ctime>
@@ -163,7 +164,7 @@ private:
     double m_touchB{0.0};///!< Blue
     double m_touchA{0.0};///!< Alpha
 
-    std::vector<MilkdropWaveform> m_waveformList;
+    std::vector<Waveform> m_waveformList;
 
     int m_mainTextureSizeX{0};
     int m_mainTextureSizeY{0};

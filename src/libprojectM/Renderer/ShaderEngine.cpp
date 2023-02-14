@@ -4,19 +4,19 @@
  *  Created on: Jul 18, 2008
  *      Author: pete
  */
-#include <fstream>
-#include <algorithm>
 #include "ShaderEngine.hpp"
-#include "BeatDetect.hpp"
-#include "Texture.hpp"
-#include "HLSLParser.h"
+#include "Audio/BeatDetect.hpp"
 #include "GLSLGenerator.h"
+#include "HLSLParser.h"
 #include "StaticGlShaders.h"
-#include <glm/mat4x4.hpp> // glm::mat4
+#include "Texture.hpp"
+#include <algorithm>
+#include <fstream>
 #include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 #include <glm/gtc/type_ptr.hpp>
-#include <set>
+#include <glm/mat4x4.hpp> // glm::mat4
 #include <regex>
+#include <set>
 
 #define FRAND ((rand() % 7381)/7380.0f)
 

@@ -1,19 +1,20 @@
 #include "Renderer.hpp"
-#include "wipemalloc.h"
-#include "math.h"
 #include "TextureManager.hpp"
-#include "MilkdropWaveform.hpp"
-#include <iostream>
+#include "math.h"
+#include "omptl/omptl_algorithm"
+
+#include "MilkdropPreset/Waveform.hpp"
+#include "stb_image_write.h"
+#include "wipemalloc.h"
 #include <algorithm>
+#include <cassert>
+#include <chrono>
 #include <cstdio>
 #include <cstring>
-#include <cassert>
-#include <omptl/omptl_algorithm>
+#include <ctime>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <chrono>
-#include <ctime>
-#include "stb_image_write.h"
+#include <iostream>
 
 using namespace std::chrono;
 
@@ -162,6 +163,9 @@ void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipel
 void Renderer::RenderItems(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
     m_renderContext.time = pipelineContext.time;
+    m_renderContext.frame = pipelineContext.frame;
+    m_renderContext.fps = pipelineContext.fps;
+    m_renderContext.progress = pipelineContext.progress;
     m_renderContext.texsize = nearestPower2(std::max(m_mainTextureSizeX, m_mainTextureSizeY));
     m_renderContext.viewportSizeX = m_viewportWidth;
     m_renderContext.viewportSizeY = m_viewportHeight;
@@ -187,7 +191,7 @@ void Renderer::RenderItems(const Pipeline& pipeline, const PipelineContext& pipe
 void Renderer::RenderTouch(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
 	Pipeline pipelineTouch;
-	MilkdropWaveform wave;
+    Waveform wave;
 	for(std::size_t x = 0; x < m_waveformList.size(); x++){
 		pipelineTouch.drawables.push_back(&wave);
 		wave = m_waveformList[x];
@@ -452,7 +456,7 @@ void Renderer::touch(float x, float y, int pressure, int type = 0)
     m_touchG = ((double)rand() / (RAND_MAX));
     m_touchA = ((double)rand() / (RAND_MAX));
 
-	MilkdropWaveform wave;
+    Waveform wave;
 	if (type == 0) {
 		// If we touched randomly, then assign type to a random number between 0 and 8
 		wave.mode = static_cast<MilkdropWaveformMode>((rand() % last));

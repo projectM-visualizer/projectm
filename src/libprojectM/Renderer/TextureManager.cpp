@@ -8,7 +8,7 @@
 #include "IdleTextures.hpp"
 #include "Texture.hpp"
 
-#include "MilkdropNoise.hpp"
+#include "MilkdropPreset/MilkdropNoise.hpp"
 
 // Missing in macOS SDK. Query will most certainly fail, but then use the default format.
 #ifndef GL_TEXTURE_IMAGE_FORMAT

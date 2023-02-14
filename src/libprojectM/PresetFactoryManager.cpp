@@ -13,7 +13,7 @@
 
 #include "Common.hpp"
 
-#include <MilkdropPresetFactory/MilkdropPresetFactory.hpp>
+#include <MilkdropPreset/MilkdropPresetFactory.hpp>
 
 #include <cassert>
 #include <iostream>

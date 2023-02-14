@@ -12,25 +12,20 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     include_directories("${MSVC_EXTRA_INCLUDE_DIR}")
 endif()
 
-# List of targets used in export().
-# Optional libraries will be added to the list as configured in the build options.
-set(EXPORTED_TARGETS
-        MilkdropPresetFactory
-        Renderer
-        hlslparser
-        SOIL2
-        )
-
-add_subdirectory(MilkdropPresetFactory)
+add_subdirectory(MilkdropPreset)
 add_subdirectory(Renderer)
 
 add_library(projectM_main OBJECT
         "${PROJECTM_EXPORT_HEADER}"
+        Audio/BeatDetect.cpp
+        Audio/BeatDetect.hpp
+        Audio/FrameAudioData.cpp
+        Audio/FrameAudioData.hpp
+        Audio/PCM.cpp
+        Audio/PCM.hpp
         Common.hpp
         HungarianMethod.hpp
         IdleTextures.hpp
-        PCM.cpp
-        PCM.hpp
         PipelineMerger.cpp
         PipelineMerger.hpp
         Preset.hpp
@@ -58,7 +53,7 @@ add_library(projectM_main OBJECT
 
 target_link_libraries(projectM_main
         PUBLIC
-        MilkdropPresetFactory
+        MilkdropPreset
         Renderer
         hlslparser
         SOIL2
@@ -78,7 +73,7 @@ target_include_directories(projectM_main
         "${CMAKE_CURRENT_SOURCE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}/Renderer"
         "${CMAKE_SOURCE_DIR}/vendor/hlslparser/src"
-        "${CMAKE_CURRENT_SOURCE_DIR}/MilkdropPresetFactory"
+        "${CMAKE_CURRENT_SOURCE_DIR}/MilkdropPreset"
         "${MSVC_EXTRA_INCLUDE_DIR}"
         )
 
@@ -86,7 +81,7 @@ target_include_directories(projectM_main
 # This syntax will pull in the compiled object files into the final library.
 add_library(projectM
         ${PROJECTM_DUMMY_SOURCE_FILE} # CMake needs at least one "real" source file.
-        $<TARGET_OBJECTS:MilkdropPresetFactory>
+        $<TARGET_OBJECTS:MilkdropPreset>
         $<TARGET_OBJECTS:Renderer>
         $<TARGET_OBJECTS:hlslparser>
         $<TARGET_OBJECTS:SOIL2>
@@ -170,13 +165,13 @@ if(ENABLE_CXX_INTERFACE)
                 )
     endif()
 
-    set_source_files_properties(ProjectM.cpp PCM.cpp PROPERTIES
+    set_source_files_properties(ProjectM.cpp Audio/PCM.cpp PROPERTIES
             COMPILE_DEFINITIONS projectM_api_EXPORTS
             )
 
     install(FILES
             Common.hpp
-            PCM.hpp
+            Audio/PCM.hpp
             ProjectM.hpp
             DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4"
             COMPONENT Devel
@@ -184,7 +179,7 @@ if(ENABLE_CXX_INTERFACE)
 else()
     # Set PROJECTM_STATIC_EXPORT for C++ implementations to use project default visibility
     # and no dllimport/dllexport.
-    set_source_files_properties(ProjectM.cpp PCM.cpp PROPERTIES
+    set_source_files_properties(ProjectM.cpp Audio/PCM.cpp PROPERTIES
             COMPILE_DEFINITIONS PROJECTM_STATIC_DEFINE
             )
 endif()

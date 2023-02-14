@@ -22,8 +22,8 @@
 
 #include "projectM-4/projectM_export.h"
 
+#include "libprojectM/Audio/PCM.hpp"
 #include "libprojectM/Common.hpp"
-#include "libprojectM/PCM.hpp"
 
 #ifdef _WIN32
 
@@ -66,7 +66,7 @@ class PipelineContext;
 
 class PresetFactoryManager;
 
-PROJECTM_EXPORT class ProjectM
+class PROJECTM_EXPORT ProjectM
 {
 public:
     ProjectM();
@@ -245,8 +245,8 @@ private:
     size_t m_meshX{32};              //!< Per-point mesh horizontal resolution.
     size_t m_meshY{24};              //!< Per-point mesh vertical resolution.
     size_t m_targetFps{35};          //!< Target frames per second.
-    size_t m_windowWidth{0};         //!< Render window width. If 0, nothing is rendered.
-    size_t m_windowHeight{0};        //!< Render window height. If 0, nothing is rendered.
+    size_t m_windowWidth{0};         //!< EvaluateFrameData window width. If 0, nothing is rendered.
+    size_t m_windowHeight{0};        //!< EvaluateFrameData window height. If 0, nothing is rendered.
     double m_presetDuration{30.0};   //!< Preset duration in seconds.
     double m_softCutDuration{3.0};   //!< Soft cut transition time.
     double m_hardCutDuration{20.0};  //!< Time after which a hard cut can happen at the earliest.

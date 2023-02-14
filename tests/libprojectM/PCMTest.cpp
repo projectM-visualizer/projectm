@@ -1,20 +1,22 @@
 #include <gtest/gtest.h>
 
-#include <PCM.hpp>
+#include <Audio/PCM.hpp>
 
 #include <cmath>
 
-class PcmMock : public Pcm
+using libprojectM::Audio::PCM;
+
+class PcmMock : public PCM
 {
 public:
     void CopyPcm(float* to, size_t channel, size_t count) const
     {
-        Pcm::CopyPcm(to, channel, count);
+        PCM::CopyPcm(to, channel, count);
     }
 
     void CopyPcm(double* to, size_t channel, size_t count) const
     {
-        Pcm::CopyPcm(to, channel, count);
+        PCM::CopyPcm(to, channel, count);
     }
 };
 

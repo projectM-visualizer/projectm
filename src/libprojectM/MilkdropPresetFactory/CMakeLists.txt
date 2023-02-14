@@ -1,45 +1,30 @@
 add_library(MilkdropPresetFactory OBJECT
-        BuiltinFuncs.cpp
-        BuiltinFuncs.hpp
-        BuiltinParams.cpp
-        BuiltinParams.hpp
-        CustomShape.cpp
-        CustomShape.hpp
-        CustomWave.cpp
-        CustomWave.hpp
-        CValue.hpp
-        Eval.cpp
-        Eval.hpp
-        Expr.cpp
-        Expr.hpp
-        Func.cpp
-        Func.hpp
-        IdlePreset.cpp
-        IdlePreset.hpp
-        InitCond.cpp
-        InitCond.hpp
-        InitCondUtils.hpp
-        JitContext.hpp
-        MilkdropPreset.cpp
-        MilkdropPresetFactory.cpp
-        MilkdropPresetFactory.hpp
-        MilkdropPreset.hpp
-        Param.cpp
-        Param.hpp
-        ParamUtils.hpp
-        OldParser.cpp
-        OldParser.hpp
-        PerFrameEqn.cpp
-        PerFrameEqn.hpp
-        PerPixelEqn.cpp
-        PerPixelEqn.hpp
-        PerPointEqn.cpp
-        PerPointEqn.hpp
-        PresetFrameIO.cpp
-        PresetFrameIO.hpp
+        Constants.hpp
         FileParser.cpp
         FileParser.hpp
-        )
+        IdlePreset.cpp
+        IdlePreset.hpp
+        MilkdropPreset.cpp
+        MilkdropPreset.hpp
+        MilkdropPresetFactory.cpp
+        MilkdropPresetFactory.hpp
+        PerFrameContext.cpp
+        PerFrameContext.hpp
+        PerPixelContext.cpp
+        PerPixelContext.hpp
+        PresetFrameIO.cpp
+        PresetFrameIO.hpp
+        PresetState.cpp
+        PresetState.hpp
+        Shape.cpp
+        Shape.hpp
+        Waveform.cpp
+        Waveform.hpp
+        WaveformPerFrameContext.cpp
+        WaveformPerFrameContext.hpp
+        WaveformPerPointContext.cpp
+        WaveformPerPointContext.hpp
+        ShapePerFrameContext.cpp ShapePerFrameContext.hpp)
 
 target_include_directories(MilkdropPresetFactory
         PRIVATE
@@ -50,6 +35,7 @@ target_include_directories(MilkdropPresetFactory
 
 target_link_libraries(MilkdropPresetFactory
         PRIVATE
+        projectM::Eval
         libprojectM::API # For export header
         PUBLIC
         omptl
