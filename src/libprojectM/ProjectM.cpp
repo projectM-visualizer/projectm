@@ -21,14 +21,14 @@
 
 #include "ProjectM.hpp"
 
-#include "BeatDetect.hpp"
-#include "PCM.hpp" //Sound data handler (buffering, FFT, etc.)
 #include "PipelineMerger.hpp"
 #include "Preset.hpp"
 #include "PresetFactoryManager.hpp"
 #include "Renderer.hpp"
 #include "Renderer/PipelineContext.hpp"
 #include "TimeKeeper.hpp"
+#include "libprojectM/Audio/BeatDetect.hpp"
+#include "libprojectM/Audio/PCM.hpp" //Sound data handler (buffering, FFT, etc.)
 
 #if PROJECTM_USE_THREADS
 
@@ -140,7 +140,7 @@ void ProjectM::EvaluateSecondPreset()
     PipelineContext2().frame = m_timeKeeper->PresetFrameB();
     PipelineContext2().progress = m_timeKeeper->PresetProgressB();
 
-    m_transitioningPreset->Render(*m_beatDetect, PipelineContext2());
+    m_transitioningPreset->EvaluateFrameData(*m_beatDetect, PipelineContext2());
 }
 
 void ProjectM::RenderFrame()
@@ -224,7 +224,7 @@ auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
         m_timeKeeper->EndSmoothing();
     }
 
-    m_activePreset->Render(*m_beatDetect, PipelineContext());
+    m_activePreset->EvaluateFrameData(*m_beatDetect, PipelineContext());
     m_renderer->RenderFrameOnlyPass1(m_activePreset->pipeline(), PipelineContext());
 
     return nullptr; // indicating no transition

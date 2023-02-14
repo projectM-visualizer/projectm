@@ -12,8 +12,6 @@ public:
     using floatTriple = float[3]; //!< A triple of floats (AKA vec3).
     using floatQuad =  float[4]; //!< A quad of floats (AKA vec4).
 
-    using List = std::vector<RenderItem*>; //!< A list of RenderItems instances.
-
     /**
      * Default constructor.
      */
@@ -33,7 +31,7 @@ public:
      * Renders the current item.
      * @param context The render context data.
      */
-    virtual void Draw(RenderContext &context) = 0;
+    virtual void Draw(RenderContext& context){};
 
     float masterAlpha{ 1.0 }; //!< Alpha value for the whole RenderItem.
 

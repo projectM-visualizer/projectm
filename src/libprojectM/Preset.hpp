@@ -1,18 +1,22 @@
 #pragma once
 
-#include <string>
+#include "Audio/FrameAudioData.hpp"
+#include "Renderer/RenderContext.hpp"
 
-class BeatDetect;
-class Pipeline;
-class PipelineContext;
+#include <string>
 
 class Preset
 {
 public:
     virtual ~Preset() = default;
 
-    virtual Pipeline& pipeline() = 0;
-    virtual void Render(const BeatDetect& music, const PipelineContext& context) = 0;
+    /**
+     * @brief Renders the preset into the current framebuffer.
+     * @param audioData Audio data to be used by the preset.
+     * @param renderContext The current render context data.
+     */
+    virtual void RenderFrame(const libprojectM::Audio::FrameAudioData& audioData,
+                             const RenderContext& renderContext) = 0;
 
     inline void SetFilename(const std::string& filename)
     {

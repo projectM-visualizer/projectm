@@ -11,10 +11,10 @@
 #include "projectM-opengl.h"
 
 class ShaderEngine;
+#include "Audio/BeatDetect.hpp"
 #include "Pipeline.hpp"
 #include "PipelineContext.hpp"
 #include "TextureManager.hpp"
-#include "BeatDetect.hpp"
 
 #include <cstdlib>
 #include <iostream>

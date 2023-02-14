@@ -1,22 +1,6 @@
 add_library(Renderer OBJECT
-        BeatDetect.cpp
-        BeatDetect.hpp
-        Border.cpp
-        Border.hpp
-        DarkenCenter.cpp
-        DarkenCenter.hpp
         FileScanner.cpp
         FileScanner.hpp
-        Filters.cpp
-        Filters.hpp
-        MilkdropNoise.cpp
-        MilkdropNoise.hpp
-        MilkdropWaveform.cpp
-        MilkdropWaveform.hpp
-        MotionVectors.cpp
-        MotionVectors.hpp
-        PerPixelMesh.cpp
-        PerPixelMesh.hpp
         Pipeline.cpp
         Pipeline.hpp
         PipelineContext.cpp
@@ -30,18 +14,12 @@ add_library(Renderer OBJECT
         Shader.hpp
         ShaderEngine.cpp
         ShaderEngine.hpp
-        Shape.cpp
-        Shape.hpp
         StaticGlShaders.cpp
         Texture.cpp
         Texture.hpp
         TextureManager.cpp
         TextureManager.hpp
         Transformation.hpp
-        VideoEcho.cpp
-        VideoEcho.hpp
-        Waveform.cpp
-        Waveform.hpp
         )
 
 target_include_directories(Renderer

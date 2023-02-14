@@ -1,12 +1,12 @@
 #ifndef Pipeline_HPP
 #define Pipeline_HPP
 
-#include <vector>
-#include "PerPixelMesh.hpp"
-#include "Filters.hpp"
+#include "Common.hpp"
+#include "MilkdropPreset/PerPixelMesh.hpp"
+#include "MilkdropPreset/Filters.hpp"
 #include "PipelineContext.hpp"
 #include "Shader.hpp"
-#include "../Common.hpp"
+#include <vector>
 //This class is the input to projectM's renderer
 //
 //Most implemenatations should implement PerPixel in order to get multi-threaded
