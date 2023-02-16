@@ -127,7 +127,7 @@ void ShaderEngine::setParams(int _texsizeX, int _texsizeY,
 
 // compile a user-defined shader from a preset. returns program ID if successful.
 GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Shader &pmShader, const std::string &shaderFilename) {
-    std::string program = pmShader.programSource;
+    std::string program = pmShader.m_programSource;
 
     if (program.length() <= 0)
     {
@@ -218,22 +218,22 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
         program.resize(pos);
     }
 
-    pmShader.textures.clear();
+    pmShader.m_textures.clear();
 
 
     // Add builtin textures
-    pmShader.textures["main"] = textureManager->getTexture("main", GL_REPEAT, GL_LINEAR);
-    pmShader.textures["fc_main"] = textureManager->getTexture("main", GL_CLAMP_TO_EDGE, GL_LINEAR);
-    pmShader.textures["pc_main"] = textureManager->getTexture("main", GL_CLAMP_TO_EDGE, GL_NEAREST);
-    pmShader.textures["fw_main"] = textureManager->getTexture("main", GL_REPEAT, GL_LINEAR);
-    pmShader.textures["pw_main"] = textureManager->getTexture("main", GL_REPEAT, GL_NEAREST);
+    pmShader.m_textures["main"] = textureManager->getTexture("main", GL_REPEAT, GL_LINEAR);
+    pmShader.m_textures["fc_main"] = textureManager->getTexture("main", GL_CLAMP_TO_EDGE, GL_LINEAR);
+    pmShader.m_textures["pc_main"] = textureManager->getTexture("main", GL_CLAMP_TO_EDGE, GL_NEAREST);
+    pmShader.m_textures["fw_main"] = textureManager->getTexture("main", GL_REPEAT, GL_LINEAR);
+    pmShader.m_textures["pw_main"] = textureManager->getTexture("main", GL_REPEAT, GL_NEAREST);
 
-    pmShader.textures["noise_lq"] = textureManager->getTexture("noise_lq", GL_REPEAT, GL_LINEAR);
-    pmShader.textures["noise_lq_lite"] = textureManager->getTexture("noise_lq_lite", GL_REPEAT, GL_LINEAR);
-    pmShader.textures["noise_mq"] = textureManager->getTexture("noise_mq", GL_REPEAT, GL_LINEAR);
-    pmShader.textures["noise_hq"] = textureManager->getTexture("noise_hq", GL_REPEAT, GL_LINEAR);
-    pmShader.textures["noisevol_lq"] = textureManager->getTexture("noisevol_lq", GL_REPEAT, GL_LINEAR);
-    pmShader.textures["noisevol_hq"] = textureManager->getTexture("noisevol_hq", GL_REPEAT, GL_LINEAR);
+    pmShader.m_textures["noise_lq"] = textureManager->getTexture("noise_lq", GL_REPEAT, GL_LINEAR);
+    pmShader.m_textures["noise_lq_lite"] = textureManager->getTexture("noise_lq_lite", GL_REPEAT, GL_LINEAR);
+    pmShader.m_textures["noise_mq"] = textureManager->getTexture("noise_mq", GL_REPEAT, GL_LINEAR);
+    pmShader.m_textures["noise_hq"] = textureManager->getTexture("noise_hq", GL_REPEAT, GL_LINEAR);
+    pmShader.m_textures["noisevol_lq"] = textureManager->getTexture("noisevol_lq", GL_REPEAT, GL_LINEAR);
+    pmShader.m_textures["noisevol_hq"] = textureManager->getTexture("noisevol_hq", GL_REPEAT, GL_LINEAR);
 
 
 
@@ -272,15 +272,15 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
             }
             else
             {
-                std::map<std::string, TextureSamplerDesc>::const_iterator iter = pmShader.textures.cbegin();
-                for ( ; iter != pmShader.textures.cend(); ++iter)
+                std::map<std::string, TextureSamplerDesc>::const_iterator iter = pmShader.m_textures.cbegin();
+                for ( ; iter != pmShader.m_textures.cend(); ++iter)
                 {
                     if (iter->first == sampler)
                         break;
                 }
 
-                if (iter == pmShader.textures.cend())
-                    pmShader.textures[sampler] = texDesc;
+                if (iter == pmShader.m_textures.cend())
+                    pmShader.m_textures[sampler] = texDesc;
             }
         }
 
@@ -293,9 +293,9 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     if (found != std::string::npos)
     {
         blur1_enabled = blur2_enabled = blur3_enabled = true;
-        pmShader.textures["blur3"] = textureManager->getTexture("blur3", GL_REPEAT, GL_LINEAR);
-        pmShader.textures["blur2"] = textureManager->getTexture("blur2", GL_REPEAT, GL_LINEAR);
-        pmShader.textures["blur1"] = textureManager->getTexture("blur1", GL_REPEAT, GL_LINEAR);
+        pmShader.m_textures["blur3"] = textureManager->getTexture("blur3", GL_REPEAT, GL_LINEAR);
+        pmShader.m_textures["blur2"] = textureManager->getTexture("blur2", GL_REPEAT, GL_LINEAR);
+        pmShader.m_textures["blur1"] = textureManager->getTexture("blur1", GL_REPEAT, GL_LINEAR);
     }
     else
     {
@@ -303,8 +303,8 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
         if (found != std::string::npos)
         {
             blur1_enabled = blur2_enabled = true;
-            pmShader.textures["blur2"] = textureManager->getTexture("blur2", GL_REPEAT, GL_LINEAR);
-            pmShader.textures["blur1"] = textureManager->getTexture("blur1", GL_REPEAT, GL_LINEAR);
+            pmShader.m_textures["blur2"] = textureManager->getTexture("blur2", GL_REPEAT, GL_LINEAR);
+            pmShader.m_textures["blur1"] = textureManager->getTexture("blur1", GL_REPEAT, GL_LINEAR);
         }
         else
         {
@@ -312,7 +312,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
             if (found != std::string::npos)
             {
                 blur1_enabled = true;
-                pmShader.textures["blur1"] = textureManager->getTexture("blur1", GL_REPEAT, GL_LINEAR);
+                pmShader.m_textures["blur1"] = textureManager->getTexture("blur1", GL_REPEAT, GL_LINEAR);
             }
         }
     }
@@ -377,8 +377,8 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
 
     // Declare samplers
     std::set<std::string> texsizes;
-    std::map<std::string, TextureSamplerDesc>::const_iterator iter_samplers = pmShader.textures.cbegin();
-    for ( ; iter_samplers != pmShader.textures.cend(); ++iter_samplers)
+    std::map<std::string, TextureSamplerDesc>::const_iterator iter_samplers = pmShader.m_textures.cbegin();
+    for ( ; iter_samplers != pmShader.m_textures.cend(); ++iter_samplers)
     {
         Texture * texture = iter_samplers->second.first;
 
@@ -572,8 +572,8 @@ void ShaderEngine::SetupTextures(GLuint program, const Shader &shader)
     std::map<std::string, Texture*> texsizes;
 
     // Set samplers
-    for (std::map<std::string, TextureSamplerDesc>::const_iterator iter_samplers = shader.textures.begin(); iter_samplers
-                    != shader.textures.end(); ++iter_samplers)
+    for (std::map<std::string, TextureSamplerDesc>::const_iterator iter_samplers = shader.m_textures.begin(); iter_samplers
+                    != shader.m_textures.end(); ++iter_samplers)
     {
         std::string texName = iter_samplers->first;
         Texture * texture = iter_samplers->second.first;
@@ -813,13 +813,13 @@ void ShaderEngine::loadPresetShaders(Pipeline &pipeline)
     programID_presetComp = GL_FALSE;
 
     // compile and link warp and composite shaders from pipeline
-    if (!pipeline.warpShader.programSource.empty()) {
+    if (!pipeline.warpShader.m_programSource.empty()) {
         programID_presetWarp = loadPresetShader(PresentWarpShader, pipeline.warpShader, pipeline.warpShaderFilename);
         uniform_vertex_transf_warp_shader = glGetUniformLocation(programID_presetWarp, "vertex_transformation");
         presetWarpShaderLoaded = true;
     }
 
-    if (!pipeline.compositeShader.programSource.empty()) {
+    if (!pipeline.compositeShader.m_programSource.empty()) {
         programID_presetComp = loadPresetShader(PresentCompositeShader, pipeline.compositeShader, pipeline.compositeShaderFilename);
         presetCompShaderLoaded = true;
     }
@@ -927,28 +927,14 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
     return linkOK ? programID : GL_FALSE;
 }
 
-void ShaderEngine::validateProgram(const GLuint programID) {
-    GLint Result = GL_FALSE;
-    int InfoLogLength;
-
-    glValidateProgram(programID);
-
-    // Check the program
-    glGetProgramiv(programID, GL_VALIDATE_STATUS, &Result);
-    glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-    if ( InfoLogLength > 0 ){
-        std::vector<char> ProgramErrorMessage(InfoLogLength+1);
-        glGetProgramInfoLog(programID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
-        fprintf(stderr, "%s\n", &ProgramErrorMessage[0]);
-    }
-}
-
 // use the appropriate shader program for rendering the interpolation.
 // it will use the preset shader if available, otherwise the textured shader
 bool ShaderEngine::enableWarpShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext, const glm::mat4 & mat_ortho) {
     if (presetWarpShaderLoaded) {
         glUseProgram(programID_presetWarp);
 
+        shader.Bind();
+        shader.BindTextures();
         SetupTextures(programID_presetWarp, shader);
 
         SetupShaderVariables(programID_presetWarp, pipeline, pipelineContext);

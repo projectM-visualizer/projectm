@@ -174,7 +174,6 @@ void Renderer::RenderItems(const Pipeline& pipeline, const PipelineContext& pipe
     m_renderContext.invAspectX = m_fInvAspectX;
     m_renderContext.invAspectY = m_fInvAspectY;
     m_renderContext.textureManager = m_textureManager.get();
-    m_renderContext.beatDetect = m_beatDetect;
 
 	for (std::vector<RenderItem*>::const_iterator pos = pipeline.drawables.begin(); pos != pipeline.drawables.end(); ++pos)
 	{

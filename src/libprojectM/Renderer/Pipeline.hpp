@@ -41,9 +41,7 @@ public:
 	 float blur1ed;
 
 	 Shader warpShader;
-     std::string warpShaderFilename;
 	 Shader compositeShader;
-     std::string compositeShaderFilename;
 
 	 std::vector<RenderItem*> drawables;
 	 std::vector<RenderItem*> compositeDrawables;

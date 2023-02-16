@@ -23,26 +23,6 @@ class ShaderEngine;
 #include "Shader.hpp"
 #include <glm/vec3.hpp>
 
-class ShaderException : public std::exception
-{
-public:
-    inline ShaderException(std::string message)
-        : m_message(std::move(message))
-    {
-    }
-
-    virtual ~ShaderException() = default;
-
-    const std::string& message() const
-    {
-        return m_message;
-    }
-
-private:
-    std::string m_message;
-};
-
-
 class ShaderEngine
 {
 public:
@@ -56,6 +36,7 @@ public:
 
     ShaderEngine();
     virtual ~ShaderEngine();
+
     void loadPresetShaders(Pipeline &pipeline);
     bool enableWarpShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext, const glm::mat4 & mat_ortho);
     bool enableCompositeShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
@@ -88,7 +69,6 @@ private:
     int texsizeY;
     float aspectX;
     float aspectY;
-    BeatDetect *beatDetect;
     TextureManager *textureManager;
     GLint uniform_vertex_transf_warp_shader;
 
@@ -127,10 +107,6 @@ private:
     void disablePresetShaders();
     GLuint loadPresetShader(const PresentShaderType shaderType, Shader &shader, std::string &shaderFilename);
 
-    void deletePresetShader(Shader &shader);
-    void validateProgram(const GLuint programID);
-
-    
     // programs generated from preset shader code
     GLuint programID_presetComp, programID_presetWarp;
 
