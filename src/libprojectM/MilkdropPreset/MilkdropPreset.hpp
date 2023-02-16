@@ -23,13 +23,6 @@
  */
 #pragma once
 
-#ifdef DEBUG
-/* 0 for no debugging, 1 for normal, 2 for insane */
-#define MILKDROP_PRESET_DEBUG 1
-#else
-#define MILKDROP_PRESET_DEBUG 0
-#endif
-
 #include "CustomShape.hpp"
 #include "CustomWaveform.hpp"
 #include "PerFrameContext.hpp"
@@ -51,14 +44,14 @@ class MilkdropPreset : public Preset
 
 public:
     /**
-     * @brief Load a MilkdropPreset by filename with input and output buffers specified.
+     * @brief LoadCode a MilkdropPreset by filename with input and output buffers specified.
      * @param factory The factory class that created this preset instance.
      * @param absoluteFilePath the absolute file path of a MilkdropPreset to load from the file system
      */
     MilkdropPreset(MilkdropPresetFactory* factory, const std::string& absoluteFilePath);
 
     /**
-     * @brief Load a MilkdropPreset from an input stream with input and output buffers specified.
+     * @brief LoadCode a MilkdropPreset from an input stream with input and output buffers specified.
      * @param presetData an already initialized input stream to read the MilkdropPreset file from
      * @param presetOutputs initialized and filled with data parsed from a MilkdropPreset
      */

@@ -48,7 +48,11 @@
 
 class BackgroundWorkerSync;
 
+namespace libprojectM {
+namespace Audio {
 class BeatDetect;
+}
+} // namespace libprojectM
 
 class Pcm;
 
@@ -240,7 +244,7 @@ private:
 
 #endif
 
-    class Pcm m_pcm; //!< Audio data buffer and analyzer instance.
+    class libprojectM::Audio::PCM m_pcm; //!< Audio data buffer and analyzer instance.
 
     size_t m_meshX{32};              //!< Per-point mesh horizontal resolution.
     size_t m_meshY{24};              //!< Per-point mesh vertical resolution.
@@ -269,11 +273,11 @@ private:
     std::unique_ptr<class PipelineContext> m_pipelineContext;  //!< Pipeline context for the first/current preset.
     std::unique_ptr<class PipelineContext> m_pipelineContext2; //!< Pipeline context for the next/transitioning preset.
 
-    std::unique_ptr<Renderer> m_renderer;          //!< The Preset renderer.
-    std::unique_ptr<BeatDetect> m_beatDetect;      //!< The beat detection class.
-    std::unique_ptr<Preset> m_activePreset;        //!< Currently loaded preset.
-    std::unique_ptr<Preset> m_transitioningPreset; //!< Destination preset when smooth preset switching.
-    std::unique_ptr<TimeKeeper> m_timeKeeper;      //!< Keeps the different timers used to render and switch presets.
+    std::unique_ptr<Renderer> m_renderer;                         //!< The Preset renderer.
+    std::unique_ptr<libprojectM::Audio::BeatDetect> m_beatDetect; //!< The beat detection class.
+    std::unique_ptr<Preset> m_activePreset;                       //!< Currently loaded preset.
+    std::unique_ptr<Preset> m_transitioningPreset;                //!< Destination preset when smooth preset switching.
+    std::unique_ptr<TimeKeeper> m_timeKeeper;                     //!< Keeps the different timers used to render and switch presets.
 
 #if PROJECTM_USE_THREADS
     mutable std::recursive_mutex m_presetSwitchMutex;   //!< Mutex for locking preset switching while rendering and vice versa.

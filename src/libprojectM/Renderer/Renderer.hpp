@@ -1,5 +1,4 @@
-#ifndef Renderer_HPP
-#define Renderer_HPP
+#pragma once
 
 #include "Audio/BeatDetect.hpp"
 #include "Pipeline.hpp"
@@ -174,5 +173,3 @@ private:
     float m_fInvAspectX{1.0};
     float m_fInvAspectY{1.0};
 };
-
-#endif
