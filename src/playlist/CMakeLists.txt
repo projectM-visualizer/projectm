@@ -150,7 +150,7 @@ if(UNIX)
     set(PKGCONFIG_PACKAGE_NAME "projectM-4-playlist")
     set(PKGCONFIG_PACKAGE_DESCRIPTION "projectM Playlist Library")
     set(PKGCONFIG_PACKAGE_REQUIREMENTS_RELEASE "projectM-4")
-    set(PKGCONFIG_PACKAGE_REQUIREMENTS_DEBUG "libprojectM-debug")
+    set(PKGCONFIG_PACKAGE_REQUIREMENTS_DEBUG "projectM-4-debug")
 
     generate_pkg_config_files(projectM_playlist projectM-4-playlist)
 endif()
