@@ -8,7 +8,7 @@
 
 #include <projectm-eval.h>
 
-class FileParser;
+class PresetFileParser;
 
 /**
  * @brief Renders a custom shape with or without a texture.
@@ -30,7 +30,7 @@ public:
      * @param parsedFile The file parser with the preset data.
      * @param index The waveform index.
      */
-    void Initialize(FileParser& parsedFile, int index);
+    void Initialize(PresetFileParser& parsedFile, int index);
 
     /**
      * @brief Compiles all code blocks and runs the init expression.

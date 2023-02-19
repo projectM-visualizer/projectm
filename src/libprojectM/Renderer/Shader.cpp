@@ -15,7 +15,8 @@ Shader::~Shader()
     }
 }
 
-void Shader::CompileProgram(const std::string& vertexShaderSource, std::string& fragmentShaderSource)
+void Shader::CompileProgram(const std::string& vertexShaderSource,
+                            const std::string& fragmentShaderSource)
 {
     auto vertexShader = CompileShader(vertexShaderSource, GL_VERTEX_SHADER);
     auto fragmentShader = CompileShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
@@ -119,8 +120,14 @@ void Shader::BindTextures()
     }
 }
 
+auto Shader::GetTextures() const -> const std::map<std::string, TextureSamplerDesc>&
+{
+    return m_textures;
+}
+
 void Shader::SetUniformTexture(const char* uniform, TextureSamplerDesc texture)
 {
+    m_textures.insert(std::make_pair(uniform, texture));
 }
 
 void Shader::SetUniformFloat(const char* uniform, float value)

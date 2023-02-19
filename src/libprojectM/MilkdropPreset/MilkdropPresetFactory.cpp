@@ -15,16 +15,6 @@
 #include "MilkdropPreset.hpp"
 #include "IdlePreset.hpp"
 
-MilkdropPresetFactory::MilkdropPresetFactory(int meshX, int meshY)
-    : m_meshX(meshX)
-    , m_meshY(meshY)
-{
-}
-
-MilkdropPresetFactory::~MilkdropPresetFactory()
-{
-}
-
 std::unique_ptr<Preset>
 MilkdropPresetFactory::LoadPresetFromFile(const std::string& filename)
 {
@@ -36,7 +26,7 @@ MilkdropPresetFactory::LoadPresetFromFile(const std::string& filename)
     }
     else if (protocol == "" || protocol == "file")
     {
-        return std::make_unique<MilkdropPreset>(this, path);
+        return std::make_unique<MilkdropPreset>(path);
     }
     else
     {
@@ -47,5 +37,5 @@ MilkdropPresetFactory::LoadPresetFromFile(const std::string& filename)
 
 std::unique_ptr<Preset> MilkdropPresetFactory::LoadPresetFromStream(std::istream& data)
 {
-    return std::make_unique<MilkdropPreset>(this, data);
+    return std::make_unique<MilkdropPreset>(data);
 }

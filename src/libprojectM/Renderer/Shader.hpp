@@ -60,7 +60,8 @@ public:
      * @param vertexShaderSource The vertex shader source.
      * @param fragmentShaderSource The fragment shader source.
      */
-    void CompileProgram(const std::string& vertexShaderSource, std::string& fragmentShaderSource);
+    void CompileProgram(const std::string& vertexShaderSource,
+                        const std::string& fragmentShaderSource);
 
     /**
      * @brief Validates that the program can run in the current state.
@@ -84,6 +85,12 @@ public:
      * The program must be bound before calling this method!
      */
     void BindTextures();
+
+    /**
+     * @brief Returns the textures used in this shader.
+     * @return A map of textures names and descriptors.
+     */
+    auto GetTextures() const -> const std::map<std::string, TextureSamplerDesc>&;
 
     void SetUniformTexture(const char* uniform, TextureSamplerDesc texture);
 

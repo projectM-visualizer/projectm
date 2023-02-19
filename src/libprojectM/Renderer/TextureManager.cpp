@@ -29,7 +29,7 @@ TextureManager::TextureManager(std::vector<std::string>& textureSearchPaths, int
 
     Preload();
 
-    // Create main texture ans associated samplers
+    // Create main texture and associated samplers
     m_mainTexture = new Texture("main", texSizeX, texSizeY, false);
     m_mainTexture->getSampler(GL_REPEAT, GL_LINEAR);
     m_mainTexture->getSampler(GL_REPEAT, GL_NEAREST);

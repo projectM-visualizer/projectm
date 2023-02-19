@@ -21,9 +21,9 @@
 
 #include "MilkdropPreset.hpp"
 
-#include "FileParser.hpp"
-#include "MilkdropPresetFactory.hpp"
 #include "MilkdropPresetExceptions.hpp"
+#include "MilkdropPresetFactory.hpp"
+#include "PresetFileParser.hpp"
 #include "PresetFrameIO.hpp"
 
 #ifdef _WIN32
@@ -37,31 +37,25 @@
 #endif
 
 
-MilkdropPreset::MilkdropPreset(MilkdropPresetFactory* factory, std::istream& presetData)
-    : m_factory(factory)
+MilkdropPreset::MilkdropPreset(std::istream& presetData)
+    : m_perFrameContext(m_state.globalMemory, &m_state.globalRegisters)
+    , m_perPixelContext(m_state.globalMemory, &m_state.globalRegisters)
+    , m_waveform(m_state)
 {
     Load(presetData);
 }
 
 
-MilkdropPreset::MilkdropPreset(MilkdropPresetFactory* factory, const std::string& absoluteFilePath)
-    : _absoluteFilePath(absoluteFilePath)
-    , m_factory(factory)
+MilkdropPreset::MilkdropPreset(const std::string& absoluteFilePath)
+    : m_absoluteFilePath(absoluteFilePath)
+    , m_perFrameContext(m_state.globalMemory, &m_state.globalRegisters)
+    , m_perPixelContext(m_state.globalMemory, &m_state.globalRegisters)
+    , m_waveform(m_state)
 {
     Load(absoluteFilePath);
 }
 
-
-MilkdropPreset::~MilkdropPreset()
-{
-    if (m_factory)
-    {
-        m_factory->releasePreset(this);
-    }
-}
-
-
-void MilkdropPreset::InitializePreset(FileParser& parsedFile)
+void MilkdropPreset::InitializePreset(PresetFileParser& parsedFile)
 {
     // Load global init variables into the state
     m_state.Initialize(parsedFile);
@@ -111,12 +105,12 @@ void MilkdropPreset::CompileCodeAndRunInitExpressions()
 void MilkdropPreset::Load(const std::string& pathname)
 {
 #ifdef MILKDROP_PRESET_DEBUG
-        std::cerr << "[Preset] Loading preset from file \"" << pathname << "\"." << std::endl;
+    std::cerr << "[Preset] Loading preset from file \"" << pathname << "\"." << std::endl;
 #endif
 
     SetFilename(ParseFilename(pathname));
 
-    FileParser parser;
+    PresetFileParser parser;
 
     if (!parser.Read(pathname))
     {
@@ -129,10 +123,10 @@ void MilkdropPreset::Load(const std::string& pathname)
 void MilkdropPreset::Load(std::istream& stream)
 {
 #ifdef MILKDROP_PRESET_DEBUG
-        std::cerr << "[Preset] Loading preset from stream." << std::endl;
+    std::cerr << "[Preset] Loading preset from stream." << std::endl;
 #endif
 
-    FileParser parser;
+    PresetFileParser parser;
 
     if (!parser.Read(stream))
     {
@@ -147,7 +141,34 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     m_state.audioData = audioData;
     m_state.renderContext = renderContext;
 
+    // First evaluate per-frame code
+    PerFrameUpdate();
 
+    // Motion vector field
+    // ToDo: Draw motion vectors to separate texture
+
+    // Draw previous frame image warped via per-pixel mesh and warp shader
+    // ToDo: ComputeGridAlphaValues
+    // ToDo: Per-Pixel and warp stuff
+
+    // Draw audio-data-related stuff
+    for(auto& shape : m_customShapes)
+    {
+        shape->Draw(m_perFrameContext);
+    }
+    for(auto& wave : m_customWaveforms)
+    {
+        wave->Draw(m_perFrameContext);
+    }
+    m_waveform.Draw();
+    // ToDo: Sprite drawing would go here.
+    // Todo: Song title anim would go here
+
+    // ToDo: Store main texture for next frame
+
+    // ToDo: Apply composite shader
+
+    // ToDo: Draw user sprites (can have evaluated code)
 }
 
 

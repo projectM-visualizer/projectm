@@ -1,11 +1,17 @@
 /**
  * @file MilkdropShader
  * @brief Holds a warp or composite shader of Milkdrop presets.
+ *
+ * This class wraps the conversion from HLSL shader code to GLSL and also manages the
+ * drawing.
  */
 #pragma once
 
+#include "Renderer/BlurTexture.hpp"
 #include "Renderer/Shader.hpp"
 #include "Renderer/TextureManager.hpp"
+
+class PresetState;
 
 /**
  * @brief Holds a warp or composite shader of Milkdrop presets.
@@ -18,17 +24,6 @@ public:
     {
         WarpShader, //!< Warp shader
         CompositeShader //!< Composite shader
-    };
-
-    /**
-     * Maximum main texture blur level used in the shader
-     */
-    enum class BlurLevel : int
-    {
-        None, //!< No blur used.
-        Blur1, //!< First blur level (2 passes)
-        Blur2, //!< Second blur level (4 passes)
-        Blur3 //!< Third blur level (6 passes)
     };
 
     /**
@@ -48,6 +43,12 @@ public:
      */
     void LoadTextures(TextureManager& textureManager);
 
+    /**
+     * @brief Loads all required shader variables into the uniforms.
+     * @param presetState The preset State to pull the values from.
+     */
+    void LoadVariables(const PresetState& presetState);
+
 private:
     /**
      * @brief Prepares the shader code to be translated into GLSL.
@@ -61,10 +62,22 @@ private:
      */
     void GetReferencedSamplers(const std::string& program);
 
+    /**
+     * @brief Translates the HLSL shader into GLSL.
+     * @param program The shader to transpile.
+     */
+    void TranspileHLSLShader(std::string& program);
+
     ShaderType m_type{ShaderType::WarpShader}; //!< Type of this shader.
     std::string m_presetShaderCode; //!< The original preset shader code.
 
     std::vector<std::string> m_samplerNames; //!< Names of all referenced samplers in the shader code.
+    BlurTexture::BlurLevel m_maxBlurLevelRequired; //!< Max blur level of main texture required by this shader.
+
+    std::array<float, 4> m_randValues; //!< Random values which don't change every frame.
+    std::array<glm::vec3, 20> m_randTranslation; //!< Random translation vectors which don't change every frame.
+    std::array<glm::vec3, 20> m_randRotationCenters; //!< Random rotation center vectors which don't change every frame.
+    std::array<glm::vec3, 20> m_randRotationSpeeds; //!< Random rotation speeds which don't change every frame.
 
     Shader m_shader;
 };

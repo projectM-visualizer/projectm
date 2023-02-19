@@ -14,7 +14,7 @@
 
 #include <string>
 
-class FileParser;
+class PresetFileParser;
 
 using BlendableFloat = float; //!< Currently a placeholder to mark blendable values.
 
@@ -35,7 +35,7 @@ public:
      * @brief Loads the initial values and code from the preset file.
      * @param parsedFile The file parser with the preset data.
      */
-    void Initialize(FileParser& parsedFile);
+    void Initialize(PresetFileParser& parsedFile);
 
     BlendableFloat gammaAdj{2.0f};
     BlendableFloat videoEchoZoom{2.0f};
@@ -128,6 +128,7 @@ public:
 
     projectm_eval_mem_buffer globalMemory{nullptr}; //!< gmegabuf data. Using per-frame buffers in projectM to reduce interference.
     double globalRegisters[100]{}; //!< Global reg00-reg99 variables.
+    std::array<double, QVarCount> frameQVariables{}; //!< Q variables after per-frame code evaluation.
 
     libprojectM::Audio::FrameAudioData audioData; //!< Holds audio/spectrum data and values for beat detection.
     RenderContext renderContext; //!< Current renderer state data like viewport size and generic shaders.

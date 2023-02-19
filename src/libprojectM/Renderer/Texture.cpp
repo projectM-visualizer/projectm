@@ -1,23 +1,5 @@
 #include "Texture.hpp"
 
-Sampler::Sampler(const GLint _wrap_mode, const GLint _filter_mode) :
-    wrap_mode(_wrap_mode),
-    filter_mode(_filter_mode)
-{
-    glGenSamplers(1, &samplerID);
-    glSamplerParameteri(samplerID, GL_TEXTURE_MIN_FILTER, _filter_mode);
-    glSamplerParameteri(samplerID, GL_TEXTURE_MAG_FILTER, _filter_mode);
-    glSamplerParameteri(samplerID, GL_TEXTURE_WRAP_S, _wrap_mode);
-    glSamplerParameteri(samplerID, GL_TEXTURE_WRAP_T, _wrap_mode);
-}
-
-
-Sampler::~Sampler()
-{
-    glDeleteSamplers(1, &samplerID);
-}
-
-
 
 Texture::Texture(const std::string &_name, const int _width, const int _height, const bool _userTexture) :
     type(GL_TEXTURE_2D),
@@ -42,7 +24,6 @@ Texture::Texture(const std::string &_name, const GLuint _texID, const GLenum _ty
 {
 }
 
-
 Texture::~Texture()
 {
     glDeleteTextures(1, &texID);
@@ -53,10 +34,21 @@ Texture::~Texture()
     }
 }
 
+void Texture::Bind(GLint slot) const
+{
+    glActiveTexture(GL_TEXTURE0 + slot);
+    glBindTexture(type, texID);
+}
+
+void Texture::Unbind(GLint slot) const
+{
+    glActiveTexture(GL_TEXTURE0 + slot);
+    glBindTexture(type, 0);
+}
 
 Sampler* Texture::getSampler(const GLint _wrap_mode, const GLint _filter_mode)
 {
-    for(std::vector<Sampler*>::const_iterator iter = samplers.begin(); iter != samplers.end(); iter++)
+    for (std::vector<Sampler*>::const_iterator iter = samplers.begin(); iter != samplers.end(); iter++)
     {
         if ((*iter)->wrap_mode == _wrap_mode && (*iter)->filter_mode == _filter_mode)
         {
@@ -65,7 +57,7 @@ Sampler* Texture::getSampler(const GLint _wrap_mode, const GLint _filter_mode)
     }
 
     // Sampler not found -> adding it
-    Sampler * sampler = new Sampler(_wrap_mode, _filter_mode);
+    Sampler* sampler = new Sampler(_wrap_mode, _filter_mode);
     samplers.push_back(sampler);
 
     return sampler;

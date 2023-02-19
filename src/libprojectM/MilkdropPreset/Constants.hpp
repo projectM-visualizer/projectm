@@ -13,5 +13,5 @@ static constexpr int CustomShapeCount = 4; //!< Number of custom shapes (express
 static constexpr int WaveformSamples = 576; //!< Number of waveform data samples available for rendering a frame.
 static constexpr int SpectrumSamples = 512; //!< Number of spectrum analyzer samples.
 
-static constexpr int CustomWaveformSamples = 480; //!< Number of custom waveform data samples available for rendering a frame.
-static constexpr int CustomWaveformMaxPoints = 512; //!< Maximum number of custom waveform points.
+static constexpr int RenderWaveformSamples = 480; //!< Number of custom waveform data samples available for rendering a frame.
+static constexpr int WaveformMaxPoints = 512; //!< Maximum number of waveform points.

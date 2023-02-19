@@ -1,4 +1,4 @@
-#include "FileParser.hpp"
+#include "PresetFileParser.hpp"
 
 #include <algorithm>
 #include <fstream>
@@ -6,13 +6,13 @@
 #include <sstream>
 #include <vector>
 
-auto FileParser::Read(const std::string& presetFile) -> bool
+auto PresetFileParser::Read(const std::string& presetFile) -> bool
 {
     std::ifstream presetStream(presetFile.c_str(), std::ios_base::in | std::ios_base::binary);
     return Read(presetStream);
 }
 
-auto FileParser::Read(std::istream& presetStream) -> bool
+auto PresetFileParser::Read(std::istream& presetStream) -> bool
 {
     if (!presetStream.good())
     {
@@ -72,7 +72,7 @@ auto FileParser::Read(std::istream& presetStream) -> bool
     return !m_presetValues.empty();
 }
 
-auto FileParser::GetCode(const std::string& keyPrefix) const -> std::string
+auto PresetFileParser::GetCode(const std::string& keyPrefix) const -> std::string
 {
     std::stringstream code;                        //!< The parsed code
     std::string key(keyPrefix.length() + 5, '\0'); //!< Allocate a string that can hold up to 5 digits.
@@ -113,7 +113,7 @@ auto FileParser::GetCode(const std::string& keyPrefix) const -> std::string
     return codeStr;
 }
 
-auto FileParser::GetInt(const std::string& key, int defaultValue) -> int
+auto PresetFileParser::GetInt(const std::string& key, int defaultValue) -> int
 {
     if (m_presetValues.find(key) != m_presetValues.end())
     {
@@ -129,7 +129,7 @@ auto FileParser::GetInt(const std::string& key, int defaultValue) -> int
     return defaultValue;
 }
 
-auto FileParser::GetFloat(const std::string& key, float defaultValue) -> float
+auto PresetFileParser::GetFloat(const std::string& key, float defaultValue) -> float
 {
     if (m_presetValues.find(key) != m_presetValues.end())
     {
@@ -145,17 +145,17 @@ auto FileParser::GetFloat(const std::string& key, float defaultValue) -> float
     return defaultValue;
 }
 
-auto FileParser::GetBool(const std::string& key, bool defaultValue) -> bool
+auto PresetFileParser::GetBool(const std::string& key, bool defaultValue) -> bool
 {
     return GetInt(key, static_cast<int>(defaultValue)) > 0;
 }
 
-const std::map<std::string, std::string>& FileParser::PresetValues() const
+const std::map<std::string, std::string>& PresetFileParser::PresetValues() const
 {
     return m_presetValues;
 }
 
-void FileParser::ParseLine(const std::string& line)
+void PresetFileParser::ParseLine(const std::string& line)
 {
     // Search for first delimiter, either space or equal
     auto varNameDelimiterPos = line.find_first_of(" =");
@@ -176,7 +176,7 @@ void FileParser::ParseLine(const std::string& line)
     }
 }
 
-void FileParser::StripComment(std::string& line)
+void PresetFileParser::StripComment(std::string& line)
 {
     auto commentPos = line.find("//");
     if (commentPos != std::string::npos)
@@ -192,7 +192,7 @@ void FileParser::StripComment(std::string& line)
     }
 }
 
-void FileParser::StripMultilineComment(std::string& code)
+void PresetFileParser::StripMultilineComment(std::string& code)
 {
     size_t commentPos;
     while ((commentPos = code.find("/*")) != std::string::npos)
@@ -209,7 +209,7 @@ void FileParser::StripMultilineComment(std::string& code)
     }
 }
 
-void FileParser::Trim(std::string& line)
+void PresetFileParser::Trim(std::string& line)
 {
     if (line.empty())
     {

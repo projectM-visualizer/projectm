@@ -195,7 +195,7 @@ public:
     /// Returns true if the active preset is locked
     auto PresetLocked() const -> bool;
 
-    auto Pcm() -> class Pcm&;
+    auto PCM() -> libprojectM::Audio::PCM&;
 
     auto WindowWidth() -> int;
 

@@ -1,6 +1,6 @@
 #include "CustomShape.hpp"
 
-#include "FileParser.hpp"
+#include "PresetFileParser.hpp"
 
 #include "Audio/BeatDetect.hpp"
 #include "Renderer/TextureManager.hpp"
@@ -64,7 +64,7 @@ void CustomShape::InitVertexAttrib()
     glDisableVertexAttribArray(1);
 }
 
-void CustomShape::Initialize(FileParser& parsedFile, int index)
+void CustomShape::Initialize(PresetFileParser& parsedFile, int index)
 {
     std::string shapecodePrefix = "shapecode_" + std::to_string(index) + "_";
 

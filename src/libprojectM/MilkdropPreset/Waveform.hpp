@@ -1,73 +1,48 @@
 #pragma once
 
+#include "Constants.hpp"
+
 #include "Renderer/RenderItem.hpp"
 
-enum MilkdropWaveformMode
-	{
-	  Circle = 0, //!< Circular wave.
-	  XYOscillationSpiral, //!< X-Y osc. that goes around in a spiral, in time.
-	  Blob2, //!< Centered spiro (alpha constant). Aimed at not being so sound-responsive, but being very "nebula-like".
-	  Blob3, //!< Centered spiro (alpha tied to volume). Aimed at having a strong audio-visual tie-in.
-	  DerivativeLine, //!< Horizontal "script", left channel.
-	  ExplosiveHash, //!< Weird explosive complex # thingy.
-	  Line, //!< Angle-adjustable left channel, with temporal wave alignment.
-	  DoubleLine, //!< Same, except there are two channels shown.
-	  SpectrumLine, //!< Same as "Line", except using the spectrum analyzer (UNFINISHED).
-	  last // last is a placeholder to find enum size. Please ignore and leave this here.
-	};
+class PresetState;
 
+class PerFrameContext;
 
 class Waveform : public RenderItem
 {
 public:
-    Waveform();
-    ~Waveform() override;
-
-    void Draw(RenderContext &context) override;
-    void InitVertexAttrib() override;
-
-	float x{ 0.5f };
-	float y{ 0.5f };
-
-	float r{ 1.0f };
-	float g{ 0.0f };
-	float b{ 0.0f };
-	float a{ 1.0f };
-
-	float mystery{ 0.0f };
-
-    MilkdropWaveformMode mode{ MilkdropWaveformMode::Line };
-
-	bool additive{ false };
-	bool dots{ false };
-	bool thick{ false };
-	bool modulateAlphaByVolume{ false };
-	bool maximizeColors{ false };
-	float scale{ 10.0f };
-	float smoothing{ 0.0f }; // DOES NOTHING
-
-	float modOpacityStart{ 0.0f };
-	float modOpacityEnd{ 1.0f };
-
-private:
-    static const int NumWaveformSamples{ 480 };
-
-    struct WaveformVertex
+    enum class Mode : int
     {
-        float x{ 0.0f };
-        float y{ 0.0f };
+        Circle = 0,          //!< Circular wave.
+        XYOscillationSpiral, //!< X-Y osc. that goes around in a spiral, in time.
+        Blob2,               //!< Centered spiro (alpha constant). Aimed at not being so sound-responsive, but being very "nebula-like".
+        Blob3,               //!< Centered spiro (alpha tied to volume). Aimed at having a strong audio-visual tie-in.
+        DerivativeLine,      //!< Horizontal "script", left channel.
+        ExplosiveHash,       //!< Weird explosive complex # thingy.
+        Line,                //!< Angle-adjustable left channel, with temporal wave alignment.
+        DoubleLine,          //!< Same, except there are two channels shown.
+        SpectrumLine         //!< Same as "Line", except using the spectrum analyzer (UNFINISHED).
     };
 
-	float temp_a{ 0.0f };
-	int samples{ NumWaveformSamples };
-	bool loop{ false };
+    Waveform(PresetState& presetState);
+    ~Waveform() override;
 
-    WaveformVertex* wave1Vertices{ nullptr };
-    WaveformVertex* wave2Vertices{ nullptr };
+    void Draw();
 
-	void MaximizeColors(RenderContext &context);
-	void ModulateOpacityByVolume(RenderContext &context);
-	void WaveformMath(RenderContext &context);
+    void InitVertexAttrib() override;
+
+
+private:
+    struct WaveformVertex {
+        float x{0.0f};
+        float y{0.0f};
+    };
+
+    void SetMode();
+
+    void MaximizeColors();
+    void ModulateOpacityByVolume();
+    void WaveformMath();
 
     /**
      * @brief Does a better-than-linear smooth on a wave.
@@ -79,6 +54,15 @@ private:
      * @param outputVertices Pointer to a buffer that will receive the smoothed data. Must be able to hold 2 * vertexCount vertices.
      * @return The number of vertices in outputVertices after smoothing.
      */
-    static int SmoothWave(const WaveformVertex* inputVertices, int vertexCount, WaveformVertex* outputVertices);
+    static auto SmoothWave(const WaveformVertex* inputVertices, WaveformVertex* outputVertices) -> int;
 
+    PresetState& m_presetState;
+
+    Mode m_mode{Mode::Line};
+
+    float m_tempAlpha{0.0f};
+    bool m_loop{false};
+
+    WaveformVertex* wave1Vertices{nullptr};
+    WaveformVertex* wave2Vertices{nullptr};
 };
