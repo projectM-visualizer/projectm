@@ -16,21 +16,10 @@
 
 #include <memory>
 
-class PresetOutputs;
-
-class PresetInputs;
-
 class MilkdropPresetFactory : public PresetFactory
 {
 
 public:
-    MilkdropPresetFactory(int meshX, int meshY);
-
-    ~MilkdropPresetFactory() override;
-
-    // called by ~MilkdropPreset
-    void releasePreset(Preset* preset);
-
     std::unique_ptr<Preset> LoadPresetFromFile(const std::string& filename) override;
 
     std::unique_ptr<Preset> LoadPresetFromStream(std::istream& data) override;
@@ -40,15 +29,4 @@ public:
         return ".milk .prjm";
     }
 
-private:
-    void ResetPresetOutputs(PresetOutputs* presetOutputs);
-
-    static PresetOutputs* CreatePresetOutputs(int meshX, int meshY);
-
-    void reset();
-
-    int m_meshX{0};
-    int m_meshY{0};
-
-    PresetOutputs* m_presetOutputsCache{nullptr};
 };

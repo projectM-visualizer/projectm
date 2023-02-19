@@ -270,7 +270,7 @@ void ProjectM::Reset()
 {
     this->m_count = 0;
 
-    m_presetFactoryManager->initialize(m_meshX, m_meshY);
+    m_presetFactoryManager->initialize();
 
     ResetEngine();
 }
@@ -289,16 +289,16 @@ void ProjectM::Initialize()
     /** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
     assert(!m_beatDetect);
 
-    m_beatDetect = std::make_unique<BeatDetect>(m_pcm);
+    m_beatDetect = std::make_unique<libprojectM::Audio::BeatDetect>(m_pcm);
 
     this->m_renderer = std::make_unique<Renderer>(m_windowWidth,
                                                   m_windowHeight,
                                                   m_meshX,
                                                   m_meshY,
-                                                  m_beatDetect.get(),
+                                                  *m_beatDetect,
                                                   m_textureSearchPaths);
 
-    m_presetFactoryManager->initialize(m_meshX, m_meshY);
+    m_presetFactoryManager->initialize();
 
     /* Set the seed to the current time in seconds */
     srand(time(nullptr));
@@ -516,7 +516,7 @@ void ProjectM::SetMeshSize(size_t meshResolutionX, size_t meshResolutionY)
 
     // Update mesh size in all sorts of classes.
     m_renderer->SetPerPixelMeshSize(m_meshX, m_meshY);
-    m_presetFactoryManager->initialize(m_meshX, m_meshY);
+    m_presetFactoryManager->initialize();
 
     // Unload all presets and reload idle preset
     m_activePreset.reset();
@@ -524,7 +524,7 @@ void ProjectM::SetMeshSize(size_t meshResolutionX, size_t meshResolutionY)
     LoadIdlePreset();
 }
 
-auto ProjectM::Pcm() -> class Pcm&
+auto ProjectM::PCM() -> libprojectM::Audio::PCM&
 {
     return m_pcm;
 }

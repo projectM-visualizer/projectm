@@ -21,7 +21,7 @@ using namespace std::chrono;
 class Preset;
 
 Renderer::Renderer(int viewportWidth, int viewportHeight, int meshX, int meshY,
-                   BeatDetect* beatDetect, std::vector<std::string>& textureSearchPaths)
+                   libprojectM::Audio::BeatDetect& beatDetect, std::vector<std::string>& textureSearchPaths)
     : m_perPixelMesh(meshX, meshY)
     , m_beatDetect(beatDetect)
     , m_viewportWidth(viewportWidth)
@@ -239,8 +239,6 @@ void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineCo
 
 void Renderer::RenderFrameOnlyPass1(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
-    m_shaderEngine.RenderBlurTextures(pipeline, pipelineContext);
-
 	SetupPass1(pipeline, pipelineContext);
 
 	Interpolation(pipeline, pipelineContext);
@@ -425,7 +423,7 @@ bool Renderer::touchedWaveform(float x, float y, std::size_t i)
 {
 	if (m_waveformList[i].x > (x-0.05f) && m_waveformList[i].x < (x+0.05f) // if x +- 0.5f
 		&& ((m_waveformList[i].y > (y-0.05f) && m_waveformList[i].y < (y+0.05f)) // and y +- 0.5f
-		|| m_waveformList[i].mode == Line || m_waveformList[i].mode == DoubleLine || m_waveformList[i].mode == DerivativeLine ) // OR it's a line (and y doesn't matter)
+		|| m_waveformList[i].m_mode == Line || m_waveformList[i].m_mode == DoubleLine || m_waveformList[i].m_mode == DerivativeLine ) // OR it's a line (and y doesn't matter)
 		)
 	{
 		return true;
@@ -458,10 +456,10 @@ void Renderer::touch(float x, float y, int pressure, int type = 0)
     Waveform wave;
 	if (type == 0) {
 		// If we touched randomly, then assign type to a random number between 0 and 8
-		wave.mode = static_cast<MilkdropWaveformMode>((rand() % last));
+		wave.m_mode = static_cast<MilkdropWaveformMode>((rand() % last));
 	}
 	else {
-		wave.mode = static_cast<MilkdropWaveformMode>(type);
+		wave.m_mode = static_cast<MilkdropWaveformMode>(type);
 	}
 
 	wave.additive = true;

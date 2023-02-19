@@ -337,7 +337,7 @@ void projectm_set_window_size(projectm_handle instance, size_t width, size_t hei
 
 unsigned int projectm_pcm_get_max_samples()
 {
-    return Pcm::maxSamples;
+    return libprojectM::Audio::PCM::maxSamples;
 }
 
 template<class BufferType>
@@ -347,11 +347,11 @@ static auto PcmAdd(projectm_handle instance, const BufferType* samples, unsigned
 
     if (channels == PROJECTM_MONO)
     {
-        projectMInstance->Pcm().AddMono(samples, count);
+        projectMInstance->PCM().AddMono(samples, count);
     }
     else
     {
-        projectMInstance->Pcm().AddStereo(samples, count);
+        projectMInstance->PCM().AddStereo(samples, count);
     }
 }
 

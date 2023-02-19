@@ -36,12 +36,9 @@ public:
     ~PresetFactoryManager();
 
     /**
-     * @brief Initializes the manager with mesh sizes specified.
-     * @note This must be called once before any other methods and whenever the mesh size changes.
-     * @param meshX The width of the mesh
-     * @param meshY The height of the mesh
+     * @brief Initializes the manager.
      */
-    void initialize(int meshX, int meshY);
+    void initialize();
 
     /// Requests a factory given a preset extension type
     /// \param extension a string denoting the preset suffix type
@@ -82,10 +79,6 @@ public:
 
 private:
     void registerFactory(const std::string& extension, PresetFactory* factory);
-
-    int m_meshX{0}; //!< The width of the mesh
-    int m_meshY{0}; //!< The height of the mesh
-    bool m_initialized{false}; //!< True if the factory maps are already initialized.
 
     mutable std::map<std::string, PresetFactory*> m_factoryMap;
     mutable std::vector<PresetFactory*> m_factoryList;

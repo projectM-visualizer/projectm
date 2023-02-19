@@ -36,14 +36,11 @@ void PresetFactoryManager::ClearFactories()
     m_factoryList.clear();
 }
 
-void PresetFactoryManager::initialize(int meshX, int meshY)
+void PresetFactoryManager::initialize()
 {
-    m_meshX = meshX;
-    m_meshY = meshY;
-
     ClearFactories();
 
-    auto* milkdropFactory = new MilkdropPresetFactory(m_meshX, m_meshY);
+    auto* milkdropFactory = new MilkdropPresetFactory();
     registerFactory(milkdropFactory->supportedExtensions(), milkdropFactory);
 }
 

@@ -1,7 +1,7 @@
 #include "CustomWaveform.hpp"
 
-#include "FileParser.hpp"
 #include "PerFrameContext.hpp"
+#include "PresetFileParser.hpp"
 #include "projectM-opengl.h"
 
 #include <glm/gtc/type_ptr.hpp>
@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <cmath>
 
-static constexpr int CustomWaveformMaxSamples = std::max(CustomWaveformSamples, SpectrumSamples);
+static constexpr int CustomWaveformMaxSamples = std::max(RenderWaveformSamples, SpectrumSamples);
 
 CustomWaveform::CustomWaveform(PresetState& presetState)
     : RenderItem()
@@ -31,7 +31,7 @@ void CustomWaveform::InitVertexAttrib()
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(ColoredPoint), (void*) (sizeof(float) * 2)); // colors
 }
 
-void CustomWaveform::Initialize(FileParser& parsedFile, int index)
+void CustomWaveform::Initialize(PresetFileParser& parsedFile, int index)
 {
     std::string wavecodePrefix = "wavecode_" + std::to_string(index) + "_";
     std::string wavePrefix = "wave_" + std::to_string(index) + "_";
@@ -72,12 +72,12 @@ void CustomWaveform::CompileCodeAndRunInitExpressions(const PerFrameContext& pre
 void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
 {
     // Some safety assertions if someone plays around and changes the values in the wrong way.
-    static_assert(CustomWaveformMaxPoints <= SpectrumSamples, "CustomWaveformMaxPoints is larger than SpectrumSamples");
-    static_assert(CustomWaveformMaxPoints <= WaveformSamples, "CustomWaveformMaxPoints is larger than WaveformSamples");
-    static_assert(CustomWaveformSamples <= CustomWaveformMaxPoints, "CustomWaveformSamples is larger than CustomWaveformMaxPoints");
+    static_assert(WaveformMaxPoints <= SpectrumSamples, "CustomWaveformMaxPoints is larger than SpectrumSamples");
+    static_assert(WaveformMaxPoints <= WaveformSamples, "CustomWaveformMaxPoints is larger than WaveformSamples");
+    static_assert(RenderWaveformSamples <= WaveformMaxPoints, "CustomWaveformSamples is larger than CustomWaveformMaxPoints");
 
     int sampleCount{m_samples};
-    int maxSampleCount{m_spectrum != 0 ? SpectrumSamples : CustomWaveformSamples};
+    int maxSampleCount{m_spectrum != 0 ? SpectrumSamples : RenderWaveformSamples};
     sampleCount = std::min(sampleCount, maxSampleCount);
     sampleCount -= m_sep;
 
@@ -88,7 +88,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     // Copy Q and T vars to per-point context
     InitPerPointEvaluationVariables();
 
-    sampleCount = std::min(CustomWaveformMaxPoints, static_cast<int>(*m_perFrameContext.samples));
+    sampleCount = std::min(WaveformMaxPoints, static_cast<int>(*m_perFrameContext.samples));
 
     // If there aren't enough samples to draw a single line or dot, skip drawing the waveform.
     if (sampleCount < 2 || (m_useDots && sampleCount < 1))
@@ -106,9 +106,9 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     const float mult = m_scaling * m_presetState.waveScale * (m_spectrum != 0 ? 0.05f : 1.0f); // ToDo: Use original "0.15f : 0.004f"?
 
     // PCM data smoothing
-    const int offset1 = m_spectrum != 0 ? 0 : (CustomWaveformMaxPoints - sampleCount) / 2 - m_sep / 2;
-    const int offset2 = m_spectrum != 0 ? 0 : (CustomWaveformMaxPoints - sampleCount) / 2 + m_sep / 2;
-    const int t = m_spectrum != 0 ? static_cast<int>((CustomWaveformMaxPoints - m_sep) / static_cast<float>(sampleCount)) : 1;
+    const int offset1 = m_spectrum != 0 ? 0 : (WaveformMaxPoints - sampleCount) / 2 - m_sep / 2;
+    const int offset2 = m_spectrum != 0 ? 0 : (WaveformMaxPoints - sampleCount) / 2 + m_sep / 2;
+    const int t = m_spectrum != 0 ? static_cast<int>((WaveformMaxPoints - m_sep) / static_cast<float>(sampleCount)) : 1;
     const float mix1 = std::pow(m_smoothing * 0.98f, 0.5f);
     const float mix2 = 1.0f - mix1;
 

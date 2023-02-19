@@ -1,6 +1,6 @@
 #include "PresetState.hpp"
 
-#include "FileParser.hpp"
+#include "PresetFileParser.hpp"
 
 PresetState::PresetState()
     : globalMemory(projectm_eval_memory_buffer_create())
@@ -12,7 +12,7 @@ PresetState::~PresetState()
     projectm_eval_memory_buffer_destroy(globalMemory);
 }
 
-void PresetState::Initialize(FileParser& parsedFile)
+void PresetState::Initialize(PresetFileParser& parsedFile)
 {
 
     // General:

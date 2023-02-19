@@ -29,6 +29,7 @@
 #include "PerPixelContext.hpp"
 #include "Preset.hpp"
 #include "PresetFrameIO.hpp"
+#include "Waveform.hpp"
 
 #include <cassert>
 #include <map>
@@ -37,7 +38,7 @@
 
 class MilkdropPresetFactory;
 
-class FileParser;
+class PresetFileParser;
 
 class MilkdropPreset : public Preset
 {
@@ -48,24 +49,29 @@ public:
      * @param factory The factory class that created this preset instance.
      * @param absoluteFilePath the absolute file path of a MilkdropPreset to load from the file system
      */
-    MilkdropPreset(MilkdropPresetFactory* factory, const std::string& absoluteFilePath);
+    MilkdropPreset(const std::string& absoluteFilePath);
 
     /**
      * @brief LoadCode a MilkdropPreset from an input stream with input and output buffers specified.
      * @param presetData an already initialized input stream to read the MilkdropPreset file from
      * @param presetOutputs initialized and filled with data parsed from a MilkdropPreset
      */
-    MilkdropPreset(MilkdropPresetFactory* factory, std::istream& presetData);
+    MilkdropPreset(std::istream& presetData);
 
-    ~MilkdropPreset();
-
-    /// Accessor method to retrieve the absolute file path of the loaded MilkdropPreset
-    /// \returns a file path string
-    std::string AbsoluteFilePath() const
+    /**
+     * @brief Returns the absolute file path of the loaded MilkdropPreset
+     * @return The path from which the preset was loaded.
+     */
+    auto AbsoluteFilePath() const -> const std::string&
     {
-        return _absoluteFilePath;
+        return m_absoluteFilePath;
     }
 
+    /**
+     * @brief Renders the preset.
+     * @param audioData The frame audio data.
+     * @param renderContext The current rendering context/information.
+     */
     void RenderFrame(const libprojectM::Audio::FrameAudioData& audioData,
                      const RenderContext& renderContext) override;
 
@@ -76,19 +82,18 @@ private:
 
     void Load(std::istream& stream);
 
-    void InitializePreset(FileParser& parsedFile);
+    void InitializePreset(PresetFileParser& parsedFile);
 
     void CompileCodeAndRunInitExpressions();
 
-    std::string _absoluteFilePath; //!< The absolute file path of the MilkdropPreset
-    std::string _absolutePath;     //!< The absolute path of the MilkdropPreset
-
-    MilkdropPresetFactory* m_factory{nullptr}; //!< The preset factory that created this instance.
+    std::string m_absoluteFilePath; //!< The absolute file path of the MilkdropPreset
+    std::string m_absolutePath;     //!< The absolute path of the MilkdropPreset
 
     PresetState m_state; //!< Preset state container.
     PerFrameContext m_perFrameContext; //!< Preset per-frame evaluation code context.
     PerPixelContext m_perPixelContext; //!< Preset per-pixel/per-vertex evaluation code context.
 
+    Waveform m_waveform; //!< Preset default waveform.
     std::array<std::unique_ptr<CustomWaveform>, CustomWaveformCount> m_customWaveforms; //!< Custom waveforms in this preset.
     std::array<std::unique_ptr<CustomShape>, CustomShapeCount> m_customShapes; //!< Custom shapes in this preset.
 

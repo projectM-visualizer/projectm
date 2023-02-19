@@ -11,8 +11,8 @@ add_library(MilkdropPreset OBJECT
         CustomWaveform.hpp
         DarkenCenter.cpp
         DarkenCenter.hpp
-        FileParser.cpp
-        FileParser.hpp
+        PresetFileParser.cpp
+        PresetFileParser.hpp
         Filters.cpp
         Filters.hpp
         IdlePreset.cpp

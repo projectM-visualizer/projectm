@@ -12,7 +12,7 @@
  * Values and code blocks can easily be accessed via the helper functions. It is also possible to access the parsed
  * map contents directly if required.
  */
-class FileParser
+class PresetFileParser
 {
 public:
     using ValueMap = std::map<std::string, std::string>; //!< A map with key/value pairs, each representing one line in the preset file.

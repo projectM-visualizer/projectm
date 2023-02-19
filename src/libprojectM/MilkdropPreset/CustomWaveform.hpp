@@ -7,7 +7,7 @@
 
 #include <vector>
 
-class FileParser;
+class PresetFileParser;
 
 class CustomWaveform : public RenderItem
 {
@@ -29,7 +29,7 @@ public:
      * @param parsedFile The file parser with the preset data.
      * @param index The waveform index.
      */
-    void Initialize(FileParser& parsedFile, int index);
+    void Initialize(PresetFileParser& parsedFile, int index);
 
     /**
      * @brief Compiles all code blocks and runs the init expression.
@@ -87,7 +87,7 @@ private:
 
     int m_index{0}; //!< Custom waveform index in the preset.
     int m_enabled{0}; //!< Render waveform if non-zero.
-    int m_samples{CustomWaveformMaxPoints}; //!< Number of samples/vertices in the waveform.
+    int m_samples{WaveformMaxPoints}; //!< Number of samples/vertices in the waveform.
     int m_sep{0}; //!< Separation distance of dual waveforms.
     float m_scaling{1.0f}; //!< Scale factor of waveform.
     float m_smoothing{0.5f}; //!< Smooth factor of waveform.

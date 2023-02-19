@@ -1,43 +1,40 @@
-#ifndef TEXTURE_HPP_
-#define TEXTURE_HPP_
+#pragma once
+
+#include "Sampler.hpp"
 
 #include <string>
 #include <vector>
-#include "projectM-opengl.h"
-
-
-class Sampler
-{
-public:
-    GLuint samplerID;
-    GLint wrap_mode;
-    GLint filter_mode;
-
-    Sampler(const GLint _wrap_mode, const GLint _filter_mode);
-    ~Sampler();
-};
-
 
 class Texture
 {
 public:
+    explicit Texture(const std::string& _name, int _width, int _height, bool _userTexture);
+    explicit Texture(const std::string& _name, GLuint _texID, GLenum _type, int _width, int _height, bool _userTexture);
+
+    ~Texture();
+
+    /**
+     * Binds the texture to the given texture unit.
+     * @param slot The texture unit to bind the texture to.
+     */
+    void Bind(GLint slot) const;
+
+    /**
+     * Unbinds the texture to the given texture unit.
+     * @param slot The texture unit to unbind the texture from.
+     */
+    void Unbind(GLint slot) const;
+
+    Sampler* getSampler(const GLint _wrap_mode, const GLint _filter_mode);
 
     GLuint texID;
     GLenum type;
 
     std::string name;
-	int width;
-	int height;
+    int width;
+    int height;
     bool userTexture;
     std::vector<Sampler*> samplers;
-
-    Texture(const std::string & _name, const int _width, const int _height, const bool _userTexture);
-    Texture(const std::string & _name, const GLuint _texID, const GLenum _type, const int _width, const int _height, const bool _userTexture);
-    ~Texture();
-
-    Sampler *getSampler(const GLint _wrap_mode, const GLint _filter_mode);
 };
 
-typedef std::pair<Texture*, Sampler*>   TextureSamplerDesc;
-
-#endif /* TEXTURE_HPP_ */
+using TextureSamplerDesc = std::pair<Texture*, Sampler*>;

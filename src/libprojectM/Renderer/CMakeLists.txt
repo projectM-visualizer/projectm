@@ -20,7 +20,7 @@ add_library(Renderer OBJECT
         TextureManager.cpp
         TextureManager.hpp
         Transformation.hpp
-        )
+        BlurTexture.cpp BlurTexture.hpp Sampler.cpp Sampler.hpp)
 
 target_include_directories(Renderer
         PRIVATE
