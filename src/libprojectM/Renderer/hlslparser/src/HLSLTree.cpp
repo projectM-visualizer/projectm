@@ -2035,6 +2035,7 @@ struct StatementList {
                 // @@ Output function as is?
                 // @@ We have to flatten function arguments! This is tricky, need to handle input/output arguments.
                 assert(!NeedsFlattening(functionCall->argument));
+                (void)functionCall;
                 
                 return AddExpressionStatement(expr, statements, wantIdent);
             }
