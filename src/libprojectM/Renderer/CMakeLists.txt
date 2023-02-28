@@ -1,4 +1,6 @@
 add_library(Renderer OBJECT
+        BlurTexture.cpp
+        BlurTexture.hpp
         FileScanner.cpp
         FileScanner.hpp
         Pipeline.cpp
@@ -10,6 +12,8 @@ add_library(Renderer OBJECT
         RenderItem.hpp
         Renderer.cpp
         Renderer.hpp
+        Sampler.cpp
+        Sampler.hpp
         Shader.cpp
         Shader.hpp
         ShaderEngine.cpp
@@ -19,8 +23,7 @@ add_library(Renderer OBJECT
         Texture.hpp
         TextureManager.cpp
         TextureManager.hpp
-        Transformation.hpp
-        BlurTexture.cpp BlurTexture.hpp Sampler.cpp Sampler.hpp)
+        )
 
 target_include_directories(Renderer
         PRIVATE

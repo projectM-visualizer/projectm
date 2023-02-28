@@ -4,11 +4,7 @@
 
 #include "Pipeline.hpp"
 #include "ShaderEngine.hpp"
-#include "Transformation.hpp"
 #include "projectM-opengl.h"
-
-#include "MilkdropPreset/PerPixelMesh.hpp"
-#include "MilkdropPreset/Waveform.hpp"
 
 #include <chrono>
 #include <ctime>
@@ -23,8 +19,8 @@ using namespace std::chrono;
 
 // for final composite grid:
 #define FCGSX 32 // final composite gridsize - # verts - should be EVEN.
-#define FCGSY 24 // final composite gridsize - # verts - should be EVEN. \
-                 // # of grid *cells* is two less,                       \
+#define FCGSY 24 // final composite gridsize - # verts - should be EVEN.
+                 // # of grid *cells* is two less,
                  // since we have redundant verts along the center line in X and Y (...for clean 'ang' interp)
 typedef struct
 {
@@ -80,7 +76,6 @@ public:
     void RenderFrameOnlyPass2(const Pipeline& pipeline, const PipelineContext& pipelineContext);
     void ResetTextures();
     void SetTextureSearchPaths(std::vector<std::string>& textureSearchPaths);
-    void SetPerPixelMeshSize(int meshX, int meshY);
     void reset(int viewportWidth, int viewportHeight);
 
     bool timeCheck(const milliseconds currentTime, const milliseconds lastTime, const double difference);
@@ -100,7 +95,6 @@ public:
     milliseconds nowMilliseconds()
     {
         return duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-        ;
     }
 
     void touch(float x, float y, int pressure, int type);
@@ -109,14 +103,8 @@ public:
     void touchDestroyAll();
     bool touchedWaveform(float x, float y, std::size_t i);
 
-    /// Writes the contents of current mainTexture in TextureManager to a bmp file
-    void debugWriteMainTextureToFile() const;
-
     void UpdateContext(PipelineContext& context);
 
-    bool correction{true};
-
-    bool writeNextFrameToFile{false};
     std::string frameDumpOutputFile;
 
     milliseconds lastTimeFPS{nowMilliseconds()};
@@ -129,14 +117,12 @@ public:
 
 private:
     void SetupPass1(const Pipeline& pipeline, const PipelineContext& pipelineContext);
-    void Interpolation(const Pipeline& pipeline, const PipelineContext& pipelineContext);
     void RenderItems(const Pipeline& pipeline, const PipelineContext& pipelineContext);
     void RenderTouch(const Pipeline& pipeline, const PipelineContext& pipelineContext);
     void FinishPass1();
     void Pass2(const Pipeline& pipeline, const PipelineContext& pipelineContext);
     void CompositeShaderOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext);
     void CompositeOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext);
-    void ResetPerPointMeshBuffer();
     int nearestPower2(int value);
     void InitCompositeShaderVertex();
     float SquishToCenter(float x, float fExp);
@@ -176,8 +162,6 @@ private:
     double m_touchG{0.0}; ///!< Green
     double m_touchB{0.0}; ///!< Blue
     double m_touchA{0.0}; ///!< Alpha
-
-    std::vector<Waveform> m_waveformList;
 
     int m_mainTextureSizeX{0};
     int m_mainTextureSizeY{0};
