@@ -28,16 +28,6 @@ Renderer::Renderer(int viewportWidth, int viewportHeight, int meshX, int meshY,
     , m_viewportHeight(viewportHeight)
     , m_textureSearchPaths(textureSearchPaths)
 {
-    ResetPerPointMeshBuffer();
-
-    m_renderContext.programID_v2f_c4f = m_shaderEngine.programID_v2f_c4f;
-    m_renderContext.programID_v2f_c4f_t2f = m_shaderEngine.programID_v2f_c4f_t2f;
-
-    m_renderContext.uniform_v2f_c4f_vertex_transformation = m_shaderEngine.uniform_v2f_c4f_vertex_transformation;
-    m_renderContext.uniform_v2f_c4f_vertex_point_size = m_shaderEngine.uniform_v2f_c4f_vertex_point_size;
-    m_renderContext.uniform_v2f_c4f_t2f_vertex_transformation = m_shaderEngine.uniform_v2f_c4f_t2f_vertex_transformation;
-    m_renderContext.uniform_v2f_c4f_t2f_frag_texture_sampler = m_shaderEngine.uniform_v2f_c4f_t2f_frag_texture_sampler;
-
 	// Interpolation VAO/VBO's
 	glGenBuffers(1, &m_vboInterpolation);
 	glGenVertexArrays(1, &m_vaoInterpolation);
@@ -122,33 +112,17 @@ void Renderer::SetPipeline(Pipeline& pipeline)
 {
     m_currentPipeline = &pipeline;
     m_shaderEngine.reset();
-
-	try {
-        m_shaderEngine.loadPresetShaders(pipeline);
-
-    }
-    catch(const ShaderException& ex)
-	{
-		throw RenderException("Shader compilation error: " + ex.message());
-	}
 }
 
 void Renderer::ResetTextures()
 {
     m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths, m_mainTextureSizeX, m_mainTextureSizeY);
-    m_shaderEngine.setParams(m_mainTextureSizeX, m_mainTextureSizeY, m_fAspectX, m_fAspectY, m_beatDetect, m_textureManager.get());
 }
 
 void Renderer::SetTextureSearchPaths(std::vector<std::string>& textureSearchPaths)
 {
     m_textureSearchPaths = textureSearchPaths;
     ResetTextures();
-}
-
-void Renderer::SetPerPixelMeshSize(int meshX, int meshY)
-{
-    m_perPixelMesh = PerPixelMesh(meshX, meshY);
-    ResetPerPointMeshBuffer();
 }
 
 void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipelineContext)
@@ -182,13 +156,16 @@ void Renderer::RenderItems(const Pipeline& pipeline, const PipelineContext& pipe
 	}
 	
 	// If we have touch waveforms, render them.
-	if (m_waveformList.size() >= 1) {
+	/*
+    if (m_waveformList.size() >= 1) {
 		RenderTouch(pipeline,pipelineContext);
 	}
+	 */
 }
 
 void Renderer::RenderTouch(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
+    /*
 	Pipeline pipelineTouch;
     Waveform wave;
 	for(std::size_t x = 0; x < m_waveformList.size(); x++){
@@ -202,18 +179,12 @@ void Renderer::RenderTouch(const Pipeline& pipeline, const PipelineContext& pipe
 				(*pos)->Draw(m_renderContext);
 		}
 	}
+     */
 }
 
 void Renderer::FinishPass1()
 {
     m_textureManager->updateMainTexture();
-
-    if (writeNextFrameToFile)
-    {
-        debugWriteMainTextureToFile();
-        writeNextFrameToFile = false;
-        frameDumpOutputFile = "";
-    }
 }
 
 void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineContext)
@@ -241,8 +212,6 @@ void Renderer::RenderFrameOnlyPass1(const Pipeline& pipeline, const PipelineCont
 {
 	SetupPass1(pipeline, pipelineContext);
 
-	Interpolation(pipeline, pipelineContext);
-
 	RenderItems(pipeline, pipelineContext);
 
 	FinishPass1();
@@ -254,95 +223,6 @@ void Renderer::RenderFrameOnlyPass2(const Pipeline& pipeline, const PipelineCont
 	Pass2(pipeline, pipelineContext);
 }
 
-
-void Renderer::Interpolation(const Pipeline& pipeline, const PipelineContext& pipelineContext)
-{
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_textureManager->getMainTexture()->texID);
-
-	//Texture wrapping( clamp vs. wrap)
-	if (pipeline.textureWrap == 0)
-	{
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	}
-	else
-	{
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	}
-
-	int size = (m_perPixelMesh.height - 1) * m_perPixelMesh.width * 4 * 2;
-
-	if (pipeline.staticPerPixel)
-	{
-		for (int j = 0; j < m_perPixelMesh.height - 1; j++)
-		{
-			int base = j * m_perPixelMesh.width * 2 * 4;
-
-			for (int i = 0; i < m_perPixelMesh.width; i++)
-			{
-				int strip = base + i * 8;
-                m_perPointMeshBuffer[strip + 2] = pipeline.x_mesh[i][j];
-                m_perPointMeshBuffer[strip + 3] = pipeline.y_mesh[i][j];
-
-                m_perPointMeshBuffer[strip + 6] = pipeline.x_mesh[i][j + 1];
-                m_perPointMeshBuffer[strip + 7] = pipeline.y_mesh[i][j + 1];
-			}
-		}
-	}
-	else
-	{
-		m_perPixelMesh.Reset();
-		Pipeline *cp = m_currentPipeline;
-		omptl::transform(m_perPixelMesh.p.begin(), m_perPixelMesh.p.end(), m_perPixelMesh.identity.begin(), m_perPixelMesh.p.begin(),
-			[cp](PixelPoint point, PerPixelContext &context) {
-				return cp->PerPixel(point, context);
-			});
-
-		for (int j = 0; j < m_perPixelMesh.height - 1; j++)
-		{
-			int base = j * m_perPixelMesh.width * 2 * 4;
-
-			for (int i = 0; i < m_perPixelMesh.width; i++)
-			{
-				int strip = base + i * 8;
-				int index = j * m_perPixelMesh.width + i;
-				int index2 = (j + 1) * m_perPixelMesh.width + i;
-
-				m_perPointMeshBuffer[strip + 2] = m_perPixelMesh.p[index].x;
-				m_perPointMeshBuffer[strip + 3] = m_perPixelMesh.p[index].y;
-
-				m_perPointMeshBuffer[strip + 6] = m_perPixelMesh.p[index2].x;
-				m_perPointMeshBuffer[strip + 7] = m_perPixelMesh.p[index2].y;
-			}
-		}
-	}
-
-	glBindBuffer(GL_ARRAY_BUFFER, m_vboInterpolation);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * size, nullptr, GL_DYNAMIC_DRAW);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * size, m_perPointMeshBuffer, GL_DYNAMIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    m_shaderEngine.enableWarpShader(m_currentPipeline->warpShader, pipeline, pipelineContext, m_renderContext.mat_ortho);
-
-	glVertexAttrib4f(1, 1.0, 1.0, 1.0, pipeline.screenDecay);
-
-	glBlendFunc(GL_SRC_ALPHA, GL_ZERO);
-
-	glBindVertexArray(m_vaoInterpolation);
-
-	for (int j = 0; j < m_perPixelMesh.height - 1; j++)
-		glDrawArrays(GL_TRIANGLE_STRIP, j * m_perPixelMesh.width * 2, m_perPixelMesh.width * 2);
-
-	glBindVertexArray(0);
-
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-}
 
 Renderer::~Renderer()
 {
@@ -390,17 +270,6 @@ void Renderer::reset(int viewportWidth, int viewportHeight)
     ResetTextures();
 
     m_shaderEngine.reset();
-    try
-    {
-        if (m_currentPipeline)
-        {
-            m_shaderEngine.loadPresetShaders(*m_currentPipeline);
-        }
-    }
-    catch(const ShaderException& ex)
-    {
-        throw RenderException("Shader compilation error: " + ex.message());
-    }
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -421,6 +290,7 @@ bool Renderer::timeCheck(const milliseconds currentTime, const milliseconds last
 // If we touched on the renderer where there is an existing waveform.
 bool Renderer::touchedWaveform(float x, float y, std::size_t i)
 {
+    /*
 	if (m_waveformList[i].x > (x-0.05f) && m_waveformList[i].x < (x+0.05f) // if x +- 0.5f
 		&& ((m_waveformList[i].y > (y-0.05f) && m_waveformList[i].y < (y+0.05f)) // and y +- 0.5f
 		|| m_waveformList[i].m_mode == Line || m_waveformList[i].m_mode == DoubleLine || m_waveformList[i].m_mode == DerivativeLine ) // OR it's a line (and y doesn't matter)
@@ -428,13 +298,14 @@ bool Renderer::touchedWaveform(float x, float y, std::size_t i)
 	{
 		return true;
 	}
+     */
 	return false;
 }
 
 // Render a waveform when a touch event is triggered.
 void Renderer::touch(float x, float y, int pressure, int type = 0)
 {
-
+/*
 	for (std::size_t i = 0; i < m_waveformList.size(); i++) {
 		if (touchedWaveform(x, y, i))
 		{
@@ -477,11 +348,13 @@ void Renderer::touch(float x, float y, int pressure, int type = 0)
 
 	// add new waveform to waveformTouchList
     m_waveformList.push_back(wave);
+    */
 }
 
 // Move a waveform when dragging X, Y, and Pressure can change. We also extend the counters so it will stay on screen for as long as you click and drag.
 void Renderer::touchDrag(float x, float y, int pressure)
 {
+    /*
 	// if we left clicked & held in the approximate position of a waveform, snap to it and adjust x / y to simulate dragging.
 	// For lines we don't worry about the x axis.
 	for (std::size_t i = 0; i < m_waveformList.size(); i++) {
@@ -491,11 +364,13 @@ void Renderer::touchDrag(float x, float y, int pressure)
             m_waveformList[i].y = y;
 		}
 	}
+     */
 }
 
 // Remove waveform at X Y
 void Renderer::touchDestroy(float x, float y)
 {
+    /*
 	// if we right clicked approximately on the position of the waveform, then remove it from the waveform list.
 	// For lines we don't worry about the x axis.
 	for (std::size_t i = 0; i < m_waveformList.size(); i++) {
@@ -504,49 +379,13 @@ void Renderer::touchDestroy(float x, float y)
             m_waveformList.erase(m_waveformList.begin() + i);
 		}
 	}
+     */
 }
 
 // Remove all waveforms
 void Renderer::touchDestroyAll()
 {
-    m_waveformList.clear();
-}
-
-void Renderer::debugWriteMainTextureToFile() const
-{
-    std::string outputFile = frameDumpOutputFile;
-    if (outputFile.empty())
-    {
-        static constexpr char prefix[] = "frame_texture_contents-";
-        static constexpr auto prefixLen = sizeof(prefix) - 1;
-        constexpr auto fileNameMaxLength = 150;
-        constexpr auto fileExtensionLength = 4;
-        std::vector<char> fileNameBuffer;
-        fileNameBuffer.resize(fileNameMaxLength);
-        std::memcpy(fileNameBuffer.data(), prefix, prefixLen);
-        auto t = std::time(nullptr);
-        auto tm = *std::localtime(&t);
-        const auto bytesWritten = std::strftime(fileNameBuffer.data() + prefixLen, fileNameMaxLength - prefixLen, "%Y-%m-%d-%H:%M:%S", &tm);
-        const auto offset = prefixLen + bytesWritten;
-        const auto spaceLeft = fileNameMaxLength - offset;
-        std::snprintf(fileNameBuffer.data() + offset, spaceLeft - fileExtensionLength, "-%d.bmp", totalframes);
-        outputFile = std::string(fileNameBuffer.data());
-    }
-
-    GLuint fbo;
-    auto mainTexture = m_textureManager->getMainTexture();
-    glGenFramebuffers(1, &fbo);
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mainTexture->texID, 0);
-    auto dataSize = mainTexture->width * mainTexture->height * 3;
-    GLubyte* pixels = new GLubyte[dataSize];
-    glReadPixels(0, 0, mainTexture->width, mainTexture->height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glDeleteFramebuffers(1, &fbo);
-
-    stbi_write_bmp(outputFile.c_str(), mainTexture->width, mainTexture->height, 3, pixels);
-
-    delete[] pixels;
+    //m_waveformList.clear();
 }
 
 void Renderer::UpdateContext(PipelineContext& context)
@@ -561,6 +400,7 @@ void Renderer::UpdateContext(PipelineContext& context)
 
 void Renderer::CompositeOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
+    /*
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_textureManager->getMainTexture()->texID);
 
@@ -591,6 +431,7 @@ void Renderer::CompositeOutput(const Pipeline& pipeline, const PipelineContext& 
 		drawable->Draw(m_renderContext);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+     */
 }
 
 /**
@@ -848,34 +689,4 @@ void Renderer::CompositeShaderOutput(const Pipeline& pipeline, const PipelineCon
 	glBindVertexArray(0);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-}
-
-void Renderer::ResetPerPointMeshBuffer()
-{
-    if (m_perPointMeshBuffer != nullptr)
-    {
-        wipefree(m_perPointMeshBuffer);
-    }
-
-    int size = (m_perPixelMesh.height - 1) * m_perPixelMesh.width * 4 * 2;
-    m_perPointMeshBuffer = static_cast<float *>(wipemalloc(size * sizeof(float)));
-
-    for (int j = 0; j < m_perPixelMesh.height - 1; j++)
-    {
-        int base = j * m_perPixelMesh.width * 4 * 2;
-
-
-        for (int i = 0; i < m_perPixelMesh.width; i++)
-        {
-            int index = j * m_perPixelMesh.width + i;
-            int index2 = (j + 1) * m_perPixelMesh.width + i;
-
-            int strip = base + i * 8;
-            m_perPointMeshBuffer[strip + 0] = m_perPixelMesh.identity[index].x;
-            m_perPointMeshBuffer[strip + 1] = m_perPixelMesh.identity[index].y;
-
-            m_perPointMeshBuffer[strip + 4] = m_perPixelMesh.identity[index2].x;
-            m_perPointMeshBuffer[strip + 5] = m_perPixelMesh.identity[index2].y;
-        }
-    }
 }

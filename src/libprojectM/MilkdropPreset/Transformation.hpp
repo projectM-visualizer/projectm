@@ -1,7 +1,8 @@
-#ifndef Transformation_HPP
-#define Transformation_HPP
+#pragma once
 
-#include "MilkdropPreset/PerPixelMesh.hpp"
+#include "PerPixelContext.hpp"
+#include "PerPixelMesh.hpp"
+
 #include <math.h>
 
 
@@ -9,7 +10,7 @@ class Transforms
 {
 public:
 
-	inline static void Zoom(PixelPoint &p, const PerPixelContext &context, float zoom, float zoomExponent)
+	inline static void Zoom(Point&p, const PerPixelContext &context, float zoom, float zoomExponent)
 	{
 		float fZoom2 = powf( zoom, powf( zoomExponent, context.rad*2.0f - 1.0f));
 		float fZoom2Inv = 1.0f/fZoom2;
@@ -21,19 +22,19 @@ public:
 		p.y += 0.5;
 	}
 
-	inline static void Transform(PixelPoint &p, const PerPixelContext &context, float dx, float dy)
+	inline static void Transform(Point&p, const PerPixelContext &context, float dx, float dy)
 	{
 		p.x -= dx;
 		p.y -= dy;
 	}
 
-	inline static void Scale(PixelPoint &p, const PerPixelContext &context, float sy, float sx, float cx, float cy)
+	inline static void Scale(Point&p, const PerPixelContext &context, float sy, float sx, float cx, float cy)
 	{
 		p.x = (p.x - cx)/sx + cx;
 		p.y = (p.y - cy)/sy + cy;
 	}
 
-	inline static void Rotate(PixelPoint &p, const PerPixelContext &context, float angle, float cx, float cy)
+	inline static void Rotate(Point&p, const PerPixelContext &context, float angle, float cx, float cy)
 	{
 		float u2 = p.x - cx;
 		float v2 = p.y - cy;
@@ -45,7 +46,7 @@ public:
 		p.y = u2*sin_rot + v2*cos_rot + cy;
 	}
 
-	inline static void Warp(PixelPoint &p, const PerPixelContext &context, float time, float speed, float scale, float warp)
+	inline static void Warp(Point&p, const PerPixelContext &context, float time, float speed, float scale, float warp)
 	{
 		float fWarpTime = time * speed;
 		float fWarpScaleInv = 1.0f / scale;
@@ -62,5 +63,3 @@ public:
 	}
 
 };
-
-#endif

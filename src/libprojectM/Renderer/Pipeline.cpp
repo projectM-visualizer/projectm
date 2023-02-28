@@ -30,5 +30,5 @@ Pipeline::~Pipeline()
 	}
 }
 
-PixelPoint Pipeline::PerPixel(PixelPoint p, const PerPixelContext context)
+Point Pipeline::PerPixel(Point p, const PerPixelContext context)
 {return p;}
