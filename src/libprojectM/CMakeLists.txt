@@ -85,7 +85,7 @@ target_include_directories(projectM_main
         "${CMAKE_SOURCE_DIR}/src"
         "${CMAKE_CURRENT_SOURCE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}/Renderer"
-        "${CMAKE_CURRENT_SOURCE_DIR}/Renderer/hlslparser/src"
+        "${CMAKE_SOURCE_DIR}/vendor/hlslparser/src"
         "${CMAKE_CURRENT_SOURCE_DIR}/MilkdropPresetFactory"
         "${MSVC_EXTRA_INCLUDE_DIR}"
         )
