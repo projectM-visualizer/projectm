@@ -23,7 +23,7 @@ add_library(SOIL2 OBJECT
 
 target_include_directories(SOIL2
         PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}"
+        "."
         )
 
 target_link_libraries(SOIL2

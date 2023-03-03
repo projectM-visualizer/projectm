@@ -1,6 +1,3 @@
-add_subdirectory(hlslparser)
-add_subdirectory(SOIL2)
-
 add_library(Renderer OBJECT
         BeatDetect.cpp
         BeatDetect.hpp

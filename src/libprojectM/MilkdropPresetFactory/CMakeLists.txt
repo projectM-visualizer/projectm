@@ -50,6 +50,7 @@ target_link_libraries(MilkdropPresetFactory
         PRIVATE
         libprojectM::API # For export header
         PUBLIC
+        omptl
         GLM::GLM
         ${PROJECTM_OPENGL_LIBRARIES}
         )

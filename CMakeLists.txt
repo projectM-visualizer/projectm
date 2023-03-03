@@ -187,6 +187,7 @@ endif()
 include(features.cmake)
 
 add_subdirectory(presets)
+add_subdirectory(vendor)
 add_subdirectory(src)
 
 if(BUILD_TESTING)

@@ -1,8 +1,8 @@
 #include <math.h>
 #include <algorithm>
 #include "PerPixelMesh.hpp"
-#include "omptl/omptl"
-#include "omptl/omptl_algorithm"
+#include <omptl/omptl>
+#include <omptl/omptl_algorithm>
 
 PerPixelMesh::PerPixelMesh(int _width, int _height) : width(_width), height(_height), size (_width * _height),
         p(_width * _height, PixelPoint(0,0)),
