@@ -2,8 +2,8 @@
 option(ENABLE_DEBUG_MILKDROP_PRESET "Enable STDERR debug output in Milkdrop preset code (Debug builds only)" OFF)
 
 add_library(MilkdropPreset OBJECT
-        BlurTexture.hpp
         BlurTexture.cpp
+        BlurTexture.hpp
         Border.cpp
         Border.hpp
         Constants.hpp
@@ -13,8 +13,7 @@ add_library(MilkdropPreset OBJECT
         CustomWaveform.hpp
         DarkenCenter.cpp
         DarkenCenter.hpp
-        PresetFileParser.cpp
-        PresetFileParser.hpp
+        EvalLibMutex.cpp
         Filters.cpp
         Filters.hpp
         IdlePreset.cpp
@@ -36,6 +35,8 @@ add_library(MilkdropPreset OBJECT
         PerPixelContext.hpp
         PerPixelMesh.cpp
         PerPixelMesh.hpp
+        PresetFileParser.cpp
+        PresetFileParser.hpp
         PresetFrameIO.cpp
         PresetFrameIO.hpp
         PresetState.cpp
@@ -51,7 +52,6 @@ add_library(MilkdropPreset OBJECT
         WaveformPerFrameContext.hpp
         WaveformPerPointContext.cpp
         WaveformPerPointContext.hpp
-        EvalLibMutex.cpp
         )
 
 target_include_directories(MilkdropPreset

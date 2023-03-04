@@ -43,7 +43,7 @@ void WaveformPerFrameContext::RegisterBuiltinVariables()
     for (int t = 0; t < TVarCount; t++)
     {
         std::string tvar = "t" + std::to_string(t + 1);
-        q_vars[t] = projectm_eval_context_register_variable(perFrameCodeContext, tvar.c_str());
+        t_vars[t] = projectm_eval_context_register_variable(perFrameCodeContext, tvar.c_str());
     }
 
     REG_VAR(bass);
