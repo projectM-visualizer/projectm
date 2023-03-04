@@ -92,6 +92,8 @@ target_include_directories(projectM
         )
 
 target_link_libraries(projectM
+        PRIVATE
+        projectM::Eval
         PUBLIC
         ${PROJECTM_OPENGL_LIBRARIES}
         libprojectM::API
