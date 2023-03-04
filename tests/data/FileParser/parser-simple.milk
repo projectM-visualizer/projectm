@@ -1,7 +1,0 @@
-// Some simple assignments, with empty key or value and a space instead of an equal sign.
-[preset00]
-warp=0
-empty_value=
-=empty_key
-value_with_space 123
-// No newline at end of file!

@@ -23,7 +23,7 @@ auto PresetFileParser::Read(std::istream& presetStream) -> bool
     auto fileSize = presetStream.tellg();
     presetStream.seekg(0, presetStream.beg);
 
-    if (fileSize > maxFileSize)
+    if (static_cast<size_t>(fileSize) > maxFileSize)
     {
         return false;
     }
@@ -89,20 +89,12 @@ auto PresetFileParser::GetCode(const std::string& keyPrefix) const -> std::strin
 
         auto line = m_presetValues.at(key);
 
-        if (!line.empty())
+        // Remove backtick char in shader code
+        if (!line.empty() && line.at(0) == '`')
         {
-            if (line.at(0) == '`')
-            {
-                // Append newline in shader code
-                line.erase(0, 1);
-                code << line << std::endl;
-            }
-            else
-            {
-                // Append a space in equation code
-                code << line << " ";
-            }
+            line.erase(0, 1);
         }
+        code << line << std::endl;
     }
 
     auto codeStr = code.str();
@@ -157,9 +149,9 @@ void PresetFileParser::ParseLine(const std::string& line)
     // Search for first delimiter, either space or equal
     auto varNameDelimiterPos = line.find_first_of(" =");
 
-    if (varNameDelimiterPos >= line.length() || varNameDelimiterPos == 0)
+    if (varNameDelimiterPos == std::string::npos || varNameDelimiterPos == 0)
     {
-        // Empty line, delimiter at end of line or no delimiter found, skip.
+        // Empty line, delimiter at start of line or no delimiter found, skip.
         return;
     }
 
