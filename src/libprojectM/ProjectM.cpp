@@ -121,7 +121,6 @@ void ProjectM::ThreadWorker()
         {
             return;
         }
-        EvaluateSecondPreset();
         m_workerSync->FinishedWork();
     }
 }
