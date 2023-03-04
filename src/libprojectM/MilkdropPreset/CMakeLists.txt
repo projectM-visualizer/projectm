@@ -51,6 +51,7 @@ add_library(MilkdropPreset OBJECT
         WaveformPerFrameContext.hpp
         WaveformPerPointContext.cpp
         WaveformPerPointContext.hpp
+        EvalLibMutex.cpp
         )
 
 target_include_directories(MilkdropPreset
