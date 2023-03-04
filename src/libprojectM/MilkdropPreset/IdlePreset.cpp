@@ -200,8 +200,8 @@ std::string IdlePresets::presetText()
 }
 
 std::unique_ptr<Preset>
-IdlePresets::allocate(MilkdropPresetFactory* factory)
+IdlePresets::allocate()
 {
     std::istringstream in(presetText());
-    return std::unique_ptr<Preset>(new MilkdropPreset(factory, in));
+    return std::unique_ptr<Preset>(new MilkdropPreset(in));
 }

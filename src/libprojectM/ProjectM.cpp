@@ -21,11 +21,9 @@
 
 #include "ProjectM.hpp"
 
-#include "PipelineMerger.hpp"
 #include "Preset.hpp"
 #include "PresetFactoryManager.hpp"
 #include "Renderer.hpp"
-#include "Renderer/PipelineContext.hpp"
 #include "TimeKeeper.hpp"
 #include "libprojectM/Audio/BeatDetect.hpp"
 #include "libprojectM/Audio/PCM.hpp" //Sound data handler (buffering, FFT, etc.)
@@ -38,8 +36,6 @@
 
 ProjectM::ProjectM()
     : m_presetFactoryManager(std::make_unique<PresetFactoryManager>())
-    , m_pipelineContext(std::make_unique<class PipelineContext>())
-    , m_pipelineContext2(std::make_unique<class PipelineContext>())
 #if PROJECTM_USE_THREADS
     , m_workerSync(std::make_unique<BackgroundWorkerSync>())
 #endif
@@ -113,7 +109,6 @@ void ProjectM::ResetTextures()
 void ProjectM::DumpDebugImageOnNextFrame(const std::string& outputFile)
 {
     m_renderer->frameDumpOutputFile = outputFile;
-    m_renderer->writeNextFrameToFile = true;
 }
 
 #if PROJECTM_USE_THREADS
@@ -133,16 +128,6 @@ void ProjectM::ThreadWorker()
 
 #endif
 
-void ProjectM::EvaluateSecondPreset()
-{
-    PipelineContext2().time = m_timeKeeper->GetRunningTime();
-    PipelineContext2().presetStartTime = m_timeKeeper->PresetTimeB();
-    PipelineContext2().frame = m_timeKeeper->PresetFrameB();
-    PipelineContext2().progress = m_timeKeeper->PresetProgressB();
-
-    m_transitioningPreset->EvaluateFrameData(*m_beatDetect, PipelineContext2());
-}
-
 void ProjectM::RenderFrame()
 {
     // Don't render if window area is zero.
@@ -151,37 +136,18 @@ void ProjectM::RenderFrame()
         return;
     }
 
-    Pipeline pipeline;
-    Pipeline* comboPipeline = RenderFrameOnlyPass1(&pipeline);
+    m_timeKeeper->UpdateTimers();
+    m_beatDetect->CalculateBeatStatistics();
 
-    RenderFrameOnlyPass2(comboPipeline);
-
-    ProjectM::RenderFrameEndOnSeparatePasses(comboPipeline);
-}
-
-
-auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
-{
 #if PROJECTM_USE_THREADS
     std::lock_guard<std::recursive_mutex> guard(m_presetSwitchMutex);
 #endif
 
-    m_timeKeeper->UpdateTimers();
-
-    /// @bug who is responsible for updating this now?"
-    auto& context = PipelineContext();
-    context.time = m_timeKeeper->GetRunningTime();
-    context.presetStartTime = m_timeKeeper->PresetTimeA();
-    context.frame = m_timeKeeper->PresetFrameA();
-    context.progress = m_timeKeeper->PresetProgressA();
-    m_renderer->UpdateContext(context);
-
-    m_beatDetect->CalculateBeatStatistics();
 
     // Check if the preset isn't locked, and we've not already notified the user
     if (!m_presetChangeNotified)
     {
-        //if preset is done and we're not already switching
+        // If preset is done and we're not already switching
         if (m_timeKeeper->PresetProgressA() >= 1.0 && !m_timeKeeper->IsSmoothing())
         {
             m_presetChangeNotified = true;
@@ -196,6 +162,7 @@ auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
         }
     }
 
+    // ToDo: Encapsulate preset loading check and transition in Renderer?
     if (m_timeKeeper->IsSmoothing() && m_transitioningPreset != nullptr)
     {
 #if PROJECTM_USE_THREADS
@@ -203,67 +170,16 @@ auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
         // FIXME: Instead of waiting after a single render pass, check every frame if it's done.
         m_workerSync->WaitForBackgroundTaskToFinish();
 #endif
-        EvaluateSecondPreset();
 
-        if (m_timeKeeper->SmoothRatio() <= 1.0)
+        // ToDo: check if new preset is loaded.
+
+        if (m_timeKeeper->SmoothRatio() >= 1.0)
         {
-            pipeline->setStaticPerPixel(m_meshX, m_meshY);
-
-            PipelineMerger::mergePipelines(
-                m_activePreset->pipeline(),
-                m_transitioningPreset->pipeline(),
-                *pipeline,
-                m_timeKeeper->SmoothRatio());
-
-            m_renderer->RenderFrameOnlyPass1(*pipeline, PipelineContext());
-
-            return pipeline;
+            m_timeKeeper->EndSmoothing();
         }
-
-        m_activePreset = std::move(m_transitioningPreset);
-        m_timeKeeper->EndSmoothing();
     }
 
-    m_activePreset->EvaluateFrameData(*m_beatDetect, PipelineContext());
-    m_renderer->RenderFrameOnlyPass1(m_activePreset->pipeline(), PipelineContext());
-
-    return nullptr; // indicating no transition
-}
-
-void ProjectM::RenderFrameOnlyPass2(Pipeline* pipeline)
-{
-    if (pipeline == nullptr)
-    {
-        assert(m_activePreset.get());
-        pipeline = &m_activePreset->pipeline();
-    }
-
-    m_renderer->RenderFrameOnlyPass2(*pipeline, PipelineContext());
-}
-
-void ProjectM::RenderFrameEndOnSeparatePasses(Pipeline* pipeline)
-{
-    if (pipeline != nullptr)
-    {
-        // mergePipelines() sets masterAlpha for each RenderItem, reset it before we forget
-        for (RenderItem* drawable : pipeline->drawables)
-        {
-            drawable->masterAlpha = 1.0;
-        }
-        pipeline->drawables.clear();
-    }
-
-    m_count++;
-}
-
-auto ProjectM::PipelineContext() -> class PipelineContext&
-{
-    return *m_pipelineContext;
-}
-
-auto ProjectM::PipelineContext2() -> class PipelineContext&
-{
-    return *m_pipelineContext2;
+    // ToDo: Call the to-be-implemented render method in Renderer
 }
 
 void ProjectM::Reset()
@@ -312,17 +228,12 @@ void ProjectM::Initialize()
 #endif
 
     m_timeKeeper->StartPreset();
-
-    // ToDo: Calculate the real FPS instead
-    PipelineContext().fps = static_cast<int>(m_targetFps);
-    PipelineContext2().fps = static_cast<int>(m_targetFps);
 }
 
 void ProjectM::LoadIdlePreset()
 {
     LoadPresetFile("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk", false);
     assert(m_activePreset);
-    m_renderer->SetPipeline(m_activePreset->pipeline());
 }
 
 /* Reinitializes the engine variables to a default (conservative and sane) value */
@@ -361,15 +272,7 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
         return;
     }
 
-    try
-    {
-        m_renderer->SetPipeline(preset->pipeline());
-    }
-    catch (const RenderException& ex)
-    {
-        PresetSwitchFailedEvent(preset->Filename(), ex.message());
-        return;
-    }
+    // ToDo: Continue only if preset is fully loaded.
 
     if (hardCut)
     {
@@ -476,9 +379,7 @@ auto ProjectM::TargetFramesPerSecond() const -> int32_t
 void ProjectM::SetTargetFramesPerSecond(int32_t fps)
 {
     m_targetFps = fps;
-    m_renderer->setFPS(fps);
-    m_pipelineContext->fps = fps;
-    m_pipelineContext2->fps = fps;
+    m_renderer->setFPS(fps); // ToDo: Renderer should ideally calculate this.
 }
 
 auto ProjectM::AspectCorrection() const -> bool
@@ -489,7 +390,6 @@ auto ProjectM::AspectCorrection() const -> bool
 void ProjectM::SetAspectCorrection(bool enabled)
 {
     m_aspectCorrection = enabled;
-    m_renderer->correction = enabled;
 }
 
 auto ProjectM::EasterEgg() const -> float
@@ -515,7 +415,7 @@ void ProjectM::SetMeshSize(size_t meshResolutionX, size_t meshResolutionY)
     m_meshY = meshResolutionY;
 
     // Update mesh size in all sorts of classes.
-    m_renderer->SetPerPixelMeshSize(m_meshX, m_meshY);
+    //m_renderer->SetPerPixelMeshSize(m_meshX, m_meshY);
     m_presetFactoryManager->initialize();
 
     // Unload all presets and reload idle preset
@@ -565,5 +465,6 @@ void ProjectM::RecreateRenderer()
 {
     m_renderer = std::make_unique<Renderer>(m_windowWidth, m_windowHeight,
                                             m_meshX, m_meshY,
-                                            m_beatDetect.get(), m_textureSearchPaths);
+                                            *m_beatDetect.get(),
+                                            m_textureSearchPaths);
 }

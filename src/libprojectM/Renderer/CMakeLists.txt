@@ -3,10 +3,6 @@ add_library(Renderer OBJECT
         BlurTexture.hpp
         FileScanner.cpp
         FileScanner.hpp
-        Pipeline.cpp
-        Pipeline.hpp
-        PipelineContext.cpp
-        PipelineContext.hpp
         RenderContext.hpp
         RenderItem.cpp
         RenderItem.hpp

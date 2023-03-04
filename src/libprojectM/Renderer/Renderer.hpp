@@ -2,7 +2,6 @@
 
 #include "Audio/BeatDetect.hpp"
 
-#include "Pipeline.hpp"
 #include "ShaderEngine.hpp"
 #include "projectM-opengl.h"
 
@@ -72,15 +71,11 @@ public:
 
     ~Renderer();
 
-    void RenderFrameOnlyPass1(const Pipeline& pipeline, const PipelineContext& pipelineContext);
-    void RenderFrameOnlyPass2(const Pipeline& pipeline, const PipelineContext& pipelineContext);
     void ResetTextures();
     void SetTextureSearchPaths(std::vector<std::string>& textureSearchPaths);
     void reset(int viewportWidth, int viewportHeight);
 
     bool timeCheck(const milliseconds currentTime, const milliseconds lastTime, const double difference);
-
-    void SetPipeline(Pipeline& pipeline);
 
     void setFPS(const int& theValue)
     {
@@ -103,8 +98,6 @@ public:
     void touchDestroyAll();
     bool touchedWaveform(float x, float y, std::size_t i);
 
-    void UpdateContext(PipelineContext& context);
-
     std::string frameDumpOutputFile;
 
     milliseconds lastTimeFPS{nowMilliseconds()};
@@ -116,23 +109,13 @@ public:
     std::string title;
 
 private:
-    void SetupPass1(const Pipeline& pipeline, const PipelineContext& pipelineContext);
-    void RenderItems(const Pipeline& pipeline, const PipelineContext& pipelineContext);
-    void RenderTouch(const Pipeline& pipeline, const PipelineContext& pipelineContext);
-    void FinishPass1();
-    void Pass2(const Pipeline& pipeline, const PipelineContext& pipelineContext);
-    void CompositeShaderOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext);
-    void CompositeOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext);
     int nearestPower2(int value);
     void InitCompositeShaderVertex();
     float SquishToCenter(float x, float fExp);
     void UvToMathSpace(float u, float v, float* rad, float* ang);
 
-    PerPixelMesh m_perPixelMesh;
     libprojectM::Audio::BeatDetect& m_beatDetect;
     std::unique_ptr<TextureManager> m_textureManager;
-    Pipeline* m_currentPipeline{nullptr};
-    RenderContext m_renderContext;
     ShaderEngine m_shaderEngine;
 
     std::string m_fps;

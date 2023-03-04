@@ -22,10 +22,9 @@ public:
 
     /**
      * @brief Allocate a new idle preset instance.
-     * @param factory The preset factory that created this instance.
      * @return A newly allocated auto pointer of an idle preset instance
      */
-    static std::unique_ptr<Preset> allocate(MilkdropPresetFactory* factory);
+    static std::unique_ptr<Preset> allocate();
 
 private:
     static std::string presetText();

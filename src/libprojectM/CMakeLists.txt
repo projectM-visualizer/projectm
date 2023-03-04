@@ -26,8 +26,6 @@ add_library(projectM_main OBJECT
         Common.hpp
         HungarianMethod.hpp
         IdleTextures.hpp
-        PipelineMerger.cpp
-        PipelineMerger.hpp
         Preset.hpp
         PresetFactory.cpp
         PresetFactory.hpp

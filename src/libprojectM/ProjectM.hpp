@@ -64,10 +64,6 @@ class Preset;
 
 class TimeKeeper;
 
-class Pipeline;
-
-class PipelineContext;
-
 class PresetFactoryManager;
 
 class PROJECTM_EXPORT ProjectM
@@ -211,17 +207,6 @@ public:
 private:
     void EvaluateSecondPreset();
 
-    /**
-     * @brief Renders the first pass of a frame.
-     * @param pipeline A pointer to a Pipeline for use in pass 2.
-     * @return Returns the pointer passed in pipeline if in a transition, else returns nullptr.
-     */
-    auto RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*;
-
-    void RenderFrameOnlyPass2(Pipeline* pipeline);
-
-    void RenderFrameEndOnSeparatePasses(Pipeline* pipeline);
-
     auto PipelineContext() -> class PipelineContext&;
 
     auto PipelineContext2() -> class PipelineContext&;
@@ -269,9 +254,6 @@ private:
     bool m_presetChangeNotified{false}; //!< Stores whether the user has been notified that projectM wants to switch the preset.
 
     std::unique_ptr<PresetFactoryManager> m_presetFactoryManager; //!< Provides access to all available preset factories.
-
-    std::unique_ptr<class PipelineContext> m_pipelineContext;  //!< Pipeline context for the first/current preset.
-    std::unique_ptr<class PipelineContext> m_pipelineContext2; //!< Pipeline context for the next/transitioning preset.
 
     std::unique_ptr<Renderer> m_renderer;                         //!< The Preset renderer.
     std::unique_ptr<libprojectM::Audio::BeatDetect> m_beatDetect; //!< The beat detection class.

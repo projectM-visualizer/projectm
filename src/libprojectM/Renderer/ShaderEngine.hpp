@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Pipeline.hpp"
-#include "PipelineContext.hpp"
 #include "Shader.hpp"
 #include "TextureManager.hpp"
 #include "projectM-opengl.h"
@@ -16,8 +14,6 @@ public:
     ShaderEngine();
     virtual ~ShaderEngine();
 
-    bool enableWarpShader(Shader& shader, const Pipeline& pipeline, const PipelineContext& pipelineContext, const glm::mat4& mat_ortho);
-    bool enableCompositeShader(Shader& shader, const Pipeline& pipeline, const PipelineContext& pipelineContext);
     void reset();
 
     Shader m_untexturedDraw;
