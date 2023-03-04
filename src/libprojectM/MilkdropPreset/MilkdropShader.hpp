@@ -7,7 +7,7 @@
  */
 #pragma once
 
-#include "Renderer/BlurTexture.hpp"
+#include "BlurTexture.hpp"
 #include "Renderer/Shader.hpp"
 #include "Renderer/TextureManager.hpp"
 

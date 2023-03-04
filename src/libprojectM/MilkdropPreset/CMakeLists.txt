@@ -2,6 +2,8 @@
 option(ENABLE_DEBUG_MILKDROP_PRESET "Enable STDERR debug output in Milkdrop preset code (Debug builds only)" OFF)
 
 add_library(MilkdropPreset OBJECT
+        BlurTexture.hpp
+        BlurTexture.cpp
         Border.cpp
         Border.hpp
         Constants.hpp

@@ -4,8 +4,8 @@
  */
 #pragma once
 
-#include "Renderer/Shader.hpp"
-#include "Renderer/Texture.hpp"
+#include <Renderer/Shader.hpp>
+#include <Renderer/Texture.hpp>
 
 #include <array>
 #include <memory>
