@@ -1,6 +1,4 @@
 add_library(Renderer OBJECT
-        BlurTexture.cpp
-        BlurTexture.hpp
         FileScanner.cpp
         FileScanner.hpp
         RenderContext.hpp
