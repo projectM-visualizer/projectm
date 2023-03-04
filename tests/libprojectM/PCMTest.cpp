@@ -4,7 +4,7 @@
 
 #include <cmath>
 
-using libprojectM::Audio::PCM;
+using namespace libprojectM::Audio;
 
 class PcmMock : public PCM
 {
