@@ -22,7 +22,7 @@ MilkdropPresetFactory::LoadPresetFromFile(const std::string& filename)
     auto protocol = PresetFactory::Protocol(filename, path);
     if (protocol == PresetFactory::IDLE_PRESET_PROTOCOL)
     {
-        return IdlePresets::allocate(this);
+        return IdlePresets::allocate();
     }
     else if (protocol == "" || protocol == "file")
     {

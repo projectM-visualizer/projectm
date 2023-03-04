@@ -63,6 +63,7 @@ target_link_libraries(MilkdropPreset
         projectM::Eval
         libprojectM::API # For export header
         PUBLIC
+        hlslparser
         GLM::GLM
         ${PROJECTM_OPENGL_LIBRARIES}
         )

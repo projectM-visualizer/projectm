@@ -152,11 +152,11 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     // ToDo: Per-Pixel and warp stuff
 
     // Draw audio-data-related stuff
-    for(auto& shape : m_customShapes)
+    for (auto& shape : m_customShapes)
     {
         shape->Draw(m_perFrameContext);
     }
-    for(auto& wave : m_customWaveforms)
+    for (auto& wave : m_customWaveforms)
     {
         wave->Draw(m_perFrameContext);
     }
@@ -174,4 +174,16 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
 
 void MilkdropPreset::PerFrameUpdate()
 {
+}
+
+auto MilkdropPreset::ParseFilename(const std::string& filename) -> std::string
+{
+    const std::size_t start = filename.find_last_of('/');
+
+    if (start == std::string::npos || start >= (filename.length() - 1))
+    {
+        return "";
+    }
+
+    return filename.substr(start + 1, filename.length());
 }

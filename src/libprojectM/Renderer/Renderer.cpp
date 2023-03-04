@@ -22,8 +22,7 @@ class Preset;
 
 Renderer::Renderer(int viewportWidth, int viewportHeight, int meshX, int meshY,
                    libprojectM::Audio::BeatDetect& beatDetect, std::vector<std::string>& textureSearchPaths)
-    : m_perPixelMesh(meshX, meshY)
-    , m_beatDetect(beatDetect)
+    : m_beatDetect(beatDetect)
     , m_viewportWidth(viewportWidth)
     , m_viewportHeight(viewportHeight)
     , m_textureSearchPaths(textureSearchPaths)
@@ -108,12 +107,6 @@ Renderer::Renderer(int viewportWidth, int viewportHeight, int meshX, int meshY,
     ResetTextures();
 }
 
-void Renderer::SetPipeline(Pipeline& pipeline)
-{
-    m_currentPipeline = &pipeline;
-    m_shaderEngine.reset();
-}
-
 void Renderer::ResetTextures()
 {
     m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths, m_mainTextureSizeX, m_mainTextureSizeY);
@@ -125,47 +118,9 @@ void Renderer::SetTextureSearchPaths(std::vector<std::string>& textureSearchPath
     ResetTextures();
 }
 
-void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipelineContext)
-{
-	totalframes++;
-
-	glViewport(0, 0, m_mainTextureSizeX, m_mainTextureSizeY);
-
-    m_renderContext.mat_ortho = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -40.0f, 40.0f);
-}
-
-void Renderer::RenderItems(const Pipeline& pipeline, const PipelineContext& pipelineContext)
-{
-    m_renderContext.time = pipelineContext.time;
-    m_renderContext.frame = pipelineContext.frame;
-    m_renderContext.fps = pipelineContext.fps;
-    m_renderContext.progress = pipelineContext.progress;
-    m_renderContext.texsize = nearestPower2(std::max(m_mainTextureSizeX, m_mainTextureSizeY));
-    m_renderContext.viewportSizeX = m_viewportWidth;
-    m_renderContext.viewportSizeY = m_viewportHeight;
-    m_renderContext.aspectX = m_fAspectX;
-    m_renderContext.aspectY = m_fAspectY;
-    m_renderContext.invAspectX = m_fInvAspectX;
-    m_renderContext.invAspectY = m_fInvAspectY;
-    m_renderContext.textureManager = m_textureManager.get();
-
-	for (std::vector<RenderItem*>::const_iterator pos = pipeline.drawables.begin(); pos != pipeline.drawables.end(); ++pos)
-	{
-		if (*pos != nullptr)
-			(*pos)->Draw(m_renderContext);
-	}
-	
-	// If we have touch waveforms, render them.
-	/*
-    if (m_waveformList.size() >= 1) {
-		RenderTouch(pipeline,pipelineContext);
-	}
-	 */
-}
-
+/*
 void Renderer::RenderTouch(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
-    /*
 	Pipeline pipelineTouch;
     Waveform wave;
 	for(std::size_t x = 0; x < m_waveformList.size(); x++){
@@ -179,50 +134,8 @@ void Renderer::RenderTouch(const Pipeline& pipeline, const PipelineContext& pipe
 				(*pos)->Draw(m_renderContext);
 		}
 	}
-     */
 }
-
-void Renderer::FinishPass1()
-{
-    m_textureManager->updateMainTexture();
-}
-
-void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineContext)
-{
-	//BEGIN PASS 2
-	//
-	//end of texture rendering
-	//now we copy the texture from the FBO or framebuffer to
-	//video texture memory and render fullscreen.
-
-	/** Reset the viewport size */
-    glViewport(0, 0, m_viewportWidth, m_viewportHeight);
-
-	if (m_shaderEngine.enableCompositeShader(m_currentPipeline->compositeShader, pipeline, pipelineContext))
-	{
-		CompositeShaderOutput(pipeline, pipelineContext);
-	}
-	else
-	{
-		CompositeOutput(pipeline, pipelineContext);
-	}
-}
-
-void Renderer::RenderFrameOnlyPass1(const Pipeline& pipeline, const PipelineContext& pipelineContext)
-{
-	SetupPass1(pipeline, pipelineContext);
-
-	RenderItems(pipeline, pipelineContext);
-
-	FinishPass1();
-}
-
-
-void Renderer::RenderFrameOnlyPass2(const Pipeline& pipeline, const PipelineContext& pipelineContext)
-{
-	Pass2(pipeline, pipelineContext);
-}
-
+*/
 
 Renderer::~Renderer()
 {
@@ -388,19 +301,9 @@ void Renderer::touchDestroyAll()
     //m_waveformList.clear();
 }
 
-void Renderer::UpdateContext(PipelineContext& context)
-{
-    context.pixelsx = m_viewportWidth;
-    context.pixelsy = m_viewportHeight;
-
-    // It's actually the inverse of the aspect ratio.
-    context.aspectx = m_fInvAspectX;
-    context.aspecty = m_fInvAspectY;
-}
-
+/*
 void Renderer::CompositeOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
-    /*
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_textureManager->getMainTexture()->texID);
 
@@ -431,8 +334,8 @@ void Renderer::CompositeOutput(const Pipeline& pipeline, const PipelineContext& 
 		drawable->Draw(m_renderContext);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
-     */
 }
+*/
 
 /**
  * Calculates the nearest power of two to the given number using the
@@ -613,7 +516,7 @@ void Renderer::InitCompositeShaderVertex()
 	}
 }
 
-
+/*
 void Renderer::CompositeShaderOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
 	// hue shader
@@ -690,3 +593,4 @@ void Renderer::CompositeShaderOutput(const Pipeline& pipeline, const PipelineCon
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
+*/

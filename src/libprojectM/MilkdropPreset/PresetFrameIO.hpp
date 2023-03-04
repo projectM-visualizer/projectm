@@ -7,7 +7,6 @@
 #include "DarkenCenter.hpp"
 #include "Filters.hpp"
 #include "MotionVectors.hpp"
-#include "Renderer/Pipeline.hpp"
 #include "VideoEcho.hpp"
 #include "Waveform.hpp"
 

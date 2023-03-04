@@ -15,7 +15,7 @@ add_library(hlslparser OBJECT
 
 target_include_directories(hlslparser
         PUBLIC
-        "src"
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
         )
 
 set_target_properties(hlslparser PROPERTIES
