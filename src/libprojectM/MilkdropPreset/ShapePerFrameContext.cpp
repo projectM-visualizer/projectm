@@ -43,7 +43,7 @@ void ShapePerFrameContext::RegisterBuiltinVariables()
     for (int t = 0; t < TVarCount; t++)
     {
         std::string tvar = "t" + std::to_string(t + 1);
-        q_vars[t] = projectm_eval_context_register_variable(perFrameCodeContext, tvar.c_str());
+        t_vars[t] = projectm_eval_context_register_variable(perFrameCodeContext, tvar.c_str());
     }
 
     REG_VAR(bass);
@@ -150,6 +150,11 @@ void ShapePerFrameContext::EvaluateInitCode(const std::string& perFrameInitCode,
 void ShapePerFrameContext::CompilePerFrameCode(const std::string& perFrameCode,
                                                const CustomShape& shape)
 {
+    if (perFrameCode.empty())
+    {
+        return;
+    }
+
     perFrameCodeHandle = projectm_eval_code_compile(perFrameCodeContext, perFrameCode.c_str());
     if (perFrameCodeHandle == nullptr)
     {

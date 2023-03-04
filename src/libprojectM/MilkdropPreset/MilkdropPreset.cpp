@@ -65,7 +65,7 @@ void MilkdropPreset::InitializePreset(PresetFileParser& parsedFile)
     {
         auto wave = std::make_unique<CustomWaveform>(m_state);
         wave->Initialize(parsedFile, i);
-        m_customWaveforms[0] = std::move(wave);
+        m_customWaveforms[i] = std::move(wave);
     }
 
     // Custom shapes:
@@ -73,7 +73,7 @@ void MilkdropPreset::InitializePreset(PresetFileParser& parsedFile)
     {
         auto shape = std::make_unique<CustomShape>(m_state);
         shape->Initialize(parsedFile, i);
-        m_customShapes[0] = std::move(shape);
+        m_customShapes[i] = std::move(shape);
     }
 
     CompileCodeAndRunInitExpressions();
@@ -82,6 +82,7 @@ void MilkdropPreset::InitializePreset(PresetFileParser& parsedFile)
 void MilkdropPreset::CompileCodeAndRunInitExpressions()
 {
     // Per-frame init and code
+    m_perFrameContext.RegisterBuiltinVariables();
     m_perFrameContext.LoadStateVariables(m_state);
     m_perFrameContext.EvaluateInitCode(m_state);
     m_perFrameContext.CompilePerFrameCode(m_state.perFrameCode);
