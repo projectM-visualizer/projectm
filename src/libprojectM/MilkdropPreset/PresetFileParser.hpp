@@ -103,29 +103,6 @@ protected:
      */
     void ParseLine(const std::string& line);
 
-    /**
-     * @brief Strips an end-of-line comment from the given line.
-     * @param[in,out] line The code line to be stripped of a comment.
-     */
-    static void StripComment(std::string& line);
-
-    /**
-     * @brief Strips all multi-line comments from the given code.
-     *
-     * This is also an undocumented feature of Milkdrop's equation parser. We could do it in the parser,
-     * but is doesn't hurt to generally remove such comments.
-     *
-     * @param[in,out] code The code to be stripped of all multi-line comments.
-     */
-    static void StripMultilineComment(std::string& code);
-
-
-    /**
-     * @brief Trims any leading/trailing whitespace from the given line.
-     * @param[in,out] line The code line to be trimmed.
-     */
-    static void Trim(std::string& line);
-
 private:
     ValueMap m_presetValues; //!< Map with preset keys and their value.
 };

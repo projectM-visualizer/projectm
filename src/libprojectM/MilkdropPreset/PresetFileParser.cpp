@@ -88,8 +88,6 @@ auto PresetFileParser::GetCode(const std::string& keyPrefix) const -> std::strin
         }
 
         auto line = m_presetValues.at(key);
-        StripComment(line);
-        Trim(line);
 
         if (!line.empty())
         {
@@ -108,7 +106,6 @@ auto PresetFileParser::GetCode(const std::string& keyPrefix) const -> std::strin
     }
 
     auto codeStr = code.str();
-    StripMultilineComment(codeStr);
 
     return codeStr;
 }
@@ -174,52 +171,4 @@ void PresetFileParser::ParseLine(const std::string& line)
     {
         m_presetValues.emplace(std::move(varName), std::move(value));
     }
-}
-
-void PresetFileParser::StripComment(std::string& line)
-{
-    auto commentPos = line.find("//");
-    if (commentPos != std::string::npos)
-    {
-        line.resize(commentPos);
-    }
-
-    // While not documented, Milkdrop also considers "\\" to be a comment.
-    commentPos = line.find("\\\\");
-    if (commentPos != std::string::npos)
-    {
-        line.resize(commentPos);
-    }
-}
-
-void PresetFileParser::StripMultilineComment(std::string& code)
-{
-    size_t commentPos;
-    while ((commentPos = code.find("/*")) != std::string::npos)
-    {
-        auto endPos = code.find("*/");
-        if (endPos != std::string::npos && endPos > commentPos)
-        {
-            code.erase(commentPos, endPos - commentPos + 2);
-        }
-        else
-        {
-            code.erase(commentPos, code.size() - commentPos);
-        }
-    }
-}
-
-void PresetFileParser::Trim(std::string& line)
-{
-    if (line.empty())
-    {
-        return;
-    }
-
-    line.erase(line.begin(), std::find_if(line.begin(), line.end(),
-                                          std::not1(std::ptr_fun<int, int>(std::isspace))));
-    line.erase(std::find_if(line.rbegin(), line.rend(),
-                            std::not1(std::ptr_fun<int, int>(std::isspace)))
-                   .base(),
-               line.end());
 }
