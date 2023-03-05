@@ -1,6 +1,8 @@
 add_library(Renderer OBJECT
         FileScanner.cpp
         FileScanner.hpp
+        Framebuffer.cpp
+        Framebuffer.hpp
         RenderContext.hpp
         RenderItem.cpp
         RenderItem.hpp
@@ -15,6 +17,8 @@ add_library(Renderer OBJECT
         StaticGlShaders.cpp
         Texture.cpp
         Texture.hpp
+        TextureAttachment.cpp
+        TextureAttachment.hpp
         TextureManager.cpp
         TextureManager.hpp
         )

@@ -26,16 +26,16 @@ public:
      * Redners the motion vectors.
      * @param context The render context data.
      */
-    void Draw(RenderContext &context);
+    void Draw(const RenderContext &context);
 
-    float r{ 0.0 }; //!< Red color channel of the motion vectors.
-    float g{ 0.0 }; //!< Green color channel of the motion vectors.
-    float b{ 0.0 }; //!< Blue color channel of the motion vectors.
-    float a{ 0.0 }; //!< Alpha channel of the motion vectors.
-    float length{ 0.0 }; //!< Line length of the motion vectors.
-    float x_num{ 0.0 }; //!< Horizontal grid size.
-    float y_num{ 0.0 }; //!< Vertical grid size.
-    float x_offset{ 0.0 }; //!< Horizontal grid offset.
-    float y_offset{ 0.0 }; //!< Vertical grid offset.
+    float r{ 0.0 }; //!< Red color channel of the motion vectors (mv_r).
+    float g{ 0.0 }; //!< Green color channel of the motion vectors (mv_g).
+    float b{ 0.0 }; //!< Blue color channel of the motion vectors (mv_b).
+    float a{ 0.0 }; //!< Alpha channel of the motion vectors (mv_a).
+    float length{ 0.0 }; //!< Line length of the motion vectors (mv_l).
+    float x_num{ 0.0 }; //!< Horizontal grid size (integer part of mv_x).
+    float y_num{ 0.0 }; //!< Vertical grid size (integer part of mv_y).
+    float x_offset{ 0.0 }; //!< Horizontal grid offset (mv_dx).
+    float y_offset{ 0.0 }; //!< Vertical grid offset (mv_dy).
 
 };

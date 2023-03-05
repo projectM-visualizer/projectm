@@ -27,9 +27,12 @@
 #include "CustomWaveform.hpp"
 #include "PerFrameContext.hpp"
 #include "PerPixelContext.hpp"
+#include "PerPixelMesh.hpp"
 #include "Preset.hpp"
 #include "PresetFrameIO.hpp"
 #include "Waveform.hpp"
+
+#include <Renderer/Framebuffer.hpp>
 
 #include <cassert>
 #include <map>
@@ -91,10 +94,15 @@ private:
     std::string m_absoluteFilePath; //!< The absolute file path of the MilkdropPreset
     std::string m_absolutePath;     //!< The absolute path of the MilkdropPreset
 
+    Framebuffer m_framebuffer{2}; //!< Preset rendering framebuffer with two surfaces (last frame and current frame).
+
     PresetState m_state; //!< Preset state container.
     PerFrameContext m_perFrameContext; //!< Preset per-frame evaluation code context.
     PerPixelContext m_perPixelContext; //!< Preset per-pixel/per-vertex evaluation code context.
 
+    PerPixelMesh m_perPixelMesh; //!< The per-pixel/per-vertex mesh, responsible for most of the movement/warp effects in Milkdrop presets.
+
+    MotionVectors m_motionVectors; //!< Motion vector grid.
     Waveform m_waveform; //!< Preset default waveform.
     std::array<std::unique_ptr<CustomWaveform>, CustomWaveformCount> m_customWaveforms; //!< Custom waveforms in this preset.
     std::array<std::unique_ptr<CustomShape>, CustomShapeCount> m_customShapes; //!< Custom shapes in this preset.

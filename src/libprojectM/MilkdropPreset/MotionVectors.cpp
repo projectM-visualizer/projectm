@@ -10,12 +10,13 @@ MotionVectors::MotionVectors()
 
 void MotionVectors::InitVertexAttrib() {
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
     glDisableVertexAttribArray(1);
 }
 
-void MotionVectors::Draw(RenderContext &context)
+void MotionVectors::Draw(const RenderContext& context)
 {
+    // ToDo: Implement the actual Milkdop behaviour here, including reverse propagation.
     float  intervalx=1.0/x_num;
     float  intervaly=1.0/y_num;
 
@@ -42,7 +43,7 @@ void MotionVectors::Draw(RenderContext &context)
 
         glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
-        glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair) * size, NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair) * size, nullptr, GL_DYNAMIC_DRAW);
         glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair) * size, points, GL_DYNAMIC_DRAW);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -66,6 +67,7 @@ void MotionVectors::Draw(RenderContext &context)
 
         glBindVertexArray(m_vaoID);
 
+        // ToDo: Milkdrop draws lines in the direction of motion, not just points!
         glDrawArrays(GL_POINTS,0,size);
 
         glBindVertexArray(0);
