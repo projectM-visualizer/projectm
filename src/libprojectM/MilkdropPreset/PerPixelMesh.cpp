@@ -10,6 +10,14 @@ PerPixelMesh::PerPixelMesh()
 {
 }
 
+void PerPixelMesh::InitVertexAttrib()
+{
+}
+
+void PerPixelMesh::Draw(const PresetState& presetState, PerPixelContext& perPixelContext)
+{
+}
+
 void PerPixelMesh::InitializeMesh(const PresetState& presetState)
 {
     if (m_gridSizeX != presetState.gridX ||

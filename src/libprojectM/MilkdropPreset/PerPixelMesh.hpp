@@ -27,6 +27,8 @@ class PerPixelMesh : public RenderItem
 public:
     PerPixelMesh();
 
+    void InitVertexAttrib() override;
+
     /**
      * @brief Renders the transformation mesh.
      * @param presetState The preset state to retrieve the configuration values from.
