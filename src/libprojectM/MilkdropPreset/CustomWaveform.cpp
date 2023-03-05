@@ -27,14 +27,14 @@ void CustomWaveform::InitVertexAttrib()
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(ColoredPoint), (void*) 0);                   // points
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(ColoredPoint), (void*) (sizeof(float) * 2)); // colors
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(ColoredPoint), nullptr);                                    // points
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(ColoredPoint), reinterpret_cast<void*>(sizeof(float) * 2)); // colors
 }
 
 void CustomWaveform::Initialize(PresetFileParser& parsedFile, int index)
 {
-    std::string wavecodePrefix = "wavecode_" + std::to_string(index) + "_";
-    std::string wavePrefix = "wave_" + std::to_string(index) + "_";
+    std::string const wavecodePrefix = "wavecode_" + std::to_string(index) + "_";
+    std::string const wavePrefix = "wave_" + std::to_string(index) + "_";
 
     m_index = index;
     m_enabled = parsedFile.GetInt(wavecodePrefix + "enabled", m_enabled);
@@ -77,11 +77,12 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     static_assert(RenderWaveformSamples <= WaveformMaxPoints, "CustomWaveformSamples is larger than CustomWaveformMaxPoints");
 
     int sampleCount{m_samples};
-    int maxSampleCount{m_spectrum != 0 ? SpectrumSamples : RenderWaveformSamples};
+    int const maxSampleCount{m_spectrum ? SpectrumSamples : RenderWaveformSamples};
     sampleCount = std::min(sampleCount, maxSampleCount);
     sampleCount -= m_sep;
 
     // Initialize and execute per-frame code
+    m_samples = sampleCount;
     LoadPerFrameEvaluationVariables(presetPerFrameContext);
     m_perFrameContext.ExecutePerFrameCode();
 
@@ -96,19 +97,19 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
         return;
     }
 
-    const auto* pcmL = m_spectrum != 0
-                            ? m_presetState.audioData.spectrumLeft.data()
-                            : m_presetState.audioData.waveformLeft.data();
-    const auto* pcmR = m_spectrum != 0
-                            ? m_presetState.audioData.spectrumRight.data()
-                            : m_presetState.audioData.waveformRight.data();
+    const auto* pcmL = m_spectrum
+                           ? m_presetState.audioData.spectrumLeft.data()
+                           : m_presetState.audioData.waveformLeft.data();
+    const auto* pcmR = m_spectrum
+                           ? m_presetState.audioData.spectrumRight.data()
+                           : m_presetState.audioData.waveformRight.data();
 
-    const float mult = m_scaling * m_presetState.waveScale * (m_spectrum != 0 ? 0.05f : 1.0f); // ToDo: Use original "0.15f : 0.004f"?
+    const float mult = m_scaling * m_presetState.waveScale * (m_spectrum ? 0.05f : 1.0f); // ToDo: Use original "0.15f : 0.004f"?
 
     // PCM data smoothing
-    const int offset1 = m_spectrum != 0 ? 0 : (WaveformMaxPoints - sampleCount) / 2 - m_sep / 2;
-    const int offset2 = m_spectrum != 0 ? 0 : (WaveformMaxPoints - sampleCount) / 2 + m_sep / 2;
-    const int t = m_spectrum != 0 ? static_cast<int>((WaveformMaxPoints - m_sep) / static_cast<float>(sampleCount)) : 1;
+    const int offset1 = m_spectrum ? 0 : (WaveformMaxPoints - sampleCount) / 2 - m_sep / 2;
+    const int offset2 = m_spectrum ? 0 : (WaveformMaxPoints - sampleCount) / 2 + m_sep / 2;
+    const int t = m_spectrum ? static_cast<int>((WaveformMaxPoints - m_sep) / static_cast<float>(sampleCount)) : 1;
     const float mix1 = std::pow(m_smoothing * 0.98f, 0.5f);
     const float mix2 = 1.0f - mix1;
 
@@ -167,9 +168,13 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     glUniformMatrix4fv(m_presetState.renderContext.uniform_v2f_c4f_vertex_transformation, 1, GL_FALSE, glm::value_ptr(m_presetState.renderContext.mat_ortho));
 
     if (m_additive)
+    {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    }
     else
+    {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
 
 #if USE_GLES == 0
     glDisable(GL_LINE_SMOOTH);
@@ -177,7 +182,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     glLineWidth(1);
 
     // Additive wave drawing (vice overwrite)
-    if (m_additive == 1)
+    if (m_additive)
     {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     }
@@ -230,7 +235,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
                 break;
         }
 
-        glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * smoothedVertexCount, &pointsSmoothed[0], GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * smoothedVertexCount, pointsSmoothed.data(), GL_DYNAMIC_DRAW);
         glDrawArrays(drawType, 0, smoothedVertexCount);
     }
 
@@ -289,7 +294,7 @@ int CustomWaveform::SmoothWave(const CustomWaveform::ColoredPoint* inputVertices
 
     for (auto inputIndex = 0; inputIndex < vertexCount - 1; inputIndex++)
     {
-        int iAbove = iAbove2;
+        int const iAbove = iAbove2;
         iAbove2 = std::min(vertexCount - 1, inputIndex + 2);
         outputVertices[outputIndex] = inputVertices[inputIndex];
         outputVertices[outputIndex + 1] = inputVertices[inputIndex];

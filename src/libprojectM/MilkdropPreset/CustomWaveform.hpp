@@ -97,10 +97,10 @@ private:
     float m_g{1.0f};
     float m_b{1.0f};
     float m_a{1.0f};
-    int m_spectrum{0}; //!< Spectrum data or PCM data.
-    int m_useDots{0}; //!< If non-zero, draw wave as dots instead of lines.
-    int m_drawThick{0}; //!< Draw thicker lines.
-    int m_additive{0}; //!< Add color values together.
+    bool m_spectrum{false}; //!< Spectrum data or PCM data.
+    bool m_useDots{false}; //!< If non-zero, draw wave as dots instead of lines.
+    bool m_drawThick{false}; //!< Draw thicker lines.
+    bool m_additive{false}; //!< Add color values together.
 
     PRJM_EVAL_F m_tValuesAfterInitCode[TVarCount]{};
 
