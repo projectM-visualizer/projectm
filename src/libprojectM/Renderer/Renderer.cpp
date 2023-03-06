@@ -109,7 +109,7 @@ Renderer::Renderer(int viewportWidth, int viewportHeight, int meshX, int meshY,
 
 void Renderer::ResetTextures()
 {
-    m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths, m_mainTextureSizeX, m_mainTextureSizeY);
+    //m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths);
 }
 
 void Renderer::SetTextureSearchPaths(std::vector<std::string>& textureSearchPaths)

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "PresetState.hpp"
+
 #include "Renderer/RenderItem.hpp"
 
 /**
@@ -8,17 +10,17 @@
 class DarkenCenter : public RenderItem
 {
 public:
+    DarkenCenter() = delete;
 
-    /**
-     * Constructor. Initializes the required OpenGL data structures.
-     */
-    DarkenCenter();
+    explicit DarkenCenter(PresetState& presetState);
 
     void InitVertexAttrib();
 
     /**
      * Applies the darkening area.
-     * @param context The render context data.
      */
-    void Draw(RenderContext &context);
+    void Draw();
+
+private:
+    PresetState& m_presetState; //!< The global preset state.
 };

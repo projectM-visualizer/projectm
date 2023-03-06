@@ -98,12 +98,14 @@ void ProjectM::LoadPresetData(std::istream& presetData, bool smoothTransition)
 void ProjectM::SetTexturePaths(std::vector<std::string> texturePaths)
 {
     m_textureSearchPaths = std::move(texturePaths);
-    m_renderer->SetTextureSearchPaths(m_textureSearchPaths);
+    m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths);
+    //m_renderer->SetTextureSearchPaths(m_textureSearchPaths);
 }
 
 void ProjectM::ResetTextures()
 {
-    m_renderer->ResetTextures();
+    m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths);
+    //m_renderer->ResetTextures();
 }
 
 void ProjectM::DumpDebugImageOnNextFrame(const std::string& outputFile)
@@ -179,6 +181,23 @@ void ProjectM::RenderFrame()
     }
 
     // ToDo: Call the to-be-implemented render method in Renderer
+    auto audio = m_beatDetect->GetFrameAudioData();
+
+    RenderContext ctx{};
+    ctx.viewportSizeX = m_windowWidth;
+    ctx.viewportSizeY = m_windowHeight;
+    ctx.time = m_timeKeeper->GetRunningTime();
+    ctx.progress = m_timeKeeper->PresetProgressA();
+    ctx.fps = m_targetFps;
+    ctx.frame = m_count;
+    ctx.aspectX = (m_windowHeight > m_windowWidth) ? static_cast<float>(m_windowWidth) / static_cast<float>(m_windowHeight) : 1.0f;
+    ctx.aspectY = (m_windowWidth > m_windowHeight) ? static_cast<float>(m_windowHeight) / static_cast<float>(m_windowWidth) : 1.0f;
+    ctx.invAspectX = 1.0f / ctx.aspectX;
+    ctx.invAspectY = 1.0f / ctx.aspectY;
+
+    m_activePreset->RenderFrame(audio, ctx);
+
+    m_count++;
 }
 
 void ProjectM::Reset()
@@ -212,6 +231,8 @@ void ProjectM::Initialize()
                                                   m_meshY,
                                                   *m_beatDetect,
                                                   m_textureSearchPaths);
+
+    m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths);
 
     m_presetFactoryManager->initialize();
 

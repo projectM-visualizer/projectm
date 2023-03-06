@@ -2,7 +2,7 @@
 
 #include "PresetState.hpp"
 
-#include "Renderer/StaticGlShaders.h"
+#include "Renderer/StaticGlShaders.hpp"
 
 #include <GLSLGenerator.h>
 #include <HLSLParser.h>

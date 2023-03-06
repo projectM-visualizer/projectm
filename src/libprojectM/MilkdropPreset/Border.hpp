@@ -1,5 +1,8 @@
 #pragma once
 
+#include "PerFrameContext.hpp"
+#include "PresetState.hpp"
+
 #include "Renderer/RenderItem.hpp"
 
 /**
@@ -8,29 +11,18 @@
 class Border : public RenderItem
 {
 public:
+    Border() = delete;
 
-    /**
-     * Constructor. Initializes the required OpenGL data structures.
-     */
-    Border();
+    explicit Border(PresetState& presetState);
 
-    void InitVertexAttrib();
+    void InitVertexAttrib() override;
 
     /**
      * Draws the border.
-     * @param context The render context data.
+     * @param presetPerFrameContext The per-frame context variables.
      */
-    void Draw(RenderContext &context);
+    void Draw(const PerFrameContext& presetPerFrameContext);
 
-    float outer_size{ 0.0 }; //!< Outer border width
-    float outer_r{ 0.0 }; //!< Outer border color, red channel.
-    float outer_g{ 0.0 }; //!< Outer border color, green channel.
-    float outer_b{ 0.0 }; //!< Outer border color, blue channel.
-    float outer_a{ 0.0 }; //!< Outer border color, alpha channel.
-
-    float inner_size{ 0.0 }; //!< Inner border width
-    float inner_r{ 0.0 }; //!< Inner border color, red channel.
-    float inner_g{ 0.0 }; //!< Inner border color, green channel.
-    float inner_b{ 0.0 }; //!< Inner border color, blue channel.
-    float inner_a{ 0.0 }; //!< Inner border color, alpha channel.
+private:
+    PresetState& m_presetState; //!< The global preset state.
 };

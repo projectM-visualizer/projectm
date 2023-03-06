@@ -106,6 +106,22 @@ void Framebuffer::CreateColorAttachment(int framebufferIndex, int attachmentInde
     }
 }
 
+GLuint Framebuffer::GetColorAttachmentTexture(int framebufferIndex, int attachmentIndex) const
+{
+    if (framebufferIndex < 0 || framebufferIndex >= static_cast<int>(m_framebufferIds.size()))
+    {
+        return 0;
+    }
+
+    const auto& attachment = m_attachments.at(framebufferIndex);
+    if (attachment.find(GL_COLOR_ATTACHMENT0 + attachmentIndex) == attachment.end())
+    {
+        return 0;
+    }
+
+    return attachment.at(GL_COLOR_ATTACHMENT0 + attachmentIndex).TextureId();
+}
+
 void Framebuffer::CreateDepthAttachment(int framebufferIndex)
 {
     if (framebufferIndex < 0 || framebufferIndex >= static_cast<int>(m_framebufferIds.size()))

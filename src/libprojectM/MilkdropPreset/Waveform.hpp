@@ -27,7 +27,7 @@ public:
     Waveform(PresetState& presetState);
     ~Waveform() override;
 
-    void Draw();
+    void Draw(const PerFrameContext& presetPerFrameContext);
 
     void InitVertexAttrib() override;
 
@@ -40,9 +40,9 @@ private:
 
     void SetMode();
 
-    void MaximizeColors();
-    void ModulateOpacityByVolume();
-    void WaveformMath();
+    void MaximizeColors(const PerFrameContext& presetPerFrameContext);
+    void ModulateOpacityByVolume(const PerFrameContext& presetPerFrameContext);
+    void WaveformMath(const PerFrameContext& presetPerFrameContext);
 
     /**
      * @brief Does a better-than-linear smooth on a wave.
@@ -50,19 +50,19 @@ private:
      * Roughly doubles the number of points.
      *
      * @param inputVertices Pointer to an array of vertices to be smoothed.
-     * @param vertexCount Number of vertices/points in the input data.
      * @param outputVertices Pointer to a buffer that will receive the smoothed data. Must be able to hold 2 * vertexCount vertices.
      * @return The number of vertices in outputVertices after smoothing.
      */
-    static auto SmoothWave(const WaveformVertex* inputVertices, WaveformVertex* outputVertices) -> int;
+    auto SmoothWave(const WaveformVertex* inputVertices, WaveformVertex* outputVertices) -> int;
 
-    PresetState& m_presetState;
+    PresetState& m_presetState; //!< The preset state.
 
-    Mode m_mode{Mode::Line};
+    Mode m_mode{Mode::Line}; //!< Line drawing mode.
 
-    float m_tempAlpha{0.0f};
-    bool m_loop{false};
+    float m_tempAlpha{0.0f}; //!< Calculated alpha value.
+    bool m_loop{false}; //!< true if the waveform is a closed loop.
+    int m_samples{}; //!< Number of samples in the current waveform. Depends on the mode.
 
-    WaveformVertex* wave1Vertices{nullptr};
-    WaveformVertex* wave2Vertices{nullptr};
+    WaveformVertex* m_wave1Vertices{nullptr};
+    WaveformVertex* m_wave2Vertices{nullptr};
 };

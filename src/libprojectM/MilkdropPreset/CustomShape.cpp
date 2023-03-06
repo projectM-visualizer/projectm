@@ -156,7 +156,7 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
             glActiveTexture(GL_TEXTURE0);
             if (m_image.empty())
             {
-                glBindTexture(GL_TEXTURE_2D, m_presetState.renderContext.textureManager->getMainTexture()->texID);
+                glBindTexture(GL_TEXTURE_2D, m_presetState.mainTextureId);
             }
             else
             {
@@ -170,7 +170,7 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
                 else
                 {
                     // No texture found, fall back to main texture.
-                    glBindTexture(GL_TEXTURE_2D, m_presetState.renderContext.textureManager->getMainTexture()->texID);
+                    glBindTexture(GL_TEXTURE_2D, m_presetState.mainTextureId);
                 }
             }
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -191,11 +191,9 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
 
             glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeVertexShaderData) * (*m_perFrameContext.sides + 2), vertexData.data(), GL_DYNAMIC_DRAW);
 
-            glUseProgram(m_presetState.renderContext.programID_v2f_c4f_t2f);
-
-            glUniformMatrix4fv(m_presetState.renderContext.uniform_v2f_c4f_t2f_vertex_transformation, 1, GL_FALSE,
-                               glm::value_ptr(m_presetState.renderContext.mat_ortho));
-            glUniform1i(m_presetState.renderContext.uniform_v2f_c4f_t2f_frag_texture_sampler, 0);
+            m_presetState.texturedShader.Bind();
+            m_presetState.texturedShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
+            m_presetState.texturedShader.SetUniformInt("texture_sampler", 0);
 
             glBindVertexArray(m_vaoID_texture);
             glDrawArrays(GL_TRIANGLE_FAN, 0, *m_perFrameContext.sides + 2);
@@ -211,10 +209,8 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
 
             glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeVertexShaderData) * (*m_perFrameContext.sides + 2), vertexData.data(), GL_DYNAMIC_DRAW);
 
-            glUseProgram(m_presetState.renderContext.programID_v2f_c4f);
-
-            glUniformMatrix4fv(m_presetState.renderContext.uniform_v2f_c4f_vertex_transformation, 1, GL_FALSE,
-                               glm::value_ptr(m_presetState.renderContext.mat_ortho));
+            m_presetState.untexturedShader.Bind();
+            m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
 
             glBindVertexArray(m_vaoID_not_texture);
             glDrawArrays(GL_TRIANGLE_FAN, 0, *m_perFrameContext.sides + 2);
@@ -231,10 +227,9 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
                 points[i].y = vertexData[i + 1].point_y;
             }
 
-            glUseProgram(m_presetState.renderContext.programID_v2f_c4f);
+            m_presetState.untexturedShader.Bind();
+            m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
 
-            glUniformMatrix4fv(m_presetState.renderContext.uniform_v2f_c4f_vertex_transformation, 1, GL_FALSE,
-                               glm::value_ptr(m_presetState.renderContext.mat_ortho));
             glVertexAttrib4f(1,
                              *m_perFrameContext.border_r,
                              *m_perFrameContext.border_g,
@@ -288,7 +283,6 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
                 glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair) * (*m_perFrameContext.sides), points.data(), GL_DYNAMIC_DRAW);
                 glDrawArrays(GL_LINE_LOOP, 0, *m_perFrameContext.sides);
             }
-
         }
     }
 
@@ -298,7 +292,8 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
 #if USE_GLES == 0
     glDisable(GL_LINE_SMOOTH);
 #endif
-    glUseProgram(0);
+
+    Shader::Unbind();
 }
 
 void CustomShape::LoadPerFrameEvaluationVariables(const PerFrameContext& presetPerFrameContext)

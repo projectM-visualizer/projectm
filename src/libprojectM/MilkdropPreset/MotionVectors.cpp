@@ -2,74 +2,164 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-MotionVectors::MotionVectors()
+MotionVectors::MotionVectors(PresetState& presetState)
     : RenderItem()
+    , m_presetState(presetState)
 {
     RenderItem::Init();
 }
 
-void MotionVectors::InitVertexAttrib() {
+void MotionVectors::InitVertexAttrib()
+{
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
     glDisableVertexAttribArray(1);
 }
 
-void MotionVectors::Draw(const RenderContext& context)
+void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext)
 {
-    // ToDo: Implement the actual Milkdop behaviour here, including reverse propagation.
-    float  intervalx=1.0/x_num;
-    float  intervaly=1.0/y_num;
+    int countX = static_cast<int>(*presetPerFrameContext.mv_x);
+    int countY = static_cast<int>(*presetPerFrameContext.mv_y);
 
+    if (countX <= 0 || countY <= 0)
+    {
+        return;
+    }
+
+    float divertX = static_cast<float>(*presetPerFrameContext.mv_x) - static_cast<float>(countX);
+    float divertY = static_cast<float>(*presetPerFrameContext.mv_y) - static_cast<float>(countY);
+
+    if (countX > 64)
+    {
+        countX = 64;
+        divertX = 0.0f;
+    }
+    if (countY > 48)
+    {
+        countY = 48;
+        divertY = 0.0f;
+    }
+
+    auto divertX2 = static_cast<float>(*presetPerFrameContext.mv_dx);
+    auto divertY2 = static_cast<float>(*presetPerFrameContext.mv_dy);
+
+    auto lengthMultiplier = static_cast<float>(*presetPerFrameContext.mv_l);
+
+    // Clamp X/Y diversions to 0..1
+    if (divertX < 0.0f)
+    {
+        divertX = 0.0f;
+    }
+    if (divertX > 1.0f)
+    {
+        divertX = 1.0f;
+    }
+    if (divertY < 0.0f)
+    {
+        divertY = 0.0f;
+    }
+    if (divertY > 1.0f)
+    {
+        divertY = 1.0f;
+    }
+
+    float const inverseWidth = 1.0f / static_cast<float>(m_presetState.viewportWidth);
+    float const minimalLength = 1.0f * inverseWidth;
+
+    struct Point {
+        float x{};
+        float y{};
+    };
+
+    std::vector<Point> lineVertices(static_cast<std::size_t>(countX + 1) * 2); // countX + 1 lines for each grid row, 2 vertices each.
+
+    glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    if (x_num + y_num < 600)
+    m_presetState.untexturedShader.Bind();
+    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
+
+    glVertexAttrib4f(1,
+                     static_cast<float>(*presetPerFrameContext.mv_r),
+                     static_cast<float>(*presetPerFrameContext.mv_g),
+                     static_cast<float>(*presetPerFrameContext.mv_b),
+                     static_cast<float>(*presetPerFrameContext.mv_a));
+
+    glBindVertexArray(m_vaoID);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
+
+
+    for (int y = 0; y < countY; y++)
     {
-        int size = x_num * y_num ;
+        float const posY = (static_cast<float>(y) + 0.25f) / (static_cast<float>(countY) + divertY + 0.25f - 1.0f) - divertY2;
 
-        floatPair *points = new float[size][2];
-
-        for (int x=0;x<(int)x_num;x++)
+        if (posY > 0.0001f && posY < 0.9999f)
         {
-            for(int y=0;y<(int)y_num;y++)
+            int vertex = 0;
+            for (int x = 0; x < countX; x++)
             {
-                float lx, ly;
-                lx = x_offset+x*intervalx;
-                ly = y_offset+y*intervaly;
+                float const posX = (static_cast<float>(x) + 0.25f) / (static_cast<float>(countX) + divertX + 0.25f - 1.0f) + divertX2;
 
-                points[(x * (int)y_num) + y][0] = lx;
-                points[(x * (int)y_num) + y][1] = ly;
+                if (posX > 0.0001f && posX < 0.9999f)
+                {
+                    float posX2{};
+                    float posY2{};
+
+                    // Uses the warp mesh texture transformation to get the motion direction of this point.
+                    ReversePropagatePoint(posX, posY, posX2, posY2);
+
+                    // Enforce minimum trail length
+                    {
+                        float distX = posX2 - posX;
+                        float distY = posY2 - posY;
+
+                        distX *= lengthMultiplier;
+                        distY *= lengthMultiplier;
+
+                        float length = sqrtf(distX * distX + distY * distY);
+                        if (length > minimalLength)
+                        {
+                        }
+                        else if (length > 0.00000001f)
+                        {
+                            length = minimalLength / length;
+                            distX *= length;
+                            distY *= length;
+                        }
+                        else
+                        {
+                            distX = minimalLength;
+                            distY = minimalLength;
+                        }
+
+                        posX2 = posX + distX;
+                        posY2 = posY + distY;
+                    }
+
+                    // Assign line vertices
+                    lineVertices.at(vertex).x = posX * 2.0f - 1.0f;
+                    lineVertices.at(vertex).y = posY * 2.0f - 1.0f;
+                    lineVertices.at(vertex + 1).x = posX2 * 2.0f - 1.0f;
+                    lineVertices.at(vertex + 1).y = posY2 * 2.0f - 1.0f;
+
+                    vertex += 2;
+                }
             }
+
+            // Draw a row of lines.
+            glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * lineVertices.size(), lineVertices.data(), GL_DYNAMIC_DRAW);
+            glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(lineVertices.size()));
         }
-
-        glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
-
-        glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair) * size, nullptr, GL_DYNAMIC_DRAW);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair) * size, points, GL_DYNAMIC_DRAW);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        delete[] points;
-
-        glUseProgram(context.programID_v2f_c4f);
-
-        glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_transformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
-
-#ifndef GL_TRANSITION
-        if (length <= 0.0) {
-            glPointSize(1.0);
-        } else {
-            glPointSize(length);
-        }
-#endif
-
-        glUniform1f(context.uniform_v2f_c4f_vertex_point_size, length);
-        glVertexAttrib4f(1, r, g, b, a * masterAlpha);
-
-        glBindVertexArray(m_vaoID);
-
-        // ToDo: Milkdrop draws lines in the direction of motion, not just points!
-        glDrawArrays(GL_POINTS,0,size);
-
-        glBindVertexArray(0);
     }
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+
+    Shader::Unbind();
+
+    glDisable(GL_BLEND);
+}
+
+void MotionVectors::ReversePropagatePoint(float posX1, float posY1, float& posX2, float& posY2)
+{
 }

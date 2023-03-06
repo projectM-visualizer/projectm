@@ -15,10 +15,8 @@
 #define GL_TEXTURE_IMAGE_FORMAT 0x828F
 #endif
 
-#define NUM_BLUR_TEX    6
 
-
-TextureManager::TextureManager(std::vector<std::string>& textureSearchPaths, int texSizeX, int texSizeY)
+TextureManager::TextureManager(std::vector<std::string>& textureSearchPaths)
     : m_textureDirectories(textureSearchPaths)
 {
     FileScanner fileScanner = FileScanner(m_textureDirectories, m_extensions);
@@ -28,41 +26,6 @@ TextureManager::TextureManager(std::vector<std::string>& textureSearchPaths, int
     fileScanner.scan(std::bind(&TextureManager::loadTexture, this, _1, _2));
 
     Preload();
-
-    // Create main texture and associated samplers
-    m_mainTexture = new Texture("main", texSizeX, texSizeY, false);
-    m_mainTexture->getSampler(GL_REPEAT, GL_LINEAR);
-    m_mainTexture->getSampler(GL_REPEAT, GL_NEAREST);
-    m_mainTexture->getSampler(GL_CLAMP_TO_EDGE, GL_LINEAR);
-    m_mainTexture->getSampler(GL_CLAMP_TO_EDGE, GL_NEAREST);
-    m_textures["main"] = m_mainTexture;
-
-    // Initialize blur textures
-    int w = texSizeX;
-    int h = texSizeY;
-    for (int i=0; i<NUM_BLUR_TEX; i++)
-    {
-        // main VS = 1024
-        // blur0 = 512
-        // blur1 = 256  <-  user sees this as "blur1"
-        // blur2 = 128
-        // blur3 = 128  <-  user sees this as "blur2"
-        // blur4 =  64
-        // blur5 =  64  <-  user sees this as "blur3"
-        if (!(i&1) || (i<2))
-        {
-			w = std::max(16, w / 2);
-			h = std::max(16, h / 2);
-        }
-        int w2 = ((w+3)/16)*16;
-        int h2 = ((h+3)/4)*4;
-
-        std::string texname = "blur" + std::to_string(i/2+1) + ((i%2) ? "" : "doNOTuseME");
-        Texture * textureBlur = new Texture(texname, w2, h2, false);
-        textureBlur->getSampler(GL_CLAMP_TO_EDGE, GL_LINEAR);
-        m_textures[texname] = textureBlur;
-        m_blurTextures.push_back(textureBlur);
-    }
 
     auto noise = std::make_unique<MilkdropNoise>();
 
@@ -387,20 +350,4 @@ void TextureManager::ExtractTextureSettings(const std::string qualifiedName, GLi
     {
         name = qualifiedName;
     }
-}
-
-const Texture * TextureManager::getMainTexture() const {
-    return m_mainTexture;
-}
-
-const std::vector<Texture*> & TextureManager::getBlurTextures() const {
-    return m_blurTextures;
-}
-
-
-void TextureManager::updateMainTexture()
-{
-    glBindTexture(GL_TEXTURE_2D, m_mainTexture->texID);
-    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, m_mainTexture->width, m_mainTexture->height);
-    glBindTexture(GL_TEXTURE_2D, 0);
 }

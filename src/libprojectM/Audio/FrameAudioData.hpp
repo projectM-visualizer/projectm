@@ -6,7 +6,7 @@
  */
 #pragma once
 
-#include "Constants.hpp"
+#include "AudioConstants.hpp"
 
 #include <array>
 

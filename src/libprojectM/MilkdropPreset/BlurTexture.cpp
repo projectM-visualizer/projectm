@@ -1,6 +1,6 @@
 #include "BlurTexture.hpp"
 
-#include <Renderer/StaticGlShaders.h>
+#include <Renderer/StaticGlShaders.hpp>
 
 #include <array>
 
