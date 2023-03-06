@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <cmath>
 
-static constexpr int CustomWaveformMaxSamples = std::max(RenderWaveformSamples, SpectrumSamples);
+static constexpr int CustomWaveformMaxSamples = std::max(RenderWaveformSamples, libprojectM::Audio::SpectrumSamples);
 
 CustomWaveform::CustomWaveform(PresetState& presetState)
     : RenderItem()
@@ -72,12 +72,12 @@ void CustomWaveform::CompileCodeAndRunInitExpressions(const PerFrameContext& pre
 void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
 {
     // Some safety assertions if someone plays around and changes the values in the wrong way.
-    static_assert(WaveformMaxPoints <= SpectrumSamples, "CustomWaveformMaxPoints is larger than SpectrumSamples");
-    static_assert(WaveformMaxPoints <= WaveformSamples, "CustomWaveformMaxPoints is larger than WaveformSamples");
+    static_assert(WaveformMaxPoints <= libprojectM::Audio::SpectrumSamples, "CustomWaveformMaxPoints is larger than SpectrumSamples");
+    static_assert(WaveformMaxPoints <= libprojectM::Audio::WaveformSamples, "CustomWaveformMaxPoints is larger than WaveformSamples");
     static_assert(RenderWaveformSamples <= WaveformMaxPoints, "CustomWaveformSamples is larger than CustomWaveformMaxPoints");
 
     int sampleCount{m_samples};
-    int const maxSampleCount{m_spectrum ? SpectrumSamples : RenderWaveformSamples};
+    int const maxSampleCount{m_spectrum ? libprojectM::Audio::SpectrumSamples : RenderWaveformSamples};
     sampleCount = std::min(sampleCount, maxSampleCount);
     sampleCount -= m_sep;
 
@@ -163,9 +163,8 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     std::vector<ColoredPoint> pointsSmoothed(sampleCount * 2);
     auto smoothedVertexCount = SmoothWave(pointsTransformed.data(), sampleCount, pointsSmoothed.data());
 
-    glUseProgram(m_presetState.renderContext.programID_v2f_c4f);
-
-    glUniformMatrix4fv(m_presetState.renderContext.uniform_v2f_c4f_vertex_transformation, 1, GL_FALSE, glm::value_ptr(m_presetState.renderContext.mat_ortho));
+    m_presetState.untexturedShader.Bind();
+    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
 
     if (m_additive)
     {
@@ -242,7 +241,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    glUseProgram(0);
+    Shader::Unbind();
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }

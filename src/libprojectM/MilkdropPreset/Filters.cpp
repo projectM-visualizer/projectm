@@ -4,130 +4,100 @@
 
 #include "Renderer/ShaderEngine.hpp"
 
-#include <glm/gtc/type_ptr.hpp>
+Filters::Filters(PresetState& presetState)
+    : RenderItem()
+    , m_presetState(presetState)
+{
+    RenderItem::Init();
+}
 
-void Brighten::InitVertexAttrib() {
-    float points[4][2] = {{-0.5, -0.5},
-                      {-0.5,  0.5},
-                      { 0.5,  0.5},
-                      { 0.5,  -0.5}};
+void Filters::InitVertexAttrib()
+{
+    std::array<std::array<float, 2>, 4> points = {{{-0.5, -0.5},
+                                                   {-0.5, 0.5},
+                                                   {0.5, 0.5},
+                                                   {0.5, -0.5}}};
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
     glDisableVertexAttribArray(1);
 }
 
-void Brighten::Draw(RenderContext &context)
+void Filters::Brighten()
 {
-    glUseProgram(context.programID_v2f_c4f);
-
-    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_transformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
+    m_presetState.untexturedShader.Bind();
+    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
 
     glBindVertexArray(m_vaoID);
 
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
-	glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
-	glDrawArrays(GL_TRIANGLE_FAN,0,4);
-	glBlendFunc(GL_ZERO, GL_DST_COLOR);
-	glDrawArrays(GL_TRIANGLE_FAN,0,4);
-	glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
-	glDrawArrays(GL_TRIANGLE_FAN,0,4);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    glBlendFunc(GL_ZERO, GL_DST_COLOR);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glBindVertexArray(0);
+
+    Shader::Unbind();
 }
 
-void Darken::InitVertexAttrib() {
-    float points[4][2] = {{-0.5, -0.5},
-                      {-0.5,  0.5},
-                      { 0.5,  0.5},
-                      { 0.5,  -0.5}};
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-    glDisableVertexAttribArray(1);
-}
-
-void Darken::Draw(RenderContext &context)
+void Filters::Darken()
 {
-    glUseProgram(context.programID_v2f_c4f);
-
-    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_transformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
+    m_presetState.untexturedShader.Bind();
+    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
 
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
 
-	glBlendFunc(GL_ZERO, GL_DST_COLOR);
+    glBlendFunc(GL_ZERO, GL_DST_COLOR);
 
     glBindVertexArray(m_vaoID);
-	glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     glBindVertexArray(0);
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    Shader::Unbind();
 }
 
-void Invert::InitVertexAttrib() {
-    float points[4][2] = {{-0.5, -0.5},
-                      {-0.5,  0.5},
-                      { 0.5,  0.5},
-                      { 0.5,  -0.5}};
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-    glDisableVertexAttribArray(1);
-}
-
-void Invert::Draw(RenderContext &context)
+void Filters::Invert()
 {
-
-    glUseProgram(context.programID_v2f_c4f);
-
-    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_transformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
+    m_presetState.untexturedShader.Bind();
+    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
 
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
 
-	glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
+    glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
 
     glBindVertexArray(m_vaoID);
-	glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     glBindVertexArray(0);
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    Shader::Unbind();
 }
 
-void Solarize::InitVertexAttrib() {
-    float points[4][2] = {{-0.5, -0.5},
-                          {-0.5,  0.5},
-                          { 0.5,  0.5},
-                          { 0.5,  -0.5}};
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
-    glDisableVertexAttribArray(1);
-}
-
-void Solarize::Draw(RenderContext &context)
+void Filters::Solarize()
 {
-    glUseProgram(context.programID_v2f_c4f);
-
-    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_transformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
+    m_presetState.untexturedShader.Bind();
+    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
 
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
 
-	glBlendFunc(GL_ZERO, GL_ONE_MINUS_DST_COLOR);
+    glBlendFunc(GL_ZERO, GL_ONE_MINUS_DST_COLOR);
 
     glBindVertexArray(m_vaoID);
-	glDrawArrays(GL_TRIANGLE_FAN,0,4);
-	glBlendFunc(GL_DST_COLOR, GL_ONE);
-	glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    glBlendFunc(GL_DST_COLOR, GL_ONE);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     glBindVertexArray(0);
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    Shader::Unbind();
 }

@@ -23,6 +23,7 @@
  */
 #pragma once
 
+#include "FrameAudioData.hpp"
 #include "PCM.hpp"
 
 #include <array>
@@ -49,6 +50,13 @@ public:
     // if the application volume is low.
     [[nodiscard]]
     auto GetPCMScale() const noexcept -> float;
+
+    /**
+     * @brief Returns a filled FrameAudioData structure for the current frame.
+     * @return A FrameAudioData structure with waveform, spectrum beat detection data.
+     */
+    [[nodiscard]]
+    auto GetFrameAudioData() const -> FrameAudioData;
 
     float beatSensitivity{1.f};
 

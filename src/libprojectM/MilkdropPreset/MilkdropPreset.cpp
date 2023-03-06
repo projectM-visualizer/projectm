@@ -34,7 +34,11 @@
 MilkdropPreset::MilkdropPreset(std::istream& presetData)
     : m_perFrameContext(m_state.globalMemory, &m_state.globalRegisters)
     , m_perPixelContext(m_state.globalMemory, &m_state.globalRegisters)
+    , m_motionVectors(m_state)
     , m_waveform(m_state)
+    , m_darkenCenter(m_state)
+    , m_border(m_state)
+    , m_filters(m_state)
 {
     Load(presetData);
 }
@@ -44,7 +48,11 @@ MilkdropPreset::MilkdropPreset(const std::string& absoluteFilePath)
     : m_absoluteFilePath(absoluteFilePath)
     , m_perFrameContext(m_state.globalMemory, &m_state.globalRegisters)
     , m_perPixelContext(m_state.globalMemory, &m_state.globalRegisters)
+    , m_motionVectors(m_state)
     , m_waveform(m_state)
+    , m_darkenCenter(m_state)
+    , m_border(m_state)
+    , m_filters(m_state)
 {
     Load(absoluteFilePath);
 }
@@ -139,6 +147,7 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
 {
     m_state.audioData = audioData;
     m_state.renderContext = renderContext;
+    m_state.mainTextureId = m_framebuffer.GetColorAttachmentTexture(1, 0);
 
     // Update framebuffer size if needed
     m_framebuffer.SetSize(renderContext.viewportSizeX, renderContext.viewportSizeY);
@@ -147,26 +156,23 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     PerFrameUpdate();
 
     // Motion vector field. Drawn to the previous frame texture before warping it.
-    m_framebuffer.Bind(1);
-    // ToDo: Move this to the draw call and pass in the per-frame context.
-    m_motionVectors.r = static_cast<float>(*m_perFrameContext.mv_r);
-    m_motionVectors.g = static_cast<float>(*m_perFrameContext.mv_g);
-    m_motionVectors.b = static_cast<float>(*m_perFrameContext.mv_b);
-    m_motionVectors.a = static_cast<float>(*m_perFrameContext.mv_a);
-    m_motionVectors.length = static_cast<float>(*m_perFrameContext.mv_l);
-    m_motionVectors.x_num = static_cast<float>(*m_perFrameContext.mv_x);
-    m_motionVectors.y_num = static_cast<float>(*m_perFrameContext.mv_y);
-    m_motionVectors.x_offset = static_cast<float>(*m_perFrameContext.mv_dx);
-    m_motionVectors.y_offset = static_cast<float>(*m_perFrameContext.mv_dy);
-    m_motionVectors.Draw(renderContext);
+    //m_framebuffer.Bind(1);
+    m_motionVectors.Draw(m_perFrameContext);
 
     // We now draw to the first framebuffer, but read from the second one for warping.
-    m_framebuffer.BindRead(1);
-    m_framebuffer.BindDraw(0);
+    //m_framebuffer.BindRead(1);
+    //m_framebuffer.BindDraw(0);
+
+    // TEST: Copy for now, no warp
+    //glBlitFramebuffer(0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
+    //                  0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
+    //                  GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
     // Draw previous frame image warped via per-pixel mesh and warp shader
     // ToDo: ComputeGridAlphaValues
     // ToDo: Per-Pixel and warp stuff
+
+    //m_framebuffer.Bind(0);
 
     // Draw audio-data-related stuff
     for (auto& shape : m_customShapes)
@@ -177,23 +183,35 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     {
         wave->Draw(m_perFrameContext);
     }
-    m_waveform.Draw();
+    m_waveform.Draw(m_perFrameContext);
 
-    // ToDo: Sprite drawing would go here.
+    // Done in DrawSprites() in Milkdrop
+    if (*m_perFrameContext.darken_center > 0)
+    {
+        m_darkenCenter.Draw();
+    }
+    m_border.Draw(m_perFrameContext);
 
     // Todo: Song title anim would go here
 
     // Copy pixels from framebuffer index 0 to 1
-    m_framebuffer.BindRead(0);
-    m_framebuffer.BindDraw(1);
-    glBlitFramebuffer(0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
-                      0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
-                      GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    //m_framebuffer.BindRead(0);
+    //m_framebuffer.BindDraw(1);
+    //glBlitFramebuffer(0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
+    //                  0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
+    //                  GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
     // ToDo: Apply composite shader
-    m_framebuffer.Bind(0);
+    //m_framebuffer.Bind(0);
 
     // ToDo: Draw user sprites (can have evaluated code)
+
+    // TEST: Copy result to default framebuffer
+    //glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    //glBlitFramebuffer(0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
+    //                  0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
+    //                  GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
 }
 
 

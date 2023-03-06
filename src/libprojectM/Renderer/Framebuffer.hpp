@@ -77,22 +77,34 @@ public:
     /**
      * @brief Adds a new color attachment to the framebuffer.
      * The texture is always created in RGBA format.
+     * @param framebufferIndex The framebuffer index.
      * @param index The index of the attachment, at least indices 0-7 are guaranteed to be available.
      */
     void CreateColorAttachment(int framebufferIndex, int attachmentIndex);
 
     /**
+     * @brief Returns the texture ID of the given framebuffer and color attachment.
+     * @param framebufferIndex The framebuffer index.
+     * @param attachmentIndex The index of the attachment to return the texture for.
+     * @return The texture ID or 0 if no texture is assigned.
+     */
+    auto GetColorAttachmentTexture(int framebufferIndex, int attachmentIndex) const -> GLuint;
+
+    /**
      * @brief Adds a depth attachment to the framebuffer.
+     * @param framebufferIndex The framebuffer index.
      */
     void CreateDepthAttachment(int framebufferIndex);
 
     /**
      * @brief Adds a stencil buffer attachment to the framebuffer.
+     * @param framebufferIndex The framebuffer index.
      */
     void CreateStencilAttachment(int framebufferIndex);
 
     /**
      * @brief Adds a depth stencil buffer attachment to the framebuffer.
+     * @param framebufferIndex The framebuffer index.
      */
     void CreateDepthStencilAttachment(int framebufferIndex);
 

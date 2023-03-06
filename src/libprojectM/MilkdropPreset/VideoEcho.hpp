@@ -1,23 +1,21 @@
 #pragma once
 
-#include "projectM-opengl.h"
-#include "Renderer/RenderItem.hpp"
+#include "PerFrameContext.hpp"
+#include "PresetState.hpp"
 
-enum Orientation
-{
-	Normal=0, FlipX, FlipY, FlipXY
-};
+#include "projectM-opengl.h"
+
+#include <Renderer/RenderItem.hpp>
 
 class VideoEcho: public RenderItem
 {
 public:
-	VideoEcho();
-	virtual ~VideoEcho();
+	VideoEcho() = delete;
+    explicit VideoEcho(PresetState& presetState);
 
-	float a;
-	float zoom;
-	Orientation orientation;
+    void InitVertexAttrib() override;
 
-    void InitVertexAttrib();
-	void Draw(RenderContext &context);
+	void Draw(PerFrameContext& perFrameContext);
+private:
+    PresetState& m_presetState; //!< The global preset state.
 };

@@ -47,7 +47,7 @@ add_library(projectM_main OBJECT
         resource.h
         wipemalloc.cpp
         wipemalloc.h
-        )
+        Audio/AudioConstants.hpp)
 
 target_link_libraries(projectM_main
         PUBLIC

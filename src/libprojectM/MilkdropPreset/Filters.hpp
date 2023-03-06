@@ -1,35 +1,28 @@
 #pragma once
 
-#include "Renderer/RenderItem.hpp"
+#include "PresetState.hpp"
 
-class Brighten : public RenderItem
+#include <Renderer/RenderItem.hpp>
+
+class Filters : public RenderItem
 {
 public:
-    Brighten(){ Init(); }
-    void InitVertexAttrib();
-	void Draw(RenderContext &context);
-};
+    Filters() = delete;
+    explicit Filters(PresetState& presetState);
 
-class Darken : public RenderItem
-{
-public:
-    Darken(){ Init(); }
     void InitVertexAttrib();
-	void Draw(RenderContext &context);
-};
 
-class Invert : public RenderItem
-{
-public:
-    Invert(){ Init(); }
-    void InitVertexAttrib();
-	void Draw(RenderContext &context);
-};
+    /**
+     * @brief Brightens the image
+     */
+    void Brighten();
 
-class Solarize : public RenderItem
-{
-public:
-    Solarize(){ Init(); }
-    void InitVertexAttrib();
-	void Draw(RenderContext &context);
+    void Darken();
+
+    void Invert();
+
+    void Solarize();
+
+private:
+    PresetState& m_presetState; //!< The global preset state.
 };

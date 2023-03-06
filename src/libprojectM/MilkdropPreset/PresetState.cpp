@@ -2,9 +2,18 @@
 
 #include "PresetFileParser.hpp"
 
+#include "Renderer/StaticGlShaders.hpp"
+
+const glm::mat4 PresetState::orthogonalProjection = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -40.0f, 40.0f);
+
 PresetState::PresetState()
     : globalMemory(projectm_eval_memory_buffer_create())
 {
+    auto staticShaders = StaticGlShaders::Get();
+    untexturedShader.CompileProgram(staticShaders->GetV2fC4fVertexShader(),
+                                      staticShaders->GetV2fC4fFragmentShader());
+    texturedShader.CompileProgram(staticShaders->GetV2fC4fT2fVertexShader(),
+                                    staticShaders->GetV2fC4fT2fFragmentShader());
 }
 
 PresetState::~PresetState()

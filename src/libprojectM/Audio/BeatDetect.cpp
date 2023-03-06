@@ -67,6 +67,27 @@ auto BeatDetect::GetPCMScale() const noexcept -> float
 }
 
 
+auto BeatDetect::GetFrameAudioData() const -> FrameAudioData
+{
+    FrameAudioData data{};
+
+    pcm.GetPcm(data.waveformLeft.data(), CHANNEL_L, WaveformSamples);
+    pcm.GetPcm(data.waveformRight.data(), CHANNEL_R, WaveformSamples);
+    pcm.GetSpectrum(data.spectrumLeft.data(), CHANNEL_L, SpectrumSamples);
+
+    data.vol = vol;
+    data.volAtt = volAtt;
+
+    data.bass = bass;
+    data.bassAtt = bassAtt;
+    data.mid = mid;
+    data.midAtt = midAtt;
+    data.treb = treb;
+    data.trebAtt = trebAtt;
+
+    return data;
+}
+
 auto BeatDetect::CalculateBeatStatistics() -> void
 {
     volOld = vol;
@@ -113,6 +134,7 @@ auto BeatDetect::CalculateBeatStatistics() -> void
     float const volIntensity = bassIntensity + midIntensity + trebIntensity;
     updateBand(vol, volAtt, volSmoothed, volIntensity);
 }
+
 
 
 auto BeatDetect::LowPassFilter::Update(float nextValue) noexcept -> void

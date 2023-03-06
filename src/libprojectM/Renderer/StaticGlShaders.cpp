@@ -1,4 +1,4 @@
-#include "StaticGlShaders.h"
+#include "StaticGlShaders.hpp"
 
 #include "projectM-opengl.h"
 

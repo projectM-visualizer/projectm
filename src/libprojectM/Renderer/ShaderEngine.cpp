@@ -1,6 +1,6 @@
 #include "ShaderEngine.hpp"
 
-#include "StaticGlShaders.h"
+#include "StaticGlShaders.hpp"
 #include "Texture.hpp"
 #include <glm/gtc/type_ptr.hpp>
 

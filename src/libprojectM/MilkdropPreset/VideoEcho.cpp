@@ -9,64 +9,80 @@
 #include "Renderer/ShaderEngine.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
-VideoEcho::VideoEcho(): a(0), zoom(1), orientation(Normal)
+VideoEcho::VideoEcho(PresetState& presetState)
+    : RenderItem()
+    , m_presetState(presetState)
 {
-    Init();
+    RenderItem::Init();
 }
 
-VideoEcho::~VideoEcho()
+void VideoEcho::InitVertexAttrib()
 {
-}
-
-void VideoEcho::InitVertexAttrib() {
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, (void*)0);   // Positions
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, nullptr); // Positions
 
     glDisableVertexAttribArray(1);
 
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, (void*)(sizeof(float)*2)); // Textures
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, reinterpret_cast<void*>(sizeof(float) * 2)); // Textures
 }
 
-void VideoEcho::Draw(RenderContext &context)
+void VideoEcho::Draw(PerFrameContext& perFrameContext)
 {
-		int flipx=1, flipy=1;
-		switch (orientation)
-		{
-			case Normal: flipx=1;flipy=1;break;
-			case FlipX: flipx=-1;flipy=1;break;
-			case FlipY: flipx=1;flipy=-1;break;
-			case FlipXY: flipx=-1;flipy=-1;break;
-			default: flipx=1;flipy=1; break;
-		}
+    int orientation = static_cast<int>(m_presetState.videoEchoOrientation) % 4;
+    int flipX;
+    int flipY;
+    switch (orientation)
+    {
+        case 0:
+            flipX = 1;
+            flipY = 1;
+            break;
+        case 1:
+            flipX = -1;
+            flipY = 1;
+            break;
+        case 2:
+            flipX = 1;
+            flipY = -1;
+            break;
+        case 3:
+            flipX = -1;
+            flipY = -1;
+            break;
+        default:
+            flipX = 1;
+            flipY = 1;
+            break;
+    }
 
     float buffer_data[8][2] = {
-        {-0.5f*flipx, -0.5f*flipy},
+        {-0.5f * flipX, -0.5f * flipY},
         {0.0, 1.0},
 
-        {-0.5f*flipx,  0.5f*flipy},
+        {-0.5f * flipX, 0.5f * flipY},
         {0.0, 0.0},
 
-        { 0.5f*flipx,  0.5f*flipy},
+        {0.5f * flipX, 0.5f * flipY},
         {1.0, 0.0},
 
-        { 0.5f*flipx, -0.5f*flipy},
-        {1.0, 1.0}
-    };
+        {0.5f * flipX, -0.5f * flipY},
+        {1.0, 1.0}};
 
     glm::mat4 mat_first_translation = glm::mat4(1.0);
     mat_first_translation[3][0] = -0.5;
     mat_first_translation[3][1] = -0.5;
 
-    glm::mat4  mat_scale = glm::mat4(1.0);
-    mat_scale[0][0] = 1.0/zoom;
-    mat_scale[1][1] = 1.0/zoom;
+    glm::mat4 mat_scale = glm::mat4(1.0);
+    mat_scale[0][0] = 1.0f / static_cast<float>(m_presetState.videoEchoZoom);
+    mat_scale[1][1] = 1.0f / static_cast<float>(m_presetState.videoEchoZoom);
 
-    glm::mat4  mat_second_translation = glm::mat4(1.0);
+    glm::mat4 mat_second_translation = glm::mat4(1.0);
     mat_second_translation[3][0] = 0.5;
     mat_second_translation[3][1] = 0.5;
 
-    for (int i = 1; i < 8; i+=2) {
+    for (int i = 1; i < 8; i += 2)
+    {
         glm::vec4 texture = glm::vec4(buffer_data[i][0], buffer_data[i][1], 0, 1);
         texture = mat_first_translation * texture;
         texture = mat_scale * texture;
@@ -84,16 +100,14 @@ void VideoEcho::Draw(RenderContext &context)
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glUseProgram(context.programID_v2f_c4f_t2f);
-
-    glUniformMatrix4fv(context.uniform_v2f_c4f_t2f_vertex_transformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
-    glUniform1i(context.uniform_v2f_c4f_t2f_frag_texture_sampler, 0);
-
+    m_presetState.texturedShader.Bind();
+    m_presetState.texturedShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
+    m_presetState.texturedShader.SetUniformInt("texture_sampler", 0);
 
     //Now Blend the Video Echo
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glVertexAttrib4f(1, 1.0, 1.0, 1.0, a * masterAlpha);
+    glVertexAttrib4f(1, 1.0, 1.0, 1.0, static_cast<float>(m_presetState.videoEchoAlpha));
 
     glBindVertexArray(m_vaoID);
 
@@ -102,5 +116,5 @@ void VideoEcho::Draw(RenderContext &context)
 
     glBindVertexArray(0);
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }

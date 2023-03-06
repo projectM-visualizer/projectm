@@ -107,5 +107,9 @@ private:
     std::array<std::unique_ptr<CustomWaveform>, CustomWaveformCount> m_customWaveforms; //!< Custom waveforms in this preset.
     std::array<std::unique_ptr<CustomShape>, CustomShapeCount> m_customShapes; //!< Custom shapes in this preset.
 
+    DarkenCenter m_darkenCenter; //!< Center darkening effect.
+    Border m_border; //!< Inner/outer borders.
+    Filters m_filters; //!< Various post-processing filters, applied if no composite shader is used.
+
     friend class MilkdropPresetFactory;
 };

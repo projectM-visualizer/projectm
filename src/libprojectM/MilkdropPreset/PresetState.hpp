@@ -7,10 +7,14 @@
 
 #include "Constants.hpp"
 
-#include "Audio/FrameAudioData.hpp"
+#include <Audio/FrameAudioData.hpp>
+
 #include <Renderer/RenderContext.hpp>
+#include <Renderer/Shader.hpp>
 
 #include <projectm-eval.h>
+
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <string>
 
@@ -146,4 +150,11 @@ public:
 
     std::string warpShader; //!< Warp shader code.
     std::string compositeShader; //!< Composite shader code.
+
+    Shader untexturedShader; //!< Shader used to draw untextured primitives, e.g. waveforms.
+    Shader texturedShader; //!< Shader used to draw textured primitives, e.g. textured shapes and the warp mesh.
+
+    int mainTextureId{}; //!< ID of the previous frame texture.
+
+    static const glm::mat4 orthogonalProjection;
 };
