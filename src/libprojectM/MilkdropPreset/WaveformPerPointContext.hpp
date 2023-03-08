@@ -27,13 +27,9 @@ public:
      * @brief Loads the current read-only state values into the expression evaluator variables.
      * This is done once per frame/waveform for a subset of the per-point variables, specifically
      * those marked as "read-only". All other variables are assigned/reset for each rendered point.
-     * @param state The preset state container.
-     * @param presetPerFrameContext The preset per-frame context (for q vars).
-     * @param waveform The waveform this context belongs to.
+     * @param presetPerFrameContext The preset per-frame context.
      */
-    void LoadReadOnlyStateVariables(PresetState& state,
-                                    const PerFrameContext& presetPerFrameContext,
-                                    CustomWaveform& waveform);
+    void LoadReadOnlyStateVariables(const PerFrameContext& presetPerFrameContext);
 
     /**
      * @brief Compiles the per-point code and stores the code handle in the class.

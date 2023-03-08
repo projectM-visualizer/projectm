@@ -39,7 +39,7 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
     glLineWidth(1);
 
     m_presetState.untexturedShader.Bind();
-    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
+    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
 
     glBindVertexArray(m_vaoID);
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
@@ -81,9 +81,8 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
         // Always draw "thick" dots.
         const auto iterations = m_presetState.waveThick || m_presetState.waveDots ? 4 : 1;
 
-        // Need to use +/- 1.0 here instead of 2.0 used in Milkdrop to achieve the same rendering result.
-        const auto incrementX = 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
-        const auto incrementY = 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeY);
+        const auto incrementX = 2.0f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
+        const auto incrementY = 2.0f / static_cast<float>(m_presetState.renderContext.viewportSizeY);
 
         GLuint drawType = m_presetState.waveDots ? GL_POINTS : (m_loop ? GL_LINE_LOOP : GL_LINE_STRIP);
 
@@ -158,40 +157,55 @@ void Waveform::MaximizeColors(const PerFrameContext& presetPerFrameContext)
     //
     //forces max color value to 1.0 and scales
     // the rest accordingly
+    int texsize = std::max(m_presetState.renderContext.viewportSizeX, m_presetState.renderContext.viewportSizeY);
+
+
     if (m_mode == Mode::Blob2 || m_mode == Mode::ExplosiveHash)
     {
-        switch (m_presetState.renderContext.texsize)
+        if (texsize <= 256)
         {
-            case 256:
-                m_tempAlpha *= 0.07f;
-                break;
-            case 512:
-                m_tempAlpha *= 0.09f;
-                break;
-            case 1024:
-                m_tempAlpha *= 0.11f;
-                break;
-            case 2048:
-                m_tempAlpha *= 0.13f;
-                break;
+            m_tempAlpha *= 0.07f;
+        }
+        else if (texsize <= 512)
+        {
+            m_tempAlpha *= 0.09f;
+        }
+        else if (texsize <= 1024)
+        {
+            m_tempAlpha *= 0.11f;
+        }
+        else if (texsize <= 2048)
+        {
+            m_tempAlpha *= 0.13f;
+        }
+        else
+        {
+            // For larger screens, e.g. 4K
+            m_tempAlpha *= 0.15f;
         }
     }
     else if (m_mode == Mode::Blob3)
     {
-        switch (m_presetState.renderContext.texsize)
+        if (texsize <= 256)
         {
-            case 256:
-                m_tempAlpha *= 0.075f;
-                break;
-            case 512:
-                m_tempAlpha *= 0.15f;
-                break;
-            case 1024:
-                m_tempAlpha *= 0.22f;
-                break;
-            case 2048:
-                m_tempAlpha *= 0.33f;
-                break;
+            m_tempAlpha *= 0.075f;
+        }
+        else if (texsize <= 512)
+        {
+            m_tempAlpha *= 0.15f;
+        }
+        else if (texsize <= 1024)
+        {
+            m_tempAlpha *= 0.22f;
+        }
+        else if (texsize <= 2048)
+        {
+            m_tempAlpha *= 0.33f;
+        }
+        else
+        {
+            // For larger screens, e.g. 4K
+            m_tempAlpha *= 0.44f;
         }
         m_tempAlpha *= 1.3f;
         m_tempAlpha *= std::pow(m_presetState.audioData.treb, 2.0f);
@@ -207,7 +221,7 @@ void Waveform::MaximizeColors(const PerFrameContext& presetPerFrameContext)
         m_tempAlpha = 1.0f;
     }
 
-    if (*presetPerFrameContext.wave_brighten)
+    if (*presetPerFrameContext.wave_brighten > 0)
     {
         constexpr float fMaximizeWaveColorAmount = 1.0f;
         float cr{static_cast<float>(*presetPerFrameContext.wave_r)};
@@ -245,7 +259,6 @@ void Waveform::MaximizeColors(const PerFrameContext& presetPerFrameContext)
 
 void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
 {
-    constexpr float PI{3.14159274101257324219f};
     constexpr size_t audioSamples{512};
 
     delete[] m_wave1Vertices;
@@ -313,8 +326,8 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
         mysteryWaveParam = mysteryWaveParam * 2 - 1;
     }
 
-    auto const waveX = static_cast<float>(*presetPerFrameContext.wave_x);
-    auto const waveY = static_cast<float>(*presetPerFrameContext.wave_y);
+    auto const waveX = 2.0f * static_cast<float>(*presetPerFrameContext.wave_x) - 1.0f;
+    auto const waveY = 2.0f * static_cast<float>(*presetPerFrameContext.wave_y) - 1.0f;
 
     switch (m_mode)
     {
@@ -342,8 +355,6 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
                     radius = radius2 * (1.0f - mix) + radius * (mix);
                 }
 
-                radius *= 0.5f;
-
                 m_wave1Vertices[i].x = radius * cosf(angle) * aspectY + waveX;
                 m_wave1Vertices[i].y = radius * sinf(angle) * aspectX + waveY;
             }
@@ -358,8 +369,8 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
 
             for (int i = 0; i < m_samples; i++)
             {
-                float const radius = (0.53f + 0.43f * pcmDataR[i] + mysteryWaveParam) * 0.5f;
-                float const angle = pcmDataL[i + 32] * PI * 0.5f + m_presetState.renderContext.time * 2.3f;
+                float const radius = (0.53f + 0.43f * pcmDataR[i] + mysteryWaveParam);
+                float const angle = pcmDataL[i + 32] * 1.57f + m_presetState.renderContext.time * 2.3f;
 
                 m_wave1Vertices[i].x = radius * cosf(angle) * aspectY + waveX;
                 m_wave1Vertices[i].y = radius * sinf(angle) * aspectX + waveY;
@@ -376,8 +387,8 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
 
             for (int i = 0; i < m_samples; i++)
             {
-                m_wave1Vertices[i].x = 0.5f * pcmDataR[i] * aspectY + waveX;
-                m_wave1Vertices[i].y = 0.5f * pcmDataL[i + 32] * aspectX + waveY;
+                m_wave1Vertices[i].x = pcmDataR[i] * aspectY + waveX;
+                m_wave1Vertices[i].y = pcmDataL[i + 32] * aspectX + waveY;
             }
 
             break;
@@ -403,17 +414,15 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
             for (int i = 0; i < m_samples; i++)
             {
                 assert((i + 25 + sampleOffset) < 512);
-                m_wave1Vertices[i].x = (-1.0f + 2.0f * (i * inverseSamples)) * 0.5f + waveX;
-                m_wave1Vertices[i].y = pcmDataL[i + sampleOffset] * 0.235f + waveY;
-                m_wave1Vertices[i].x += pcmDataR[i + 25 + sampleOffset] * 0.22f;
+                m_wave1Vertices[i].x = -1.0f + 2.0f * (i * inverseSamples) + waveX;
+                m_wave1Vertices[i].y = pcmDataL[i + sampleOffset] * 0.47f + waveY;
+                m_wave1Vertices[i].x += pcmDataR[i + 25 + sampleOffset] * 0.44f;
 
                 // Momentum
                 if (i > 1)
                 {
-                    m_wave1Vertices[i].x =
-                        m_wave1Vertices[i].x * w2 + w1 * (m_wave1Vertices[i - 1].x * 2.0f - m_wave1Vertices[i - 2].x);
-                    m_wave1Vertices[i].y =
-                        m_wave1Vertices[i].y * w2 + w1 * (m_wave1Vertices[i - 1].y * 2.0f - m_wave1Vertices[i - 2].y);
+                    m_wave1Vertices[i].x = m_wave1Vertices[i].x * w2 + w1 * (m_wave1Vertices[i - 1].x * 2.0f - m_wave1Vertices[i - 2].x);
+                    m_wave1Vertices[i].y = m_wave1Vertices[i].y * w2 + w1 * (m_wave1Vertices[i - 1].y * 2.0f - m_wave1Vertices[i - 2].y);
                 }
             }
             break;
@@ -431,8 +440,8 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
             {
                 const float x0 = (pcmDataR[i] * pcmDataL[i + 32] + pcmDataL[i] * pcmDataR[i + 32]);
                 const float y0 = (pcmDataR[i] * pcmDataR[i] - pcmDataL[i + 32] * pcmDataL[i + 32]);
-                m_wave1Vertices[i].x = ((x0 * cosineRotation - y0 * sineRotation) * 0.5f * aspectY) + waveX;
-                m_wave1Vertices[i].y = ((x0 * sineRotation + y0 * cosineRotation) * 0.5f * aspectX) + waveY;
+                m_wave1Vertices[i].x = ((x0 * cosineRotation - y0 * sineRotation) * aspectY) + waveX;
+                m_wave1Vertices[i].y = ((x0 * sineRotation + y0 * cosineRotation) * aspectX) + waveY;
             }
             break;
         }
@@ -449,7 +458,7 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
             {
                 m_samples = RenderWaveformSamples / 2;
 
-                if (m_samples > m_presetState.viewportWidth / 3)
+                if (m_samples > m_presetState.renderContext.viewportSizeX / 3)
                 {
                     m_samples /= 3;
                 }
@@ -463,17 +472,17 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
 
             const int sampleOffset = (RenderWaveformSamples - m_samples) / 2;
 
-            const float angle = PI * 0.5f * mysteryWaveParam; // from -PI/2 to PI/2
+            const float angle = 1.57f * mysteryWaveParam; // from -PI/2 to PI/2
             float dx = cosf(angle);
             float dy = sinf(angle);
 
             std::array<float, 2> edgeX{
-                waveX * cosf(angle + PI * 0.5f) - dx * 3.0f,
-                waveX * cosf(angle + PI * 0.5f) + dx * 3.0f};
+                waveX * cosf(angle + 1.57f) - dx * 3.0f,
+                waveX * cosf(angle + 1.57f) + dx * 3.0f};
 
             std::array<float, 2> edgeY{
-                waveX * sinf(angle + PI * 0.5f) - dy * 3.0f,
-                waveX * sinf(angle + PI * 0.5f) + dy * 3.0f};
+                waveX * sinf(angle + 1.57f) - dy * 3.0f,
+                waveX * sinf(angle + 1.57f) + dy * 3.0f};
 
             for (int i = 0; i < 2; i++)
             {
@@ -531,17 +540,15 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
             dy = (edgeY[1] - edgeY[0]) / static_cast<float>(m_samples);
 
             const float angle2 = atan2f(dy, dx);
-            const float perpetualDX = cosf(angle2 + PI * 0.5f);
-            const float perpetualDY = sinf(angle2 + PI * 0.5f);
+            const float perpetualDX = cosf(angle2 + 1.57f);
+            const float perpetualDY = sinf(angle2 + 1.57f);
 
             if (m_mode == Mode::Line)
             {
                 for (int i = 0; i < m_samples; i++)
                 {
-                    m_wave1Vertices[i].x =
-                        edgeX[0] + dx * static_cast<float>(i) + perpetualDX * 0.25f * pcmDataL[i + sampleOffset];
-                    m_wave1Vertices[i].y =
-                        edgeY[0] + dy * static_cast<float>(i) + perpetualDY * 0.25f * pcmDataL[i + sampleOffset];
+                    m_wave1Vertices[i].x = edgeX[0] + dx * static_cast<float>(i) + perpetualDX * 0.25f * pcmDataL[i + sampleOffset];
+                    m_wave1Vertices[i].y = edgeY[0] + dy * static_cast<float>(i) + perpetualDY * 0.25f * pcmDataL[i + sampleOffset];
                 }
             }
             else if (m_mode == Mode::SpectrumLine)
@@ -555,7 +562,7 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
             }
             else
             {
-                float const separation = powf(waveY * 0.25f + 0.25f, 2.0f);
+                float const separation = powf(waveY * 0.5f + 0.5f, 2.0f);
                 for (int i = 0; i < m_samples; i++)
                 {
                     m_wave1Vertices[i].x = edgeX[0] + dx * static_cast<float>(i) +
@@ -574,19 +581,6 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
 
         default:
             break;
-    }
-
-    // Reverse all Y coordinates to stay consistent with the pre-VMS milkdrop
-    for (int i = 0; i < m_samples; i++)
-    {
-        if (m_wave1Vertices)
-        {
-            m_wave1Vertices[i].y = 1.0f - m_wave1Vertices[i].y;
-        }
-        if (m_wave2Vertices)
-        {
-            m_wave2Vertices[i].y = 1.0f - m_wave2Vertices[i].y;
-        }
     }
 }
 

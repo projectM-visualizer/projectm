@@ -88,18 +88,17 @@ void Shader::BindTextures()
     for (const auto& samplerIt : m_textures)
     {
         std::string const texName = samplerIt.first;
-        Texture* texture = samplerIt.second.first;
-        Sampler* sampler = samplerIt.second.second;
+        auto* texture = samplerIt.second.first;
+        const auto* sampler = samplerIt.second.second;
 
         std::string const samplerName = "sampler_" + texName;
 
         texSizes[texName] = texture;
-        texSizes[texture->name] = texture;
+        texSizes[texture->Name()] = texture;
 
         // https://www.khronos.org/opengl/wiki/Sampler_(GLSL)#Binding_textures_to_samplers
-        glActiveTexture(GL_TEXTURE0 + texNum);
-        glBindTexture(texture->type, texture->texID);
-        glBindSampler(texNum, sampler->samplerID);
+        texture->Bind(GL_TEXTURE0 + texNum);
+        sampler->Bind(texNum);
 
         SetUniformInt(samplerName.c_str(), texNum);
 
@@ -113,10 +112,10 @@ void Shader::BindTextures()
 
         std::string const texSizeName = "texsize_" + texSize.first;
 
-        SetUniformFloat4(texSizeName.c_str(), {texture->width,
-                                               texture->height,
-                                               1 / (float) texture->width,
-                                               1 / (float) texture->height});
+        SetUniformFloat4(texSizeName.c_str(), {texture->Width(),
+                                               texture->Height(),
+                                               1 / (float) texture->Width(),
+                                               1 / (float) texture->Height()});
     }
 }
 

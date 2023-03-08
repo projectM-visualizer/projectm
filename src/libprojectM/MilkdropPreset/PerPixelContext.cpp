@@ -76,16 +76,20 @@ void PerPixelContext::LoadStateReadOnlyVariables(PresetState& state, PerFrameCon
     *bass_att = static_cast<PRJM_EVAL_F>(*perFrameState.bass_att);
     *mid_att = static_cast<PRJM_EVAL_F>(*perFrameState.mid_att);
     *treb_att = static_cast<PRJM_EVAL_F>(*perFrameState.treb_att);
-    *meshx = static_cast<PRJM_EVAL_F>(state.gridX);
-    *meshy = static_cast<PRJM_EVAL_F>(state.gridY);
-    *pixelsx = static_cast<PRJM_EVAL_F>(state.viewportWidth);
-    *pixelsy = static_cast<PRJM_EVAL_F>(state.viewportHeight);
-    *aspectx = static_cast<PRJM_EVAL_F>(state.aspectX);
-    *aspecty = static_cast<PRJM_EVAL_F>(state.aspectY);
+    *meshx = static_cast<PRJM_EVAL_F>(state.renderContext.perPixelMeshX);
+    *meshy = static_cast<PRJM_EVAL_F>(state.renderContext.perPixelMeshY);
+    *pixelsx = static_cast<PRJM_EVAL_F>(state.renderContext.viewportSizeX);
+    *pixelsy = static_cast<PRJM_EVAL_F>(state.renderContext.viewportSizeY);
+    *aspectx = static_cast<PRJM_EVAL_F>(state.renderContext.aspectX);
+    *aspecty = static_cast<PRJM_EVAL_F>(state.renderContext.aspectY);
 }
 
-void PerPixelContext::LoadStateReadWriteVariables(PresetState& state, PerFrameContext& perFrameState)
+void PerPixelContext::LoadPerFrameQVariables(PresetState& state, PerFrameContext& perFrameState)
 {
+    for (int q = 0; q < QVarCount; q++)
+    {
+        *q_vars[q] = *perFrameState.q_vars[q];
+    }
 }
 
 void PerPixelContext::CompilePerPixelCode(const std::string& perPixelCode)

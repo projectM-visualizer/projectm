@@ -46,8 +46,8 @@ BlurTexture::~BlurTexture()
 void BlurTexture::UpdateFromTexture(const BlurParameters& parameters, const Texture& sourceTexture)
 {
     if (parameters.level == BlurLevel::None ||
-        sourceTexture.width == 0 ||
-        sourceTexture.height == 0)
+        sourceTexture.Width() == 0 ||
+        sourceTexture.Height() == 0)
     {
         return;
     }
@@ -121,7 +121,7 @@ void BlurTexture::UpdateFromTexture(const BlurParameters& parameters, const Text
             m_blur2Shader.SetUniformInt("texture_sampler", 0);
         }
 
-        glViewport(0, 0, m_blurTextures[pass]->width, m_blurTextures[pass]->height);
+        glViewport(0, 0, m_blurTextures[pass]->Width(), m_blurTextures[pass]->Height());
 
         // hook up correct source texture - assume there is only one, at stage 0
         if (pass == 0)
@@ -133,8 +133,8 @@ void BlurTexture::UpdateFromTexture(const BlurParameters& parameters, const Text
             m_blurTextures[pass - 1]->Bind(0);
         }
 
-        float srcWidth = static_cast<float>((pass == 0) ? sourceTexture.width : m_blurTextures[pass - 1]->width);
-        float srcHeight = static_cast<float>((pass == 0) ? sourceTexture.height : m_blurTextures[pass - 1]->height);
+        float srcWidth = static_cast<float>((pass == 0) ? sourceTexture.Width() : m_blurTextures[pass - 1]->Width());
+        float srcHeight = static_cast<float>((pass == 0) ? sourceTexture.Height() : m_blurTextures[pass - 1]->Height());
 
         float scaleNow = scale[pass / 2];
         float biasNow = bias[pass / 2];
@@ -193,7 +193,7 @@ void BlurTexture::UpdateFromTexture(const BlurParameters& parameters, const Text
 
         // save to blur texture
         m_blurTextures[pass]->Bind(0);
-        glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, m_blurTextures[pass]->width, m_blurTextures[pass]->height);
+        glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, m_blurTextures[pass]->Width(), m_blurTextures[pass]->Height());
         m_blurTextures[pass]->Unbind(0);
     }
 
@@ -205,18 +205,19 @@ void BlurTexture::UpdateFromTexture(const BlurParameters& parameters, const Text
 
 void BlurTexture::AllocateTextures(const Texture& sourceTexture)
 {
+    int width = sourceTexture.Width();
+    int height = sourceTexture.Height();
+
     if (m_blurTextures[0] != nullptr &&
-        sourceTexture.width > 0 &&
-        sourceTexture.height > 0 &&
-        sourceTexture.width == m_sourceTextureWidth &&
-        sourceTexture.height == m_sourceTextureHeight)
+        width > 0 &&
+        height > 0 &&
+        width == m_sourceTextureWidth &&
+        height == m_sourceTextureHeight)
     {
         // Size unchanged, return.
         return;
     }
 
-    int width = sourceTexture.width;
-    int height = sourceTexture.height;
     for (size_t i = 0; i < m_blurTextures.size(); i++)
     {
         // main VS = 1024
@@ -236,12 +237,12 @@ void BlurTexture::AllocateTextures(const Texture& sourceTexture)
 
         std::string textureName = "blur" + std::to_string(i / 2 + 1) + ((i % 2) ? "" : "doNOTuseME");
         auto textureBlur = std::make_unique<Texture>(textureName, width2, height2, false);
-        textureBlur->getSampler(GL_CLAMP_TO_EDGE, GL_LINEAR);
+        textureBlur->Sampler(GL_CLAMP_TO_EDGE, GL_LINEAR);
 
         // This will automatically replace any old texture.
         m_blurTextures[i] = std::move(textureBlur);
     }
 
-    m_sourceTextureWidth = sourceTexture.width;
-    m_sourceTextureHeight = sourceTexture.height;
+    m_sourceTextureWidth = sourceTexture.Width();
+    m_sourceTextureHeight = sourceTexture.Height();
 }

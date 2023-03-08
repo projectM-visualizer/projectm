@@ -41,9 +41,9 @@ MilkdropShader::MilkdropShader(ShaderType type)
     } while (index < sizeof(m_randTranslation) / sizeof(m_randTranslation[0]));
 }
 
-void MilkdropShader::LoadCode(std::string presetShaderCode)
+void MilkdropShader::LoadCode(const std::string& presetShaderCode)
 {
-    m_presetShaderCode = std::move(presetShaderCode);
+    m_presetShaderCode = presetShaderCode;
 
     std::string program = m_presetShaderCode;
     GetReferencedSamplers(program);
@@ -53,6 +53,8 @@ void MilkdropShader::LoadCode(std::string presetShaderCode)
 
 void MilkdropShader::LoadTextures(TextureManager& textureManager)
 {
+    m_shader.Bind();
+
     // Add Milkdrop built-in textures
     m_shader.SetUniformTexture("main", textureManager.getTexture("main", GL_REPEAT, GL_LINEAR));
     m_shader.SetUniformTexture("main", textureManager.getTexture("main", GL_REPEAT, GL_LINEAR));
@@ -75,9 +77,11 @@ void MilkdropShader::LoadVariables(const PresetState& presetState)
 
     auto floatTime = static_cast<float>(presetState.presetTime);
     auto timeSincePresetStartWrapped = floatTime - static_cast<int>(floatTime / 10000.0) * 10000;
-    auto mipX = logf(static_cast<float>(presetState.viewportWidth)) / logf(2.0f);
-    auto mipY = logf(static_cast<float>(presetState.viewportWidth)) / logf(2.0f);
+    auto mipX = logf(static_cast<float>(presetState.renderContext.viewportSizeX)) / logf(2.0f);
+    auto mipY = logf(static_cast<float>(presetState.renderContext.viewportSizeY)) / logf(2.0f);
     auto mipAvg = 0.5f * (mipX + mipY);
+
+    m_shader.Bind();
 
     m_shader.SetUniformFloat4("rand_frame", {(rand() % 100) * .01,
                                              (rand() % 100) * .01,
@@ -88,10 +92,10 @@ void MilkdropShader::LoadVariables(const PresetState& presetState)
                                               m_randValues[2],
                                               m_randValues[3]});
 
-    m_shader.SetUniformFloat4("_c0", {presetState.aspectX,
-                                      presetState.aspectY,
-                                      1.0f / presetState.aspectX,
-                                      1.0f / presetState.aspectY});
+    m_shader.SetUniformFloat4("_c0", {presetState.renderContext.aspectX,
+                                      presetState.renderContext.aspectY,
+                                      1.0f / presetState.renderContext.aspectX,
+                                      1.0f / presetState.renderContext.aspectY});
     m_shader.SetUniformFloat4("_c1", {0.0,
                                       0.0,
                                       0.0,
@@ -116,10 +120,10 @@ void MilkdropShader::LoadVariables(const PresetState& presetState)
                                       presetState.blur3Min,
                                       presetState.blur1Min,
                                       presetState.blur1Max});
-    m_shader.SetUniformFloat4("_c7", {presetState.viewportWidth,
-                                      presetState.viewportHeight,
-                                      1 / static_cast<float>(presetState.viewportWidth),
-                                      1 / static_cast<float>(presetState.viewportHeight)});
+    m_shader.SetUniformFloat4("_c7", {presetState.renderContext.viewportSizeX,
+                                      presetState.renderContext.viewportSizeY,
+                                      1 / static_cast<float>(presetState.renderContext.viewportSizeX),
+                                      1 / static_cast<float>(presetState.renderContext.viewportSizeY)});
 
     m_shader.SetUniformFloat4("_c8", {0.5f + 0.5f * cosf(floatTime * 0.329f + 1.2f),
                                       0.5f + 0.5f * cosf(floatTime * 1.293f + 3.9f),
@@ -429,7 +433,7 @@ void MilkdropShader::TranspileHLSLShader(std::string& program)
     {
         Texture* texture = sampler.second.first;
 
-        if (texture->type == GL_TEXTURE_3D)
+        if (texture->Type() == GL_TEXTURE_3D)
         {
             sourcePreprocessed.insert(0, "uniform sampler3D sampler_" + sampler.first + ";\n");
         }
@@ -439,7 +443,7 @@ void MilkdropShader::TranspileHLSLShader(std::string& program)
         }
 
         textureSizes.insert(sampler.first);
-        textureSizes.insert(texture->name);
+        textureSizes.insert(texture->Name());
     }
 
     // Declare texsizes

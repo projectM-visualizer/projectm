@@ -20,6 +20,7 @@ CustomWaveform::CustomWaveform(PresetState& presetState)
     , m_perFrameContext(presetState.globalMemory, &presetState.globalRegisters)
     , m_perPointContext(presetState.globalMemory, &presetState.globalRegisters)
 {
+    RenderItem::Init();
 }
 
 void CustomWaveform::InitVertexAttrib()
@@ -76,20 +77,21 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     static_assert(WaveformMaxPoints <= libprojectM::Audio::WaveformSamples, "CustomWaveformMaxPoints is larger than WaveformSamples");
     static_assert(RenderWaveformSamples <= WaveformMaxPoints, "CustomWaveformSamples is larger than CustomWaveformMaxPoints");
 
-    int sampleCount{m_samples};
+    if (!m_enabled)
+    {
+        return;
+    }
+
     int const maxSampleCount{m_spectrum ? libprojectM::Audio::SpectrumSamples : RenderWaveformSamples};
-    sampleCount = std::min(sampleCount, maxSampleCount);
-    sampleCount -= m_sep;
 
     // Initialize and execute per-frame code
-    m_samples = sampleCount;
     LoadPerFrameEvaluationVariables(presetPerFrameContext);
     m_perFrameContext.ExecutePerFrameCode();
 
     // Copy Q and T vars to per-point context
     InitPerPointEvaluationVariables();
 
-    sampleCount = std::min(WaveformMaxPoints, static_cast<int>(*m_perFrameContext.samples));
+    int sampleCount = std::min(WaveformMaxPoints, static_cast<int>(*m_perFrameContext.samples));
 
     // If there aren't enough samples to draw a single line or dot, skip drawing the waveform.
     if (sampleCount < 2 || (m_useDots && sampleCount < 1))
@@ -104,12 +106,12 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
                            ? m_presetState.audioData.spectrumRight.data()
                            : m_presetState.audioData.waveformRight.data();
 
-    const float mult = m_scaling * m_presetState.waveScale * (m_spectrum ? 0.05f : 1.0f); // ToDo: Use original "0.15f : 0.004f"?
+    const float mult = m_scaling * m_presetState.waveScale * (m_spectrum ? 0.15f : 0.004f);
 
     // PCM data smoothing
-    const int offset1 = m_spectrum ? 0 : (WaveformMaxPoints - sampleCount) / 2 - m_sep / 2;
-    const int offset2 = m_spectrum ? 0 : (WaveformMaxPoints - sampleCount) / 2 + m_sep / 2;
-    const int t = m_spectrum ? static_cast<int>((WaveformMaxPoints - m_sep) / static_cast<float>(sampleCount)) : 1;
+    const int offset1 = m_spectrum ? 0 : (maxSampleCount - sampleCount) / 2 - m_sep / 2;
+    const int offset2 = m_spectrum ? 0 : (maxSampleCount - sampleCount) / 2 + m_sep / 2;
+    const int t = m_spectrum ? static_cast<int>(static_cast<float>(maxSampleCount - m_sep) / static_cast<float>(sampleCount)) : 1;
     const float mix1 = std::pow(m_smoothing * 0.98f, 0.5f);
     const float mix2 = 1.0f - mix1;
 
@@ -151,29 +153,17 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
         m_perPointContext.ExecutePerPointCode();
 
         // ToDo: Tweak coordinate multiplications to match DirectX/OpenGL differences.
-        pointsTransformed[sample].x = static_cast<float>((*m_perPointContext.x * 2.0 - 1.0) * m_presetState.aspectX);
-        pointsTransformed[sample].y = 1.0f - static_cast<float>((*m_perPointContext.y * 2.0 + 1.0) * m_presetState.aspectY);
+        pointsTransformed[sample].x = static_cast<float>((*m_perPointContext.x * 2.0 - 1.0) * m_presetState.renderContext.invAspectX);
+        pointsTransformed[sample].y = static_cast<float>((*m_perPointContext.y * -2.0 + 1.0) * m_presetState.renderContext.invAspectY);
 
         pointsTransformed[sample].r = static_cast<float>(*m_perPointContext.r);
         pointsTransformed[sample].g = static_cast<float>(*m_perPointContext.g);
         pointsTransformed[sample].b = static_cast<float>(*m_perPointContext.b);
-        pointsTransformed[sample].a = static_cast<float>(*m_perPointContext.a) * masterAlpha;
+        pointsTransformed[sample].a = static_cast<float>(*m_perPointContext.a);
     }
 
     std::vector<ColoredPoint> pointsSmoothed(sampleCount * 2);
     auto smoothedVertexCount = SmoothWave(pointsTransformed.data(), sampleCount, pointsSmoothed.data());
-
-    m_presetState.untexturedShader.Bind();
-    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
-
-    if (m_additive)
-    {
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    }
-    else
-    {
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    }
 
 #if USE_GLES == 0
     glDisable(GL_LINE_SMOOTH);
@@ -181,6 +171,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     glLineWidth(1);
 
     // Additive wave drawing (vice overwrite)
+    glEnable(GL_BLEND);
     if (m_additive)
     {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
@@ -190,12 +181,15 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     }
 
+    m_presetState.untexturedShader.Bind();
+    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+
     // Always draw "thick" dots.
     auto iterations = m_drawThick || m_useDots ? 4 : 1;
 
     // Need to use +/- 1.0 here instead of 2.0 used in Milkdrop to achieve the same rendering result.
-    auto incrementX = 1.0f / static_cast<float>(m_presetState.viewportWidth);
-    auto incrementY = 1.0f / static_cast<float>(m_presetState.viewportHeight);
+    auto incrementX = 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
+    auto incrementY = 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
 
     GLuint drawType = m_useDots ? GL_POINTS : GL_LINE_STRIP;
 
@@ -243,13 +237,13 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
 
     Shader::Unbind();
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_BLEND);
 }
 
 void CustomWaveform::LoadPerFrameEvaluationVariables(const PerFrameContext& presetPerFrameContext)
 {
     m_perFrameContext.LoadStateVariables(m_presetState, presetPerFrameContext, *this);
-    m_perPointContext.LoadReadOnlyStateVariables(m_presetState, presetPerFrameContext, *this);
+    m_perPointContext.LoadReadOnlyStateVariables(presetPerFrameContext);
 }
 
 void CustomWaveform::InitPerPointEvaluationVariables()

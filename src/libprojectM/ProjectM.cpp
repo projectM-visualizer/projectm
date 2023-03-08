@@ -194,6 +194,8 @@ void ProjectM::RenderFrame()
     ctx.aspectY = (m_windowWidth > m_windowHeight) ? static_cast<float>(m_windowHeight) / static_cast<float>(m_windowWidth) : 1.0f;
     ctx.invAspectX = 1.0f / ctx.aspectX;
     ctx.invAspectY = 1.0f / ctx.aspectY;
+    ctx.perPixelMeshX = m_meshX;
+    ctx.perPixelMeshY = m_meshY;
 
     m_activePreset->RenderFrame(audio, ctx);
 

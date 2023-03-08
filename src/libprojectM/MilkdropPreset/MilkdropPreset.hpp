@@ -25,6 +25,7 @@
 
 #include "CustomShape.hpp"
 #include "CustomWaveform.hpp"
+#include "MilkdropShader.hpp"
 #include "PerFrameContext.hpp"
 #include "PerPixelContext.hpp"
 #include "PerPixelMesh.hpp"
@@ -40,7 +41,6 @@
 #include <string>
 
 class MilkdropPresetFactory;
-
 class PresetFileParser;
 
 class MilkdropPreset : public Preset
@@ -89,6 +89,11 @@ private:
 
     void CompileCodeAndRunInitExpressions();
 
+    /**
+     * @brief Compiles the warp and composite shaders.
+     */
+    void CompileShaders();
+
     auto ParseFilename(const std::string& filename) -> std::string;
 
     std::string m_absoluteFilePath; //!< The absolute file path of the MilkdropPreset
@@ -96,20 +101,22 @@ private:
 
     Framebuffer m_framebuffer{2}; //!< Preset rendering framebuffer with two surfaces (last frame and current frame).
 
-    PresetState m_state; //!< Preset state container.
+    PresetState m_state;               //!< Preset state container.
     PerFrameContext m_perFrameContext; //!< Preset per-frame evaluation code context.
     PerPixelContext m_perPixelContext; //!< Preset per-pixel/per-vertex evaluation code context.
 
     PerPixelMesh m_perPixelMesh; //!< The per-pixel/per-vertex mesh, responsible for most of the movement/warp effects in Milkdrop presets.
 
-    MotionVectors m_motionVectors; //!< Motion vector grid.
-    Waveform m_waveform; //!< Preset default waveform.
+    MotionVectors m_motionVectors;                                                      //!< Motion vector grid.
+    Waveform m_waveform;                                                                //!< Preset default waveform.
     std::array<std::unique_ptr<CustomWaveform>, CustomWaveformCount> m_customWaveforms; //!< Custom waveforms in this preset.
-    std::array<std::unique_ptr<CustomShape>, CustomShapeCount> m_customShapes; //!< Custom shapes in this preset.
+    std::array<std::unique_ptr<CustomShape>, CustomShapeCount> m_customShapes;          //!< Custom shapes in this preset.
+    std::unique_ptr<MilkdropShader> m_warpShader;                                       //!< The warp shader. Either preset-defined or a default shader.
+    std::unique_ptr<MilkdropShader> m_compositeShader;                                   //!< The composite shader. Either preset-defined or empty.
 
     DarkenCenter m_darkenCenter; //!< Center darkening effect.
-    Border m_border; //!< Inner/outer borders.
-    Filters m_filters; //!< Various post-processing filters, applied if no composite shader is used.
+    Border m_border;             //!< Inner/outer borders.
+    Filters m_filters;           //!< Various post-processing filters, applied if no composite shader is used.
 
     friend class MilkdropPresetFactory;
 };

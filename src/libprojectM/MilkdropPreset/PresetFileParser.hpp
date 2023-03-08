@@ -87,6 +87,17 @@ public:
     [[nodiscard]] auto GetBool(const std::string& key, bool defaultValue) -> bool;
 
     /**
+     * @brief Returns the given key value as a string.
+     *
+     * Returns the default value if no value can be parsed or the key doesn't exist.
+     *
+     * @param key The key to retrieve the value from.
+     * @param defaultValue The default value to return if key is not found.
+     * @return the string content of the key, or the default value.
+     */
+    [[nodiscard]] auto GetString(const std::string& key, const std::string& defaultValue) -> std::string;
+
+    /**
      * @brief Returns a reference to the internal value map.
      * @return A reference to the internal value map.
      */

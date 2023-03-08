@@ -121,14 +121,9 @@ public:
     int frame{0};
     double progress{0.0};
 
-    int gridX{0};
-    int gridY{0};
-
-    int viewportWidth{0};
-    int viewportHeight{0};
-
-    double aspectX{1.0};
-    double aspectY{1.0};
+    int presetVersion{100}; //!< Value of MILKDROP_PRESET_VERSION in preset files.
+    int warpShaderVersion{2}; //!< PSVERSION or PSVERSION_WARP.
+    int compositeShaderVersion{2}; //!< PSVERSION or PSVERSION_COMP.
 
     projectm_eval_mem_buffer globalMemory{nullptr}; //!< gmegabuf data. Using per-frame buffers in projectM to reduce interference.
     double globalRegisters[100]{}; //!< Global reg00-reg99 variables.
@@ -156,5 +151,5 @@ public:
 
     int mainTextureId{}; //!< ID of the previous frame texture.
 
-    static const glm::mat4 orthogonalProjection;
+    static const glm::mat4 orthogonalProjection; //!< Projection matrix that transforms DirectX screen-space coordinates into the OpenGL coordinate frame.
 };
