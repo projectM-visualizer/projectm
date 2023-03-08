@@ -6,8 +6,9 @@
 #include <vector>
 
 class PresetState;
-
+class PerFrameContext;
 class PerPixelContext;
+class MilkdropShader;
 
 /**
  * @brief The "per-pixel" transformation mesh.
@@ -32,9 +33,14 @@ public:
     /**
      * @brief Renders the transformation mesh.
      * @param presetState The preset state to retrieve the configuration values from.
+     * @param presetPerFrameContext The per-frame context to retrieve the initial vars from.
      * @param perPixelContext The per-pixel code context to use.
+     * @param warpShader The warp shader or nullptr.
      */
-    void Draw(const PresetState& presetState, PerPixelContext& perPixelContext);
+    void Draw(const PresetState& presetState,
+              const PerFrameContext& perFrameContext,
+              PerPixelContext& perPixelContext,
+              MilkdropShader* warpShader);
 
 private:
     /**
@@ -46,6 +52,32 @@ private:
      * @param presetState The preset state to retrieve the configuration values from.
      */
     void InitializeMesh(const PresetState& presetState);
+
+    /**
+     * @brief Executes the per-pixel code and calculates the u/v coordinates.
+     * The x/y coordinates are either a static grid or computed by the per-vertex expression.
+     * @param presetState The preset state to retrieve the configuration values from.
+     * @param presetPerFrameContext The per-frame context to retrieve the initial vars from.
+     * @param perPixelContext The per-pixel code context to use.
+     */
+    void CalculateMesh(const PresetState& presetState,
+                       const PerFrameContext& perFrameContext,
+                       PerPixelContext& perPixelContext);
+
+    /**
+     * @brief Draws the mesh without a warp shader.
+     * Since OpenGL doesn't support drawing without shaders, this function uses the standard
+     * textured shader also used for textured shapes.
+     */
+    void BlitNoShader();
+
+    /**
+     * @brief Draws the mesh using a warp shader.
+     * In Milkdrop 2 presets, this is either a preset-defined shader or a default warp
+     * shader.
+     * @param warpShader
+     */
+    void BlitShader(MilkdropShader* warpShader);
 
     struct MeshVertex {
         float x{};

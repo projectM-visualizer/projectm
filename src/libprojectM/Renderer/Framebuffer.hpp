@@ -1,3 +1,7 @@
+/**
+* @file Framebuffer.hpp
+* @brief Defines a class to hold one or more render framebuffers.
+*/
 #pragma once
 
 #include "TextureAttachment.hpp"
@@ -109,8 +113,9 @@ public:
     void CreateDepthStencilAttachment(int framebufferIndex);
 
 private:
+    using AttachmentsPerSlot = std::map<GLenum, TextureAttachment>;
     std::vector<unsigned int> m_framebufferIds{}; //!< The framebuffer IDs returned by OpenGL
-    std::map<int, std::map<GLenum, TextureAttachment>> m_attachments; //!< Framebuffer texture attachments.
+    std::map<int, AttachmentsPerSlot> m_attachments; //!< Framebuffer texture attachments.
 
     int m_width{}; //!< Framebuffers texture width
     int m_height{}; //!< Framebuffers texture height.

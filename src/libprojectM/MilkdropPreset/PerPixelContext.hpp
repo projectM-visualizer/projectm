@@ -37,13 +37,11 @@ public:
     void LoadStateReadOnlyVariables(PresetState& state, PerFrameContext& perFrameState);
 
     /**
-     * @brief Loads the current state read/write values into the expression evaluator variables.
-     *
-     * These variables contain the actual per-pixel output data used to distort the warp mesh.
-     *
+     * @brief Copies the current per-frame Q variable values into the per-pixel state.
      * @param state The preset state container.
+     * @param perFrameState The per-frame execution context.
      */
-    void LoadStateReadWriteVariables(PresetState& state, PerFrameContext& perFrameState);
+    void LoadPerFrameQVariables(PresetState& state, PerFrameContext& perFrameState);
 
     /**
      * @brief Compiles the per-pixel code and stores the code handle in the class.

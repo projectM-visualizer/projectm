@@ -139,6 +139,16 @@ auto PresetFileParser::GetBool(const std::string& key, bool defaultValue) -> boo
     return GetInt(key, static_cast<int>(defaultValue)) > 0;
 }
 
+auto PresetFileParser::GetString(const std::string& key, const std::string& defaultValue) -> std::string
+{
+    if (m_presetValues.find(key) != m_presetValues.end())
+    {
+        return m_presetValues.at(key);
+    }
+
+    return defaultValue;
+}
+
 const std::map<std::string, std::string>& PresetFileParser::PresetValues() const
 {
     return m_presetValues;

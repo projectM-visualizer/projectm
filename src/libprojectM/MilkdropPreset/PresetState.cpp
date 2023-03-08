@@ -4,7 +4,7 @@
 
 #include "Renderer/StaticGlShaders.hpp"
 
-const glm::mat4 PresetState::orthogonalProjection = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -40.0f, 40.0f);
+const glm::mat4 PresetState::orthogonalProjection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -40.0f, 40.0f);
 
 PresetState::PresetState()
     : globalMemory(projectm_eval_memory_buffer_create())
@@ -98,6 +98,26 @@ void PresetState::Initialize(PresetFileParser& parsedFile)
     innerBorderG = parsedFile.GetFloat("ib_g", innerBorderG);
     innerBorderB = parsedFile.GetFloat("ib_b", innerBorderB);
     innerBorderA = parsedFile.GetFloat("ib_a", innerBorderA);
+
+    // Versions:
+    presetVersion = parsedFile.GetInt("MILKDROP_PRESET_VERSION", presetVersion);
+    if (presetVersion < 200)
+    {
+        // Milkdrop 1.x did not use shaders.
+        warpShaderVersion = 0;
+        compositeShaderVersion = 0;
+    }
+    else if (presetVersion == 200)
+    {
+        // Milkdrop 2.0 only supported a single shader language level variable.
+        warpShaderVersion = parsedFile.GetInt("PSVERSION", warpShaderVersion);
+        compositeShaderVersion = parsedFile.GetInt("PSVERSION", compositeShaderVersion);
+    }
+    else
+    {
+        warpShaderVersion = parsedFile.GetInt("PSVERSION_WARP", warpShaderVersion);
+        compositeShaderVersion = parsedFile.GetInt("PSVERSION_COMP", compositeShaderVersion);
+    }
 
     // Code:
     perFrameInitCode = parsedFile.GetCode("per_frame_init_");

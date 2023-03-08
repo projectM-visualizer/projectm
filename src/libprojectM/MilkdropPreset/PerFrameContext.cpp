@@ -143,15 +143,15 @@ void PerFrameContext::LoadStateVariables(PresetState& state)
     *dy = static_cast<PRJM_EVAL_F>(state.yPush);
     *sx = static_cast<PRJM_EVAL_F>(state.stretchX);
     *sy = static_cast<PRJM_EVAL_F>(state.stretchY);
-    *time = static_cast<PRJM_EVAL_F>(state.presetTime);
-    *fps = static_cast<PRJM_EVAL_F>(state.fps);
+    *time = static_cast<PRJM_EVAL_F>(state.renderContext.time);
+    *fps = static_cast<PRJM_EVAL_F>(state.renderContext.fps);
     *bass = static_cast<PRJM_EVAL_F>(state.audioData.bass);
     *mid = static_cast<PRJM_EVAL_F>(state.audioData.mid);
     *treb = static_cast<PRJM_EVAL_F>(state.audioData.treb);
     *bass_att = static_cast<PRJM_EVAL_F>(state.audioData.bassAtt);
     *mid_att = static_cast<PRJM_EVAL_F>(state.audioData.midAtt);
     *treb_att = static_cast<PRJM_EVAL_F>(state.audioData.trebAtt);
-    *frame = static_cast<PRJM_EVAL_F>(state.frame);
+    *frame = static_cast<PRJM_EVAL_F>(state.renderContext.frame);
     for (int q = 0; q < QVarCount; q++)
     {
         *q_vars[q] = q_values_after_init_code[q];
@@ -199,12 +199,12 @@ void PerFrameContext::LoadStateVariables(PresetState& state)
     *brighten = static_cast<PRJM_EVAL_F>(state.brighten);
     *darken = static_cast<PRJM_EVAL_F>(state.darken);
     *solarize = static_cast<PRJM_EVAL_F>(state.solarize);
-    *meshx = static_cast<PRJM_EVAL_F>(state.gridX);
-    *meshy = static_cast<PRJM_EVAL_F>(state.gridY);
-    *pixelsx = static_cast<PRJM_EVAL_F>(state.viewportWidth);
-    *pixelsy = static_cast<PRJM_EVAL_F>(state.viewportHeight);
-    *aspectx = static_cast<PRJM_EVAL_F>(state.aspectX);
-    *aspecty = static_cast<PRJM_EVAL_F>(state.aspectY);
+    *meshx = static_cast<PRJM_EVAL_F>(state.renderContext.perPixelMeshX);
+    *meshy = static_cast<PRJM_EVAL_F>(state.renderContext.perPixelMeshY);
+    *pixelsx = static_cast<PRJM_EVAL_F>(state.renderContext.viewportSizeX);
+    *pixelsy = static_cast<PRJM_EVAL_F>(state.renderContext.viewportSizeY);
+    *aspectx = static_cast<PRJM_EVAL_F>(state.renderContext.invAspectX);
+    *aspecty = static_cast<PRJM_EVAL_F>(state.renderContext.invAspectY);
     *blur1_min = static_cast<PRJM_EVAL_F>(state.blur1Min);
     *blur2_min = static_cast<PRJM_EVAL_F>(state.blur2Min);
     *blur3_min = static_cast<PRJM_EVAL_F>(state.blur3Min);

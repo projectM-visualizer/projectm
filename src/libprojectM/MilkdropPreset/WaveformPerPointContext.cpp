@@ -2,6 +2,7 @@
 
 #include "CustomWaveform.hpp"
 #include "MilkdropPresetExceptions.hpp"
+#include "PerFrameContext.hpp"
 
 #define REG_VAR(var) \
     var = projectm_eval_context_register_variable(perPointCodeContext, #var);
@@ -35,13 +36,13 @@ void WaveformPerPointContext::RegisterBuiltinVariables()
 
     for (int q = 0; q < QVarCount; q++)
     {
-        std::string qvar = "q" + std::to_string(q + 1);
+        std::string const qvar = "q" + std::to_string(q + 1);
         q_vars[q] = projectm_eval_context_register_variable(perPointCodeContext, qvar.c_str());
     }
 
     for (int t = 0; t < TVarCount; t++)
     {
-        std::string tvar = "t" + std::to_string(t + 1);
+        std::string const tvar = "t" + std::to_string(t + 1);
         t_vars[t] = projectm_eval_context_register_variable(perPointCodeContext, tvar.c_str());
     }
 
@@ -62,18 +63,18 @@ void WaveformPerPointContext::RegisterBuiltinVariables()
     REG_VAR(a);
 }
 
-void WaveformPerPointContext::LoadReadOnlyStateVariables(PresetState& state, const PerFrameContext& presetPerFrameContext, CustomWaveform& waveform)
+void WaveformPerPointContext::LoadReadOnlyStateVariables(const PerFrameContext& presetPerFrameContext)
 {
-    *time = static_cast<double>(state.presetTime);
-    *frame = static_cast<double>(state.frame);
-    *fps = static_cast<double>(state.fps);
-    *progress = static_cast<double>(state.progress);
-    *bass = static_cast<double>(state.audioData.bass);
-    *mid = static_cast<double>(state.audioData.mid);
-    *treb = static_cast<double>(state.audioData.treb);
-    *bass_att = static_cast<double>(state.audioData.bassAtt);
-    *mid_att = static_cast<double>(state.audioData.midAtt);
-    *treb_att = static_cast<double>(state.audioData.trebAtt);
+    *time = *presetPerFrameContext.time;
+    *frame = *presetPerFrameContext.frame;
+    *fps = *presetPerFrameContext.fps;
+    *progress = *presetPerFrameContext.progress;
+    *bass = *presetPerFrameContext.bass;
+    *mid = *presetPerFrameContext.mid;
+    *treb = *presetPerFrameContext.treb;
+    *bass_att = *presetPerFrameContext.bass_att;
+    *mid_att = *presetPerFrameContext.mid_att;
+    *treb_att = *presetPerFrameContext.treb_att;
 }
 
 void WaveformPerPointContext::CompilePerPointCode(const std::string& perPointCode,

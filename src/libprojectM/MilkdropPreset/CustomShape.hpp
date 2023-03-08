@@ -46,8 +46,6 @@ public:
     void Draw(const PerFrameContext& presetPerFrameContext);
 
 private:
-    void DrawInstance();
-
     /**
      * Vertex shader inputs for each shape vertex.
      */
@@ -67,20 +65,14 @@ private:
         float y{.0f}; //!< The vertex Y coordinate.
     };
 
-    /**
-     * @brief Initializes the per-frame context with the preset per-frame state.
-     * @param presetPerFrameContext The preset per-frame context to pull q vars from.
-     */
-    void LoadPerFrameEvaluationVariables(const PerFrameContext& presetPerFrameContext);
-
     std::string m_image; //!< Texture filename to be rendered on this shape
 
     int m_index{0};        //!< The custom shape index in the preset.
-    int m_enabled{0};      //!< If false, the shape isn't drawn.
+    bool m_enabled{false};      //!< If false, the shape isn't drawn.
     int m_sides{4};        //!< Number of sides (vertices)
-    int m_additive{0};     //!< Flag that specifies whether the shape should be drawn additive.
-    int m_thickOutline{0}; //!< If true, the shape is rendered with a thick line, otherwise a single-pixel line.
-    int m_textured{0};     //!< If true, the shape will be rendered with the given texture.
+    bool m_additive{false};     //!< Flag that specifies whether the shape should be drawn additive.
+    bool m_thickOutline{false}; //!< If true, the shape is rendered with a thick line, otherwise a single-pixel line.
+    bool m_textured{false};     //!< If true, the shape will be rendered with the given texture.
     int m_instances{1};    //!< Number of shape instances to render
 
     float m_x{0.5f};      //!< The shape x position.

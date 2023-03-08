@@ -57,92 +57,6 @@ MilkdropPreset::MilkdropPreset(const std::string& absoluteFilePath)
     Load(absoluteFilePath);
 }
 
-void MilkdropPreset::InitializePreset(PresetFileParser& parsedFile)
-{
-    // Create the offscreen rendering surfaces.
-    m_framebuffer.CreateColorAttachment(0, 0);
-    m_framebuffer.CreateColorAttachment(1, 0);
-
-    // Load global init variables into the state
-    m_state.Initialize(parsedFile);
-
-    // Custom waveforms:
-    for (int i = 0; i < CustomWaveformCount; i++)
-    {
-        auto wave = std::make_unique<CustomWaveform>(m_state);
-        wave->Initialize(parsedFile, i);
-        m_customWaveforms[i] = std::move(wave);
-    }
-
-    // Custom shapes:
-    for (int i = 0; i < CustomShapeCount; i++)
-    {
-        auto shape = std::make_unique<CustomShape>(m_state);
-        shape->Initialize(parsedFile, i);
-        m_customShapes[i] = std::move(shape);
-    }
-
-    CompileCodeAndRunInitExpressions();
-}
-
-void MilkdropPreset::CompileCodeAndRunInitExpressions()
-{
-    // Per-frame init and code
-    m_perFrameContext.RegisterBuiltinVariables();
-    m_perFrameContext.LoadStateVariables(m_state);
-    m_perFrameContext.EvaluateInitCode(m_state);
-    m_perFrameContext.CompilePerFrameCode(m_state.perFrameCode);
-
-    // Per-vertex code
-    m_perPixelContext.CompilePerPixelCode(m_state.perPixelCode);
-
-    for (int i = 0; i < CustomWaveformCount; i++)
-    {
-        auto& wave = m_customWaveforms[i];
-        wave->CompileCodeAndRunInitExpressions(m_perFrameContext);
-    }
-
-    for (int i = 0; i < CustomShapeCount; i++)
-    {
-        auto& shape = m_customShapes[i];
-        shape->CompileCodeAndRunInitExpressions(m_perFrameContext);
-    }
-}
-
-void MilkdropPreset::Load(const std::string& pathname)
-{
-#ifdef MILKDROP_PRESET_DEBUG
-    std::cerr << "[Preset] Loading preset from file \"" << pathname << "\"." << std::endl;
-#endif
-
-    SetFilename(ParseFilename(pathname));
-
-    PresetFileParser parser;
-
-    if (!parser.Read(pathname))
-    {
-        throw MilkdropPresetLoadException("Could not parse preset file \"" + pathname + "\"");
-    }
-
-    InitializePreset(parser);
-}
-
-void MilkdropPreset::Load(std::istream& stream)
-{
-#ifdef MILKDROP_PRESET_DEBUG
-    std::cerr << "[Preset] Loading preset from stream." << std::endl;
-#endif
-
-    PresetFileParser parser;
-
-    if (!parser.Read(stream))
-    {
-        throw MilkdropPresetLoadException("Could not parse preset data.");
-    }
-
-    InitializePreset(parser);
-}
-
 void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audioData, const RenderContext& renderContext)
 {
     m_state.audioData = audioData;
@@ -157,7 +71,7 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
 
     // Motion vector field. Drawn to the previous frame texture before warping it.
     //m_framebuffer.Bind(1);
-    m_motionVectors.Draw(m_perFrameContext);
+    //m_motionVectors.Draw(m_perFrameContext);
 
     // We now draw to the first framebuffer, but read from the second one for warping.
     //m_framebuffer.BindRead(1);
@@ -169,8 +83,7 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     //                  GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
     // Draw previous frame image warped via per-pixel mesh and warp shader
-    // ToDo: ComputeGridAlphaValues
-    // ToDo: Per-Pixel and warp stuff
+    m_perPixelMesh.Draw(m_state, m_perFrameContext, m_perPixelContext, m_warpShader.get());
 
     //m_framebuffer.Bind(0);
 
@@ -211,12 +124,171 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     //glBlitFramebuffer(0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
     //                  0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
     //                  GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
 }
 
 
 void MilkdropPreset::PerFrameUpdate()
 {
+    m_perFrameContext.LoadStateVariables(m_state);
+    m_perPixelContext.LoadStateReadOnlyVariables(m_state, m_perFrameContext);
+
+    m_perFrameContext.ExecutePerFrameCode();
+
+    m_perPixelContext.LoadPerFrameQVariables(m_state, m_perFrameContext);
+
+    // Clamp gamma and echo zoom values
+    *m_perFrameContext.gamma = std::max(0.0, std::min(8.0, *m_perFrameContext.gamma));
+    *m_perFrameContext.echo_zoom = std::max(0.001, std::min(1000.0, *m_perFrameContext.echo_zoom));
+}
+
+void MilkdropPreset::Load(const std::string& pathname)
+{
+#ifdef MILKDROP_PRESET_DEBUG
+    std::cerr << "[Preset] Loading preset from file \"" << pathname << "\"." << std::endl;
+#endif
+
+    SetFilename(ParseFilename(pathname));
+
+    PresetFileParser parser;
+
+    if (!parser.Read(pathname))
+    {
+        throw MilkdropPresetLoadException("Could not parse preset file \"" + pathname + "\"");
+    }
+
+    InitializePreset(parser);
+}
+
+void MilkdropPreset::Load(std::istream& stream)
+{
+#ifdef MILKDROP_PRESET_DEBUG
+    std::cerr << "[Preset] Loading preset from stream." << std::endl;
+#endif
+
+    PresetFileParser parser;
+
+    if (!parser.Read(stream))
+    {
+        throw MilkdropPresetLoadException("Could not parse preset data.");
+    }
+
+    InitializePreset(parser);
+}
+
+void MilkdropPreset::InitializePreset(PresetFileParser& parsedFile)
+{
+    // Create the offscreen rendering surfaces.
+    m_framebuffer.CreateColorAttachment(0, 0);
+    m_framebuffer.CreateColorAttachment(1, 0);
+
+    // Load global init variables into the state
+    m_state.Initialize(parsedFile);
+
+    // Custom waveforms:
+    for (int i = 0; i < CustomWaveformCount; i++)
+    {
+        auto wave = std::make_unique<CustomWaveform>(m_state);
+        wave->Initialize(parsedFile, i);
+        m_customWaveforms[i] = std::move(wave);
+    }
+
+    // Custom shapes:
+    for (int i = 0; i < CustomShapeCount; i++)
+    {
+        auto shape = std::make_unique<CustomShape>(m_state);
+        shape->Initialize(parsedFile, i);
+        m_customShapes[i] = std::move(shape);
+    }
+
+    CompileCodeAndRunInitExpressions();
+    //CompileShaders();
+}
+
+void MilkdropPreset::CompileCodeAndRunInitExpressions()
+{
+    // Per-frame init and code
+    m_perFrameContext.RegisterBuiltinVariables();
+    m_perFrameContext.LoadStateVariables(m_state);
+    m_perFrameContext.EvaluateInitCode(m_state);
+    m_perFrameContext.CompilePerFrameCode(m_state.perFrameCode);
+
+    // Per-vertex code
+    m_perPixelContext.RegisterBuiltinVariables();
+    m_perPixelContext.CompilePerPixelCode(m_state.perPixelCode);
+
+    for (int i = 0; i < CustomWaveformCount; i++)
+    {
+        auto& wave = m_customWaveforms[i];
+        wave->CompileCodeAndRunInitExpressions(m_perFrameContext);
+    }
+
+    for (int i = 0; i < CustomShapeCount; i++)
+    {
+        auto& shape = m_customShapes[i];
+        shape->CompileCodeAndRunInitExpressions(m_perFrameContext);
+    }
+}
+
+void MilkdropPreset::CompileShaders()
+{
+    // Warp shader
+    if (m_state.warpShaderVersion > 0)
+    {
+        std::string const defaultWarpShader = R"(shader_body
+            {
+                ret = tex2D( sampler_main, uv ).xyz;
+                ret -= 0.004;
+            }
+            )";
+
+        m_warpShader = std::make_unique<MilkdropShader>(MilkdropShader::ShaderType::WarpShader);
+        if (!m_state.warpShader.empty())
+        {
+            try
+            {
+                m_warpShader->LoadCode(m_state.warpShader);
+            }
+            catch (ShaderException& ex)
+            {
+                // Fall back to default shader
+                m_warpShader = std::make_unique<MilkdropShader>(MilkdropShader::ShaderType::WarpShader);
+                m_warpShader->LoadCode(defaultWarpShader);
+            }
+        }
+        else
+        {
+            m_warpShader->LoadCode(defaultWarpShader);
+        }
+    }
+
+    // Composite shader
+    if (m_state.compositeShaderVersion > 0)
+    {
+        std::string const defaultCompositeShader = R"(shader_body
+            {
+                ret = tex2D(sampler_main, uv).xyz;
+            }
+            )";
+
+        m_compositeShader = std::make_unique<MilkdropShader>(MilkdropShader::ShaderType::CompositeShader);
+        if (!m_state.warpShader.empty())
+        {
+            try
+            {
+                m_compositeShader->LoadCode(m_state.compositeShader);
+            }
+            catch (ShaderException& ex)
+            {
+                // Fall back to default shader
+                m_compositeShader = std::make_unique<MilkdropShader>(MilkdropShader::ShaderType::CompositeShader);
+                m_compositeShader->LoadCode(defaultCompositeShader);
+            }
+        }
+        else
+        {
+            m_warpShader->LoadCode(defaultCompositeShader);
+        }
+    }
 }
 
 auto MilkdropPreset::ParseFilename(const std::string& filename) -> std::string

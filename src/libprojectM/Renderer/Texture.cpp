@@ -1,64 +1,95 @@
 #include "Texture.hpp"
 
+#include <utility>
 
-Texture::Texture(const std::string &_name, const int _width, const int _height, const bool _userTexture) :
-    type(GL_TEXTURE_2D),
-    name(_name),
-    width(_width),
-    height(_height),
-    userTexture(_userTexture)
+Texture::Texture(std::string name, const int width, const int height, const bool isUserTexture)
+    : m_type(GL_TEXTURE_2D)
+    , m_name(std::move(name))
+    , m_width(width)
+    , m_height(height)
+    , m_isUserTexture(isUserTexture)
 {
-    glGenTextures(1, &texID);
-    glBindTexture(GL_TEXTURE_2D, texID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glGenTextures(1, &m_textureId);
+    glBindTexture(GL_TEXTURE_2D, m_textureId);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-Texture::Texture(const std::string &_name, const GLuint _texID, const GLenum _type, const int _width, const int _height, const bool _userTexture) :
-    texID(_texID),
-    type(_type),
-    name(_name),
-    width(_width),
-    height(_height),
-    userTexture(_userTexture)
+Texture::Texture(std::string name, const GLuint texID, const GLenum type, const int width, const int height, const bool isUserTexture)
+    : m_textureId(texID)
+    , m_type(type)
+    , m_name(std::move(name))
+    , m_width(width)
+    , m_height(height)
+    , m_isUserTexture(isUserTexture)
 {
 }
 
 Texture::~Texture()
 {
-    glDeleteTextures(1, &texID);
-
-    for(std::vector<Sampler*>::const_iterator iter = samplers.begin(); iter != samplers.end(); iter++)
+    if (m_textureId > 0)
     {
-        delete (*iter);
+        glDeleteTextures(1, &m_textureId);
+        m_textureId = 0;
     }
+
+    m_samplers.clear();
 }
 
 void Texture::Bind(GLint slot) const
 {
     glActiveTexture(GL_TEXTURE0 + slot);
-    glBindTexture(type, texID);
+    glBindTexture(m_type, m_textureId);
 }
 
 void Texture::Unbind(GLint slot) const
 {
     glActiveTexture(GL_TEXTURE0 + slot);
-    glBindTexture(type, 0);
+    glBindTexture(m_type, 0);
 }
 
-Sampler* Texture::getSampler(const GLint _wrap_mode, const GLint _filter_mode)
+auto Texture::TextureID() const -> GLuint
 {
-    for (std::vector<Sampler*>::const_iterator iter = samplers.begin(); iter != samplers.end(); iter++)
+    return m_textureId;
+}
+
+auto Texture::Sampler(const GLint wrapMode, const GLint filterMode) -> const class Sampler&
+{
+    for (auto& sampler : m_samplers)
     {
-        if ((*iter)->wrap_mode == _wrap_mode && (*iter)->filter_mode == _filter_mode)
+        if (sampler->WrapMode() == wrapMode && sampler->FilterMode() == filterMode)
         {
-            return *iter;
+            return *sampler;
         }
     }
 
     // Sampler not found -> adding it
-    Sampler* sampler = new Sampler(_wrap_mode, _filter_mode);
-    samplers.push_back(sampler);
+    m_samplers.push_back(std::make_unique<class Sampler>(wrapMode, filterMode));
 
-    return sampler;
+    return *m_samplers.back();
+}
+
+auto Texture::Name() const -> const std::string&
+{
+    return m_name;
+}
+
+auto Texture::Type() const -> GLenum
+{
+    return m_type;
+}
+
+auto Texture::Width() const -> int
+{
+    return m_width;
+}
+
+auto Texture::Height() const -> int
+{
+    return m_height;
+}
+
+auto Texture::IsUserTexture() const -> bool
+{
+    return m_isUserTexture;
 }

@@ -9,23 +9,14 @@ TextureAttachment::TextureAttachment(AttachmentType attachment, int width, int h
     }
 }
 
-TextureAttachment::~TextureAttachment()
-{
-    if (m_textureId > 0)
-    {
-        glDeleteTextures(1, &m_textureId);
-        m_textureId = 0;
-    }
-}
-
 auto TextureAttachment::Type() const -> TextureAttachment::AttachmentType
 {
     return m_attachmentType;
 }
 
-auto TextureAttachment::TextureId() const -> GLuint
+auto TextureAttachment::Texture() const -> const class Texture&
 {
-    return m_textureId;
+    return *m_texture;
 }
 
 void TextureAttachment::SetSize(int width, int height)
@@ -34,20 +25,14 @@ void TextureAttachment::SetSize(int width, int height)
     {
         ReplaceTexture(width, height);
     }
-    else if (m_textureId > 0)
+    else
     {
-        glDeleteTextures(1, &m_textureId);
-        m_textureId = 0;
+        m_texture = std::make_unique<class Texture>();
     }
 }
 
 void TextureAttachment::ReplaceTexture(int width, int height)
 {
-    if (m_textureId > 0)
-    {
-        glDeleteTextures(1, &m_textureId);
-    }
-
     GLint internalFormat;
     GLint textureFormat;
     GLenum pixelFormat;
@@ -79,8 +64,11 @@ void TextureAttachment::ReplaceTexture(int width, int height)
             return;
     }
 
-    glGenTextures(1, &m_textureId);
-    glBindTexture(GL_TEXTURE_2D, m_textureId);
+    m_texture.reset();
+
+    GLuint textureId;
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_2D, textureId);
     glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, textureFormat, pixelFormat, nullptr);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -89,4 +77,6 @@ void TextureAttachment::ReplaceTexture(int width, int height)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    m_texture = std::make_unique<class Texture>("", textureId, GL_TEXTURE_2D, width, height, false);
 }

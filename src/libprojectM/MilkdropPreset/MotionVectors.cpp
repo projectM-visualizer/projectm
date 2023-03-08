@@ -63,7 +63,7 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext)
         divertY = 1.0f;
     }
 
-    float const inverseWidth = 1.0f / static_cast<float>(m_presetState.viewportWidth);
+    float const inverseWidth = 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
     float const minimalLength = 1.0f * inverseWidth;
 
     struct Point {
