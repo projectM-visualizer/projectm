@@ -42,10 +42,10 @@ void TextureAttachment::ReplaceTexture(int width, int height)
         case AttachmentType::Color:
             internalFormat = GL_RGBA;
             textureFormat = GL_RGBA;
-            pixelFormat = GL_TEXTURE_2D;
+            pixelFormat = GL_UNSIGNED_BYTE;
             break;
         case AttachmentType::Depth:
-            internalFormat = GL_DEPTH_COMPONENT;
+            internalFormat = GL_DEPTH_COMPONENT16;
             textureFormat = GL_DEPTH_COMPONENT;
             pixelFormat = GL_FLOAT;
             break;
