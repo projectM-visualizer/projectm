@@ -15,6 +15,22 @@ PerPixelMesh::PerPixelMesh()
 
 void PerPixelMesh::InitVertexAttrib()
 {
+    glGenVertexArrays(1, &m_vaoID);
+    glGenBuffers(1, &m_vboID);
+
+    glBindVertexArray(m_vaoID);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, x))); // Positions
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, r))); // Colors
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, u))); // Textures
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void PerPixelMesh::Draw(const PresetState& presetState,
@@ -37,6 +53,7 @@ void PerPixelMesh::Draw(const PresetState& presetState,
     CalculateMesh(presetState, perFrameContext, perPixelContext);
 
     // Render the resulting mesh.
+    BlitNoShader(presetState, perFrameContext);
 }
 
 void PerPixelMesh::InitializeMesh(const PresetState& presetState)
@@ -70,8 +87,8 @@ void PerPixelMesh::InitializeMesh(const PresetState& presetState)
         {
             auto& vertex = m_vertices.at(vertexIndex);
 
-            vertex.x = static_cast<float>(gridX) / static_cast<float>(m_gridSizeX - 1);
-            vertex.y = -((static_cast<float>(gridY) / static_cast<float>(m_gridSizeY - 1)) - 1.0f);
+            vertex.x = static_cast<float>(gridX) / static_cast<float>(m_gridSizeX) * 2.0f - 1.0f;
+            vertex.y = -(static_cast<float>(gridY) / static_cast<float>(m_gridSizeY) * 2.0f - 1.0f);
 
             // ToDo: Check if this works correctly, as it previously didn't use the aspect ratio, but some weird constant:
             //       hypotf((vertex.x - .5f) * 2.0f, (vertex.y - .5f) * 2.0f) * .7071067f;
@@ -269,8 +286,52 @@ void PerPixelMesh::CalculateMesh(const PresetState& presetState, const PerFrameC
     }
 }
 
-void PerPixelMesh::BlitNoShader()
+void PerPixelMesh::BlitNoShader(const PresetState& presetState,
+                                const PerFrameContext& perFrameContext)
 {
+    // Decay
+    float decay = static_cast<float>(*perFrameContext.decay);
+    if (decay < 0.9999f)
+    {
+        // Milkdrop uses a GPU-specific value, either 0.0 or 2.0.
+        // We'll simply assume 2, as it's the default value.
+        decay = std::min(decay, (32.0f - 2.0f) / 32.0f);
+    }
+
+    for (auto& vertex : m_vertices)
+    {
+        vertex.r = decay;
+        vertex.g = decay;
+        vertex.b = decay;
+        vertex.a = 1.0f;
+    }
+
+    // No blending between presets here, wo we make sure blending is disabled.
+    glDisable(GL_BLEND);
+
+    presetState.texturedShader.Bind();
+    presetState.texturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+    presetState.texturedShader.SetUniformInt("texture_sampler", 0);
+
+    if (*perFrameContext.wrap > 0.0001f)
+    {
+        // Set main texture sampling mode to GL_REPEAT
+    }
+    else
+    {
+        // Set main texture sampling mode to GL_CLAMP_TO_EDGE
+    }
+
+    glBindVertexArray(m_vaoID);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(MeshVertex) * m_vertices.size(), m_vertices.data(), GL_DYNAMIC_DRAW);
+    glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    Shader::Unbind();
 }
 
 void PerPixelMesh::BlitShader(MilkdropShader* warpShader)

@@ -1,5 +1,7 @@
 #include "Framebuffer.hpp"
 
+#include <cassert>
+
 Framebuffer::Framebuffer()
 {
     m_framebufferIds.resize(1);
@@ -42,6 +44,7 @@ void Framebuffer::Bind(int framebufferIndex)
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferIds.at(framebufferIndex));
+    auto code = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 }
 
 void Framebuffer::BindRead(int framebufferIndex)
@@ -52,6 +55,7 @@ void Framebuffer::BindRead(int framebufferIndex)
     }
 
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_framebufferIds.at(framebufferIndex));
+    auto code = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 }
 
 void Framebuffer::BindDraw(int framebufferIndex)
@@ -62,6 +66,12 @@ void Framebuffer::BindDraw(int framebufferIndex)
     }
 
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_framebufferIds.at(framebufferIndex));
+    auto code = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+}
+
+void Framebuffer::Unbind()
+{
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
 void Framebuffer::SetSize(int width, int height)
@@ -98,12 +108,13 @@ void Framebuffer::CreateColorAttachment(int framebufferIndex, int attachmentInde
     const auto& texture = textureAttachment.Texture();
     m_attachments.at(framebufferIndex).insert({GL_COLOR_ATTACHMENT0 + attachmentIndex, std::move(textureAttachment)});
 
+    Bind(framebufferIndex);
     if (m_width > 0 && m_height > 0)
     {
-        Bind(framebufferIndex);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachmentIndex, GL_TEXTURE_2D, texture.TextureID(), 0);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
+    UpdateDrawBuffers(framebufferIndex);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 auto Framebuffer::GetColorAttachmentTexture(int framebufferIndex, int attachmentIndex) const -> GLuint
@@ -133,12 +144,13 @@ void Framebuffer::CreateDepthAttachment(int framebufferIndex)
     const auto& texture = textureAttachment.Texture();
     m_attachments.at(framebufferIndex).insert({GL_DEPTH_ATTACHMENT, std::move(textureAttachment)});
 
+    Bind(framebufferIndex);
     if (m_width > 0 && m_height > 0)
     {
-        Bind(framebufferIndex);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture.TextureID(), 0);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
+    UpdateDrawBuffers(framebufferIndex);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Framebuffer::CreateStencilAttachment(int framebufferIndex)
@@ -152,12 +164,13 @@ void Framebuffer::CreateStencilAttachment(int framebufferIndex)
     const auto& texture = textureAttachment.Texture();
     m_attachments.at(framebufferIndex).insert({GL_STENCIL_ATTACHMENT, std::move(textureAttachment)});
 
+    Bind(framebufferIndex);
     if (m_width > 0 && m_height > 0)
     {
-        Bind(framebufferIndex);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texture.TextureID(), 0);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
+    UpdateDrawBuffers(framebufferIndex);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Framebuffer::CreateDepthStencilAttachment(int framebufferIndex)
@@ -171,10 +184,69 @@ void Framebuffer::CreateDepthStencilAttachment(int framebufferIndex)
     const auto& texture = textureAttachment.Texture();
     m_attachments.at(framebufferIndex).insert({GL_DEPTH_STENCIL_ATTACHMENT, std::move(textureAttachment)});
 
+    Bind(framebufferIndex);
     if (m_width > 0 && m_height > 0)
     {
-        Bind(framebufferIndex);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texture.TextureID(), 0);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
+    UpdateDrawBuffers(framebufferIndex);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Framebuffer::UpdateDrawBuffers(int framebufferIndex)
+{
+    if (framebufferIndex < 0 || framebufferIndex >= static_cast<int>(m_framebufferIds.size()))
+    {
+        return;
+    }
+
+    const auto& attachments = m_attachments.at(framebufferIndex);
+
+    std::vector<GLenum> buffers;
+
+    bool hasDepthAttachment = false;
+    bool hasStencilAttachment = false;
+    bool hasDepthStencilAttachment = false;
+
+    for (const auto& attachment : attachments)
+    {
+        if (attachment.first != GL_DEPTH_ATTACHMENT &&
+            attachment.first != GL_STENCIL_ATTACHMENT &&
+            attachment.first != GL_DEPTH_STENCIL_ATTACHMENT)
+        {
+            buffers.push_back(attachment.first);
+        }
+        else
+        {
+            switch (attachment.first)
+            {
+                case GL_DEPTH_ATTACHMENT:
+                    hasDepthAttachment = true;
+                    break;
+                case GL_STENCIL_ATTACHMENT:
+                    hasStencilAttachment = true;
+                    break;
+                case GL_DEPTH_STENCIL_ATTACHMENT:
+                    hasDepthStencilAttachment = true;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    if (hasDepthAttachment)
+    {
+        buffers.push_back(GL_DEPTH_ATTACHMENT);
+    }
+    if (hasStencilAttachment)
+    {
+        buffers.push_back(GL_STENCIL_ATTACHMENT);
+    }
+    if (hasDepthStencilAttachment)
+    {
+        buffers.push_back(GL_DEPTH_STENCIL_ATTACHMENT);
+    }
+
+    glDrawBuffers(static_cast<GLsizei>(buffers.size()), buffers.data());
 }

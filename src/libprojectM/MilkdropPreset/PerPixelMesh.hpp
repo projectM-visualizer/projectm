@@ -69,7 +69,7 @@ private:
      * Since OpenGL doesn't support drawing without shaders, this function uses the standard
      * textured shader also used for textured shapes.
      */
-    void BlitNoShader();
+    void BlitNoShader(const PresetState& presetState, const PerFrameContext& perFrameContext);
 
     /**
      * @brief Draws the mesh using a warp shader.
@@ -103,7 +103,7 @@ private:
     int m_viewportWidth{};
     int m_viewportHeight{};
 
-    std::vector<MeshVertex> m_vertices;
+    std::vector<MeshVertex> m_vertices; //!< The calculated mesh vertices.
 
     std::vector<int> m_stripIndices;
     std::vector<int> m_listIndices;

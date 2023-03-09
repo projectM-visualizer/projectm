@@ -14,14 +14,23 @@
 /**
  * @brief A framebuffer class holding one or more framebuffer objects.
  *
- * Framebuffers act as both render targets and sampling sources. This class holds one or more of those
+ * <p>Framebuffers act as both render targets and sampling sources. This class holds one or more of those
  * objects, either used to store current and previous frame images or sub images for multi-stage
- * rendering.
+ * rendering.</p>
  *
- * Each framebuffer can have multiple color attachments (at least up to 8), one depth buffer,
- * one stencil buffer and one depth stencil buffer.
+ * <p>Each framebuffer can have multiple color attachments (at least up to 8), one depth buffer,
+ * one stencil buffer and one depth stencil buffer.</p>
  *
- * All framebuffers and their attachments will share the same size.
+ * <p>All framebuffers and their attachments will share the same size.</p>
+ *
+ * <p>Draw buffers will be configured in this order for each framebuffer:</p>
+ *
+ * <ol>
+ * <li>Color attachments in ascending order</li>
+ * <li>Depth</li>
+ * <li>Stencil</li>
+ * <li>Depth Stencil</li>
+ * </ol>
  */
 class Framebuffer
 {
@@ -65,6 +74,11 @@ public:
      * @param framebufferIndex The framebuffer index.
      */
     void BindDraw(int framebufferIndex);
+
+    /**
+     * @brief Binds the default framebuffer for both reading and writing.
+     */
+    static void Unbind();
 
     /**
      * @brief Sets the framebuffer texture size.
@@ -113,6 +127,13 @@ public:
     void CreateDepthStencilAttachment(int framebufferIndex);
 
 private:
+    /**
+     * @brief Updates the draw buffer list for the fragment shader outputs of the given framebuffer.
+     * Note that when calling this function, the framebuffer must already be bound.
+     * @param framebufferIndex The framebuffer index.
+     */
+    void UpdateDrawBuffers(int framebufferIndex);
+
     using AttachmentsPerSlot = std::map<GLenum, TextureAttachment>;
     std::vector<unsigned int> m_framebufferIds{}; //!< The framebuffer IDs returned by OpenGL
     std::map<int, AttachmentsPerSlot> m_attachments; //!< Framebuffer texture attachments.

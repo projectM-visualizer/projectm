@@ -73,7 +73,7 @@ public:
     /**
      * Binds the program into the current context.
      */
-    void Bind();
+    void Bind() const;
 
     /**
      * Unbinds the program.
@@ -84,7 +84,7 @@ public:
      * @brief Binds the registered textures to the current program context.
      * The program must be bound before calling this method!
      */
-    void BindTextures();
+    void BindTextures() const;
 
     /**
      * @brief Returns the textures used in this shader.
@@ -100,7 +100,7 @@ public:
      * @param uniform The uniform name
      * @param value The value to set.
      */
-    void SetUniformFloat(const char* uniform, float value);
+    void SetUniformFloat(const char* uniform, float value) const;
 
     /**
      * @brief Sets a single integer uniform.
@@ -108,7 +108,7 @@ public:
      * @param uniform The uniform name
      * @param value The value to set.
      */
-    void SetUniformInt(const char* uniform, int value);
+    void SetUniformInt(const char* uniform, int value) const;
 
     /**
      * @brief Sets a float vec2 uniform.
@@ -116,7 +116,7 @@ public:
      * @param uniform The uniform name
      * @param values The values to set.
      */
-    void SetUniformFloat2(const char* uniform, const glm::vec2& values);
+    void SetUniformFloat2(const char* uniform, const glm::vec2& values) const;
 
     /**
      * @brief Sets a float vec3 uniform.
@@ -124,7 +124,7 @@ public:
      * @param uniform The uniform name
      * @param values The values to set.
      */
-    void SetUniformFloat3(const char* uniform, const glm::vec3& values);
+    void SetUniformFloat3(const char* uniform, const glm::vec3& values) const;
 
     /**
      * @brief Sets a float vec4 uniform.
@@ -132,7 +132,7 @@ public:
      * @param uniform The uniform name
      * @param values The values to set.
      */
-    void SetUniformFloat4(const char* uniform, const glm::vec4& values);
+    void SetUniformFloat4(const char* uniform, const glm::vec4& values) const;
 
     /**
      * @brief Sets a float 3x4 matrix uniform.
@@ -140,7 +140,7 @@ public:
      * @param uniform The uniform name
      * @param values The matrix to set.
      */
-    void SetUniformMat3x4(const char* uniform, const glm::mat3x4& values);
+    void SetUniformMat3x4(const char* uniform, const glm::mat3x4& values) const;
 
     /**
      * @brief Sets a float 4x4 matrix uniform.
@@ -148,7 +148,7 @@ public:
      * @param uniform The uniform name
      * @param values The matrix to set.
      */
-    void SetUniformMat4x4(const char* uniform, const glm::mat4x4& values);
+    void SetUniformMat4x4(const char* uniform, const glm::mat4x4& values) const;
 
 
 private:
