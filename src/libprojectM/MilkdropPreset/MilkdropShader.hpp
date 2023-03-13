@@ -73,7 +73,7 @@ private:
     ShaderType m_type{ShaderType::WarpShader}; //!< Type of this shader.
     std::string m_presetShaderCode;            //!< The original preset shader code.
 
-    std::vector<std::string> m_samplerNames;                                     //!< Names of all referenced samplers in the shader code.
+    std::vector<TextureSamplerDescriptor> m_textureSamplerDescriptors; //!< Descriptors of all referenced samplers in the shader code.
     BlurTexture::BlurLevel m_maxBlurLevelRequired{BlurTexture::BlurLevel::None}; //!< Max blur level of main texture required by this shader.
 
     std::array<float, 4> m_randValues{};               //!< Random values which don't change every frame.

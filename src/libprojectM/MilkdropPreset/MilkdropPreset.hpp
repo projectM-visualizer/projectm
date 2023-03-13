@@ -23,14 +23,17 @@
  */
 #pragma once
 
+#include "Border.hpp"
 #include "CustomShape.hpp"
 #include "CustomWaveform.hpp"
+#include "DarkenCenter.hpp"
+#include "Filters.hpp"
 #include "MilkdropShader.hpp"
+#include "MotionVectors.hpp"
 #include "PerFrameContext.hpp"
 #include "PerPixelContext.hpp"
 #include "PerPixelMesh.hpp"
 #include "Preset.hpp"
-#include "PresetFrameIO.hpp"
 #include "Waveform.hpp"
 
 #include <Renderer/Framebuffer.hpp>
@@ -111,7 +114,6 @@ private:
     Waveform m_waveform;                                                                //!< Preset default waveform.
     std::array<std::unique_ptr<CustomWaveform>, CustomWaveformCount> m_customWaveforms; //!< Custom waveforms in this preset.
     std::array<std::unique_ptr<CustomShape>, CustomShapeCount> m_customShapes;          //!< Custom shapes in this preset.
-    std::unique_ptr<MilkdropShader> m_warpShader;                                       //!< The warp shader. Either preset-defined or a default shader.
     std::unique_ptr<MilkdropShader> m_compositeShader;                                   //!< The composite shader. Either preset-defined or empty.
 
     DarkenCenter m_darkenCenter; //!< Center darkening effect.

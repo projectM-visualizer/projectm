@@ -21,11 +21,10 @@ using namespace std::chrono;
 class Preset;
 
 Renderer::Renderer(int viewportWidth, int viewportHeight, int meshX, int meshY,
-                   libprojectM::Audio::BeatDetect& beatDetect, std::vector<std::string>& textureSearchPaths)
+                   libprojectM::Audio::BeatDetect& beatDetect)
     : m_beatDetect(beatDetect)
     , m_viewportWidth(viewportWidth)
     , m_viewportHeight(viewportHeight)
-    , m_textureSearchPaths(textureSearchPaths)
 {
 	// Interpolation VAO/VBO's
 	glGenBuffers(1, &m_vboInterpolation);
@@ -104,18 +103,6 @@ Renderer::Renderer(int viewportWidth, int viewportHeight, int meshX, int meshY,
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    ResetTextures();
-}
-
-void Renderer::ResetTextures()
-{
-    //m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths);
-}
-
-void Renderer::SetTextureSearchPaths(std::vector<std::string>& textureSearchPaths)
-{
-    m_textureSearchPaths = textureSearchPaths;
-    ResetTextures();
 }
 
 /*
@@ -179,8 +166,6 @@ void Renderer::reset(int viewportWidth, int viewportHeight)
     m_fInvAspectY = 1.0f / m_fAspectY;
 
 	InitCompositeShaderVertex();
-
-    ResetTextures();
 
     m_shaderEngine.reset();
 

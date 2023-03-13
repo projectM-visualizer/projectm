@@ -24,7 +24,6 @@
 #include "MilkdropPresetExceptions.hpp"
 #include "MilkdropPresetFactory.hpp"
 #include "PresetFileParser.hpp"
-#include "PresetFrameIO.hpp"
 
 #ifdef MILKDROP_PRESET_DEBUG
 #include <iostream>
@@ -73,9 +72,12 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     m_framebuffer.Bind(1);
     m_motionVectors.Draw(m_perFrameContext);
 
-    // We now draw to the first framebuffer, but read from the second one for warping.
+    // We now draw to the first framebuffer, but read from the second one for warping and textured shapes.
     m_framebuffer.BindRead(1);
     m_framebuffer.BindDraw(0);
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     // TEST: Copy for now, no warp
     //glBlitFramebuffer(0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
@@ -83,9 +85,7 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     //                  GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
     // Draw previous frame image warped via per-pixel mesh and warp shader
-    m_perPixelMesh.Draw(m_state, m_perFrameContext, m_perPixelContext, m_warpShader.get());
-
-    m_framebuffer.Bind(0);
+    m_perPixelMesh.Draw(m_state, m_perFrameContext, m_perPixelContext);
 
     // Draw audio-data-related stuff
     for (auto& shape : m_customShapes)
@@ -202,7 +202,7 @@ void MilkdropPreset::InitializePreset(PresetFileParser& parsedFile)
     }
 
     CompileCodeAndRunInitExpressions();
-    //CompileShaders();
+    CompileShaders();
 }
 
 void MilkdropPreset::CompileCodeAndRunInitExpressions()
@@ -232,36 +232,8 @@ void MilkdropPreset::CompileCodeAndRunInitExpressions()
 
 void MilkdropPreset::CompileShaders()
 {
-    // Warp shader
-    if (m_state.warpShaderVersion > 0)
-    {
-        std::string const defaultWarpShader = R"(shader_body
-            {
-                ret = tex2D( sampler_main, uv ).xyz;
-                ret -= 0.004;
-            }
-            )";
-
-        m_warpShader = std::make_unique<MilkdropShader>(MilkdropShader::ShaderType::WarpShader);
-        if (!m_state.warpShader.empty())
-        {
-            try
-            {
-                m_warpShader->LoadCode(m_state.warpShader);
-            }
-            catch (ShaderException& ex)
-            {
-                // Fall back to default shader
-                m_warpShader = std::make_unique<MilkdropShader>(MilkdropShader::ShaderType::WarpShader);
-                m_warpShader->LoadCode(defaultWarpShader);
-            }
-        }
-        else
-        {
-            m_warpShader->LoadCode(defaultWarpShader);
-        }
-    }
-
+    m_perPixelMesh.CompileWarpShader(m_state);
+    return;
     // Composite shader
     if (m_state.compositeShaderVersion > 0)
     {
@@ -287,7 +259,7 @@ void MilkdropPreset::CompileShaders()
         }
         else
         {
-            m_warpShader->LoadCode(defaultCompositeShader);
+            m_compositeShader->LoadCode(defaultCompositeShader);
         }
     }
 }

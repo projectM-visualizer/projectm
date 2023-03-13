@@ -17,12 +17,15 @@ add_subdirectory(Renderer)
 
 add_library(projectM_main OBJECT
         "${PROJECTM_EXPORT_HEADER}"
+        Audio/AudioConstants.hpp
         Audio/BeatDetect.cpp
         Audio/BeatDetect.hpp
         Audio/FrameAudioData.cpp
         Audio/FrameAudioData.hpp
         Audio/PCM.cpp
         Audio/PCM.hpp
+        Audio/fftsg.cpp
+        Audio/fftsg.h
         Common.hpp
         HungarianMethod.hpp
         IdleTextures.hpp
@@ -39,15 +42,13 @@ add_library(projectM_main OBJECT
         TimeKeeper.cpp
         TimeKeeper.hpp
         fatal.h
-        fftsg.cpp
-        fftsg.h
         glError.h
         gltext.h
         projectM-opengl.h
         resource.h
         wipemalloc.cpp
         wipemalloc.h
-        Audio/AudioConstants.hpp)
+        )
 
 target_link_libraries(projectM_main
         PUBLIC
