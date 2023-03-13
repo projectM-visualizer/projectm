@@ -81,20 +81,6 @@ public:
     static void Unbind();
 
     /**
-     * @brief Binds the registered textures to the current program context.
-     * The program must be bound before calling this method!
-     */
-    void BindTextures() const;
-
-    /**
-     * @brief Returns the textures used in this shader.
-     * @return A map of textures names and descriptors.
-     */
-    auto GetTextures() const -> const std::map<std::string, TextureSamplerDesc>&;
-
-    void SetUniformTexture(const char* uniform, TextureSamplerDesc texture);
-
-    /**
      * @brief Sets a single float uniform.
      * The program must be bound before calling this method!
      * @param uniform The uniform name
@@ -150,7 +136,6 @@ public:
      */
     void SetUniformMat4x4(const char* uniform, const glm::mat4x4& values) const;
 
-
 private:
     /**
      * @brief Compiles a single shader.
@@ -160,8 +145,6 @@ private:
      * @return The shader ID.
      */
     auto CompileShader(const std::string& source, GLenum type) -> GLuint;
-
-    std::map<std::string, TextureSamplerDesc> m_textures; //!< Textures used in this program.
 
     GLuint m_shaderProgram{}; //!< The program ID.
 };

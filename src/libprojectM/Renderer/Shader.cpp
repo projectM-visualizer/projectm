@@ -79,56 +79,6 @@ void Shader::Unbind()
     glUseProgram(0);
 }
 
-void Shader::BindTextures() const
-{
-    int texNum{0};
-    std::map<std::string, Texture*> texSizes;
-
-    // Set samplers
-    for (const auto& samplerIt : m_textures)
-    {
-        std::string const texName = samplerIt.first;
-        auto* texture = samplerIt.second.first;
-        const auto* sampler = samplerIt.second.second;
-
-        std::string const samplerName = "sampler_" + texName;
-
-        texSizes[texName] = texture;
-        texSizes[texture->Name()] = texture;
-
-        // https://www.khronos.org/opengl/wiki/Sampler_(GLSL)#Binding_textures_to_samplers
-        texture->Bind(GL_TEXTURE0 + texNum);
-        sampler->Bind(texNum);
-
-        SetUniformInt(samplerName.c_str(), texNum);
-
-        texNum++;
-    }
-
-    // Set texture size uniforms
-    for (const auto& texSize : texSizes)
-    {
-        Texture* texture = texSize.second;
-
-        std::string const texSizeName = "texsize_" + texSize.first;
-
-        SetUniformFloat4(texSizeName.c_str(), {texture->Width(),
-                                               texture->Height(),
-                                               1 / (float) texture->Width(),
-                                               1 / (float) texture->Height()});
-    }
-}
-
-auto Shader::GetTextures() const -> const std::map<std::string, TextureSamplerDesc>&
-{
-    return m_textures;
-}
-
-void Shader::SetUniformTexture(const char* uniform, TextureSamplerDesc texture)
-{
-    m_textures.insert(std::make_pair(uniform, texture));
-}
-
 void Shader::SetUniformFloat(const char* uniform, float value) const
 {
     auto location = glGetUniformLocation(m_shaderProgram, uniform);

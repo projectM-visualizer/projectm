@@ -5,7 +5,7 @@
 #pragma once
 
 #include <Renderer/Shader.hpp>
-#include <Renderer/Texture.hpp>
+#include <Renderer/TextureSamplerDescriptor.hpp>
 
 #include <array>
 #include <memory>
@@ -73,11 +73,11 @@ private:
     GLuint m_vboBlur; //!< Vertex buffer object for the fullscreen blur quad.
     GLuint m_vaoBlur; //!< Vertex array object for the fullscreen blur quad.
 
-    Shader m_blur1Shader; //!< The shader used on the forst blur pass.
+    Shader m_blur1Shader; //!< The shader used on the first blur pass.
     Shader m_blur2Shader; //!< The shader used for subsequent blur passes after the initial pass.
 
     int m_sourceTextureWidth{}; //!< Width of the source texture used to create the blur textures.
     int m_sourceTextureHeight{}; //!< Height of the source texture used to create the blur textures.
 
-    std::array<std::unique_ptr<Texture>, NumBlurTextures> m_blurTextures; //!< The blur textures for each pass.
+    std::array<std::unique_ptr<TextureSamplerDescriptor>, NumBlurTextures> m_blurTextures; //!< The blur textures for each pass.
 };

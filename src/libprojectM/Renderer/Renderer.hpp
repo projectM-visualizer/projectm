@@ -66,13 +66,10 @@ public:
 
     Renderer(int viewportWidth, int viewportHeight,
              int meshX, int meshY,
-             libprojectM::Audio::BeatDetect& beatDetect,
-             std::vector<std::string>& textureSearchPaths);
+             libprojectM::Audio::BeatDetect& beatDetect);
 
     ~Renderer();
 
-    void ResetTextures();
-    void SetTextureSearchPaths(std::vector<std::string>& textureSearchPaths);
     void reset(int viewportWidth, int viewportHeight);
 
     bool timeCheck(const milliseconds currentTime, const milliseconds lastTime, const double difference);
@@ -115,7 +112,6 @@ private:
     void UvToMathSpace(float u, float v, float* rad, float* ang);
 
     libprojectM::Audio::BeatDetect& m_beatDetect;
-    std::unique_ptr<TextureManager> m_textureManager;
     ShaderEngine m_shaderEngine;
 
     std::string m_fps;
@@ -124,8 +120,6 @@ private:
 
     int m_viewportWidth{0};
     int m_viewportHeight{0};
-
-    std::vector<std::string>& m_textureSearchPaths; ///!< List of paths to search for texture files
 
     GLuint m_vboInterpolation{0};
     GLuint m_vaoInterpolation{0};

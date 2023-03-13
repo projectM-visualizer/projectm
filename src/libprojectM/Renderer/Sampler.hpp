@@ -6,6 +6,8 @@
 
 #include "projectM-opengl.h"
 
+#include <memory>
+
 /**
  * @brief Stores a single texture sampler.
  *
@@ -19,6 +21,8 @@
 class Sampler
 {
 public:
+    using Ptr = std::shared_ptr<Sampler>;
+
     Sampler() = delete;
     Sampler(const Sampler&) = delete;
     auto operator=(const Sampler&) -> Sampler& = delete;
@@ -54,10 +58,22 @@ public:
     auto WrapMode() const -> GLint;
 
     /**
+     * @brief Sets a new wrap mode for this sampler.
+     * @param wrapMode the new wrap mode.
+     */
+    void WrapMode(GLint wrapMode);
+
+    /**
      * @brief Returns the sampler filter mode.
      * @return The sampler filter mode.
      */
     auto FilterMode() const -> GLint;
+
+    /**
+     * @brief Sets a new filter mode for this sampler.
+     * @param filterMode the new filter mode.
+     */
+    void FilterMode(GLint filterMode);
 
 private:
     GLuint m_samplerId{0}; //!< the OpenGL Sampler name/ID.

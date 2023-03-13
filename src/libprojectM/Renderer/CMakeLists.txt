@@ -21,7 +21,7 @@ add_library(Renderer OBJECT
         TextureAttachment.hpp
         TextureManager.cpp
         TextureManager.hpp
-        )
+        TextureSamplerDescriptor.cpp TextureSamplerDescriptor.hpp)
 
 target_include_directories(Renderer
         PRIVATE

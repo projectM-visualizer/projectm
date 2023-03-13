@@ -4,7 +4,7 @@
 
 #include "Renderer/StaticGlShaders.hpp"
 
-const glm::mat4 PresetState::orthogonalProjection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -40.0f, 40.0f);
+const glm::mat4 PresetState::orthogonalProjection = glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, -40.0f, 40.0f);
 
 PresetState::PresetState()
     : globalMemory(projectm_eval_memory_buffer_create())

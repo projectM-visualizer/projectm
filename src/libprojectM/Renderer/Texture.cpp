@@ -1,4 +1,4 @@
-#include "Texture.hpp"
+#include "Renderer/Texture.hpp"
 
 #include <utility>
 
@@ -15,7 +15,9 @@ Texture::Texture(std::string name, const int width, const int height, const bool
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-Texture::Texture(std::string name, const GLuint texID, const GLenum type, const int width, const int height, const bool isUserTexture)
+Texture::Texture(std::string name, const GLuint texID, const GLenum type,
+                 const int width, const int height,
+                 const bool isUserTexture)
     : m_textureId(texID)
     , m_type(type)
     , m_name(std::move(name))
@@ -32,14 +34,17 @@ Texture::~Texture()
         glDeleteTextures(1, &m_textureId);
         m_textureId = 0;
     }
-
-    m_samplers.clear();
 }
 
-void Texture::Bind(GLint slot) const
+void Texture::Bind(GLint slot, const Sampler::Ptr& sampler) const
 {
     glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(m_type, m_textureId);
+
+    if (sampler)
+    {
+        sampler->Bind(slot);
+    }
 }
 
 void Texture::Unbind(GLint slot) const
@@ -51,22 +56,6 @@ void Texture::Unbind(GLint slot) const
 auto Texture::TextureID() const -> GLuint
 {
     return m_textureId;
-}
-
-auto Texture::Sampler(const GLint wrapMode, const GLint filterMode) -> const class Sampler&
-{
-    for (auto& sampler : m_samplers)
-    {
-        if (sampler->WrapMode() == wrapMode && sampler->FilterMode() == filterMode)
-        {
-            return *sampler;
-        }
-    }
-
-    // Sampler not found -> adding it
-    m_samplers.push_back(std::make_unique<class Sampler>(wrapMode, filterMode));
-
-    return *m_samplers.back();
 }
 
 auto Texture::Name() const -> const std::string&

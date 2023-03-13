@@ -11,6 +11,7 @@
 
 #include <Renderer/RenderContext.hpp>
 #include <Renderer/Shader.hpp>
+#include <Renderer/TextureSamplerDescriptor.hpp>
 
 #include <projectm-eval.h>
 
@@ -150,6 +151,8 @@ public:
     Shader texturedShader; //!< Shader used to draw textured primitives, e.g. textured shapes and the warp mesh.
 
     int mainTextureId{}; //!< ID of the previous frame texture.
+
+    std::map<int, TextureSamplerDescriptor> randomTextureDescriptors; //!< Descriptors for random texture IDs. Should be the same across both warp and comp shaders.
 
     static const glm::mat4 orthogonalProjection; //!< Projection matrix that transforms DirectX screen-space coordinates into the OpenGL coordinate frame.
 };

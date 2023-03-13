@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Renderer/RenderItem.hpp>
+#include <Renderer/Sampler.hpp>
+#include <Renderer/Shader.hpp>
 
 #include <cstdint>
 #include <vector>
@@ -30,17 +32,17 @@ public:
 
     void InitVertexAttrib() override;
 
+    void CompileWarpShader(const PresetState& presetState);
+
     /**
      * @brief Renders the transformation mesh.
      * @param presetState The preset state to retrieve the configuration values from.
      * @param presetPerFrameContext The per-frame context to retrieve the initial vars from.
      * @param perPixelContext The per-pixel code context to use.
-     * @param warpShader The warp shader or nullptr.
      */
     void Draw(const PresetState& presetState,
               const PerFrameContext& perFrameContext,
-              PerPixelContext& perPixelContext,
-              MilkdropShader* warpShader);
+              PerPixelContext& perPixelContext);
 
 private:
     /**
@@ -69,7 +71,7 @@ private:
      * Since OpenGL doesn't support drawing without shaders, this function uses the standard
      * textured shader also used for textured shapes.
      */
-    void BlitNoShader(const PresetState& presetState, const PerFrameContext& perFrameContext);
+    void WarpedBlit(const PresetState& presetState, const PerFrameContext& perFrameContext);
 
     /**
      * @brief Draws the mesh using a warp shader.
@@ -82,19 +84,22 @@ private:
     struct MeshVertex {
         float x{};
         float y{};
-
-        float r{};
-        float g{};
-        float b{};
-        float a{1.0f};
-
-        float u{};
-        float v{};
-
-        float uOrigin{};
-        float vOrigin{};
         float radius{};
         float angle{};
+
+        float zoom{};
+        float zoomExp{};
+        float rot{};
+        float warp{};
+
+        float centerX{};
+        float centerY{};
+
+        float distanceX{};
+        float distanceY{};
+
+        float stretchX{};
+        float stretchY{};
     };
 
     int m_gridSizeX{};
@@ -103,8 +108,14 @@ private:
     int m_viewportWidth{};
     int m_viewportHeight{};
 
+    GLuint m_vebID{0}; //!< This RenderItem's vertex element buffer ID
+
     std::vector<MeshVertex> m_vertices; //!< The calculated mesh vertices.
 
-    std::vector<int> m_stripIndices;
-    std::vector<int> m_listIndices;
+    std::vector<int> m_listIndices;         //!< List of vertex indices to render.
+    std::vector<MeshVertex> m_drawVertices; //!< Temp data buffer for the vertices to be drawn.
+
+    Shader m_perPixelMeshShader; //!< Special shader which calculates the per-pixel UV coordinates.
+    std::unique_ptr<MilkdropShader> m_warpShader;           //!< The warp shader. Either preset-defined or a default shader.
+    Sampler m_perPixelSampler{GL_CLAMP_TO_EDGE, GL_LINEAR}; //!< The main texture sampler.
 };

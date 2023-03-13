@@ -69,6 +69,7 @@ void ProjectM::LoadPresetFile(const std::string& presetFilename, bool smoothTran
 
     try
     {
+        m_textureManager->PurgeTextures();
         StartPresetTransition(m_presetFactoryManager->CreatePresetFromFile(presetFilename), !smoothTransition);
     }
     catch (const PresetFactoryException& ex)
@@ -87,6 +88,7 @@ void ProjectM::LoadPresetData(std::istream& presetData, bool smoothTransition)
 
     try
     {
+        m_textureManager->PurgeTextures();
         StartPresetTransition(m_presetFactoryManager->CreatePresetFromStream(".milk", presetData), !smoothTransition);
     }
     catch (const PresetFactoryException& ex)
@@ -99,13 +101,11 @@ void ProjectM::SetTexturePaths(std::vector<std::string> texturePaths)
 {
     m_textureSearchPaths = std::move(texturePaths);
     m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths);
-    //m_renderer->SetTextureSearchPaths(m_textureSearchPaths);
 }
 
 void ProjectM::ResetTextures()
 {
     m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths);
-    //m_renderer->ResetTextures();
 }
 
 void ProjectM::DumpDebugImageOnNextFrame(const std::string& outputFile)
@@ -196,6 +196,7 @@ void ProjectM::RenderFrame()
     ctx.invAspectY = 1.0f / ctx.aspectY;
     ctx.perPixelMeshX = m_meshX;
     ctx.perPixelMeshY = m_meshY;
+    ctx.textureManager = m_textureManager.get();
 
     m_activePreset->RenderFrame(audio, ctx);
 
@@ -227,12 +228,11 @@ void ProjectM::Initialize()
 
     m_beatDetect = std::make_unique<libprojectM::Audio::BeatDetect>(m_pcm);
 
-    this->m_renderer = std::make_unique<Renderer>(m_windowWidth,
-                                                  m_windowHeight,
-                                                  m_meshX,
-                                                  m_meshY,
-                                                  *m_beatDetect,
-                                                  m_textureSearchPaths);
+    m_renderer = std::make_unique<Renderer>(m_windowWidth,
+                                            m_windowHeight,
+                                            m_meshX,
+                                            m_meshY,
+                                            *m_beatDetect);
 
     m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths);
 
@@ -487,6 +487,5 @@ void ProjectM::RecreateRenderer()
 {
     m_renderer = std::make_unique<Renderer>(m_windowWidth, m_windowHeight,
                                             m_meshX, m_meshY,
-                                            *m_beatDetect.get(),
-                                            m_textureSearchPaths);
+                                            *m_beatDetect.get());
 }

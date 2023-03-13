@@ -19,84 +19,55 @@
 TextureManager::TextureManager(std::vector<std::string>& textureSearchPaths)
     : m_textureDirectories(textureSearchPaths)
 {
-    FileScanner fileScanner = FileScanner(m_textureDirectories, m_extensions);
-
-    // scan for textures
-    using namespace std::placeholders;
-    fileScanner.scan(std::bind(&TextureManager::loadTexture, this, _1, _2));
-
     Preload();
-
-    auto noise = std::make_unique<MilkdropNoise>();
-
-#if !USE_GLES
-    // Query preferred internal texture format. GLES 3 only supports GL_RENDERBUFFER here, no texture targets.
-    // That's why we use GL_BGRA as default, as this is the best general-use format according to Khronos.
-    GLint preferredInternalFormat{GL_BGRA};
-    glGetInternalformativ(GL_TEXTURE_2D, GL_RGBA8, GL_TEXTURE_IMAGE_FORMAT, sizeof(preferredInternalFormat), &preferredInternalFormat);
-#else
-    // GLES only supports GL_RGB and GL_RGBA, so we always use the latter.
-    GLint preferredInternalFormat{GL_RGBA};
-#endif
-
-    GLuint noise_texture_lq_lite;
-    glGenTextures(1, &noise_texture_lq_lite);
-    glBindTexture(GL_TEXTURE_2D, noise_texture_lq_lite);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 32, 32, 0, preferredInternalFormat, GL_UNSIGNED_BYTE, noise->noise_lq_lite);
-    Texture* textureNoise_lq_lite = new Texture("noise_lq_lite", noise_texture_lq_lite, GL_TEXTURE_2D, 32, 32, false);
-    textureNoise_lq_lite->Sampler(GL_REPEAT, GL_LINEAR);
-    m_textures["noise_lq_lite"] = textureNoise_lq_lite;
-
-    GLuint noise_texture_lq;
-    glGenTextures(1, &noise_texture_lq);
-    glBindTexture(GL_TEXTURE_2D, noise_texture_lq);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, preferredInternalFormat, GL_UNSIGNED_BYTE, noise->noise_lq);
-    Texture* textureNoise_lq = new Texture("noise_lq", noise_texture_lq, GL_TEXTURE_2D, 256, 256, false);
-    textureNoise_lq->Sampler(GL_REPEAT, GL_LINEAR);
-    m_textures["noise_lq"] = textureNoise_lq;
-
-    GLuint noise_texture_mq;
-    glGenTextures(1, &noise_texture_mq);
-    glBindTexture(GL_TEXTURE_2D, noise_texture_mq);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, preferredInternalFormat, GL_UNSIGNED_BYTE, noise->noise_mq);
-    Texture* textureNoise_mq = new Texture("noise_mq", noise_texture_mq, GL_TEXTURE_2D, 256, 256, false);
-    textureNoise_mq->Sampler(GL_REPEAT, GL_LINEAR);
-    m_textures["noise_mq"] = textureNoise_mq;
-
-    GLuint noise_texture_hq;
-    glGenTextures(1, &noise_texture_hq);
-    glBindTexture(GL_TEXTURE_2D, noise_texture_hq);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, preferredInternalFormat, GL_UNSIGNED_BYTE, noise->noise_hq);
-    Texture* textureNoise_hq = new Texture("noise_hq", noise_texture_hq, GL_TEXTURE_2D, 256, 256, false);
-    textureNoise_hq->Sampler(GL_REPEAT, GL_LINEAR);
-    m_textures["noise_hq"] = textureNoise_hq;
-
-    GLuint noise_texture_lq_vol;
-    glGenTextures(1, &noise_texture_lq_vol);
-    glBindTexture(GL_TEXTURE_3D, noise_texture_lq_vol);
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, 32, 32, 32, 0, preferredInternalFormat, GL_UNSIGNED_BYTE, noise->noise_lq_vol);
-    Texture* textureNoise_lq_vol = new Texture("noisevol_lq", noise_texture_lq_vol, GL_TEXTURE_3D, 32, 32, false);
-    textureNoise_lq_vol->Sampler(GL_REPEAT, GL_LINEAR);
-    m_textures["noisevol_lq"] = textureNoise_lq_vol;
-
-    GLuint noise_texture_hq_vol;
-    glGenTextures(1, &noise_texture_hq_vol);
-    glBindTexture(GL_TEXTURE_3D, noise_texture_hq_vol);
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, 32, 32, 32, 0, preferredInternalFormat, GL_UNSIGNED_BYTE, noise->noise_hq_vol);
-
-    Texture* textureNoise_hq_vol = new Texture("noisevol_hq", noise_texture_hq_vol, GL_TEXTURE_3D, 32, 32, false);
-    textureNoise_hq_vol->Sampler(GL_REPEAT, GL_LINEAR);
-    m_textures["noisevol_hq"] = textureNoise_hq_vol;
 }
 
-TextureManager::~TextureManager()
+TextureSamplerDescriptor TextureManager::GetTexture(const std::string& fullName)
 {
-    Clear();
+    std::string fileName = fullName;
+    std::string unqualifiedName;
+    GLint wrap_mode;
+    GLint filter_mode;
+
+    // Remove extension
+    std::string lowerCaseFileName(fullName);
+    std::transform(lowerCaseFileName.begin(), lowerCaseFileName.end(), lowerCaseFileName.begin(), tolower);
+    for (auto ext : m_extensions)
+    {
+        size_t found = lowerCaseFileName.find(ext);
+        if (found != std::string::npos)
+        {
+            fileName.replace(int(found), ext.size(), "");
+            break;
+        }
+    }
+
+    ExtractTextureSettings(fullName, wrap_mode, filter_mode, unqualifiedName);
+    if (m_textures.find(unqualifiedName) == m_textures.end())
+    {
+        return {};
+    }
+
+    auto texture = m_textures[unqualifiedName];
+    if (texture->IsUserTexture())
+    {
+        m_textureStats.at(unqualifiedName).age = 0;
+    }
+
+    return {texture, m_samplers.at({wrap_mode, filter_mode}), fullName, unqualifiedName};
 }
+
 
 void TextureManager::Preload()
 {
-    int width, height;
+    // Create samplers
+    m_samplers.emplace(std::pair<GLint, GLint>(GL_CLAMP_TO_EDGE, GL_LINEAR), std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR));
+    m_samplers.emplace(std::pair<GLint, GLint>(GL_CLAMP_TO_EDGE, GL_NEAREST), std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_NEAREST));
+    m_samplers.emplace(std::pair<GLint, GLint>(GL_REPEAT, GL_LINEAR), std::make_shared<Sampler>(GL_REPEAT, GL_LINEAR));
+    m_samplers.emplace(std::pair<GLint, GLint>(GL_REPEAT, GL_NEAREST), std::make_shared<Sampler>(GL_REPEAT, GL_NEAREST));
+
+    int width{};
+    int height{};
 
     unsigned int tex = SOIL_load_OGL_texture_from_memory(
         M_data,
@@ -106,9 +77,8 @@ void TextureManager::Preload()
         SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
 
 
-    Texture* newTex = new Texture("m", tex, GL_TEXTURE_2D, width, height, true);
-    newTex->Sampler(GL_CLAMP_TO_EDGE, GL_LINEAR);
-    m_textures["m"] = newTex;
+    auto newTex = std::make_shared<Texture>("idlem", tex, GL_TEXTURE_2D, width, height, false);
+    m_textures["idlem"] = newTex;
 
     //    tex = SOIL_load_OGL_texture_from_memory(
     //                project_data,
@@ -130,69 +100,138 @@ void TextureManager::Preload()
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
 
-    newTex = new Texture("headphones", tex, GL_TEXTURE_2D, width, height, true);
-    newTex->Sampler(GL_CLAMP_TO_EDGE, GL_LINEAR);
-    m_textures["headphones"] = newTex;
+    newTex = std::make_shared<Texture>("idleheadphones", tex, GL_TEXTURE_2D, width, height, false);
+    m_textures["idleheadphones"] = newTex;
+
+    auto noise = std::make_unique<MilkdropNoise>();
+
+#if !USE_GLES
+    // Query preferred internal texture format. GLES 3 only supports GL_RENDERBUFFER here, no texture targets.
+    // That's why we use GL_BGRA as default, as this is the best general-use format according to Khronos.
+    GLint preferredInternalFormat{GL_BGRA};
+    glGetInternalformativ(GL_TEXTURE_2D, GL_RGBA8, GL_TEXTURE_IMAGE_FORMAT, sizeof(preferredInternalFormat), &preferredInternalFormat);
+#else
+    // GLES only supports GL_RGB and GL_RGBA, so we always use the latter.
+    GLint preferredInternalFormat{GL_RGBA};
+#endif
+
+    GLuint noise_texture_lq_lite;
+    glGenTextures(1, &noise_texture_lq_lite);
+    glBindTexture(GL_TEXTURE_2D, noise_texture_lq_lite);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 32, 32, 0, preferredInternalFormat, GL_UNSIGNED_BYTE, noise->noise_lq_lite);
+    auto textureNoise_lq_lite = std::make_shared<Texture>("noise_lq_lite", noise_texture_lq_lite, GL_TEXTURE_2D, 32, 32, false);
+    m_textures["noise_lq_lite"] = textureNoise_lq_lite;
+
+    GLuint noise_texture_lq;
+    glGenTextures(1, &noise_texture_lq);
+    glBindTexture(GL_TEXTURE_2D, noise_texture_lq);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, preferredInternalFormat, GL_UNSIGNED_BYTE, noise->noise_lq);
+    auto textureNoise_lq = std::make_shared<Texture>("noise_lq", noise_texture_lq, GL_TEXTURE_2D, 256, 256, false);
+    m_textures["noise_lq"] = textureNoise_lq;
+
+    GLuint noise_texture_mq;
+    glGenTextures(1, &noise_texture_mq);
+    glBindTexture(GL_TEXTURE_2D, noise_texture_mq);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, preferredInternalFormat, GL_UNSIGNED_BYTE, noise->noise_mq);
+    auto textureNoise_mq = std::make_shared<Texture>("noise_mq", noise_texture_mq, GL_TEXTURE_2D, 256, 256, false);
+    m_textures["noise_mq"] = textureNoise_mq;
+
+    GLuint noise_texture_hq;
+    glGenTextures(1, &noise_texture_hq);
+    glBindTexture(GL_TEXTURE_2D, noise_texture_hq);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, preferredInternalFormat, GL_UNSIGNED_BYTE, noise->noise_hq);
+    auto textureNoise_hq = std::make_shared<Texture>("noise_hq", noise_texture_hq, GL_TEXTURE_2D, 256, 256, false);
+    m_textures["noise_hq"] = textureNoise_hq;
+
+    GLuint noise_texture_lq_vol;
+    glGenTextures(1, &noise_texture_lq_vol);
+    glBindTexture(GL_TEXTURE_3D, noise_texture_lq_vol);
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, 32, 32, 32, 0, preferredInternalFormat, GL_UNSIGNED_BYTE, noise->noise_lq_vol);
+    auto textureNoise_lq_vol = std::make_shared<Texture>("noisevol_lq", noise_texture_lq_vol, GL_TEXTURE_3D, 32, 32, false);
+    m_textures["noisevol_lq"] = textureNoise_lq_vol;
+
+    GLuint noise_texture_hq_vol;
+    glGenTextures(1, &noise_texture_hq_vol);
+    glBindTexture(GL_TEXTURE_3D, noise_texture_hq_vol);
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, 32, 32, 32, 0, preferredInternalFormat, GL_UNSIGNED_BYTE, noise->noise_hq_vol);
+
+    auto textureNoise_hq_vol = std::make_shared<Texture>("noisevol_hq", noise_texture_hq_vol, GL_TEXTURE_3D, 32, 32, false);
+    m_textures["noisevol_hq"] = textureNoise_hq_vol;
 }
 
-void TextureManager::Clear()
+void TextureManager::PurgeTextures()
 {
-    for (std::map<std::string, Texture*>::const_iterator iter = m_textures.begin(); iter != m_textures.end(); iter++)
-        delete (iter->second);
-
-    m_textures.clear();
-}
-
-
-TextureSamplerDesc TextureManager::getTexture(const std::string fullName, const GLenum defaultWrap, const GLenum defaultFilter)
-{
-    std::string fileName = fullName;
-    std::string unqualifiedName;
-    GLint wrap_mode;
-    GLint filter_mode;
-
-    // Remove extension
-    std::string lowerCaseFileName(fullName);
-    std::transform(lowerCaseFileName.begin(), lowerCaseFileName.end(), lowerCaseFileName.begin(), tolower);
-    for (auto ext : m_extensions)
+    // Increment age of all textures
+    for (auto& texture : m_textures)
     {
-        size_t found = lowerCaseFileName.find(ext);
-        if (found != std::string::npos)
+        if (texture.second->IsUserTexture())
         {
-            fileName.replace(int(found), ext.size(), "");
-            break;
+            m_textureStats.at(texture.first).age++;
         }
     }
 
-    ExtractTextureSettings(fileName, wrap_mode, filter_mode, unqualifiedName);
-    if (m_textures.find(unqualifiedName) == m_textures.end())
+    // Only purge textures with an age of 2 or higher, so we don't evict textures used by the preset being blended out
+    uint32_t newest = 99999999;
+    uint32_t oldest = 0;
+    bool foundTextureToEvict = false;
+    for (const auto& stat : m_textureStats)
     {
-        return TextureSamplerDesc(NULL, NULL);
+        if (stat.second.sizeBytes > 0 && stat.second.age > 1)
+        {
+            newest = std::min(newest, stat.second.age);
+            oldest = std::max(oldest, stat.second.age);
+            foundTextureToEvict = true;
+        }
     }
 
-    if (fileName == unqualifiedName)
+    if (!foundTextureToEvict)
     {
-        // Warp and filter mode not specified in sampler name
-        // applying default
-        wrap_mode = defaultWrap;
-        filter_mode = defaultFilter;
+        return;
     }
 
-    Texture* texture = m_textures[unqualifiedName];
-    const auto* sampler = &texture->Sampler(wrap_mode, filter_mode);
+    uint32_t biggestBytes = 0;
+    std::string biggestName;
+    for (const auto& stat : m_textureStats)
+    {
+        if (stat.second.sizeBytes > 0 && stat.second.age > 1)
+        {
+            auto sizeMultiplicator = 1.0f + static_cast<float>(stat.second.age - newest) / static_cast<float>(oldest - newest);
+            auto scaledSize = static_cast<uint32_t>(stat.second.sizeBytes * sizeMultiplicator);
+            if (scaledSize > biggestBytes)
+            {
+                biggestBytes = scaledSize;
+                biggestName = stat.first;
+            }
+        }
+    }
 
-    return TextureSamplerDesc(texture, sampler);
+    if (biggestName.empty())
+    {
+        return;
+    }
+
+    // Purge one texture. No need to inform presets, as the texture shouldn't be in use anymore.
+    // If this really happens for some reason, it'll simply be reloaded on the next frame.
+    m_textures.erase(m_textures.find(biggestName));
+    m_textureStats.erase(m_textureStats.find(biggestName));
 }
 
-
-TextureSamplerDesc TextureManager::tryLoadingTexture(const std::string name)
+TextureSamplerDescriptor TextureManager::TryLoadingTexture(const std::string& name)
 {
-    TextureSamplerDesc texDesc;
+    TextureSamplerDescriptor texDesc;
     GLint wrapMode{0};
     GLint filterMode{0};
     std::string unqualifiedName;
 
     ExtractTextureSettings(name, wrapMode, filterMode, unqualifiedName);
+
+/*
+    FileScanner fileScanner = FileScanner(m_textureDirectories, m_extensions);
+
+    // scan for textures
+    using namespace std::placeholders;
+    fileScanner.scan(std::bind(&TextureManager::LoadTexture, this, _1, _2));
+*/
 
     // Search order:
     // 1. User preset dir
@@ -207,9 +246,9 @@ TextureSamplerDesc TextureManager::tryLoadingTexture(const std::string name)
 
         for (const auto& ext : m_extensions)
         {
-            texDesc = loadTexture(fullPath + ext, name);
+            texDesc = LoadTexture(fullPath + ext, name);
 
-            if (texDesc.first != NULL)
+            if (!texDesc.Empty())
             {
                 std::cerr << "Located texture " << name << std::endl;
                 return texDesc;
@@ -222,49 +261,48 @@ TextureSamplerDesc TextureManager::tryLoadingTexture(const std::string name)
     return {};
 }
 
-TextureSamplerDesc TextureManager::loadTexture(const std::string fileName, const std::string name)
+TextureSamplerDescriptor TextureManager::LoadTexture(const std::string& fileName, const std::string& name)
 {
-    int width, height;
-    //    std::cout << "Loading texture " << name << " at " << fileName << std::endl;
+    GLint wrapMode;
+    GLint filterMode;
+    std::string unqualifiedName;
 
-    unsigned int tex = SOIL_load_OGL_texture(
+    ExtractTextureSettings(name, wrapMode, filterMode, unqualifiedName);
+    auto sampler = m_samplers.at({wrapMode, filterMode});
+    if (m_textures.find(name) != m_textures.end())
+    {
+        return {m_textures.at(name), sampler, name, unqualifiedName};
+    }
+
+    int width{};
+    int height{};
+
+    unsigned int const tex = SOIL_load_OGL_texture(
         fileName.c_str(),
-        SOIL_LOAD_AUTO,
+        SOIL_LOAD_RGBA,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
 
     if (tex == 0)
     {
-        return TextureSamplerDesc(NULL, NULL);
+        return {};
     }
 
-    GLint wrap_mode;
-    GLint filter_mode;
-    std::string unqualifiedName;
-
-    ExtractTextureSettings(name, wrap_mode, filter_mode, unqualifiedName);
-    Texture* newTexture = new Texture(unqualifiedName, tex, GL_TEXTURE_2D, width, height, true);
-    const auto* sampler = &newTexture->Sampler(wrap_mode, filter_mode);
-
-    if (m_textures.find(name) != m_textures.end())
-    {
-        // found duplicate.. this could be optimized
-        delete m_textures[name];
-    }
-
+    uint32_t memoryBytes = width * height * 4; // RGBA, unsigned byte color channels.
+    auto newTexture = std::make_shared<Texture>(unqualifiedName, tex, GL_TEXTURE_2D, width, height, true);
     m_textures[name] = newTexture;
-    //    std::cout << "Loaded texture " << name << std::endl;
+    m_textureStats.insert({name, {memoryBytes}});
 
-    return TextureSamplerDesc(newTexture, sampler);
+    return {newTexture, sampler, name, unqualifiedName};
 }
 
-TextureSamplerDesc TextureManager::getRandomTextureName(std::string random_id)
+TextureSamplerDescriptor TextureManager::GetRandomTexture(const std::string& randomName)
 {
-    GLint wrap_mode;
-    GLint filter_mode;
+    GLint wrapMode;
+    GLint filterMode;
     std::string unqualifiedName;
 
-    ExtractTextureSettings(random_id, wrap_mode, filter_mode, unqualifiedName);
+    ExtractTextureSettings(randomName, wrapMode, filterMode, unqualifiedName);
 
     std::vector<std::string> user_texture_names;
     size_t separator = unqualifiedName.find('_');
@@ -290,60 +328,62 @@ TextureSamplerDesc TextureManager::getRandomTextureName(std::string random_id)
     if (!user_texture_names.empty())
     {
         std::string random_name = user_texture_names[rand() % user_texture_names.size()];
-        m_randomTextures.push_back(random_id);
+        m_randomTextures.push_back(randomName);
 
-        auto* randomTexture = m_textures[random_name];
-        const auto* sampler = &randomTexture->Sampler(wrap_mode, filter_mode);
+        auto randomTexture = m_textures[random_name];
+        auto sampler = m_samplers.at({wrapMode, filterMode});
 
-        return TextureSamplerDesc(randomTexture, sampler);
+        return {randomTexture, sampler, randomName, unqualifiedName};
     }
 
-    return TextureSamplerDesc(nullptr, nullptr);
+    return {};
 }
 
-void TextureManager::clearRandomTextures()
+void TextureManager::ExtractTextureSettings(const std::string& qualifiedName, GLint& wrapMode, GLint& filterMode, std::string& name)
 {
-    for (std::vector<std::string>::iterator pos = m_randomTextures.begin(); pos != m_randomTextures.end(); ++pos)
+    if (qualifiedName.length() <= 3 || qualifiedName.at(2) != '_')
     {
-        m_textures.erase(*pos);
+        name = qualifiedName;
+        filterMode = GL_LINEAR;
+        wrapMode = GL_REPEAT;
+        return;
     }
-    m_randomTextures.clear();
-}
 
-void TextureManager::ExtractTextureSettings(const std::string qualifiedName, GLint& _wrap_mode, GLint& _filter_mode, std::string& name)
-{
     std::string lowerQualifiedName(qualifiedName);
     std::transform(lowerQualifiedName.begin(), lowerQualifiedName.end(), lowerQualifiedName.begin(), tolower);
 
-    _wrap_mode = GL_REPEAT;
-    _filter_mode = GL_LINEAR;
+    // Default mode for user textures is "fw" (bilinear filtering + wrap).
+    wrapMode = GL_REPEAT;
+    filterMode = GL_LINEAR;
 
-    if (lowerQualifiedName.substr(0, 3) == "fc_")
+    if (lowerQualifiedName.substr(0, 3) == "fc_" || lowerQualifiedName.substr(0, 3) == "cf_")
     {
         name = qualifiedName.substr(3);
-        _filter_mode = GL_LINEAR;
-        _wrap_mode = GL_CLAMP_TO_EDGE;
+        filterMode = GL_LINEAR;
+        wrapMode = GL_CLAMP_TO_EDGE;
     }
-    else if (lowerQualifiedName.substr(0, 3) == "fw_")
+    else if (lowerQualifiedName.substr(0, 3) == "fw_" || lowerQualifiedName.substr(0, 3) == "wf_")
     {
         name = qualifiedName.substr(3);
-        _filter_mode = GL_LINEAR;
-        _wrap_mode = GL_REPEAT;
+        filterMode = GL_LINEAR;
+        wrapMode = GL_REPEAT;
     }
-    else if (lowerQualifiedName.substr(0, 3) == "pc_")
+    else if (lowerQualifiedName.substr(0, 3) == "pc_" || lowerQualifiedName.substr(0, 3) == "cp_")
     {
         name = qualifiedName.substr(3);
-        _filter_mode = GL_NEAREST;
-        _wrap_mode = GL_CLAMP_TO_EDGE;
+        filterMode = GL_NEAREST;
+        wrapMode = GL_CLAMP_TO_EDGE;
     }
-    else if (lowerQualifiedName.substr(0, 3) == "pw_")
+    else if (lowerQualifiedName.substr(0, 3) == "pw_" || lowerQualifiedName.substr(0, 3) == "wp_")
     {
         name = qualifiedName.substr(3);
-        _filter_mode = GL_NEAREST;
-        _wrap_mode = GL_REPEAT;
+        filterMode = GL_NEAREST;
+        wrapMode = GL_REPEAT;
     }
     else
     {
-        name = qualifiedName;
+        name = qualifiedName.substr(3); // Milkdrop also removes the XY_ prefix in the case nothing matches.
+        filterMode = GL_LINEAR;
+        wrapMode = GL_REPEAT;
     }
 }

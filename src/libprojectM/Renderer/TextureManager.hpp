@@ -1,8 +1,10 @@
 #pragma once
 
-#include "FileScanner.hpp"
-#include "Texture.hpp"
+#include "Renderer/FileScanner.hpp"
+#include "Renderer/TextureSamplerDescriptor.hpp"
+
 #include "projectM-opengl.h"
+
 #include <iostream>
 #include <map>
 #include <string>
@@ -12,27 +14,54 @@
 class TextureManager
 {
 public:
+    TextureManager() = delete;
+
     /**
      * Constructor.
-     * @param textureSearchPaths List of paths to search for textures. These paths are search in the given order.
+     * @param textureSearchPaths List of paths to search for textures. These paths are searched in the given order.
      */
     TextureManager(std::vector<std::string>& textureSearchPaths);
-    ~TextureManager();
 
-    TextureSamplerDesc tryLoadingTexture(const std::string name);
-    TextureSamplerDesc getTexture(const std::string fullName, const GLenum defaultWrap, const GLenum defaultFilter);
-    TextureSamplerDesc getRandomTextureName(std::string rand_name);
-    void clearRandomTextures();
+    ~TextureManager() = default;
+
+    /**
+     * @brief Requests a texture and sampler with the given name.
+     * Resets the texture age to zero.
+     * @param fullName
+     * @return
+     */
+    auto GetTexture(const std::string& fullName) -> TextureSamplerDescriptor;
+
+    /**
+     * @brief Purges unused textures and increments the age counter of all stored textures.
+     * Must be called exactly once per preset load.
+     */
+    void PurgeTextures();
 
 private:
-    void Clear();
+    /**
+     * Texture usage statistics. Used to determine when to purge a texture.
+     */
+    struct UsageStats {
+        UsageStats(uint32_t size) : sizeBytes(size) {};
+
+        uint32_t age{};       //!< Age of the texture. Represents the number of presets loaded since it was last retrieved.
+        uint32_t sizeBytes{}; //!< The texture in-memory size in bytes.
+    };
+
+    auto TryLoadingTexture(const std::string& name) -> TextureSamplerDescriptor;
+
+    auto GetRandomTexture(const std::string& randomName) -> TextureSamplerDescriptor;
+
     void Preload();
 
-    TextureSamplerDesc loadTexture(const std::string name, const std::string imageUrl);
-    void ExtractTextureSettings(const std::string qualifiedName, GLint& _wrap_mode, GLint& _filter_mode, std::string& name);
+    TextureSamplerDescriptor LoadTexture(const std::string& fileName, const std::string& name);
+    static void ExtractTextureSettings(const std::string& qualifiedName, GLint& wrapMode, GLint& filterMode, std::string& name);
 
     std::vector<std::string>& m_textureDirectories;
-    std::map<std::string, Texture*> m_textures;
+    std::map<std::string, std::shared_ptr<Texture>> m_textures;
+    std::map<std::pair<GLint, GLint>, std::shared_ptr<Sampler>> m_samplers; //!< The four sampler objects for each combination of wrap and filter modes.
+    std::map<std::string, UsageStats> m_textureStats; //!< Map with texture stats for user-loaded files.
     std::vector<std::string> m_randomTextures;
     std::vector<std::string> m_extensions{".jpg", ".jpeg", ".dds", ".png", ".tga", ".bmp", ".dib"};
 };

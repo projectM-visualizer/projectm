@@ -180,6 +180,10 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
 
         if (static_cast<int>(*m_perFrameContext.textured) != 0)
         {
+            m_presetState.texturedShader.Bind();
+            m_presetState.texturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+            m_presetState.texturedShader.SetUniformInt("texture_sampler", 0);
+
             // Textured shape, either main texture or texture from "image" key
             auto textureAspectY = m_presetState.renderContext.aspectY;
             if (m_image.empty())
@@ -189,11 +193,10 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
             }
             else
             {
-                auto texture = m_presetState.renderContext.textureManager->getTexture(m_image, GL_CLAMP_TO_EDGE, GL_LINEAR);
-                if (texture.first)
+                auto desc = m_presetState.renderContext.textureManager->GetTexture(m_image);
+                if (!desc.Empty())
                 {
-                    texture.first->Bind(0);
-                    texture.second->Bind(0);
+                    desc.Bind(0,  m_presetState.texturedShader);
                     textureAspectY = 1.0f;
                 }
                 else
@@ -203,6 +206,7 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
                     glBindTexture(GL_TEXTURE_2D, m_presetState.mainTextureId);
                 }
             }
+
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
@@ -221,9 +225,6 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
 
             glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeVertexShaderData) * (sides + 2), vertexData.data(), GL_DYNAMIC_DRAW);
 
-            m_presetState.texturedShader.Bind();
-            m_presetState.texturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
-            m_presetState.texturedShader.SetUniformInt("texture_sampler", 0);
 
             glBindVertexArray(m_vaoID_texture);
             glDrawArrays(GL_TRIANGLE_FAN, 0, sides + 2);

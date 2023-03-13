@@ -55,20 +55,13 @@ void MilkdropShader::LoadTextures(TextureManager& textureManager)
 {
     m_shader.Bind();
 
-    // Add Milkdrop built-in textures
-    m_shader.SetUniformTexture("main", textureManager.getTexture("main", GL_REPEAT, GL_LINEAR));
-    m_shader.SetUniformTexture("main", textureManager.getTexture("main", GL_REPEAT, GL_LINEAR));
-    m_shader.SetUniformTexture("fc_main", textureManager.getTexture("main", GL_CLAMP_TO_EDGE, GL_LINEAR));
-    m_shader.SetUniformTexture("pc_main", textureManager.getTexture("main", GL_CLAMP_TO_EDGE, GL_NEAREST));
-    m_shader.SetUniformTexture("fw_main", textureManager.getTexture("main", GL_REPEAT, GL_LINEAR));
-    m_shader.SetUniformTexture("pw_main", textureManager.getTexture("main", GL_REPEAT, GL_NEAREST));
-
-    m_shader.SetUniformTexture("noise_lq", textureManager.getTexture("noise_lq", GL_REPEAT, GL_LINEAR));
-    m_shader.SetUniformTexture("noise_lq_lite", textureManager.getTexture("noise_lq_lite", GL_REPEAT, GL_LINEAR));
-    m_shader.SetUniformTexture("noise_mq", textureManager.getTexture("noise_mq", GL_REPEAT, GL_LINEAR));
-    m_shader.SetUniformTexture("noise_hq", textureManager.getTexture("noise_hq", GL_REPEAT, GL_LINEAR));
-    m_shader.SetUniformTexture("noisevol_lq", textureManager.getTexture("noisevol_lq", GL_REPEAT, GL_LINEAR));
-    m_shader.SetUniformTexture("noisevol_hq", textureManager.getTexture("noisevol_hq", GL_REPEAT, GL_LINEAR));
+    // Bind all descriptors. This includes the main and blur textures.
+    GLint textureUnit{0};
+    for (const auto& desc : m_textureSamplerDescriptors)
+    {
+        desc.Bind(textureUnit, m_shader);
+        textureUnit++;
+    }
 }
 
 void MilkdropShader::LoadVariables(const PresetState& presetState)
@@ -350,7 +343,8 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
 
 void MilkdropShader::GetReferencedSamplers(const std::string& program)
 {
-    // set up texture samplers for all samplers references in the shader program
+    // Look up samplers referenced in the shader program
+    std::set<std::string> samplerNames;
     auto found = program.find("sampler_", 0);
     while (found != std::string::npos)
     {
@@ -363,7 +357,7 @@ void MilkdropShader::GetReferencedSamplers(const std::string& program)
             std::string lowerCaseName(sampler);
             std::transform(lowerCaseName.begin(), lowerCaseName.end(), lowerCaseName.begin(), tolower);
 
-            m_samplerNames.push_back(lowerCaseName);
+            samplerNames.insert(lowerCaseName);
         }
 
         found = program.find("sampler_", found);
@@ -372,24 +366,31 @@ void MilkdropShader::GetReferencedSamplers(const std::string& program)
     if (program.find("GetBlur3") != std::string::npos)
     {
         m_maxBlurLevelRequired = BlurTexture::BlurLevel::Blur3;
-        m_samplerNames.emplace_back("blur1");
-        m_samplerNames.emplace_back("blur2");
-        m_samplerNames.emplace_back("blur3");
+        samplerNames.insert("blur1");
+        samplerNames.insert("blur2");
+        samplerNames.insert("blur3");
     }
     else if (program.find("GetBlur2") != std::string::npos)
     {
         m_maxBlurLevelRequired = BlurTexture::BlurLevel::Blur2;
-        m_samplerNames.emplace_back("blur1");
-        m_samplerNames.emplace_back("blur2");
+        samplerNames.insert("blur1");
+        samplerNames.insert("blur2");
     }
     else if (program.find("GetBlur1") != std::string::npos)
     {
         m_maxBlurLevelRequired = BlurTexture::BlurLevel::Blur1;
-        m_samplerNames.emplace_back("blur1");
+        samplerNames.insert("blur1");
     }
     else
     {
         m_maxBlurLevelRequired = BlurTexture::BlurLevel::None;
+    }
+
+    // Now request the textures and descriptors from the texture manager.
+    // The "main" and "blurX" textures are preset-specific and are not managed by TextureManager.
+    for (const auto& name : samplerNames)
+    {
+
     }
 }
 
@@ -427,31 +428,11 @@ void MilkdropShader::TranspileHLSLShader(std::string& program)
         sourcePreprocessed.replace(matches.position(), matches.length(), "");
     }
 
-    // Declare samplers
-    std::set<std::string> textureSizes;
-    for (const auto& sampler : m_shader.GetTextures())
+    // Declare samplers and texsize uniforms
+    for (const auto& desc : m_textureSamplerDescriptors)
     {
-        Texture* texture = sampler.second.first;
-
-        if (texture->Type() == GL_TEXTURE_3D)
-        {
-            sourcePreprocessed.insert(0, "uniform sampler3D sampler_" + sampler.first + ";\n");
-        }
-        else
-        {
-            sourcePreprocessed.insert(0, "uniform sampler2D sampler_" + sampler.first + ";\n");
-        }
-
-        textureSizes.insert(sampler.first);
-        textureSizes.insert(texture->Name());
+        sourcePreprocessed.insert(0, desc.SamplerDeclarations());
     }
-
-    // Declare texsizes
-    for (const auto& textureSize : textureSizes)
-    {
-        sourcePreprocessed.insert(0, "uniform float4 texsize_" + textureSize + ";\n");
-    }
-
 
     // Transpile from HLSL (aka preset shader aka DirectX shader) to GLSL (aka OpenGL shader lang)
     // First, parse HLSL into a tree
