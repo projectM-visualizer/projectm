@@ -28,7 +28,7 @@
 #include "CustomWaveform.hpp"
 #include "DarkenCenter.hpp"
 #include "Filters.hpp"
-#include "MilkdropShader.hpp"
+#include "FinalComposite.hpp"
 #include "MotionVectors.hpp"
 #include "PerFrameContext.hpp"
 #include "PerPixelContext.hpp"
@@ -65,13 +65,10 @@ public:
     MilkdropPreset(std::istream& presetData);
 
     /**
-     * @brief Returns the absolute file path of the loaded MilkdropPreset
-     * @return The path from which the preset was loaded.
+     * @brief Initializes the preset with rendering-related data.
+     * @param renderContext The initial render context.
      */
-    auto AbsoluteFilePath() const -> const std::string&
-    {
-        return m_absoluteFilePath;
-    }
+    void Initialize(const RenderContext& renderContext) override;
 
     /**
      * @brief Renders the preset.
@@ -99,10 +96,17 @@ private:
 
     auto ParseFilename(const std::string& filename) -> std::string;
 
+    /**
+     * @brief Draws the composite shader quad to create the final output image.
+     */
+    void ApplyCompositeShader();
+
     std::string m_absoluteFilePath; //!< The absolute file path of the MilkdropPreset
     std::string m_absolutePath;     //!< The absolute path of the MilkdropPreset
 
     Framebuffer m_framebuffer{2}; //!< Preset rendering framebuffer with two surfaces (last frame and current frame).
+    int m_currentFrameBuffer{0};  //!< Framebuffer ID of the current frame.
+    int m_previousFrameBuffer{1}; //!< Framebuffer ID of the previous frame.
 
     PresetState m_state;               //!< Preset state container.
     PerFrameContext m_perFrameContext; //!< Preset per-frame evaluation code context.
@@ -114,11 +118,8 @@ private:
     Waveform m_waveform;                                                                //!< Preset default waveform.
     std::array<std::unique_ptr<CustomWaveform>, CustomWaveformCount> m_customWaveforms; //!< Custom waveforms in this preset.
     std::array<std::unique_ptr<CustomShape>, CustomShapeCount> m_customShapes;          //!< Custom shapes in this preset.
-    std::unique_ptr<MilkdropShader> m_compositeShader;                                   //!< The composite shader. Either preset-defined or empty.
+    DarkenCenter m_darkenCenter;                                                        //!< Center darkening effect.
+    Border m_border;                                                                    //!< Inner/outer borders.
 
-    DarkenCenter m_darkenCenter; //!< Center darkening effect.
-    Border m_border;             //!< Inner/outer borders.
-    Filters m_filters;           //!< Various post-processing filters, applied if no composite shader is used.
-
-    friend class MilkdropPresetFactory;
+    FinalComposite m_finalComposite; //!< Final composite shader or filters.
 };

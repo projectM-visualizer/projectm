@@ -11,6 +11,10 @@
 #include "Renderer/Shader.hpp"
 #include "Renderer/TextureManager.hpp"
 
+#include <array>
+#include <set>
+
+class PerFrameContext;
 class PresetState;
 
 /**
@@ -41,15 +45,23 @@ public:
     /**
      * @brief Loads the required texture references into the shader.
      * Binds the underlying shader program.
+     * @param presetState The preset state to pull the values and textures from.
      */
-    void LoadTextures(TextureManager& textureManager);
+    void LoadTexturesAndCompile(PresetState& presetState);
 
     /**
      * @brief Loads all required shader variables into the uniforms.
      * Binds the underlying shader program.
-     * @param presetState The preset State to pull the values from.
+     * @param presetState The preset state to pull the values from.
+     * @param perFrameContext The per-frame context with dynamically calculated values.
      */
-    void LoadVariables(const PresetState& presetState);
+    void LoadVariables(const PresetState& presetState, const PerFrameContext& perFrameContext);
+
+    /**
+     * @brief Returns the contained shader.
+     * @return The shader program wrapper.
+     */
+    auto Shader() -> class Shader&;
 
 private:
     /**
@@ -66,14 +78,18 @@ private:
 
     /**
      * @brief Translates the HLSL shader into GLSL.
+     * @param presetState The preset state to pull the blur textures from.
      * @param program The shader to transpile.
      */
-    void TranspileHLSLShader(std::string& program);
+    void TranspileHLSLShader(const PresetState& presetState, std::string& program);
 
     ShaderType m_type{ShaderType::WarpShader}; //!< Type of this shader.
-    std::string m_presetShaderCode;            //!< The original preset shader code.
+    std::string m_fragmentShaderCode;          //!< The original preset fragment shader code.
+    std::string m_preprocessedCode;            //!< The preprocessed preset shader code.
 
-    std::vector<TextureSamplerDescriptor> m_textureSamplerDescriptors; //!< Descriptors of all referenced samplers in the shader code.
+    std::set<std::string> m_samplerNames;                                        //!< All sampler names referenced in the shader code.
+    std::vector<TextureSamplerDescriptor> m_mainTextureDescriptors;              //!< Descriptors for all main texture references.
+    std::vector<TextureSamplerDescriptor> m_textureSamplerDescriptors;           //!< Descriptors of all referenced samplers in the shader code.
     BlurTexture::BlurLevel m_maxBlurLevelRequired{BlurTexture::BlurLevel::None}; //!< Max blur level of main texture required by this shader.
 
     std::array<float, 4> m_randValues{};               //!< Random values which don't change every frame.
@@ -81,5 +97,5 @@ private:
     std::array<glm::vec3, 20> m_randRotationCenters{}; //!< Random rotation center vectors which don't change every frame.
     std::array<glm::vec3, 20> m_randRotationSpeeds{};  //!< Random rotation speeds which don't change every frame.
 
-    Shader m_shader;
+    class Shader m_shader;
 };

@@ -57,7 +57,7 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
 
     WaveformMath(presetPerFrameContext);
 
-    std::vector<WaveformVertex> smoothedWave(m_samples * 2);
+    std::vector<Point> smoothedWave(static_cast<size_t>(m_samples) * 2);
 
     for (int waveIndex = 0; waveIndex < 2; waveIndex++)
     {
@@ -117,7 +117,7 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
                     break;
             }
 
-            glBufferData(GL_ARRAY_BUFFER, sizeof(WaveformVertex) * smoothedSamples, smoothedWave.data(), GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * smoothedSamples, smoothedWave.data(), GL_DYNAMIC_DRAW);
             glDrawArrays(drawType, 0, smoothedSamples);
         }
     }
@@ -337,7 +337,7 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
 
             m_samples = RenderWaveformSamples / 2;
 
-            m_wave1Vertices = new WaveformVertex[m_samples]();
+            m_wave1Vertices = new Point[m_samples]();
 
             const int sampleOffset{(RenderWaveformSamples - m_samples) / 2};
 
@@ -365,7 +365,7 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
         {
             m_samples = RenderWaveformSamples / 2;
 
-            m_wave1Vertices = new WaveformVertex[m_samples]();
+            m_wave1Vertices = new Point[m_samples]();
 
             for (int i = 0; i < m_samples; i++)
             {
@@ -383,7 +383,7 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
             // Alpha calculation is handled in MaximizeColors().
             m_samples = RenderWaveformSamples;
 
-            m_wave1Vertices = new WaveformVertex[m_samples]();
+            m_wave1Vertices = new Point[m_samples]();
 
             for (int i = 0; i < m_samples; i++)
             {
@@ -402,7 +402,7 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
                 m_samples /= 3;
             }
 
-            m_wave1Vertices = new WaveformVertex[m_samples]();
+            m_wave1Vertices = new Point[m_samples]();
 
             int const sampleOffset = (RenderWaveformSamples - m_samples) / 2;
 
@@ -431,7 +431,7 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
         case Mode::ExplosiveHash: {
             m_samples = RenderWaveformSamples;
 
-            m_wave1Vertices = new WaveformVertex[m_samples]();
+            m_wave1Vertices = new Point[m_samples]();
 
             const float cosineRotation = cosf(m_presetState.renderContext.time * 0.3f);
             const float sineRotation = sinf(m_presetState.renderContext.time * 0.3f);
@@ -464,10 +464,10 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
                 }
             }
 
-            m_wave1Vertices = new WaveformVertex[m_samples]();
+            m_wave1Vertices = new Point[m_samples]();
             if (m_mode == Mode::DoubleLine)
             {
-                m_wave2Vertices = new WaveformVertex[m_samples]();
+                m_wave2Vertices = new Point[m_samples]();
             }
 
             const int sampleOffset = (RenderWaveformSamples - m_samples) / 2;
@@ -584,8 +584,8 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
     }
 }
 
-int Waveform::SmoothWave(const Waveform::WaveformVertex* inputVertices,
-                         Waveform::WaveformVertex* outputVertices)
+int Waveform::SmoothWave(const RenderItem::Point* inputVertices,
+                         RenderItem::Point* outputVertices)
 {
     constexpr float c1{-0.15f};
     constexpr float c2{1.15f};

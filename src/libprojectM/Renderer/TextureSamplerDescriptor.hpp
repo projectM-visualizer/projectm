@@ -4,6 +4,8 @@
 #include "Sampler.hpp"
 #include "Shader.hpp"
 
+class TextureManager;
+
 /**
  * @brief A pair of a texture and a sampler for use in shaders.
  *
@@ -63,20 +65,39 @@ public:
     auto Texture() const -> std::shared_ptr<class Texture>;
 
     /**
+     * @brief Updates the internal texture with a new one.
+     * @param texture A weak pointer to the new texture.
+     */
+    void Texture(std::weak_ptr<class Texture> texture);
+
+    /**
      * @brief Returns a pointer to the stored sampler.
      * @return A shared pointer to the stored sampler, or nullptr if the sampler is invalid or empty.
      */
     auto Sampler() const -> std::shared_ptr<class Sampler>;
 
     /**
-     * @brief Returns the shader sampler and texsize HLSL declarations.
-     * @return The sampler and texsize declarations for use in the preset HLSL shaders.
+     * @brief Returns the shader sampler HLSL declaration.
+     * @return The sampler declaration for use in the preset HLSL shaders.
      */
-    auto SamplerDeclarations() const -> std::string;
+    auto SamplerDeclaration() const -> std::string;
+
+    /**
+     * @brief Returns the shader texsize HLSL declaration.
+     * @return The texsize declaration for use in the preset HLSL shaders.
+     */
+    auto TexSizeDeclaration() const -> std::string;
+
+    /**
+     * @brief Tries to update the texture and sampler from the given texture manager if invalid.
+     * @param textureManager The texture manager to retrieve the new data from.
+     */
+    void TryUpdate(TextureManager& textureManager);
 
 private:
     std::weak_ptr<class Texture> m_texture; //!< A weak reference to the texture.
     std::weak_ptr<class Sampler> m_sampler; //!< A weak reference to the sampler.
     std::string m_samplerName; //!< The name of the texture sampler as referenced in the shader.
     std::string m_sizeName; //!< The name of the "texsize_" uniform as referenced in the shader.
+    bool m_updateFailed{false}; //!< Set to true if the update try failed, e.g. texture could not be loaded.
 };

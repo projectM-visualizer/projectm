@@ -50,7 +50,7 @@ add_library(MilkdropPreset OBJECT
         WaveformPerFrameContext.hpp
         WaveformPerPointContext.cpp
         WaveformPerPointContext.hpp
-        )
+        FinalComposite.cpp FinalComposite.hpp)
 
 target_include_directories(MilkdropPreset
         PRIVATE

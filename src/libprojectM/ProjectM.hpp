@@ -20,6 +20,8 @@
  */
 #pragma once
 
+#include <Renderer/RenderContext.hpp>
+
 #include "projectM-4/projectM_export.h"
 
 #include "libprojectM/Audio/PCM.hpp"
@@ -225,6 +227,8 @@ private:
 
     void LoadIdlePreset();
 
+    auto GetRenderContext() -> RenderContext;
+
 #if PROJECTM_USE_THREADS
 
     void ThreadWorker();
@@ -250,7 +254,7 @@ private:
     std::vector<std::string> m_textureSearchPaths; ///!< List of paths to search for texture files
 
     /** Timing information */
-    int m_count{0}; //!< Rendered frame count since start
+    int m_frameCount{0}; //!< Rendered frame count since start
 
     bool m_presetLocked{false};         //!< If true, the preset change event will not be sent.
     bool m_presetChangeNotified{false}; //!< Stores whether the user has been notified that projectM wants to switch the preset.

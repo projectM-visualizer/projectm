@@ -45,15 +45,6 @@ public:
     void Draw(const PerFrameContext& presetPerFrameContext);
 
 private:
-    struct ColoredPoint {
-        float x{0.5f}; //!< Vertex X coordinate.
-        float y{0.5f}; //!< Vertex Y coordinate.
-        float r{1.0f}; //!< Vertex red color value.
-        float g{1.0f}; //!< Vertex green color value.
-        float b{1.0f}; //!< Vertex blue color value.
-        float a{1.0f}; //!< Vertex alpha value.
-    };
-
     /**
      * @brief Initializes the per-frame context with the preset per-frame state.
      * @param presetPerFrameContext The preset per-frame context to pull q vars from.

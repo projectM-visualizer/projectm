@@ -181,31 +181,14 @@ void ProjectM::RenderFrame()
     }
 
     // ToDo: Call the to-be-implemented render method in Renderer
-    auto audio = m_beatDetect->GetFrameAudioData();
+    m_activePreset->RenderFrame(m_beatDetect->GetFrameAudioData(), GetRenderContext());
 
-    RenderContext ctx{};
-    ctx.viewportSizeX = m_windowWidth;
-    ctx.viewportSizeY = m_windowHeight;
-    ctx.time = m_timeKeeper->GetRunningTime();
-    ctx.progress = m_timeKeeper->PresetProgressA();
-    ctx.fps = m_targetFps;
-    ctx.frame = m_count;
-    ctx.aspectX = (m_windowHeight > m_windowWidth) ? static_cast<float>(m_windowWidth) / static_cast<float>(m_windowHeight) : 1.0f;
-    ctx.aspectY = (m_windowWidth > m_windowHeight) ? static_cast<float>(m_windowHeight) / static_cast<float>(m_windowWidth) : 1.0f;
-    ctx.invAspectX = 1.0f / ctx.aspectX;
-    ctx.invAspectY = 1.0f / ctx.aspectY;
-    ctx.perPixelMeshX = m_meshX;
-    ctx.perPixelMeshY = m_meshY;
-    ctx.textureManager = m_textureManager.get();
-
-    m_activePreset->RenderFrame(audio, ctx);
-
-    m_count++;
+    m_frameCount++;
 }
 
 void ProjectM::Reset()
 {
-    this->m_count = 0;
+    this->m_frameCount = 0;
 
     m_presetFactoryManager->initialize();
 
@@ -293,6 +276,8 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
     {
         return;
     }
+
+    preset->Initialize(GetRenderContext());
 
     // ToDo: Continue only if preset is fully loaded.
 
@@ -488,4 +473,24 @@ void ProjectM::RecreateRenderer()
     m_renderer = std::make_unique<Renderer>(m_windowWidth, m_windowHeight,
                                             m_meshX, m_meshY,
                                             *m_beatDetect.get());
+}
+
+auto ProjectM::GetRenderContext() -> RenderContext
+{
+    RenderContext ctx{};
+    ctx.viewportSizeX = m_windowWidth;
+    ctx.viewportSizeY = m_windowHeight;
+    ctx.time = m_timeKeeper->GetRunningTime();
+    ctx.progress = m_timeKeeper->PresetProgressA();
+    ctx.fps = m_targetFps;
+    ctx.frame = m_frameCount;
+    ctx.aspectX = (m_windowHeight > m_windowWidth) ? static_cast<float>(m_windowWidth) / static_cast<float>(m_windowHeight) : 1.0f;
+    ctx.aspectY = (m_windowWidth > m_windowHeight) ? static_cast<float>(m_windowHeight) / static_cast<float>(m_windowWidth) : 1.0f;
+    ctx.invAspectX = 1.0f / ctx.aspectX;
+    ctx.invAspectY = 1.0f / ctx.aspectY;
+    ctx.perPixelMeshX = m_meshX;
+    ctx.perPixelMeshY = m_meshY;
+    ctx.textureManager = m_textureManager.get();
+
+    return ctx;
 }

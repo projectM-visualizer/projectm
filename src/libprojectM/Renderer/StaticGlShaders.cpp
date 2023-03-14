@@ -9,23 +9,92 @@
 namespace {
 // Variants of shaders for GLSL1.2
 const std::string kPresetWarpVertexShaderGlsl120 = R"(
-attribute vec2 vertex_position;
-attribute vec4 vertex_color;
-attribute vec2 vertex_texture;
+#define pos vertex_position.xy
+#define radius vertex_position.z
+#define angle vertex_position.w
+#define zoom transforms.x
+#define zoomExp transforms.y
+#define rot transforms.z
+#define warp transforms.w
+
+#define aspectX aspect.x
+#define aspectY aspect.y
+#define invAspectX aspect.z
+#define invAspectY aspect.w
+
+attribute vec4 vertex_position;
+attribute vec4 transforms;
+attribute vec2 center;
+attribute vec2 distance;
+attribute vec2 stretch;
 
 uniform mat4 vertex_transformation;
+uniform vec4 aspect;
+uniform float warpTime;
+uniform float warpScaleInverse;
+uniform vec4 warpFactors;
+uniform vec2 texelOffset;
+uniform float decay;
 
 varying vec4 frag_COLOR;
-varying vec4 frag_TEXCOORD0;
+varying vec2 frag_TEXCOORD0;
 varying vec2 frag_TEXCOORD1;
 
 void main(){
-    vec4 position = vertex_transformation * vec4(vertex_position, 0.0, 1.0);
-    gl_Position = position;
-    frag_COLOR = vertex_color;
-    frag_TEXCOORD0.xy = vertex_texture;
-    frag_TEXCOORD0.zw = position.xy;
-    frag_TEXCOORD1 = vec2(0.0, 0.0);
+    gl_Position = vertex_transformation * vec4(vec2(pos.x, -pos.y), 0.0, 1.0);
+
+    float zoom2 = pow(zoom, pow(zoomExp, radius * 2.0 - 1.0));
+    float zoom2Inverse = 1.0 / zoom2;
+
+    // Initial texture coordinates, with built-in zoom factor
+    vec2 uv = vec2(pos.x * aspectX * 0.5 * zoom2Inverse + 0.5,
+                   -pos.y * aspectY * 0.5 * zoom2Inverse + 0.5);
+
+    // Stretch on X, Y
+    uv.x = (uv.x - center.x) / stretch.x + center.x;
+    uv.y = (uv.y - center.y) / stretch.y + center.y;
+
+    // Warping
+    uv.x += warp * 0.0035 * sin(warpTime * 0.333 + warpScaleInverse * (pos.x * warpFactors.x - pos.y * warpFactors.w));
+    uv.y += warp * 0.0035 * cos(warpTime * 0.375 - warpScaleInverse * (pos.x * warpFactors.z + pos.y * warpFactors.y));
+    uv.x += warp * 0.0035 * cos(warpTime * 0.753 - warpScaleInverse * (pos.x * warpFactors.y - pos.y * warpFactors.z));
+    uv.y += warp * 0.0035 * sin(warpTime * 0.825 + warpScaleInverse * (pos.x * warpFactors.x + pos.y * warpFactors.w));
+
+    // Rotation
+    vec2 uv2 = vec2(uv.x - center.x,
+                    uv.y - center.y);
+
+    float cosRotation = cos(rot);
+    float sinRotation = sin(rot);
+    uv.x = uv2.x * cosRotation - uv2.y * sinRotation + center.x;
+    uv.y = uv2.x * sinRotation - uv2.y * cosRotation + center.y;
+
+    // Translation
+    uv -= distance;
+
+    // Undo aspect ratio fix
+    uv.x = (uv.x - 0.5) * invAspectX + 0.5;
+    uv.y = (uv.y - 0.5) * invAspectY + 0.5;
+
+    // Final half-texel translation
+    uv += texelOffset;
+
+    frag_COLOR = vec4(decay, decay, decay, 1.0);
+    frag_TEXCOORD0.xy = uv;
+    frag_TEXCOORD0.zw = gl_Position.xy;
+    frag_TEXCOORD1 = vertex_position.zw;
+}
+)";
+
+const std::string kPresetWarpFragmentShaderGlsl120 = R"(
+varying vec4 frag_COLOR;
+varying vec2 frag_TEXCOORD0;
+varying vec2 frag_TEXCOORD1;
+
+uniform sampler2D texture_sampler;
+
+void main(){
+    gl_FragColor = frag_COLOR * texture2D(texture_sampler, frag_TEXCOORD0);
 }
 )";
 
@@ -376,23 +445,94 @@ void main(){
 
 // Variants of shaders for GLSL3.3
 const std::string kPresetWarpVertexShaderGlsl330 = R"(
-layout(location = 0) in vec2 vertex_position;
-layout(location = 1) in vec4 vertex_color;
-layout(location = 2) in vec2 vertex_texture;
+#define pos vertex_position.xy
+#define radius vertex_position.z
+#define angle vertex_position.w
+#define zoom transforms.x
+#define zoomExp transforms.y
+#define rot transforms.z
+#define warp transforms.w
+
+#define aspectX aspect.x
+#define aspectY aspect.y
+#define invAspectX aspect.z
+#define invAspectY aspect.w
+
+layout(location = 0) in vec4 vertex_position;
+layout(location = 1) in vec4 transforms;
+layout(location = 2) in vec2 center;
+layout(location = 3) in vec2 distance;
+layout(location = 4) in vec2 stretch;
 
 uniform mat4 vertex_transformation;
+uniform vec4 aspect;
+uniform float warpTime;
+uniform float warpScaleInverse;
+uniform vec4 warpFactors;
+uniform vec2 texelOffset;
+uniform float decay;
 
 out vec4 frag_COLOR;
 out vec4 frag_TEXCOORD0;
 out vec2 frag_TEXCOORD1;
 
-void main(){
-    vec4 position = vertex_transformation * vec4(vertex_position, 0.0, 1.0);
-    gl_Position = position;
-    frag_COLOR = vertex_color;
-    frag_TEXCOORD0.xy = vertex_texture;
-    frag_TEXCOORD0.zw = position.xy;
-    frag_TEXCOORD1 = vec2(0.0, 0.0);
+void main() {
+    gl_Position = vertex_transformation * vec4(vec2(pos.x, -pos.y), 0.0, 1.0);
+
+    float zoom2 = pow(zoom, pow(zoomExp, radius * 2.0 - 1.0));
+    float zoom2Inverse = 1.0 / zoom2;
+
+    // Initial texture coordinates, with built-in zoom factor
+    vec2 uv = vec2(pos.x * aspectX * 0.5 * zoom2Inverse + 0.5,
+                   -pos.y * aspectY * 0.5 * zoom2Inverse + 0.5);
+
+    // Stretch on X, Y
+    uv.x = (uv.x - center.x) / stretch.x + center.x;
+    uv.y = (uv.y - center.y) / stretch.y + center.y;
+
+    // Warping
+    uv.x += warp * 0.0035 * sin(warpTime * 0.333 + warpScaleInverse * (pos.x * warpFactors.x - pos.y * warpFactors.w));
+    uv.y += warp * 0.0035 * cos(warpTime * 0.375 - warpScaleInverse * (pos.x * warpFactors.z + pos.y * warpFactors.y));
+    uv.x += warp * 0.0035 * cos(warpTime * 0.753 - warpScaleInverse * (pos.x * warpFactors.y - pos.y * warpFactors.z));
+    uv.y += warp * 0.0035 * sin(warpTime * 0.825 + warpScaleInverse * (pos.x * warpFactors.x + pos.y * warpFactors.w));
+
+    // Rotation
+    vec2 uv2 = vec2(uv.x - center.x,
+                    uv.y - center.y);
+
+    float cosRotation = cos(rot);
+    float sinRotation = sin(rot);
+    uv.x = uv2.x * cosRotation - uv2.y * sinRotation + center.x;
+    uv.y = uv2.x * sinRotation - uv2.y * cosRotation + center.y;
+
+    // Translation
+    uv -= distance;
+
+    // Undo aspect ratio fix
+    uv.x = (uv.x - 0.5) * invAspectX + 0.5;
+    uv.y = (uv.y - 0.5) * invAspectY + 0.5;
+
+    // Final half-texel translation
+    uv += texelOffset;
+
+    frag_COLOR = vec4(decay, decay, decay, 1.0);
+    frag_TEXCOORD0.xy = uv;
+    frag_TEXCOORD0.zw = gl_Position.xy;
+    frag_TEXCOORD1 = vertex_position.zw;
+}
+)";
+
+const std::string kPresetWarpFragmentShaderGlsl330 = R"(
+in vec4 frag_COLOR;
+in vec4 frag_TEXCOORD0;
+in vec2 frag_TEXCOORD1;
+
+uniform sampler2D texture_sampler;
+
+out vec4 color;
+
+void main() {
+    color = frag_COLOR * texture(texture_sampler, frag_TEXCOORD0.xy);
 }
 )";
 
@@ -885,6 +1025,7 @@ std::string StaticGlShaders::AddVersionHeader(std::string shader_text) {
     }
 
 DECLARE_SHADER_ACCESSOR(PresetWarpVertexShader);
+DECLARE_SHADER_ACCESSOR(PresetWarpFragmentShader);
 DECLARE_SHADER_ACCESSOR(PresetCompVertexShader);
 DECLARE_SHADER_ACCESSOR(V2fC4fVertexShader);
 DECLARE_SHADER_ACCESSOR(V2fC4fFragmentShader);

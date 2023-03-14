@@ -5,196 +5,19 @@
 #include "PerPixelContext.hpp"
 #include "PresetState.hpp"
 
+#include <Renderer/StaticGlShaders.hpp>
+
 #include <algorithm>
 #include <cmath>
-
-static const std::string perPixelVertexShaderGLSL120 = R"(
-#version 120
-
-#define pos vertex_position.xy
-#define radius vertex_position.z
-#define angle vertex_position.w
-#define zoom transforms.x
-#define zoomExp transforms.y
-#define rot transforms.z
-#define warp transforms.w
-
-#define aspectX aspect.x
-#define aspectY aspect.y
-#define invAspectX aspect.z
-#define invAspectY aspect.w
-
-attribute vec4 vertex_position;
-attribute vec4 transforms;
-attribute vec2 center;
-attribute vec2 distance;
-attribute vec2 stretch;
-
-uniform mat4 vertex_transformation;
-uniform vec4 aspect;
-uniform float warpTime;
-uniform float warpScaleInverse;
-uniform vec4 warpFactors;
-uniform vec2 texelOffset;
-uniform float decay;
-
-varying vec4 fragment_color;
-varying vec2 fragment_texture;
-
-void main(){
-    gl_Position = vertex_transformation * vec4(vec2(pos.x, -pos.y), 0.0, 1.0);
-
-    float zoom2 = pow(zoom, pow(zoomExp, radius * 2.0 - 1.0));
-    float zoom2Inverse = 1.0 / zoom2;
-
-    // Initial texture coordinates, with built-in zoom factor
-    vec2 uv = vec2(pos.x * aspectX * 0.5 * zoom2Inverse + 0.5,
-                   -pos.y * aspectY * 0.5 * zoom2Inverse + 0.5);
-
-    // Stretch on X, Y
-    uv.x = (uv.x - center.x) / stretch.x + center.x;
-    uv.y = (uv.y - center.y) / stretch.y + center.y;
-
-    // Warping
-    uv.x += warp * 0.0035 * sin(warpTime * 0.333 + warpScaleInverse * (pos.x * warpFactors.x - pos.y * warpFactors.w));
-    uv.y += warp * 0.0035 * cos(warpTime * 0.375 - warpScaleInverse * (pos.x * warpFactors.z + pos.y * warpFactors.y));
-    uv.x += warp * 0.0035 * cos(warpTime * 0.753 - warpScaleInverse * (pos.x * warpFactors.y - pos.y * warpFactors.z));
-    uv.y += warp * 0.0035 * sin(warpTime * 0.825 + warpScaleInverse * (pos.x * warpFactors.x + pos.y * warpFactors.w));
-
-    // Rotation
-    vec2 uv2 = vec2(uv.x - center.x,
-                    uv.y - center.y);
-
-    float cosRotation = cos(rot);
-    float sinRotation = sin(rot);
-    uv.x = uv2.x * cosRotation - uv2.y * sinRotation + center.x;
-    uv.y = uv2.x * sinRotation - uv2.y * cosRotation + center.y;
-
-    // Translation
-    uv -= distance;
-
-    // Undo aspect ratio fix
-    uv.x = (uv.x - 0.5) * invAspectX + 0.5;
-    uv.y = (uv.y - 0.5) * invAspectY + 0.5;
-
-    // Final half-texel translation
-    uv += texelOffset;
-
-    fragment_color = vec4(decay, decay, decay, 1.0);
-    fragment_texture = uv;
-}
-)";
-
-static const std::string perPixelFragmentShaderGLSL120 = R"(
-#version 120
-
-varying vec4 fragment_color;
-varying vec2 fragment_texture;
-
-uniform sampler2D texture_sampler;
-
-void main(){
-    gl_FragColor = fragment_color * texture2D(texture_sampler, fragment_texture);
-})";
-
-static const std::string perPixelVertexShaderGLSL330 = R"(
-#version 330
-
-#define pos vertex_position.xy
-#define radius vertex_position.z
-#define angle vertex_position.w
-#define zoom transforms.x
-#define zoomExp transforms.y
-#define rot transforms.z
-#define warp transforms.w
-
-#define aspectX aspect.x
-#define aspectY aspect.y
-#define invAspectX aspect.z
-#define invAspectY aspect.w
-
-layout(location = 0) in vec4 vertex_position;
-layout(location = 1) in vec4 transforms;
-layout(location = 2) in vec2 center;
-layout(location = 3) in vec2 distance;
-layout(location = 4) in vec2 stretch;
-
-uniform mat4 vertex_transformation;
-uniform vec4 aspect;
-uniform float warpTime;
-uniform float warpScaleInverse;
-uniform vec4 warpFactors;
-uniform vec2 texelOffset;
-uniform float decay;
-
-out vec4 fragment_color;
-out vec2 fragment_texture;
-
-void main() {
-    gl_Position = vertex_transformation * vec4(vec2(pos.x, -pos.y), 0.0, 1.0);
-
-    float zoom2 = pow(zoom, pow(zoomExp, radius * 2.0 - 1.0));
-    float zoom2Inverse = 1.0 / zoom2;
-
-    // Initial texture coordinates, with built-in zoom factor
-    vec2 uv = vec2(pos.x * aspectX * 0.5 * zoom2Inverse + 0.5,
-                   -pos.y * aspectY * 0.5 * zoom2Inverse + 0.5);
-
-    // Stretch on X, Y
-    uv.x = (uv.x - center.x) / stretch.x + center.x;
-    uv.y = (uv.y - center.y) / stretch.y + center.y;
-
-    // Warping
-    uv.x += warp * 0.0035 * sin(warpTime * 0.333 + warpScaleInverse * (pos.x * warpFactors.x - pos.y * warpFactors.w));
-    uv.y += warp * 0.0035 * cos(warpTime * 0.375 - warpScaleInverse * (pos.x * warpFactors.z + pos.y * warpFactors.y));
-    uv.x += warp * 0.0035 * cos(warpTime * 0.753 - warpScaleInverse * (pos.x * warpFactors.y - pos.y * warpFactors.z));
-    uv.y += warp * 0.0035 * sin(warpTime * 0.825 + warpScaleInverse * (pos.x * warpFactors.x + pos.y * warpFactors.w));
-
-    // Rotation
-    vec2 uv2 = vec2(uv.x - center.x,
-                    uv.y - center.y);
-
-    float cosRotation = cos(rot);
-    float sinRotation = sin(rot);
-    uv.x = uv2.x * cosRotation - uv2.y * sinRotation + center.x;
-    uv.y = uv2.x * sinRotation - uv2.y * cosRotation + center.y;
-
-    // Translation
-    uv -= distance;
-
-    // Undo aspect ratio fix
-    uv.x = (uv.x - 0.5) * invAspectX + 0.5;
-    uv.y = (uv.y - 0.5) * invAspectY + 0.5;
-
-    // Final half-texel translation
-    uv += texelOffset;
-
-    fragment_color = vec4(decay, decay, decay, 1.0);
-    fragment_texture = uv;
-}
-)";
-
-static const std::string perPixelFragmentShaderGLSL330 = R"(
-#version 330
-
-in vec2 fragment_texture;
-in vec4 fragment_color;
-
-uniform sampler2D texture_sampler;
-
-out vec4 color;
-
-void main() {
-    color = fragment_color * texture(texture_sampler, fragment_texture);
-}
-)";
 
 PerPixelMesh::PerPixelMesh()
     : RenderItem()
 {
     RenderItem::Init();
 
-    m_perPixelMeshShader.CompileProgram(perPixelVertexShaderGLSL330, perPixelFragmentShaderGLSL330);
+    auto staticShaders = StaticGlShaders::Get();
+    m_perPixelMeshShader.CompileProgram(staticShaders->GetPresetWarpVertexShader(),
+                                        staticShaders->GetPresetWarpFragmentShader());
 }
 
 void PerPixelMesh::InitVertexAttrib()
@@ -222,7 +45,7 @@ void PerPixelMesh::InitVertexAttrib()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void PerPixelMesh::CompileWarpShader(const PresetState& presetState)
+void PerPixelMesh::LoadWarpShader(const PresetState& presetState)
 {
     // Compile warp shader if preset specifies one.
     if (presetState.warpShaderVersion > 0)
@@ -233,13 +56,38 @@ void PerPixelMesh::CompileWarpShader(const PresetState& presetState)
             {
                 m_warpShader = std::make_unique<MilkdropShader>(MilkdropShader::ShaderType::WarpShader);
                 m_warpShader->LoadCode(presetState.warpShader);
-                std::cerr << "Compiled warp shader." << std::endl;
+#ifdef MILKDROP_PRESET_DEBUG
+                std::cerr << "[Warp Shader] Loaded preset warp shader code." << std::endl;
+#endif
             }
             catch (ShaderException& ex)
             {
-                std::cerr << "Error compiling warp shader:" << ex.message() << std::endl;
+#ifdef MILKDROP_PRESET_DEBUG
+                std::cerr << "[Warp Shader] Error loading warp shader code:" << ex.message() << std::endl;
+#endif
                 m_warpShader.reset();
             }
+        }
+    }
+}
+
+void PerPixelMesh::CompileWarpShader(PresetState& presetState)
+{
+    if (m_warpShader)
+    {
+        try
+        {
+            m_warpShader->LoadTexturesAndCompile(presetState);
+#ifdef MILKDROP_PRESET_DEBUG
+            std::cerr << "[Warp Shader] Successfully compiled warp shader code." << std::endl;
+#endif
+        }
+        catch (ShaderException& ex)
+        {
+#ifdef MILKDROP_PRESET_DEBUG
+            std::cerr << "[Warp Shader] Error compiling warp shader code:" << ex.message() << std::endl;
+#endif
+            m_warpShader.reset();
         }
     }
 }
@@ -288,9 +136,6 @@ void PerPixelMesh::InitializeMesh(const PresetState& presetState)
 
     // Either viewport size or mesh size changed, reinitialize the vertices.
     int vertexIndex{0};
-    float const texelOffsetX = 0.5f / static_cast<float>(presetState.renderContext.viewportSizeX);
-    float const texelOffsetY = 0.5f / static_cast<float>(presetState.renderContext.viewportSizeY);
-
     for (int gridY = 0; gridY <= m_gridSizeY; gridY++)
     {
         for (int gridX = 0; gridX <= m_gridSizeX; gridX++)
@@ -455,20 +300,38 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
     // No blending between presets here, so we make sure blending is disabled.
     glDisable(GL_BLEND);
 
-    m_perPixelMeshShader.Bind();
-    m_perPixelMeshShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
-    m_perPixelMeshShader.SetUniformInt("texture_sampler", 0);
-    m_perPixelMeshShader.SetUniformFloat4("aspect", {presetState.renderContext.aspectX,
-                                                     presetState.renderContext.aspectY,
-                                                     presetState.renderContext.invAspectX,
-                                                     presetState.renderContext.invAspectY});
-    m_perPixelMeshShader.SetUniformFloat("warpTime", warpTime);
-    m_perPixelMeshShader.SetUniformFloat("warpScaleInverse", warpScaleInverse);
-    m_perPixelMeshShader.SetUniformFloat4("warpFactors", warpFactors);
-    m_perPixelMeshShader.SetUniformFloat2("texelOffset", texelOffsets);
-    m_perPixelMeshShader.SetUniformFloat("decay", decay);
+    if (!m_warpShader)
+    {
+        m_perPixelMeshShader.Bind();
+        m_perPixelMeshShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+        m_perPixelMeshShader.SetUniformInt("texture_sampler", 0);
+        m_perPixelMeshShader.SetUniformFloat4("aspect", {presetState.renderContext.aspectX,
+                                                         presetState.renderContext.aspectY,
+                                                         presetState.renderContext.invAspectX,
+                                                         presetState.renderContext.invAspectY});
+        m_perPixelMeshShader.SetUniformFloat("warpTime", warpTime);
+        m_perPixelMeshShader.SetUniformFloat("warpScaleInverse", warpScaleInverse);
+        m_perPixelMeshShader.SetUniformFloat4("warpFactors", warpFactors);
+        m_perPixelMeshShader.SetUniformFloat2("texelOffset", texelOffsets);
+        m_perPixelMeshShader.SetUniformFloat("decay", decay);
+    }
+    else
+    {
+        m_warpShader->LoadVariables(presetState, perFrameContext);
+        auto& shader = m_warpShader->Shader();
+        shader.SetUniformFloat4("aspect", {presetState.renderContext.aspectX,
+                                                         presetState.renderContext.aspectY,
+                                                         presetState.renderContext.invAspectX,
+                                                         presetState.renderContext.invAspectY});
+        shader.SetUniformFloat("warpTime", warpTime);
+        shader.SetUniformFloat("warpScaleInverse", warpScaleInverse);
+        shader.SetUniformFloat4("warpFactors", warpFactors);
+        shader.SetUniformFloat2("texelOffset", texelOffsets);
+        shader.SetUniformFloat("decay", decay);
+    }
 
-    glBindTexture(GL_TEXTURE_2D, presetState.mainTextureId);
+    assert(!presetState.mainTexture.expired());
+    presetState.mainTexture.lock()->Bind(0);
 
     // Set wrap mode and bind the sampler to get interpolation right.
     if (*perFrameContext.wrap > 0.0001f)

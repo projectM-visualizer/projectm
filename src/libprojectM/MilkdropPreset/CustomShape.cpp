@@ -14,47 +14,47 @@ CustomShape::CustomShape(PresetState& presetState)
     , m_presetState(presetState)
     , m_perFrameContext(presetState.globalMemory, &presetState.globalRegisters)
 {
-    glGenVertexArrays(1, &m_vaoID_texture);
-    glGenBuffers(1, &m_vboID_texture);
+    glGenVertexArrays(1, &m_vaoIdTextured);
+    glGenBuffers(1, &m_vboIdTextured);
 
-    glGenVertexArrays(1, &m_vaoID_not_texture);
-    glGenBuffers(1, &m_vboID_not_texture);
+    glGenVertexArrays(1, &m_vaoIdUntextured);
+    glGenBuffers(1, &m_vboIdUntextured);
 
-    glBindVertexArray(m_vaoID_texture);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vboID_texture);
+    glBindVertexArray(m_vaoIdTextured);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboIdTextured);
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE,
-                          sizeof(ShapeVertexShaderData), nullptr); // Positions
+                          sizeof(TexturedPoint), nullptr); // Positions
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE,
-                          sizeof(ShapeVertexShaderData), reinterpret_cast<void*>(sizeof(float) * 2)); // Colors
+                          sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r))); // Colors
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
-                          sizeof(ShapeVertexShaderData), reinterpret_cast<void*>(sizeof(float) * 6)); // Textures
+                          sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, u))); // Textures
 
-    glBindVertexArray(m_vaoID_not_texture);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vboID_not_texture);
+    glBindVertexArray(m_vaoIdUntextured);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboIdUntextured);
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE,
-                          sizeof(ShapeVertexShaderData), nullptr); // Points
+                          sizeof(TexturedPoint), nullptr); // Points
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE,
-                          sizeof(ShapeVertexShaderData), reinterpret_cast<void*>(sizeof(float) * 2)); // Colors
+                          sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r))); // Colors
 
     RenderItem::Init();
 }
 
 CustomShape::~CustomShape()
 {
-    glDeleteBuffers(1, &m_vboID_texture);
-    glDeleteVertexArrays(1, &m_vaoID_texture);
+    glDeleteBuffers(1, &m_vboIdTextured);
+    glDeleteVertexArrays(1, &m_vaoIdTextured);
 
-    glDeleteBuffers(1, &m_vboID_not_texture);
-    glDeleteVertexArrays(1, &m_vaoID_not_texture);
+    glDeleteBuffers(1, &m_vboIdUntextured);
+    glDeleteVertexArrays(1, &m_vaoIdUntextured);
 }
 
 void CustomShape::InitVertexAttrib()
@@ -142,23 +142,23 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
         // Additive Drawing or Overwrite
         glBlendFunc(GL_SRC_ALPHA, static_cast<int>(*m_perFrameContext.additive) != 0 ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
 
-        std::vector<ShapeVertexShaderData> vertexData(sides + 2);
+        std::vector<TexturedPoint> vertexData(sides + 2);
 
-        vertexData[0].point_x = static_cast<float>(*m_perFrameContext.x * 2.0 - 1.0);
-        vertexData[0].point_y = static_cast<float>(*m_perFrameContext.y * -2.0 + 1.0);
+        vertexData[0].x = static_cast<float>(*m_perFrameContext.x * 2.0 - 1.0);
+        vertexData[0].y = static_cast<float>(*m_perFrameContext.y * -2.0 + 1.0);
 
-        vertexData[0].tex_x = 0.5f;
-        vertexData[0].tex_y = 0.5f;
+        vertexData[0].u = 0.5f;
+        vertexData[0].v = 0.5f;
 
-        vertexData[0].color_r = static_cast<float>(*m_perFrameContext.r);
-        vertexData[0].color_g = static_cast<float>(*m_perFrameContext.g);
-        vertexData[0].color_b = static_cast<float>(*m_perFrameContext.b);
-        vertexData[0].color_a = static_cast<float>(*m_perFrameContext.a);
+        vertexData[0].r = static_cast<float>(*m_perFrameContext.r);
+        vertexData[0].g = static_cast<float>(*m_perFrameContext.g);
+        vertexData[0].b = static_cast<float>(*m_perFrameContext.b);
+        vertexData[0].a = static_cast<float>(*m_perFrameContext.a);
 
-        vertexData[1].color_r = static_cast<float>(*m_perFrameContext.r2);
-        vertexData[1].color_g = static_cast<float>(*m_perFrameContext.g2);
-        vertexData[1].color_b = static_cast<float>(*m_perFrameContext.b2);
-        vertexData[1].color_a = static_cast<float>(*m_perFrameContext.a2);
+        vertexData[1].r = static_cast<float>(*m_perFrameContext.r2);
+        vertexData[1].g = static_cast<float>(*m_perFrameContext.g2);
+        vertexData[1].b = static_cast<float>(*m_perFrameContext.b2);
+        vertexData[1].a = static_cast<float>(*m_perFrameContext.a2);
 
         for (int i = 1; i < sides + 1; i++)
         {
@@ -166,13 +166,13 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
             const float angle = cornerProgress * pi * 2.0f + static_cast<float>(*m_perFrameContext.ang) + pi * 0.25f;
 
             // Todo: There's still some issue with aspect ratio here, as everything gets squashed horizontally if Y > x.
-            vertexData[i].point_x = vertexData[0].point_x + static_cast<float>(*m_perFrameContext.rad) * cosf(angle) * m_presetState.renderContext.aspectY;
-            vertexData[i].point_y = vertexData[0].point_y + static_cast<float>(*m_perFrameContext.rad) * sinf(angle);
+            vertexData[i].x = vertexData[0].x + static_cast<float>(*m_perFrameContext.rad) * cosf(angle) * m_presetState.renderContext.aspectY;
+            vertexData[i].y = vertexData[0].y + static_cast<float>(*m_perFrameContext.rad) * sinf(angle);
 
-            vertexData[i].color_r = vertexData[1].color_r;
-            vertexData[i].color_g = vertexData[1].color_g;
-            vertexData[i].color_b = vertexData[1].color_b;
-            vertexData[i].color_a = vertexData[1].color_a;
+            vertexData[i].r = vertexData[1].r;
+            vertexData[i].g = vertexData[1].g;
+            vertexData[i].b = vertexData[1].b;
+            vertexData[i].a = vertexData[1].a;
         }
 
         // Duplicate last vertex.
@@ -188,8 +188,8 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
             auto textureAspectY = m_presetState.renderContext.aspectY;
             if (m_image.empty())
             {
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, m_presetState.mainTextureId);
+                assert(!m_presetState.mainTexture.expired());
+                m_presetState.mainTexture.lock()->Bind(0);
             }
             else
             {
@@ -202,8 +202,8 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
                 else
                 {
                     // No texture found, fall back to main texture.
-                    glActiveTexture(GL_TEXTURE0);
-                    glBindTexture(GL_TEXTURE_2D, m_presetState.mainTextureId);
+                    assert(!m_presetState.mainTexture.expired());
+                    m_presetState.mainTexture.lock()->Bind(0);
                 }
             }
 
@@ -215,18 +215,17 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
                 const float cornerProgress = static_cast<float>(i - 1) / static_cast<float>(sides);
                 const float angle = cornerProgress * pi * 2.0f + static_cast<float>(*m_perFrameContext.tex_ang) + pi * 0.25f;
 
-                vertexData[i].tex_x = 0.5f + 0.5f * cosf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom) * textureAspectY;
-                vertexData[i].tex_y = 0.5f + 0.5f * sinf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom);
+                vertexData[i].u = 0.5f + 0.5f * cosf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom) * textureAspectY;
+                vertexData[i].v = 0.5f + 0.5f * sinf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom);
             }
 
             vertexData[sides + 1] = vertexData[1];
 
-            glBindBuffer(GL_ARRAY_BUFFER, m_vboID_texture);
+            glBindBuffer(GL_ARRAY_BUFFER, m_vboIdTextured);
 
-            glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeVertexShaderData) * (sides + 2), vertexData.data(), GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * (sides + 2), vertexData.data(), GL_DYNAMIC_DRAW);
 
-
-            glBindVertexArray(m_vaoID_texture);
+            glBindVertexArray(m_vaoIdTextured);
             glDrawArrays(GL_TRIANGLE_FAN, 0, sides + 2);
             glBindVertexArray(0);
 
@@ -236,14 +235,14 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
         else
         {
             // Untextured (creates a color gradient: center=r/g/b/a to border=r2/b2/g2/a2)
-            glBindBuffer(GL_ARRAY_BUFFER, m_vboID_not_texture);
+            glBindBuffer(GL_ARRAY_BUFFER, m_vboIdUntextured);
 
-            glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeVertexShaderData) * (sides + 2), vertexData.data(), GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * (sides + 2), vertexData.data(), GL_DYNAMIC_DRAW);
 
             m_presetState.untexturedShader.Bind();
             m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
 
-            glBindVertexArray(m_vaoID_not_texture);
+            glBindVertexArray(m_vaoIdUntextured);
             glDrawArrays(GL_TRIANGLE_FAN, 0, sides + 2);
             glBindVertexArray(0);
         }
@@ -254,8 +253,8 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
 
             for (int i = 0; i < sides + 1; i++)
             {
-                points[i].x = vertexData[i + 1].point_x;
-                points[i].y = vertexData[i + 1].point_y;
+                points[i].x = vertexData[i + 1].x;
+                points[i].y = vertexData[i + 1].y;
             }
 
             m_presetState.untexturedShader.Bind();

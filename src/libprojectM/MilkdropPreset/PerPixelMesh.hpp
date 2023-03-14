@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Renderer/RenderItem.hpp>
-#include <Renderer/Sampler.hpp>
 #include <Renderer/Shader.hpp>
 
 #include <cstdint>
@@ -32,7 +31,17 @@ public:
 
     void InitVertexAttrib() override;
 
-    void CompileWarpShader(const PresetState& presetState);
+    /**
+     * @brief Loads the warp shader, if the preset uses one.
+     * @param presetState The preset state to retrieve the shader from.
+     */
+    void LoadWarpShader(const PresetState& presetState);
+
+    /**
+     * @brief Loads the required textures and compiles the warp shader.
+     * @param presetState The preset state to retrieve the configuration values from.
+     */
+    void CompileWarpShader(PresetState& presetState);
 
     /**
      * @brief Renders the transformation mesh.
@@ -67,20 +76,14 @@ private:
                        PerPixelContext& perPixelContext);
 
     /**
-     * @brief Draws the mesh without a warp shader.
-     * Since OpenGL doesn't support drawing without shaders, this function uses the standard
-     * textured shader also used for textured shapes.
+     * @brief Draws the warp mesh with or without a warp shader.
+     * If the preset doesn't use a warp shader, a default textured shader is used.
      */
     void WarpedBlit(const PresetState& presetState, const PerFrameContext& perFrameContext);
 
     /**
-     * @brief Draws the mesh using a warp shader.
-     * In Milkdrop 2 presets, this is either a preset-defined shader or a default warp
-     * shader.
-     * @param warpShader
+     * Warp mesh vertex with all required attributes.
      */
-    void BlitShader(MilkdropShader* warpShader);
-
     struct MeshVertex {
         float x{};
         float y{};
@@ -102,13 +105,11 @@ private:
         float stretchY{};
     };
 
-    int m_gridSizeX{};
-    int m_gridSizeY{};
+    int m_gridSizeX{}; //!< Warp mesh X resolution.
+    int m_gridSizeY{}; //!< Warp mesh Y resolution.
 
-    int m_viewportWidth{};
-    int m_viewportHeight{};
-
-    GLuint m_vebID{0}; //!< This RenderItem's vertex element buffer ID
+    int m_viewportWidth{}; //!< Last known viewport width.
+    int m_viewportHeight{}; //!< Last known viewport height.
 
     std::vector<MeshVertex> m_vertices; //!< The calculated mesh vertices.
 

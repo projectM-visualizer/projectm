@@ -27,6 +27,7 @@ class StaticGlShaders {
 
     // Returns the named static GL shader resource.
     std::string GetPresetWarpVertexShader();
+    std::string GetPresetWarpFragmentShader();
     std::string GetPresetCompVertexShader();
     std::string GetV2fC4fVertexShader();
     std::string GetV2fC4fFragmentShader();
