@@ -29,20 +29,6 @@
 #include <iostream>
 #endif
 
-
-MilkdropPreset::MilkdropPreset(std::istream& presetData)
-    : m_perFrameContext(m_state.globalMemory, &m_state.globalRegisters)
-    , m_perPixelContext(m_state.globalMemory, &m_state.globalRegisters)
-    , m_motionVectors(m_state)
-    , m_waveform(m_state)
-    , m_darkenCenter(m_state)
-    , m_border(m_state)
-    , m_filters(m_state)
-{
-    Load(presetData);
-}
-
-
 MilkdropPreset::MilkdropPreset(const std::string& absoluteFilePath)
     : m_absoluteFilePath(absoluteFilePath)
     , m_perFrameContext(m_state.globalMemory, &m_state.globalRegisters)
@@ -51,41 +37,65 @@ MilkdropPreset::MilkdropPreset(const std::string& absoluteFilePath)
     , m_waveform(m_state)
     , m_darkenCenter(m_state)
     , m_border(m_state)
-    , m_filters(m_state)
 {
     Load(absoluteFilePath);
+}
+
+MilkdropPreset::MilkdropPreset(std::istream& presetData)
+    : m_perFrameContext(m_state.globalMemory, &m_state.globalRegisters)
+    , m_perPixelContext(m_state.globalMemory, &m_state.globalRegisters)
+    , m_motionVectors(m_state)
+    , m_waveform(m_state)
+    , m_darkenCenter(m_state)
+    , m_border(m_state)
+{
+    Load(presetData);
+}
+
+void MilkdropPreset::Initialize(const RenderContext& renderContext)
+{
+    assert(renderContext.textureManager);
+    m_state.renderContext = renderContext;
+
+    // Update framebuffer size if needed
+    m_framebuffer.SetSize(renderContext.viewportSizeX, renderContext.viewportSizeY);
+    if (m_state.mainTexture.expired())
+    {
+        m_state.mainTexture = m_framebuffer.GetColorAttachmentTexture(1, 0);
+    }
+
+    m_perPixelMesh.CompileWarpShader(m_state);
+    m_finalComposite.CompileCompositeShader(m_state);
 }
 
 void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audioData, const RenderContext& renderContext)
 {
     m_state.audioData = audioData;
     m_state.renderContext = renderContext;
-    m_state.mainTextureId = m_framebuffer.GetColorAttachmentTexture(1, 0);
 
     // Update framebuffer size if needed
     m_framebuffer.SetSize(renderContext.viewportSizeX, renderContext.viewportSizeY);
+    m_state.mainTexture = m_framebuffer.GetColorAttachmentTexture(m_previousFrameBuffer, 0);
 
     // First evaluate per-frame code
     PerFrameUpdate();
 
     // Motion vector field. Drawn to the previous frame texture before warping it.
-    m_framebuffer.Bind(1);
+    m_framebuffer.Bind(m_previousFrameBuffer);
     m_motionVectors.Draw(m_perFrameContext);
 
     // We now draw to the first framebuffer, but read from the second one for warping and textured shapes.
-    m_framebuffer.BindRead(1);
-    m_framebuffer.BindDraw(0);
+    m_framebuffer.BindRead(m_previousFrameBuffer);
+    m_framebuffer.BindDraw(m_currentFrameBuffer);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // TEST: Copy for now, no warp
-    //glBlitFramebuffer(0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
-    //                  0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
-    //                  GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
     // Draw previous frame image warped via per-pixel mesh and warp shader
     m_perPixelMesh.Draw(m_state, m_perFrameContext, m_perPixelContext);
+
+    // Update blur textures
+    m_state.blurTexture.Update(m_state, m_perFrameContext);
 
     // Draw audio-data-related stuff
     for (auto& shape : m_customShapes)
@@ -107,23 +117,24 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
 
     // Todo: Song title anim would go here
 
-    // Copy pixels from framebuffer index 0 to 1
-    m_framebuffer.BindRead(0);
-    m_framebuffer.BindDraw(1);
-    glBlitFramebuffer(0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
-                      0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
-                      GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    // We no longer need the previous frame image, as the composite shader reads from the current frame image.
+    m_framebuffer.BindRead(m_currentFrameBuffer);
+    m_framebuffer.BindDraw(m_previousFrameBuffer);
+    m_state.mainTexture = m_framebuffer.GetColorAttachmentTexture(m_currentFrameBuffer, 0);
 
-    // ToDo: Apply composite shader
-    //m_framebuffer.Bind(0);
+    m_finalComposite.Draw(m_state, m_perFrameContext);
 
     // ToDo: Draw user sprites (can have evaluated code)
 
     // TEST: Copy result to default framebuffer
+    m_framebuffer.BindRead(m_previousFrameBuffer);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     glBlitFramebuffer(0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
                       0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
                       GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+    // Swap framebuffers for the next frame.
+    std::swap(m_currentFrameBuffer, m_previousFrameBuffer);
 }
 
 
@@ -232,36 +243,8 @@ void MilkdropPreset::CompileCodeAndRunInitExpressions()
 
 void MilkdropPreset::CompileShaders()
 {
-    m_perPixelMesh.CompileWarpShader(m_state);
-    return;
-    // Composite shader
-    if (m_state.compositeShaderVersion > 0)
-    {
-        std::string const defaultCompositeShader = R"(shader_body
-            {
-                ret = tex2D(sampler_main, uv).xyz;
-            }
-            )";
-
-        m_compositeShader = std::make_unique<MilkdropShader>(MilkdropShader::ShaderType::CompositeShader);
-        if (!m_state.warpShader.empty())
-        {
-            try
-            {
-                m_compositeShader->LoadCode(m_state.compositeShader);
-            }
-            catch (ShaderException& ex)
-            {
-                // Fall back to default shader
-                m_compositeShader = std::make_unique<MilkdropShader>(MilkdropShader::ShaderType::CompositeShader);
-                m_compositeShader->LoadCode(defaultCompositeShader);
-            }
-        }
-        else
-        {
-            m_compositeShader->LoadCode(defaultCompositeShader);
-        }
-    }
+    m_perPixelMesh.LoadWarpShader(m_state);
+    m_finalComposite.LoadCompositeShader(m_state);
 }
 
 auto MilkdropPreset::ParseFilename(const std::string& filename) -> std::string

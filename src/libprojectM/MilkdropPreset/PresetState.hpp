@@ -7,6 +7,8 @@
 
 #include "Constants.hpp"
 
+#include "BlurTexture.hpp"
+
 #include <Audio/FrameAudioData.hpp>
 
 #include <Renderer/RenderContext.hpp>
@@ -150,7 +152,8 @@ public:
     Shader untexturedShader; //!< Shader used to draw untextured primitives, e.g. waveforms.
     Shader texturedShader; //!< Shader used to draw textured primitives, e.g. textured shapes and the warp mesh.
 
-    int mainTextureId{}; //!< ID of the previous frame texture.
+    std::weak_ptr<Texture> mainTexture; //!< A weak reference to the main texture in the preset framebuffer.
+    BlurTexture blurTexture; //!< The blur textures used in this preset. Contents depend on the shader code using GetBlurX().
 
     std::map<int, TextureSamplerDescriptor> randomTextureDescriptors; //!< Descriptors for random texture IDs. Should be the same across both warp and comp shaders.
 

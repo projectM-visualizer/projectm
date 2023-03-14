@@ -54,7 +54,7 @@ public:
      * @brief Returns the internal texture of this attachment.
      * @return The texture instance of this attachment.
      */
-    auto Texture() const -> const class Texture&;
+    auto Texture() const -> std::shared_ptr<class Texture>;
 
     /**
      * @brief Sets a new texture size.
@@ -73,5 +73,5 @@ private:
     void ReplaceTexture(int width, int height);
 
     AttachmentType m_attachmentType{AttachmentType::Color};                      //!< Attachment type of this texture.
-    std::unique_ptr<class Texture> m_texture{std::make_unique<class Texture>()}; //!< The texture.
+    std::shared_ptr<class Texture> m_texture{std::make_shared<class Texture>()}; //!< The texture.
 };

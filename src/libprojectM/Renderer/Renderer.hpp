@@ -107,9 +107,6 @@ public:
 
 private:
     int nearestPower2(int value);
-    void InitCompositeShaderVertex();
-    float SquishToCenter(float x, float fExp);
-    void UvToMathSpace(float u, float v, float* rad, float* ang);
 
     libprojectM::Audio::BeatDetect& m_beatDetect;
     ShaderEngine m_shaderEngine;

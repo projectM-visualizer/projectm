@@ -22,11 +22,6 @@ void Border::Draw(const PerFrameContext& presetPerFrameContext)
     float const outerBorderSize = static_cast<float>(*presetPerFrameContext.ob_size);
     float const innerBorderSize = static_cast<float>(*presetPerFrameContext.ib_size);
 
-    struct Point {
-        float x{};
-        float y{};
-    };
-
     glBindVertexArray(m_vaoID);
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 

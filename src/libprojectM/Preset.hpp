@@ -11,6 +11,12 @@ public:
     virtual ~Preset() = default;
 
     /**
+     * @brief Initializes additional preset resources.
+     * @param renderContext A render context with the initial data.
+     */
+    virtual void Initialize(const RenderContext& renderContext) = 0;
+
+    /**
      * @brief Renders the preset into the current framebuffer.
      * @param audioData Audio data to be used by the preset.
      * @param renderContext The current render context data.

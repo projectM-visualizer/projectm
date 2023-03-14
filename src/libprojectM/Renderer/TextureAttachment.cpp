@@ -14,9 +14,9 @@ auto TextureAttachment::Type() const -> TextureAttachment::AttachmentType
     return m_attachmentType;
 }
 
-auto TextureAttachment::Texture() const -> const class Texture&
+auto TextureAttachment::Texture() const -> std::shared_ptr<class Texture>
 {
-    return *m_texture;
+    return m_texture;
 }
 
 void TextureAttachment::SetSize(int width, int height)
@@ -78,5 +78,5 @@ void TextureAttachment::ReplaceTexture(int width, int height)
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    m_texture = std::make_unique<class Texture>("", textureId, GL_TEXTURE_2D, width, height, false);
+    m_texture = std::make_shared<class Texture>("", textureId, GL_TEXTURE_2D, width, height, false);
 }

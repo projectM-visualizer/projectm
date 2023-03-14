@@ -104,9 +104,9 @@ public:
      * @brief Returns the texture ID of the given framebuffer and color attachment.
      * @param framebufferIndex The framebuffer index.
      * @param attachmentIndex The index of the attachment to return the texture for.
-     * @return The texture ID or 0 if no texture is assigned.
+     * @return A shared pointer to the texture or nullptr if no texture is assigned.
      */
-    auto GetColorAttachmentTexture(int framebufferIndex, int attachmentIndex) const -> GLuint;
+    auto GetColorAttachmentTexture(int framebufferIndex, int attachmentIndex) const -> std::shared_ptr<class Texture>;
 
     /**
      * @brief Adds a depth attachment to the framebuffer.

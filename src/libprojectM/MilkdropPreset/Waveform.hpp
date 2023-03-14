@@ -33,11 +33,6 @@ public:
 
 
 private:
-    struct WaveformVertex {
-        float x{0.0f};
-        float y{0.0f};
-    };
-
     void SetMode();
 
     void MaximizeColors(const PerFrameContext& presetPerFrameContext);
@@ -53,7 +48,7 @@ private:
      * @param outputVertices Pointer to a buffer that will receive the smoothed data. Must be able to hold 2 * vertexCount vertices.
      * @return The number of vertices in outputVertices after smoothing.
      */
-    auto SmoothWave(const WaveformVertex* inputVertices, WaveformVertex* outputVertices) -> int;
+    auto SmoothWave(const Point* inputVertices, Point* outputVertices) -> int;
 
     PresetState& m_presetState; //!< The preset state.
 
@@ -63,6 +58,6 @@ private:
     bool m_loop{false}; //!< true if the waveform is a closed loop.
     int m_samples{}; //!< Number of samples in the current waveform. Depends on the mode.
 
-    WaveformVertex* m_wave1Vertices{nullptr};
-    WaveformVertex* m_wave2Vertices{nullptr};
+    Point* m_wave1Vertices{nullptr};
+    Point* m_wave2Vertices{nullptr};
 };

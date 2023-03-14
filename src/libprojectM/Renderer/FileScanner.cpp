@@ -12,27 +12,35 @@
 #include <sys/types.h>
 #endif
 
-FileScanner::FileScanner() {}
+FileScanner::FileScanner()
+{
+}
 
-FileScanner::FileScanner(const std::vector<std::string> &rootDirs, std::vector<std::string> &extensions) : _rootDirs(rootDirs), _extensions(extensions) {}
+FileScanner::FileScanner(const std::vector<std::string>& rootDirs, std::vector<std::string>& extensions)
+    : _rootDirs(rootDirs)
+    , _extensions(extensions)
+{
+}
 
-void FileScanner::scan(ScanCallback cb) {
+void FileScanner::scan(ScanCallback cb)
+{
 #if HAVE_FTS_H
-	scanPosix(cb);
+    scanPosix(cb);
 #else
-	for (const auto& dir : _rootDirs)
-		scanGeneric(cb, dir.c_str());
+    for (const auto& dir : _rootDirs)
+        scanGeneric(cb, dir.c_str());
 #endif
 }
 
-void FileScanner::handleDirectoryError(std::string dir) {
+void FileScanner::handleDirectoryError(std::string dir)
+{
 #ifndef HAVE_FTS_H
-	  std::cerr << "[PresetLoader] warning: errno unsupported on win32, etc platforms. fix me" << std::endl;
+    std::cerr << "[PresetLoader] warning: errno unsupported on win32, etc platforms. fix me" << std::endl;
 #else
 
     std::cerr << dir << " scan error: ";
 
-    switch ( errno )
+    switch (errno)
     {
         case ENOENT:
             std::cerr << "ENOENT error. The path \"" << dir << "\" probably does not exist. \"man open\" for more info." << std::endl;
@@ -58,7 +66,8 @@ void FileScanner::handleDirectoryError(std::string dir) {
 #endif
 }
 
-std::string FileScanner::extensionMatches(std::string &filename) {
+std::string FileScanner::extensionMatches(std::string& filename)
+{
     // returns file name without extension
     // TODO: optimize me
 
@@ -80,14 +89,17 @@ std::string FileScanner::extensionMatches(std::string &filename) {
     return {};
 }
 
-bool FileScanner::isValidFilename(std::string &filename) {
-    if (filename.find("__MACOSX") != std::string::npos) return false;
+bool FileScanner::isValidFilename(std::string& filename)
+{
+    if (filename.find("__MACOSX") != std::string::npos)
+        return false;
     return true;
 }
 
 // generic implementation using dirent
-void FileScanner::scanGeneric(ScanCallback cb, const char *currentDir) {
-    DIR * m_dir;
+void FileScanner::scanGeneric(ScanCallback cb, const char* currentDir)
+{
+    DIR* m_dir;
 
     // Allocate a new a stream given the current directory name
     if ((m_dir = opendir(currentDir)) == NULL)
@@ -95,7 +107,7 @@ void FileScanner::scanGeneric(ScanCallback cb, const char *currentDir) {
         return; // no files found in here
     }
 
-    struct dirent * dir_entry;
+    struct dirent* dir_entry;
 
     while ((dir_entry = readdir(m_dir)) != NULL)
     {
@@ -103,7 +115,8 @@ void FileScanner::scanGeneric(ScanCallback cb, const char *currentDir) {
         std::string filename(dir_entry->d_name);
 
         // Some sanity checks
-        if (! isValidFilename(filename)) continue;
+        if (!isValidFilename(filename))
+            continue;
         if (filename.length() == 0 || filename[0] == '.')
             continue;
 
@@ -126,18 +139,21 @@ void FileScanner::scanGeneric(ScanCallback cb, const char *currentDir) {
         }
 #endif
 
-        if (dir_entry->d_type == DT_DIR) {
+        if (dir_entry->d_type == DT_DIR)
+        {
             // recurse into dir
             scanGeneric(cb, fullPath.c_str());
             continue;
-        } else if (dir_entry->d_type != DT_REG && dir_entry->d_type != DT_LNK) {
+        }
+        else if (dir_entry->d_type != DT_REG && dir_entry->d_type != DT_LNK)
+        {
             // not regular file/link
             continue;
         }
 
         auto nameMatched = extensionMatches(filename);
-        if (! nameMatched.empty())
-           cb(fullPath, nameMatched);
+        if (!nameMatched.empty())
+            cb(fullPath, nameMatched);
     }
 
     if (m_dir)
@@ -149,35 +165,39 @@ void FileScanner::scanGeneric(ScanCallback cb, const char *currentDir) {
 
 #if HAVE_FTS_H
 // more optimized posix "fts" directory traversal
-int fts_compare(const FTSENT** one, const FTSENT** two) {
+int fts_compare(const FTSENT** one, const FTSENT** two)
+{
     return (strcmp((*one)->fts_name, (*two)->fts_name));
 }
 #endif
 
-void FileScanner::scanPosix(ScanCallback cb) {
+void FileScanner::scanPosix(ScanCallback cb)
+{
 #if HAVE_FTS_H
 
     // efficient directory traversal
     FTS* fileSystem = NULL;
-    FTSENT *node    = NULL;
+    FTSENT* node = NULL;
 
     if (_rootDirs.empty())
     {
-        return ;
+        return;
     }
 
     // list of directories to scan
     auto rootDirCount = _rootDirs.size();
 
-    char **dirList = (char **)malloc(sizeof(char*) * (rootDirCount + 1));
-    for (unsigned long i = 0; i < rootDirCount; i++) {
-        dirList[i] = (char *) _rootDirs[i].c_str();
+    char** dirList = (char**) malloc(sizeof(char*) * (rootDirCount + 1));
+    for (unsigned long i = 0; i < rootDirCount; i++)
+    {
+        dirList[i] = (char*) _rootDirs[i].c_str();
     }
     dirList[rootDirCount] = NULL;
 
     // initialize file hierarchy traversal
-    fileSystem = fts_open(dirList, FTS_LOGICAL|FTS_NOCHDIR|FTS_NOSTAT, &fts_compare);
-    if (fileSystem == NULL) {
+    fileSystem = fts_open(dirList, FTS_LOGICAL | FTS_NOCHDIR | FTS_NOSTAT, &fts_compare);
+    if (fileSystem == NULL)
+    {
         std::string s;
         for (std::size_t i = 0; i < _rootDirs.size(); i++)
             s += _rootDirs[i] + ' ';
@@ -190,8 +210,10 @@ void FileScanner::scanPosix(ScanCallback cb) {
     std::string path, name, nameMatched;
 
     // traverse dirList
-    while( (node = fts_read(fileSystem)) != NULL) {
-        switch (node->fts_info) {
+    while ((node = fts_read(fileSystem)) != NULL)
+    {
+        switch (node->fts_info)
+        {
             case FTS_F:
             case FTS_SL:
             case FTS_NSOK:
@@ -199,12 +221,17 @@ void FileScanner::scanPosix(ScanCallback cb) {
                 path = std::string(node->fts_path);
                 name = std::string(node->fts_name);
 
-                if (!isValidFilename(path) || !isValidFilename(name)) break;
+                if (!isValidFilename(path) || !isValidFilename(name))
+                {
+                    break;
+                }
 
                 // check extension
                 nameMatched = extensionMatches(name);
-                if (! nameMatched.empty())
-                   cb(path, nameMatched);
+                if (!nameMatched.empty())
+                {
+                    cb(path, nameMatched);
+                }
                 break;
             default:
                 break;

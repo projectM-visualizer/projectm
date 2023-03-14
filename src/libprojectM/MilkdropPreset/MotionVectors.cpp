@@ -66,11 +66,6 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext)
     float const inverseWidth = 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
     float const minimalLength = 1.0f * inverseWidth;
 
-    struct Point {
-        float x{};
-        float y{};
-    };
-
     std::vector<Point> lineVertices(static_cast<std::size_t>(countX + 1) * 2); // countX + 1 lines for each grid row, 2 vertices each.
 
     glEnable(GL_BLEND);

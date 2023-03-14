@@ -16,45 +16,37 @@
 #endif
 
 
-TextureManager::TextureManager(std::vector<std::string>& textureSearchPaths)
-    : m_textureDirectories(textureSearchPaths)
+TextureManager::TextureManager(const std::vector<std::string>& textureSearchPaths)
+    : m_textureSearchPaths(textureSearchPaths)
+    , m_placeholderTexture(std::make_shared<Texture>("placeholder", 1, 1, false))
 {
     Preload();
 }
 
 TextureSamplerDescriptor TextureManager::GetTexture(const std::string& fullName)
 {
-    std::string fileName = fullName;
     std::string unqualifiedName;
-    GLint wrap_mode;
-    GLint filter_mode;
+    GLint wrapMode;
+    GLint filterMode;
 
-    // Remove extension
-    std::string lowerCaseFileName(fullName);
-    std::transform(lowerCaseFileName.begin(), lowerCaseFileName.end(), lowerCaseFileName.begin(), tolower);
-    for (auto ext : m_extensions)
-    {
-        size_t found = lowerCaseFileName.find(ext);
-        if (found != std::string::npos)
-        {
-            fileName.replace(int(found), ext.size(), "");
-            break;
-        }
-    }
-
-    ExtractTextureSettings(fullName, wrap_mode, filter_mode, unqualifiedName);
+    ExtractTextureSettings(fullName, wrapMode, filterMode, unqualifiedName);
     if (m_textures.find(unqualifiedName) == m_textures.end())
     {
-        return {};
+        return TryLoadingTexture(fullName);
     }
 
-    auto texture = m_textures[unqualifiedName];
-    if (texture->IsUserTexture())
-    {
-        m_textureStats.at(unqualifiedName).age = 0;
-    }
+    return {m_textures[unqualifiedName], m_samplers.at({wrapMode, filterMode}), fullName, unqualifiedName};
+}
 
-    return {texture, m_samplers.at({wrap_mode, filter_mode}), fullName, unqualifiedName};
+auto TextureManager::GetSampler(const std::string& fullName) -> std::shared_ptr<class Sampler>
+{
+    std::string unqualifiedName;
+    GLint wrapMode;
+    GLint filterMode;
+
+    ExtractTextureSettings(fullName, wrapMode, filterMode, unqualifiedName);
+
+    return m_samplers.at({wrapMode, filterMode});
 }
 
 
@@ -79,19 +71,6 @@ void TextureManager::Preload()
 
     auto newTex = std::make_shared<Texture>("idlem", tex, GL_TEXTURE_2D, width, height, false);
     m_textures["idlem"] = newTex;
-
-    //    tex = SOIL_load_OGL_texture_from_memory(
-    //                project_data,
-    //                project_bytes,
-    //                SOIL_LOAD_AUTO,
-    //                SOIL_CREATE_NEW_ID,
-    //                SOIL_FLAG_POWER_OF_TWO
-    //                |  SOIL_FLAG_MULTIPLY_ALPHA
-    //                ,&width,&height);
-
-    //    newTex = new Texture("project", tex, GL_TEXTURE_2D, width, height, true);
-    //    newTex->getSampler(GL_CLAMP_TO_EDGE, GL_LINEAR);
-    //    textures["project"] = newTex;
 
     tex = SOIL_load_OGL_texture_from_memory(
         headphones_data,
@@ -170,6 +149,10 @@ void TextureManager::PurgeTextures()
         }
     }
 
+    // Clear file cache
+    m_scannedTextureFiles.clear();
+    m_filesScanned = false;
+
     // Only purge textures with an age of 2 or higher, so we don't evict textures used by the preset being blended out
     uint32_t newest = 99999999;
     uint32_t oldest = 0;
@@ -225,40 +208,43 @@ TextureSamplerDescriptor TextureManager::TryLoadingTexture(const std::string& na
 
     ExtractTextureSettings(name, wrapMode, filterMode, unqualifiedName);
 
-/*
-    FileScanner fileScanner = FileScanner(m_textureDirectories, m_extensions);
-
-    // scan for textures
-    using namespace std::placeholders;
-    fileScanner.scan(std::bind(&TextureManager::LoadTexture, this, _1, _2));
-*/
-
-    // Search order:
-    // 1. User preset dir
-    // 2. User texture dir
-    // 3. System/default preset dir
-    // 4. System/default texture dir
-    for (const auto& path : m_textureDirectories)
+    if (!m_filesScanned)
     {
-        std::string fullPath = path;
-        fullPath += pathSeparator;
-        fullPath += unqualifiedName;
+        FileScanner fileScanner = FileScanner(m_textureSearchPaths, m_extensions);
 
-        for (const auto& ext : m_extensions)
+        // scan for textures
+        using namespace std::placeholders;
+        fileScanner.scan(std::bind(&TextureManager::AddTextureFile, this, _1, _2));
+        m_filesScanned = true;
+    }
+
+    std::string lowerCaseFileName(name);
+    std::transform(lowerCaseFileName.begin(), lowerCaseFileName.end(), lowerCaseFileName.begin(), tolower);
+
+    for (const auto& file : m_scannedTextureFiles)
+    {
+        if (file.lowerCaseBaseName != lowerCaseFileName)
         {
-            texDesc = LoadTexture(fullPath + ext, name);
+            continue;
+        }
 
-            if (!texDesc.Empty())
-            {
-                std::cerr << "Located texture " << name << std::endl;
-                return texDesc;
-            }
+        texDesc = LoadTexture(file.filePath, name);
+
+        if (!texDesc.Empty())
+        {
+#ifdef DEBUG
+            std::cerr << "Located texture " << unqualifiedName << std::endl;
+#endif
+            return texDesc;
         }
     }
 
-    std::cerr << "Failed to locate texture " << name << std::endl;
+#ifdef DEBUG
+    std::cerr << "Failed to locate texture " << unqualifiedName << std::endl;
+#endif
 
-    return {};
+    // Return a placeholder.
+    return {m_placeholderTexture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
 }
 
 TextureSamplerDescriptor TextureManager::LoadTexture(const std::string& fileName, const std::string& name)
@@ -339,6 +325,18 @@ TextureSamplerDescriptor TextureManager::GetRandomTexture(const std::string& ran
     return {};
 }
 
+void TextureManager::AddTextureFile(const std::string& fileName, const std::string& baseName)
+{
+    std::string lowerCaseBaseName(baseName);
+    std::transform(lowerCaseBaseName.begin(), lowerCaseBaseName.end(), lowerCaseBaseName.begin(), tolower);
+
+    ScannedFile file;
+    file.filePath = fileName;
+    file.lowerCaseBaseName = lowerCaseBaseName;
+
+    m_scannedTextureFiles.push_back(std::move(file));
+}
+
 void TextureManager::ExtractTextureSettings(const std::string& qualifiedName, GLint& wrapMode, GLint& filterMode, std::string& name)
 {
     if (qualifiedName.length() <= 3 || qualifiedName.at(2) != '_')
@@ -387,3 +385,4 @@ void TextureManager::ExtractTextureSettings(const std::string& qualifiedName, GL
         wrapMode = GL_REPEAT;
     }
 }
+

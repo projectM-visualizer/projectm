@@ -1,10 +1,14 @@
 #include "BlurTexture.hpp"
 
+#include "PerFrameContext.hpp"
+#include "PresetState.hpp"
+
 #include <Renderer/StaticGlShaders.hpp>
 
 #include <array>
 
 BlurTexture::BlurTexture()
+    : m_blurSampler(std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR))
 {
     // Compile shader sources
     m_blur1Shader.CompileProgram(StaticGlShaders::Get()->GetBlurVertexShader(),
@@ -12,12 +16,14 @@ BlurTexture::BlurTexture()
     m_blur2Shader.CompileProgram(StaticGlShaders::Get()->GetBlurVertexShader(),
                                  StaticGlShaders::Get()->GetBlur2FragmentShader());
 
-    // Initialize Blur VAO/VBO with a single fullscreen quad
+    m_blurFramebuffer.CreateColorAttachment(0, 0);
+
+    // Initialize Blur VAO/VBO with a single fullscreen quad.
     static constexpr std::array<float, 16> pointsBlur{
-        -1.0, -1.0, 0.0, 1.0,
-        1.0, -1.0, 1.0, 1.0,
-        -1.0, 1.0, 0.0, 0.0,
-        1.0, 1.0, 1.0, 0.0};
+        -1.0, -1.0, 0.0, 0.0,
+        1.0, -1.0, 1.0, 0.0,
+        -1.0, 1.0, 0.0, 1.0,
+        1.0, 1.0, 1.0, 1.0};
 
     glGenBuffers(1, &m_vboBlur);
     glGenVertexArrays(1, &m_vaoBlur);
@@ -25,16 +31,28 @@ BlurTexture::BlurTexture()
     glBindVertexArray(m_vaoBlur);
     glBindBuffer(GL_ARRAY_BUFFER, m_vboBlur);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8 * 2, pointsBlur.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * pointsBlur.size(), pointsBlur.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, nullptr); // Positions
-
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, reinterpret_cast<void*>(sizeof(float) * 2)); // Textures
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, nullptr); // Position at index 0 and 1
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, reinterpret_cast<void*>(sizeof(float) * 2)); // Texture coord at index 2 and 3
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // Initialize with empty textures.
+    for (size_t i = 0; i < m_blurTextures.size(); i++)
+    {
+        std::string textureName;
+        if (i % 2 == 1)
+        {
+            textureName = "blur" + std::to_string(i / 2 + 1);
+        }
+
+        m_blurTextures[i] = std::make_shared<Texture>(textureName, 0, GL_TEXTURE_2D, 0, 0, false);
+    }
 }
 
 BlurTexture::~BlurTexture()
@@ -43,60 +61,70 @@ BlurTexture::~BlurTexture()
     glDeleteVertexArrays(1, &m_vaoBlur);
 }
 
-void BlurTexture::UpdateFromTexture(const BlurParameters& parameters, const Texture& sourceTexture)
+void BlurTexture::SetRequiredBlurLevel(BlurTexture::BlurLevel level)
 {
-    if (parameters.level == BlurLevel::None ||
-        sourceTexture.Width() == 0 ||
-        sourceTexture.Height() == 0)
+    m_blurLevel = std::max(level, m_blurLevel);
+}
+
+auto BlurTexture::GetDescriptorsForBlurLevel(BlurTexture::BlurLevel blurLevel) const -> std::vector<TextureSamplerDescriptor>
+{
+    std::vector<TextureSamplerDescriptor> descriptors;
+
+    if (blurLevel == BlurLevel::Blur3)
+    {
+        descriptors.emplace_back(m_blurTextures[1], m_blurSampler, m_blurTextures[1]->Name(), std::string());
+        descriptors.emplace_back(m_blurTextures[3], m_blurSampler, m_blurTextures[3]->Name(), std::string());
+        descriptors.emplace_back(m_blurTextures[5], m_blurSampler, m_blurTextures[5]->Name(), std::string());
+    }
+    if (blurLevel == BlurLevel::Blur2)
+    {
+        descriptors.emplace_back(m_blurTextures[1], m_blurSampler, m_blurTextures[1]->Name(), std::string());
+        descriptors.emplace_back(m_blurTextures[3], m_blurSampler, m_blurTextures[3]->Name(), std::string());
+    }
+    if (blurLevel == BlurLevel::Blur1)
+    {
+        descriptors.emplace_back(m_blurTextures[1], m_blurSampler, m_blurTextures[1]->Name(), std::string());
+    }
+
+    return descriptors;
+}
+
+void BlurTexture::Update(const PresetState& presetState, const PerFrameContext& perFrameContext)
+{
+    if (m_blurLevel == BlurLevel::None)
     {
         return;
     }
 
-    AllocateTextures(sourceTexture);
+    auto sourceTexture = presetState.mainTexture.lock();
 
-    unsigned int passes = static_cast<int>(parameters.level) * 2;
+    if (!sourceTexture ||
+        sourceTexture->Width() == 0 ||
+        sourceTexture->Height() == 0)
+    {
+        return;
+    }
+
+    AllocateTextures(*sourceTexture);
+
+    unsigned int const passes = static_cast<int>(m_blurLevel) * 2;
+    auto const blur1EdgeDarken = static_cast<float>(*perFrameContext.blur1_edge_darken);
 
     const std::array<float, 8> weights = {4.0f, 3.8f, 3.5f, 2.9f, 1.9f, 1.2f, 0.7f, 0.3f}; //<- user can specify these
-    std::array<float, 3> blurMin{parameters.blur1Min, parameters.blur2Min, parameters.blur3Min};
-    std::array<float, 3> blurMax{parameters.blur1Max, parameters.blur2Max, parameters.blur3Max};
 
-    // check that precision isn't wasted in later blur passes [...min-max gap can't grow!]
-    // also, if min-max are close to each other, push them apart:
-    const float minDist = 0.1f;
-    if (blurMax[0] - blurMin[0] < minDist)
-    {
-        float const avg = (blurMin[0] + blurMax[0]) * 0.5f;
-        blurMin[0] = avg - minDist * 0.5f;
-        blurMax[0] = avg - minDist * 0.5f;
-    }
-    blurMax[1] = std::min(blurMax[0], blurMax[1]);
-    blurMin[1] = std::max(blurMin[0], blurMin[1]);
-    if (blurMax[1] - blurMin[1] < minDist)
-    {
-        float const avg = (blurMin[1] + blurMax[1]) * 0.5f;
-        blurMin[1] = avg - minDist * 0.5f;
-        blurMax[1] = avg - minDist * 0.5f;
-    }
-    blurMax[2] = std::min(blurMax[1], blurMax[2]);
-    blurMin[2] = std::max(blurMin[1], blurMin[2]);
-    if (blurMax[2] - blurMin[2] < minDist)
-    {
-        float const avg = (blurMin[2] + blurMax[2]) * 0.5f;
-        blurMin[2] = avg - minDist * 0.5f;
-        blurMax[2] = avg - minDist * 0.5f;
-    }
+    Values blurMin;
+    Values blurMax;
+    GetSafeBlurMinMaxValues(perFrameContext, blurMin, blurMax);
 
     std::array<float, 3> scale{};
     std::array<float, 3> bias{};
 
     // figure out the progressive scale & bias needed, at each step,
     // to go from one [min..max] range to the next.
-    float tempMin;
-    float tempMax;
     scale[0] = 1.0f / (blurMax[0] - blurMin[0]);
     bias[0] = -blurMin[0] * scale[0];
-    tempMin = (blurMin[1] - blurMin[0]) / (blurMax[0] - blurMin[0]);
-    tempMax = (blurMax[1] - blurMin[0]) / (blurMax[0] - blurMin[0]);
+    float tempMin = (blurMin[1] - blurMin[0]) / (blurMax[0] - blurMin[0]);
+    float tempMax = (blurMax[1] - blurMin[0]) / (blurMax[0] - blurMin[0]);
     scale[1] = 1.0f / (tempMax - tempMin);
     bias[1] = -tempMin * scale[1];
     tempMin = (blurMin[2] - blurMin[1]) / (blurMax[1] - blurMin[1]);
@@ -104,12 +132,20 @@ void BlurTexture::UpdateFromTexture(const BlurParameters& parameters, const Text
     scale[2] = 1.0f / (tempMax - tempMin);
     bias[2] = -tempMin * scale[2];
 
+    // Remember previously bound framebuffer
+    GLint origReadFramebuffer;
+    GLint origDrawFramebuffer;
+    glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &origReadFramebuffer);
+    glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &origDrawFramebuffer);
+
+    m_blurFramebuffer.Bind(0);
+
     glBlendFunc(GL_ONE, GL_ZERO);
     glBindVertexArray(m_vaoBlur);
 
     for (unsigned int pass = 0; pass < passes; pass++)
     {
-        if (m_blurTextures[pass]->Empty())
+        if (m_blurTextures[pass]->TextureID() == 0)
         {
             continue;
         }
@@ -127,20 +163,21 @@ void BlurTexture::UpdateFromTexture(const BlurParameters& parameters, const Text
         blurShader->Bind();
         blurShader->SetUniformInt("texture_sampler", 0);
 
-        glViewport(0, 0, m_blurTextures[pass]->Texture()->Width(), m_blurTextures[pass]->Texture()->Height());
+        glViewport(0, 0, m_blurTextures[pass]->Width(), m_blurTextures[pass]->Height());
 
         // hook up correct source texture - assume there is only one, at stage 0
         if (pass == 0)
         {
-            sourceTexture.Bind(0);
+            sourceTexture->Bind(0);
         }
         else
         {
-            m_blurTextures[pass - 1]->Bind(0, *blurShader);
+            m_blurTextures[pass - 1]->Bind(0);
         }
+        m_blurSampler->Bind(0);
 
-        float srcWidth = static_cast<float>((pass == 0) ? sourceTexture.Width() : m_blurTextures[pass - 1]->Texture()->Width());
-        float srcHeight = static_cast<float>((pass == 0) ? sourceTexture.Height() : m_blurTextures[pass - 1]->Texture()->Height());
+        float srcWidth = static_cast<float>((pass == 0) ? sourceTexture->Width() : m_blurTextures[pass - 1]->Width());
+        float srcHeight = static_cast<float>((pass == 0) ? sourceTexture->Height() : m_blurTextures[pass - 1]->Height());
 
         float scaleNow = scale[pass / 2];
         float biasNow = bias[pass / 2];
@@ -189,24 +226,86 @@ void BlurTexture::UpdateFromTexture(const BlurParameters& parameters, const Text
             // note: only do this first time; if you do it many times,
             // then the super-blurred levels will have big black lines along the top & left sides.
             if (pass == 1)
-                m_blur2Shader.SetUniformFloat4("_c6", {w_div, (1 - parameters.blur1EdgeDarken), parameters.blur1EdgeDarken, 5.0f}); //darken edges
+            {
+                // Darken edges
+                m_blur2Shader.SetUniformFloat4("_c6", {w_div, (1 - blur1EdgeDarken), blur1EdgeDarken, 5.0f});
+            }
             else
-                m_blur2Shader.SetUniformFloat4("_c6", {w_div, 1.0f, 0.0f, 5.0f}); // don't darken
+            {
+                // Don't darken
+                m_blur2Shader.SetUniformFloat4("_c6", {w_div, 1.0f, 0.0f, 5.0f});
+            }
         }
 
-        // draw fullscreen quad
+        // Draw fullscreen quad
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-        // save to blur texture
-        m_blurTextures[pass]->Bind(0, *blurShader);
-        glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, m_blurTextures[pass]->Texture()->Width(), m_blurTextures[pass]->Texture()->Height());
+        // Save to blur texture
+        m_blurTextures[pass]->Bind(0);
+        glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, m_blurTextures[pass]->Width(), m_blurTextures[pass]->Height());
         m_blurTextures[pass]->Unbind(0);
     }
 
     glBindVertexArray(0);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    // Bind previous framebuffer and reset viewport size
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, origReadFramebuffer);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, origDrawFramebuffer);
+    glViewport(0, 0, sourceTexture->Width(), sourceTexture->Height());
+
     Shader::Unbind();
+}
+
+void BlurTexture::Bind(GLint& unit, Shader& shader) const
+{
+    for (size_t i = 0; i < static_cast<size_t>(m_blurLevel) * 2; i++)
+    {
+        if (i % 2 == 1)
+        {
+            m_blurTextures[i]->Bind(unit);
+            m_blurSampler->Bind(unit);
+            unit++;
+        }
+    }
+}
+
+void BlurTexture::GetSafeBlurMinMaxValues(const PerFrameContext& perFrameContext,
+                                          Values& blurMin,
+                                          Values& blurMax)
+{
+    blurMin[0] = static_cast<float>(*perFrameContext.blur1_min);
+    blurMin[1] = static_cast<float>(*perFrameContext.blur2_min);
+    blurMin[2] = static_cast<float>(*perFrameContext.blur3_min);
+    blurMax[0] = static_cast<float>(*perFrameContext.blur1_max);
+    blurMax[1] = static_cast<float>(*perFrameContext.blur2_max);
+    blurMax[2] = static_cast<float>(*perFrameContext.blur3_max);
+
+    // check that precision isn't wasted in later blur passes [...min-max gap can't grow!]
+    // also, if min-max are close to each other, push them apart:
+    const float fMinDist = 0.1f;
+    if (blurMax[0] - blurMin[0] < fMinDist)
+    {
+        float avg = (blurMin[0] + blurMax[0]) * 0.5f;
+        blurMin[0] = avg - fMinDist * 0.5f;
+        blurMax[0] = avg - fMinDist * 0.5f;
+    }
+    blurMax[1] = std::min(blurMax[0], blurMax[1]);
+    blurMin[1] = std::max(blurMin[0], blurMin[1]);
+    if (blurMax[1] - blurMin[1] < fMinDist)
+    {
+        float avg = (blurMin[1] + blurMax[1]) * 0.5f;
+        blurMin[1] = avg - fMinDist * 0.5f;
+        blurMax[1] = avg - fMinDist * 0.5f;
+    }
+    blurMax[2] = std::min(blurMax[1], blurMax[2]);
+    blurMin[2] = std::max(blurMin[1], blurMin[2]);
+    if (blurMax[2] - blurMin[2] < fMinDist)
+    {
+        float avg = (blurMin[2] + blurMax[2]) * 0.5f;
+        blurMin[2] = avg - fMinDist * 0.5f;
+        blurMax[2] = avg - fMinDist * 0.5f;
+    }
 }
 
 void BlurTexture::AllocateTextures(const Texture& sourceTexture)
@@ -241,18 +340,20 @@ void BlurTexture::AllocateTextures(const Texture& sourceTexture)
         int width2 = ((width + 3) / 16) * 16;
         int height2 = ((height + 3) / 4) * 4;
 
+        if (i == 0)
+        {
+            // Only use as much space as needed to render the blur textures.
+            m_blurFramebuffer.SetSize(width2, height2);
+        }
+
         std::string textureName;
-        if (i % 2)
+        if (i % 2 == 1)
         {
             textureName = "blur" + std::to_string(i / 2 + 1);
         }
 
-        auto texture = std::make_shared<Texture>(textureName, width2, height2, false);
-        auto sampler = std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR);
-        auto textureBlur = std::make_unique<TextureSamplerDescriptor>(texture, sampler, textureName, textureName);
-
         // This will automatically replace any old texture.
-        m_blurTextures[i] = std::move(textureBlur);
+        m_blurTextures[i] = std::make_shared<Texture>(textureName, width2, height2, false);
     }
 
     m_sourceTextureWidth = sourceTexture.Width();

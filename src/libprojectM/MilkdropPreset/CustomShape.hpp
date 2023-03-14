@@ -46,20 +46,6 @@ public:
     void Draw(const PerFrameContext& presetPerFrameContext);
 
 private:
-    /**
-     * Vertex shader inputs for each shape vertex.
-     */
-    struct ShapeVertexShaderData {
-        float point_x; //!< The vertex x coordinate.
-        float point_y; //!< The vertex y coordinate.
-        float color_r; //!< The vertex color, red channel.
-        float color_g; //!< The vertex color, green channel.
-        float color_b; //!< The vertex color, blue channel.
-        float color_a; //!< The vertex color, alpha channel.
-        float tex_x;   //!< The vertex x (u) texture coordinate.
-        float tex_y;   //!< The vertex y (v) texture coordinate.
-    };
-
     struct ShapeVertex {
         float x{.0f}; //!< The vertex X coordinate.
         float y{.0f}; //!< The vertex Y coordinate.
@@ -106,11 +92,11 @@ private:
     PresetState& m_presetState; //!< The global preset state.
     ShapePerFrameContext m_perFrameContext;
 
-    GLuint m_vboID_texture{0}; //!< Vertex buffer object ID for a textured shape.
-    GLuint m_vaoID_texture{0}; //!< Vertex array object ID for a textured shape.
+    GLuint m_vboIdTextured{0}; //!< Vertex buffer object ID for a textured shape.
+    GLuint m_vaoIdTextured{0}; //!< Vertex array object ID for a textured shape.
 
-    GLuint m_vboID_not_texture{0}; //!< Vertex buffer object ID for an untextured shape.
-    GLuint m_vaoID_not_texture{0}; //!< Vertex array object ID for an untextured shape.
+    GLuint m_vboIdUntextured{0}; //!< Vertex buffer object ID for an untextured shape.
+    GLuint m_vaoIdUntextured{0}; //!< Vertex array object ID for an untextured shape.
 
     friend class ShapePerFrameContext;
 };

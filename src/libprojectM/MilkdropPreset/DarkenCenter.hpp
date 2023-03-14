@@ -23,4 +23,5 @@ public:
 
 private:
     PresetState& m_presetState; //!< The global preset state.
+    float m_aspectY{}; //!< Previous Y aspect ration.
 };

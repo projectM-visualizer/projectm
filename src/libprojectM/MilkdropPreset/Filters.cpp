@@ -13,22 +13,22 @@ Filters::Filters(PresetState& presetState)
 
 void Filters::InitVertexAttrib()
 {
-    std::array<std::array<float, 2>, 4> points = {{{-0.5, -0.5},
-                                                   {-0.5, 0.5},
-                                                   {0.5, 0.5},
-                                                   {0.5, -0.5}}};
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points.data(), GL_STATIC_DRAW);
+    std::array<RenderItem::Point, 4> points = {{{-1.0, -1.0},
+                                                {-1.0, 1.0},
+                                                {1.0, 1.0},
+                                                {1.0, -1.0}}};
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
     glDisableVertexAttribArray(1);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Point), nullptr);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points.data(), GL_STATIC_DRAW);
 }
 
 void Filters::Brighten()
 {
     m_presetState.untexturedShader.Bind();
-    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
+    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
 
     glBindVertexArray(m_vaoID);
 
@@ -49,7 +49,7 @@ void Filters::Brighten()
 void Filters::Darken()
 {
     m_presetState.untexturedShader.Bind();
-    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
+    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
 
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
 
@@ -67,7 +67,7 @@ void Filters::Darken()
 void Filters::Invert()
 {
     m_presetState.untexturedShader.Bind();
-    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
+    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
 
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
 
@@ -85,7 +85,7 @@ void Filters::Invert()
 void Filters::Solarize()
 {
     m_presetState.untexturedShader.Bind();
-    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
+    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
 
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
 
