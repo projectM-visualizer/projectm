@@ -122,4 +122,6 @@ private:
     Border m_border;                                                                    //!< Inner/outer borders.
 
     FinalComposite m_finalComposite; //!< Final composite shader or filters.
+
+    bool m_isFirstFrame{true}; //!< Controls drawing the motion vectors starting with the second frame.
 };

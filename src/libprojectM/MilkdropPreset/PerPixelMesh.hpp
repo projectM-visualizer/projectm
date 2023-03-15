@@ -53,7 +53,34 @@ public:
               const PerFrameContext& perFrameContext,
               PerPixelContext& perPixelContext);
 
+
 private:
+    /**
+     * Warp mesh vertex with all required attributes.
+     */
+    struct MeshVertex {
+        float x{};
+        float y{};
+        float radius{};
+        float angle{};
+
+        float zoom{};
+        float zoomExp{};
+        float rot{};
+        float warp{};
+
+        float centerX{};
+        float centerY{};
+
+        float distanceX{};
+        float distanceY{};
+
+        float stretchX{};
+        float stretchY{};
+    };
+
+    using VertexList = std::vector<MeshVertex>;
+
     /**
      * @brief Initializes the vertex array and fills in static data if needed.
      *
@@ -81,40 +108,16 @@ private:
      */
     void WarpedBlit(const PresetState& presetState, const PerFrameContext& perFrameContext);
 
-    /**
-     * Warp mesh vertex with all required attributes.
-     */
-    struct MeshVertex {
-        float x{};
-        float y{};
-        float radius{};
-        float angle{};
-
-        float zoom{};
-        float zoomExp{};
-        float rot{};
-        float warp{};
-
-        float centerX{};
-        float centerY{};
-
-        float distanceX{};
-        float distanceY{};
-
-        float stretchX{};
-        float stretchY{};
-    };
-
     int m_gridSizeX{}; //!< Warp mesh X resolution.
     int m_gridSizeY{}; //!< Warp mesh Y resolution.
 
     int m_viewportWidth{}; //!< Last known viewport width.
     int m_viewportHeight{}; //!< Last known viewport height.
 
-    std::vector<MeshVertex> m_vertices; //!< The calculated mesh vertices.
+    VertexList m_vertices; //!< The calculated mesh vertices.
 
     std::vector<int> m_listIndices;         //!< List of vertex indices to render.
-    std::vector<MeshVertex> m_drawVertices; //!< Temp data buffer for the vertices to be drawn.
+    VertexList m_drawVertices; //!< Temp data buffer for the vertices to be drawn.
 
     Shader m_perPixelMeshShader; //!< Special shader which calculates the per-pixel UV coordinates.
     std::unique_ptr<MilkdropShader> m_warpShader;           //!< The warp shader. Either preset-defined or a default shader.

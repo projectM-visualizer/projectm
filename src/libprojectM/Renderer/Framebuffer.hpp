@@ -89,8 +89,9 @@ public:
      * won't be changed.
      * @param width The width of the framebuffer.
      * @param height The height of the framebuffer.
+     * @return true if the framebuffer was resized, false if it's contents remain unchanged.
      */
-    void SetSize(int width, int height);
+    bool SetSize(int width, int height);
 
     /**
      * @brief Adds a new color attachment to the framebuffer.
@@ -99,6 +100,17 @@ public:
      * @param index The index of the attachment, at least indices 0-7 are guaranteed to be available.
      */
     void CreateColorAttachment(int framebufferIndex, int attachmentIndex);
+
+    /**
+     * @brief Adds a new color attachment to the framebuffer with the specified format.
+     * @param framebufferIndex The framebuffer index.
+     * @param index The index of the attachment, at least indices 0-7 are guaranteed to be available.
+     * @param internalFormat OpenGL internal format, e.g. GL_RGBA8
+     * @param format OpenGL color format, e.g. GL_RGBA
+     * @param type OpenGL component storage type, e.g. GL_UNSIGNED _BYTE
+     */
+    void CreateColorAttachment(int framebufferIndex, int attachmentIndex,
+                               GLint internalFormat, GLenum format, GLenum type);
 
     /**
      * @brief Returns the texture ID of the given framebuffer and color attachment.
@@ -125,6 +137,14 @@ public:
      * @param framebufferIndex The framebuffer index.
      */
     void CreateDepthStencilAttachment(int framebufferIndex);
+
+    /**
+     * @brief Sets the masked flag for a specific draw buffer.
+     * This can be used to enable or disable rendering to specific color attachments.
+     * @param bufferIndex The index of the buffer to set the mask flag on.
+     * @param masked true if the attachment should be masked, false if not.
+     */
+    void MaskDrawBuffer(int bufferIndex, bool masked);
 
 private:
     /**

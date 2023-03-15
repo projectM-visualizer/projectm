@@ -71,12 +71,12 @@ void Framebuffer::Unbind()
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
-void Framebuffer::SetSize(int width, int height)
+bool Framebuffer::SetSize(int width, int height)
 {
     if (width == 0 || height == 0 ||
         (width == m_width && height == m_height))
     {
-        return;
+        return false;
     }
 
     m_width = width;
@@ -92,16 +92,23 @@ void Framebuffer::SetSize(int width, int height)
         }
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    return true;
 }
 
 void Framebuffer::CreateColorAttachment(int framebufferIndex, int attachmentIndex)
+{
+    CreateColorAttachment(framebufferIndex, attachmentIndex, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
+}
+
+void Framebuffer::CreateColorAttachment(int framebufferIndex, int attachmentIndex, GLint internalFormat, GLenum format, GLenum type)
 {
     if (framebufferIndex < 0 || framebufferIndex >= static_cast<int>(m_framebufferIds.size()))
     {
         return;
     }
 
-    TextureAttachment textureAttachment{TextureAttachment::AttachmentType::Color, m_width, m_height};
+    TextureAttachment textureAttachment{internalFormat, format, type, m_width, m_height };
     const auto texture = textureAttachment.Texture();
     m_attachments.at(framebufferIndex).insert({GL_COLOR_ATTACHMENT0 + attachmentIndex, std::move(textureAttachment)});
 
@@ -188,6 +195,13 @@ void Framebuffer::CreateDepthStencilAttachment(int framebufferIndex)
     }
     UpdateDrawBuffers(framebufferIndex);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Framebuffer::MaskDrawBuffer(int bufferIndex, bool masked)
+{
+    // Invert the flag, as "true" means the color channel *will* be written.
+    auto glMasked = static_cast<GLboolean>(!masked);
+    glColorMaski(bufferIndex, glMasked, glMasked, glMasked, glMasked);
 }
 
 void Framebuffer::UpdateDrawBuffers(int framebufferIndex)

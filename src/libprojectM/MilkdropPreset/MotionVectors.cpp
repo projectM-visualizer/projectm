@@ -1,23 +1,36 @@
 #include "MotionVectors.hpp"
 
-#include <glm/gtc/type_ptr.hpp>
+#include <Renderer/StaticGlShaders.hpp>
+#include <Renderer/TextureManager.hpp>
 
 MotionVectors::MotionVectors(PresetState& presetState)
     : RenderItem()
     , m_presetState(presetState)
 {
+    auto staticShaders = StaticGlShaders::Get();
+    m_motionVectorShader.CompileProgram(staticShaders->GetPresetMotionVectorsVertexShader(),
+                                        staticShaders->GetV2fC4fFragmentShader());
     RenderItem::Init();
 }
 
 void MotionVectors::InitVertexAttrib()
 {
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
     glDisableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(MotionVectorVertex), reinterpret_cast<void*>(offsetof(MotionVectorVertex, x)));
+    glVertexAttribIPointer(2, 1, GL_INT, sizeof(MotionVectorVertex), reinterpret_cast<void*>(offsetof(MotionVectorVertex, index)));
 }
 
-void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext)
+void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shared_ptr<class Texture> motionTexture)
 {
+    // Don't draw if invisible.
+    if (*presetPerFrameContext.mv_a < 0.0001f)
+    {
+        return;
+    }
+
     int countX = static_cast<int>(*presetPerFrameContext.mv_x);
     int countY = static_cast<int>(*presetPerFrameContext.mv_y);
 
@@ -40,10 +53,8 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext)
         divertY = 0.0f;
     }
 
-    auto divertX2 = static_cast<float>(*presetPerFrameContext.mv_dx);
-    auto divertY2 = static_cast<float>(*presetPerFrameContext.mv_dy);
-
-    auto lengthMultiplier = static_cast<float>(*presetPerFrameContext.mv_l);
+    auto const divertX2 = static_cast<float>(*presetPerFrameContext.mv_dx);
+    auto const divertY2 = static_cast<float>(*presetPerFrameContext.mv_dy);
 
     // Clamp X/Y diversions to 0..1
     if (divertX < 0.0f)
@@ -63,16 +74,25 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext)
         divertY = 1.0f;
     }
 
-    float const inverseWidth = 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
-    float const minimalLength = 1.0f * inverseWidth;
+    // Tweaked this a bit to ensure lines are always at least a bit more than 1px long.
+    // Line smoothing makes some of them disappear otherwise.
+    float const inverseWidth = 1.25f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
+    float const inverseHeight = 1.25f / static_cast<float>(m_presetState.renderContext.viewportSizeY);
+    float const minimumLength = sqrtf(inverseWidth * inverseWidth + inverseHeight * inverseHeight);
 
-    std::vector<Point> lineVertices(static_cast<std::size_t>(countX + 1) * 2); // countX + 1 lines for each grid row, 2 vertices each.
+    std::vector<MotionVectorVertex> lineVertices(static_cast<std::size_t>(countX + 1) * 2); // countX + 1 lines for each grid row, 2 vertices each.
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    m_presetState.untexturedShader.Bind();
-    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
+    m_motionVectorShader.Bind();
+    m_motionVectorShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
+    m_motionVectorShader.SetUniformFloat("length_multiplier", static_cast<float>(*presetPerFrameContext.mv_l));
+    m_motionVectorShader.SetUniformFloat("minimum_length", minimumLength);
+
+    m_motionVectorShader.SetUniformInt("warp_coordinates", 0);
+
+    motionTexture->Bind(0, m_sampler);
 
     glVertexAttrib4f(1,
                      static_cast<float>(*presetPerFrameContext.mv_r),
@@ -83,6 +103,10 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext)
     glBindVertexArray(m_vaoID);
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
+    glLineWidth(1);
+#if USE_GLES == 0
+    glEnable(GL_LINE_SMOOTH);
+#endif
 
     for (int y = 0; y < countY; y++)
     {
@@ -97,64 +121,31 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext)
 
                 if (posX > 0.0001f && posX < 0.9999f)
                 {
-                    float posX2{};
-                    float posY2{};
+                    lineVertices[vertex].x = posX;
+                    lineVertices[vertex].y = posY;
+                    lineVertices[vertex].index = vertex;
 
-                    // Uses the warp mesh texture transformation to get the motion direction of this point.
-                    ReversePropagatePoint(posX, posY, posX2, posY2);
-
-                    // Enforce minimum trail length
-                    {
-                        float distX = posX2 - posX;
-                        float distY = posY2 - posY;
-
-                        distX *= lengthMultiplier;
-                        distY *= lengthMultiplier;
-
-                        float length = sqrtf(distX * distX + distY * distY);
-                        if (length > minimalLength)
-                        {
-                        }
-                        else if (length > 0.00000001f)
-                        {
-                            length = minimalLength / length;
-                            distX *= length;
-                            distY *= length;
-                        }
-                        else
-                        {
-                            distX = minimalLength;
-                            distY = minimalLength;
-                        }
-
-                        posX2 = posX + distX;
-                        posY2 = posY + distY;
-                    }
-
-                    // Assign line vertices
-                    lineVertices.at(vertex).x = posX * 2.0f - 1.0f;
-                    lineVertices.at(vertex).y = posY * 2.0f - 1.0f;
-                    lineVertices.at(vertex + 1).x = posX2 * 2.0f - 1.0f;
-                    lineVertices.at(vertex + 1).y = posY2 * 2.0f - 1.0f;
+                    lineVertices[vertex + 1] = lineVertices[vertex];
+                    lineVertices[vertex + 1].index++;
 
                     vertex += 2;
                 }
             }
 
             // Draw a row of lines.
-            glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * lineVertices.size(), lineVertices.data(), GL_DYNAMIC_DRAW);
-            glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(lineVertices.size()));
+            glBufferData(GL_ARRAY_BUFFER, sizeof(MotionVectorVertex) * vertex, lineVertices.data(), GL_DYNAMIC_DRAW);
+            glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(vertex));
         }
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
+#if USE_GLES == 0
+    glDisable(GL_LINE_SMOOTH);
+#endif
+
     Shader::Unbind();
 
     glDisable(GL_BLEND);
-}
-
-void MotionVectors::ReversePropagatePoint(float posX1, float posY1, float& posX2, float& posY2)
-{
 }
