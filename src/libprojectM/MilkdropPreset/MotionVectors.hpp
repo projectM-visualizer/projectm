@@ -26,11 +26,20 @@ public:
     /**
      * Redners the motion vectors.
      * @param presetPerFrameContext The per-frame context variables.
+     * @param motionTexture The u/v "motion" texture written by the warp shader.
      */
-    void Draw(const PerFrameContext& presetPerFrameContext);
+    void Draw(const PerFrameContext& presetPerFrameContext, std::shared_ptr<class Texture> motionTexture);
 
 private:
-    void ReversePropagatePoint(float posX1, float posY1, float& posX2, float&posY2);
+    struct MotionVectorVertex
+    {
+        float x{};
+        float y{};
+        int32_t index{};
+    };
 
     PresetState& m_presetState; //!< The global preset state.
+
+    Shader m_motionVectorShader; //!< The motion vector shader, calculates the trace positions in the GPU.
+    std::shared_ptr<Sampler> m_sampler{std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR)}; //!< The texture sampler.
 };

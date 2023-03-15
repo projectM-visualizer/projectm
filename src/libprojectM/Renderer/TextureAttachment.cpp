@@ -9,6 +9,18 @@ TextureAttachment::TextureAttachment(AttachmentType attachment, int width, int h
     }
 }
 
+TextureAttachment::TextureAttachment(GLint internalFormat, GLenum format, GLenum type, int width, int height)
+    : m_attachmentType(AttachmentType::Color)
+    , m_internalFormat(internalFormat)
+    , m_format(format)
+    , m_type(type)
+{
+    if (width > 0 && height > 0)
+    {
+        ReplaceTexture(width, height);
+    }
+}
+
 auto TextureAttachment::Type() const -> TextureAttachment::AttachmentType
 {
     return m_attachmentType;
@@ -40,9 +52,18 @@ void TextureAttachment::ReplaceTexture(int width, int height)
     switch(m_attachmentType)
     {
         case AttachmentType::Color:
-            internalFormat = GL_RGBA;
-            textureFormat = GL_RGBA;
-            pixelFormat = GL_UNSIGNED_BYTE;
+            if (m_internalFormat == 0)
+            {
+                internalFormat = GL_RGBA;
+                textureFormat = GL_RGBA;
+                pixelFormat = GL_UNSIGNED_BYTE;
+            }
+            else
+            {
+                internalFormat = m_internalFormat;
+                textureFormat = m_format;
+                pixelFormat = m_type;
+            }
             break;
         case AttachmentType::Depth:
             internalFormat = GL_DEPTH_COMPONENT16;

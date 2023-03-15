@@ -8,6 +8,9 @@
 
 namespace {
 // Variants of shaders for GLSL1.2
+const std::string kPresetMotionVectorsVertexShaderGlsl120 = R"(
+)";
+
 const std::string kPresetWarpVertexShaderGlsl120 = R"(
 #define pos vertex_position.xy
 #define radius vertex_position.z
@@ -444,6 +447,63 @@ void main(){
 )";
 
 // Variants of shaders for GLSL3.3
+const std::string kPresetMotionVectorsVertexShaderGlsl330 = R"(
+layout(location = 0) in vec2 vertex_position;
+layout(location = 1) in vec4 vertex_color;
+layout(location = 2) in int vertex_index;
+
+uniform mat4 vertex_transformation;
+uniform float length_multiplier;
+uniform float minimum_length;
+
+uniform sampler2D warp_coordinates;
+
+out vec4 fragment_color;
+
+void main() {
+    // Input positions are given in texture coordinates (0...1), not the usual
+    // screen coordinates.
+    vec2 pos = vertex_position;
+
+    if (vertex_index % 2 == 1)
+    {
+        // Reverse propagation using the u/v texture written in the previous frame.
+        // Milkdrop's original code did a simple bilinear interpolation, but here it was already
+        // done by the fragment shader during the warp mesh drawing. We just need to look up the
+        // motion vector coordinate.
+        vec2 oldUV = texture(warp_coordinates, pos.xy).xy;
+
+        // Enforce minimum trail length
+        vec2 dist = oldUV - pos;
+        dist *= length_multiplier;
+        float len = length(dist);
+        if (len > minimum_length)
+        {}
+        else if (len > 0.00000001f)
+        {
+            len = minimum_length / len;
+            dist *= len;
+        }
+        else
+        {
+            dist = vec2(minimum_length);
+        }
+
+        pos += dist;
+    }
+
+    // Transform positions from 0...1 to -1...1 in each direction.
+    pos = pos * 2.0 - 1.0;
+
+    // Flip final Y, as we draw this top-down, which is bottom-up in OpenGL.
+    pos.y = -pos.y;
+
+    // Now we've got the usual coordinates, apply our orthogonal transformation.
+    gl_Position = vertex_transformation * vec4(pos, 0.0, 1.0);
+    fragment_color = vertex_color;
+}
+)";
+
 const std::string kPresetWarpVertexShaderGlsl330 = R"(
 #define pos vertex_position.xy
 #define radius vertex_position.z
@@ -529,10 +589,14 @@ in vec2 frag_TEXCOORD1;
 
 uniform sampler2D texture_sampler;
 
-out vec4 color;
+layout(location = 0) out vec4 color;
+layout(location = 1) out vec2 texCoords;
 
 void main() {
+    // Main image
     color = frag_COLOR * texture(texture_sampler, frag_TEXCOORD0.xy);
+    // Motion vector grid u/v coords for the next frame
+    texCoords = frag_TEXCOORD0.xy;
 }
 )";
 
@@ -575,6 +639,7 @@ const std::string kV2fC4fFragmentShaderGlsl330 = R"(
 precision mediump float;
 
 in vec4 fragment_color;
+
 out vec4 color;
 
 void main(){
@@ -1024,6 +1089,7 @@ std::string StaticGlShaders::AddVersionHeader(std::string shader_text) {
         return k##name##Glsl330;                \
     }
 
+DECLARE_SHADER_ACCESSOR(PresetMotionVectorsVertexShader);
 DECLARE_SHADER_ACCESSOR(PresetWarpVertexShader);
 DECLARE_SHADER_ACCESSOR(PresetWarpFragmentShader);
 DECLARE_SHADER_ACCESSOR(PresetCompVertexShader);

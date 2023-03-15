@@ -327,7 +327,7 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
 
         if (m_type == ShaderType::WarpShader)
         {
-            program.replace(int(found), 11, "void PS(float4 _vDiffuse : COLOR, float4 _uv : TEXCOORD0, float2 _rad_ang : TEXCOORD1, out float4 _return_value : COLOR)\n");
+            program.replace(int(found), 11, "void PS(float4 _vDiffuse : COLOR, float4 _uv : TEXCOORD0, float2 _rad_ang : TEXCOORD1, out float4 _return_value : COLOR0, out float4 _mv_tex_coords : COLOR1)\n");
         }
         else
         {
@@ -346,9 +346,11 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
 #ifdef MILKDROP_PRESET_DEBUG
         std::cerr << "[MilkdropShader] First '{' found at: " << int(found) << std::endl;
 #endif
-        const char* progMain =
-            "{\n"
-            "float3 ret = 0;\n";
+        std::string progMain = "{\nfloat3 ret = 0;\n";
+        if (m_type == ShaderType::WarpShader)
+        {
+            progMain.append("_mv_tex_coords.xy = _uv.xy;\n");
+        }
         program.replace(int(found), 1, progMain);
     }
     else

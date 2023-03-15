@@ -39,6 +39,17 @@ public:
      */
     explicit TextureAttachment(AttachmentType attachmentType, int width, int height);
 
+    /**
+     * @brief Creates a new 2D color texture attachment with the given format and size.
+     * Must have the same size as the framebuffer.
+     * @param internalFormat OpenGL internal format, e.g. GL_RGBA8
+     * @param format OpenGL color format, e.g. GL_RGBA
+     * @param type OpenGL component storage type, e.g. GL_UNSIGNED _BYTE
+     * @param width The width of the texture in pixels.
+     * @param height The height of the texture in pixels.
+     */
+    explicit TextureAttachment(GLint internalFormat, GLenum format, GLenum type, int width, int height);
+
     TextureAttachment(TextureAttachment&& other) = default;
     auto operator=(TextureAttachment&& other) -> TextureAttachment& = default;
 
@@ -74,4 +85,8 @@ private:
 
     AttachmentType m_attachmentType{AttachmentType::Color};                      //!< Attachment type of this texture.
     std::shared_ptr<class Texture> m_texture{std::make_shared<class Texture>()}; //!< The texture.
+
+    GLint m_internalFormat{}; //!< OpenGL internal format, e.g. GL_RGBA8
+    GLenum m_format{};        //!< OpenGL color format, e.g. GL_RGBA
+    GLenum m_type{};          //!< OpenGL component storage type, e.g. GL_UNSIGNED _BYTE
 };
