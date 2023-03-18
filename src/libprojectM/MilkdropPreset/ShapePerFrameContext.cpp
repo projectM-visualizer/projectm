@@ -4,6 +4,10 @@
 #include "MilkdropPresetExceptions.hpp"
 #include "PerFrameContext.hpp"
 
+#ifdef MILKDROP_PRESET_DEBUG
+#include <iostream>
+#endif
+
 #define REG_VAR(var) \
     var = projectm_eval_context_register_variable(perFrameCodeContext, #var);
 
@@ -61,7 +65,7 @@ void ShapePerFrameContext::RegisterBuiltinVariables()
     REG_VAR(sides);
     REG_VAR(textured);
     REG_VAR(instance);
-    REG_VAR(instances);
+    REG_VAR(num_inst);
     REG_VAR(additive);
     REG_VAR(thick);
     REG_VAR(r);
@@ -77,8 +81,7 @@ void ShapePerFrameContext::RegisterBuiltinVariables()
     REG_VAR(border_b);
     REG_VAR(border_a);
 }
-void ShapePerFrameContext::LoadStateVariables(PresetState& state,
-                                              const PerFrameContext& presetPerFrameContext,
+void ShapePerFrameContext::LoadStateVariables(const PresetState& state,
                                               CustomShape& shape,
                                               int inst)
 {
@@ -95,7 +98,7 @@ void ShapePerFrameContext::LoadStateVariables(PresetState& state,
 
     for (int q = 0; q < QVarCount; q++)
     {
-        *q_vars[q] = *presetPerFrameContext.q_vars[q];
+        *q_vars[q] = state.frameQVariables[q];
     }
 
     for (int t = 0; t < TVarCount; t++)
@@ -112,7 +115,7 @@ void ShapePerFrameContext::LoadStateVariables(PresetState& state,
     *sides = static_cast<double>(shape.m_sides);
     *additive = static_cast<double>(shape.m_additive);
     *textured = static_cast<double>(shape.m_textured);
-    *instances = static_cast<double>(shape.m_instances);
+    *num_inst = static_cast<double>(shape.m_instances);
     *instance = static_cast<double>(inst);
     *thick = static_cast<double>(shape.m_thickOutline);
     *r = static_cast<double>(shape.m_r);
@@ -140,6 +143,15 @@ void ShapePerFrameContext::EvaluateInitCode(const std::string& perFrameInitCode,
     auto* initCode = projectm_eval_code_compile(perFrameCodeContext, perFrameInitCode.c_str());
     if (initCode == nullptr)
     {
+#ifdef MILKDROP_PRESET_DEBUG
+        int line;
+        int col;
+        auto* errmsg = projectm_eval_get_error(perFrameCodeContext, &line, &col);
+        if (errmsg)
+        {
+            std::cerr << "[Preset] Could not compile custom shape " << shape.m_index << " per-frame INIT code: " << errmsg << "(L" << line << " C" << col << ")" << std::endl;
+        }
+#endif
         throw MilkdropCompileException("Could not compile custom shape " + std::to_string(shape.m_index) + " per-frame init code");
     }
 
@@ -158,6 +170,15 @@ void ShapePerFrameContext::CompilePerFrameCode(const std::string& perFrameCode,
     perFrameCodeHandle = projectm_eval_code_compile(perFrameCodeContext, perFrameCode.c_str());
     if (perFrameCodeHandle == nullptr)
     {
+#ifdef MILKDROP_PRESET_DEBUG
+        int line;
+        int col;
+        auto* errmsg = projectm_eval_get_error(perFrameCodeContext, &line, &col);
+        if (errmsg)
+        {
+            std::cerr << "[Preset] Could not compile custom shape " << shape.m_index << " per-frame code: " << errmsg << "(L" << line << " C" << col << ")" << std::endl;
+        }
+#endif
         throw MilkdropCompileException("Could not compile custom shape " + std::to_string(shape.m_index) + " per-frame code");
     }
 }

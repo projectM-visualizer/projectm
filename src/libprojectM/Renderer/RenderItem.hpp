@@ -3,7 +3,8 @@
 #include "RenderContext.hpp"
 
 /**
- * Base class of all renderable items in the projectM render queue.
+ * @brief Base class for render meshes.
+ * Also defines a few standard vertex attribute structures for use with the shaders.
  */
 class RenderItem
 {
@@ -47,11 +48,6 @@ public:
         float v{}; //!< Texture Y coordinate.
     };
 
-
-    using floatPair = float[2];   //!< A pair of floats (AKA vec2).
-    using floatTriple = float[3]; //!< A triple of floats (AKA vec3).
-    using floatQuad = float[4];   //!< A quad of floats (AKA vec4).
-
     /**
      * Default constructor.
      */
@@ -66,14 +62,6 @@ public:
      * Sets up the vertex attribute pointers for rendering this item.
      */
     virtual void InitVertexAttrib() = 0;
-
-    /**
-     * Renders the current item.
-     * @param context The render context data.
-     */
-    virtual void Draw(RenderContext& context){};
-
-    float masterAlpha{1.0}; //!< Alpha value for the whole RenderItem.
 
 protected:
     /**

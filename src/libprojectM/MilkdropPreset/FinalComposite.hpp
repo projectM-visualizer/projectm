@@ -1,6 +1,8 @@
 #pragma once
 
+#include "Filters.hpp"
 #include "MilkdropShader.hpp"
+#include "VideoEcho.hpp"
 
 #include <Renderer/RenderItem.hpp>
 
@@ -50,7 +52,7 @@ private:
         float a{}; //!< Vertex alpha value.
         float u{}; //!< Texture X coordinate.
         float v{}; //!< Texture Y coordinate.
-        float radius{}; //!<
+        float radius{};
         float angle{};
     };
 
@@ -68,6 +70,12 @@ private:
     static void UvToMathSpace(float aspectX, float aspectY,
                               float u, float v, float& rad, float& ang);
 
+    /**
+     * @brief Calculates the randomized, slowly changing diffuse colors.
+     * @param presetState The preset state to retrieve the configuration values from.
+     */
+    void ApplyHueShaderColors(const PresetState& presetState);
+
     static constexpr int compositeGridWidth{32};
     static constexpr int compositeGridHeight{24};
     static constexpr int vertexCount{compositeGridWidth * compositeGridHeight};
@@ -81,4 +89,6 @@ private:
     int m_viewportHeight{}; //!< Last known viewport height.
 
     std::unique_ptr<MilkdropShader> m_compositeShader; //!< The composite shader. Either preset-defined or empty.
+    std::unique_ptr<VideoEcho> m_videoEcho; //!< Video echo effect. Used if no composite shader is loaded and video echo is enabled.
+    std::unique_ptr<Filters> m_filters; //!< Color post-processing filters. Used if no composite shader is loaded.
 };

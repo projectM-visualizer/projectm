@@ -2,6 +2,10 @@
 
 #include "MilkdropPresetExceptions.hpp"
 
+#ifdef MILKDROP_PRESET_DEBUG
+#include <iostream>
+#endif
+
 #define REG_VAR(var) \
     var = projectm_eval_context_register_variable(perPixelCodeContext, #var);
 
@@ -88,6 +92,7 @@ void PerPixelContext::LoadPerFrameQVariables(PresetState& state, PerFrameContext
 {
     for (int q = 0; q < QVarCount; q++)
     {
+        state.frameQVariables[q] = *perFrameState.q_vars[q];
         *q_vars[q] = *perFrameState.q_vars[q];
     }
 }
@@ -102,6 +107,12 @@ void PerPixelContext::CompilePerPixelCode(const std::string& perPixelCode)
     perPixelCodeHandle = projectm_eval_code_compile(perPixelCodeContext, perPixelCode.c_str());
     if (perPixelCodeHandle == nullptr)
     {
+#ifdef MILKDROP_PRESET_DEBUG
+        int line;
+        int col;
+        auto* errmsg = projectm_eval_get_error(perPixelCodeContext, &line, &col);
+        std::cerr << "[Preset] Could not compile per-pixel code: " << errmsg << "(L" << line << " C" << col << ")" << std::endl;
+#endif
         throw MilkdropCompileException("Could not compile per-pixel code");
     }
 }

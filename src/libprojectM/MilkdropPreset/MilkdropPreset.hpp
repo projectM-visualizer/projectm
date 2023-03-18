@@ -92,7 +92,7 @@ private:
     /**
      * @brief Compiles the warp and composite shaders.
      */
-    void CompileShaders();
+    void LoadShaderCode();
 
     auto ParseFilename(const std::string& filename) -> std::string;
 

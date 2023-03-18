@@ -26,17 +26,17 @@ MilkdropShader::MilkdropShader(ShaderType type)
     {
         for (int i = 0; i < 4; i++)
         {
-            float m_randTranslation_mult = 1;
-            float rot_mult = 0.9f * powf(index / 8.0f, 3.2f);
-            m_randTranslation[index].x = (floatRand() * 2 - 1) * m_randTranslation_mult;
-            m_randTranslation[index].y = (floatRand() * 2 - 1) * m_randTranslation_mult;
-            m_randTranslation[index].z = (floatRand() * 2 - 1) * m_randTranslation_mult;
+            float const m_randTranslationMult = 1;
+            float const rotMult = 0.9f * powf(index / 8.0f, 3.2f);
+            m_randTranslation[index].x = (floatRand() * 2 - 1) * m_randTranslationMult;
+            m_randTranslation[index].y = (floatRand() * 2 - 1) * m_randTranslationMult;
+            m_randTranslation[index].z = (floatRand() * 2 - 1) * m_randTranslationMult;
             m_randRotationCenters[index].x = floatRand() * 6.28f;
             m_randRotationCenters[index].y = floatRand() * 6.28f;
             m_randRotationCenters[index].z = floatRand() * 6.28f;
-            m_randRotationSpeeds[index].x = (floatRand() * 2 - 1) * rot_mult;
-            m_randRotationSpeeds[index].y = (floatRand() * 2 - 1) * rot_mult;
-            m_randRotationSpeeds[index].z = (floatRand() * 2 - 1) * rot_mult;
+            m_randRotationSpeeds[index].x = (floatRand() * 2 - 1) * rotMult;
+            m_randRotationSpeeds[index].y = (floatRand() * 2 - 1) * rotMult;
+            m_randRotationSpeeds[index].z = (floatRand() * 2 - 1) * rotMult;
             index++;
         }
     } while (index < sizeof(m_randTranslation) / sizeof(m_randTranslation[0]));
@@ -76,10 +76,20 @@ void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
             continue;
         }
 
-        if (lowerCaseName == "blur1" ||
-            lowerCaseName == "blur2" ||
-            lowerCaseName == "blur3")
+        // A few presets directly use the (undocumented) sampler name.
+        if (lowerCaseName == "blur1")
         {
+            UpdateMaxBlurLevel(BlurTexture::BlurLevel::Blur1);
+            continue;
+        }
+        if (lowerCaseName == "blur2")
+        {
+            UpdateMaxBlurLevel(BlurTexture::BlurLevel::Blur2);
+            continue;
+        }
+        if (lowerCaseName == "blur3")
+        {
+            UpdateMaxBlurLevel(BlurTexture::BlurLevel::Blur3);
             continue;
         }
 
@@ -112,10 +122,10 @@ void MilkdropShader::LoadVariables(const PresetState& presetState, const PerFram
 
     m_shader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
 
-    m_shader.SetUniformFloat4("rand_frame", {(rand() % 100) * .01,
-                                             (rand() % 100) * .01,
-                                             (rand() % 100) * .01,
-                                             (rand() % 100) * .01});
+    m_shader.SetUniformFloat4("rand_frame", {floatRand(),
+                                             floatRand(),
+                                             floatRand(),
+                                             floatRand()});
     m_shader.SetUniformFloat4("rand_preset", {m_randValues[0],
                                               m_randValues[1],
                                               m_randValues[2],
@@ -151,8 +161,8 @@ void MilkdropShader::LoadVariables(const PresetState& presetState, const PerFram
                                       blurMax[0]});
     m_shader.SetUniformFloat4("_c7", {presetState.renderContext.viewportSizeX,
                                       presetState.renderContext.viewportSizeY,
-                                      1 / static_cast<float>(presetState.renderContext.viewportSizeX),
-                                      1 / static_cast<float>(presetState.renderContext.viewportSizeY)});
+                                      1.0f / static_cast<float>(presetState.renderContext.viewportSizeX),
+                                      1.0f / static_cast<float>(presetState.renderContext.viewportSizeY)});
 
     m_shader.SetUniformFloat4("_c8", {0.5f + 0.5f * cosf(floatTime * 0.329f + 1.2f),
                                       0.5f + 0.5f * cosf(floatTime * 1.293f + 3.9f),
@@ -254,10 +264,8 @@ void MilkdropShader::LoadVariables(const PresetState& presetState, const PerFram
     GLint textureUnit{0};
     for (auto& desc : m_mainTextureDescriptors)
     {
-        if (!desc.Texture())
-        {
-            desc.Texture(presetState.mainTexture);
-        }
+        // Update main texture, swaps every frame.
+        desc.Texture(presetState.mainTexture);
         desc.Bind(textureUnit, m_shader);
         textureUnit++;
     }
@@ -293,9 +301,6 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
     found = program.find("sampler_state");
     while (found != std::string::npos)
     {
-#ifdef MILKDROP_PRESET_DEBUG
-        std::cerr << "[MilkdropShader] 'sampler_state' override found at: " << int(found) << std::endl;
-#endif
         // Now go backwards and find the assigment
         found = program.rfind('=', found);
         auto startPos = found;
@@ -321,10 +326,6 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
     found = program.find("shader_body");
     if (found != std::string::npos)
     {
-#ifdef MILKDROP_PRESET_DEBUG
-        std::cerr << "[MilkdropShader] First 'shader_body' found at: " << int(found) << std::endl;
-#endif
-
         if (m_type == ShaderType::WarpShader)
         {
             program.replace(int(found), 11, "void PS(float4 _vDiffuse : COLOR, float4 _uv : TEXCOORD0, float2 _rad_ang : TEXCOORD1, out float4 _return_value : COLOR0, out float4 _mv_tex_coords : COLOR1)\n");
@@ -343,9 +344,6 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
     found = program.find('{', found);
     if (found != std::string::npos)
     {
-#ifdef MILKDROP_PRESET_DEBUG
-        std::cerr << "[MilkdropShader] First '{' found at: " << int(found) << std::endl;
-#endif
         std::string progMain = "{\nfloat3 ret = 0;\n";
         if (m_type == ShaderType::WarpShader)
         {
@@ -362,9 +360,6 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
     found = program.rfind('}');
     if (found != std::string::npos)
     {
-#ifdef MILKDROP_PRESET_DEBUG
-        std::cerr << "[MilkdropShader] Last '}' found at: " << int(found) << std::endl;
-#endif
         program.replace(int(found), 1, "_return_value = float4(ret.xyz, 1.0);\n"
                                        "}\n");
     }
@@ -481,21 +476,15 @@ void MilkdropShader::GetReferencedSamplers(const std::string& program)
 
     if (program.find("GetBlur3") != std::string::npos)
     {
-        m_maxBlurLevelRequired = BlurTexture::BlurLevel::Blur3;
-        m_samplerNames.insert("blur1");
-        m_samplerNames.insert("blur2");
-        m_samplerNames.insert("blur3");
+        UpdateMaxBlurLevel(BlurTexture::BlurLevel::Blur3);
     }
     else if (program.find("GetBlur2") != std::string::npos)
     {
-        m_maxBlurLevelRequired = BlurTexture::BlurLevel::Blur2;
-        m_samplerNames.insert("blur1");
-        m_samplerNames.insert("blur2");
+        UpdateMaxBlurLevel(BlurTexture::BlurLevel::Blur2);
     }
     else if (program.find("GetBlur1") != std::string::npos)
     {
-        m_maxBlurLevelRequired = BlurTexture::BlurLevel::Blur1;
-        m_samplerNames.insert("blur1");
+        UpdateMaxBlurLevel(BlurTexture::BlurLevel::Blur1);
     }
     else
     {
@@ -529,7 +518,7 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
     //       The below code causes invalid syntax as it leaves part of the expression.
     //       Leaving it in causes HLSLParser to add "sampler_XYZ = sampler2D( <unknown expression> );"
     //       in the main() function, which is also bad...
-        std::smatch matches;
+    std::smatch matches;
     while (std::regex_search(sourcePreprocessed, matches, std::regex("sampler(2D|3D|)(\\s+|\\().*")))
     {
         sourcePreprocessed.replace(matches.position(), matches.length(), "");
@@ -594,5 +583,31 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
     else
     {
         m_shader.CompileProgram(StaticGlShaders::Get()->GetPresetCompVertexShader(), generator.GetResult());
+    }
+}
+
+void MilkdropShader::UpdateMaxBlurLevel(BlurTexture::BlurLevel requestedLevel)
+{
+    if (m_maxBlurLevelRequired >= requestedLevel)
+    {
+        return;
+    }
+
+    m_maxBlurLevelRequired = requestedLevel;
+
+    if (m_maxBlurLevelRequired == BlurTexture::BlurLevel::Blur3)
+    {
+        m_samplerNames.insert("blur1");
+        m_samplerNames.insert("blur2");
+        m_samplerNames.insert("blur3");
+    }
+    else if (m_maxBlurLevelRequired == BlurTexture::BlurLevel::Blur2)
+    {
+        m_samplerNames.insert("blur1");
+        m_samplerNames.insert("blur2");
+    }
+    else
+    {
+        m_samplerNames.insert("blur1");
     }
 }

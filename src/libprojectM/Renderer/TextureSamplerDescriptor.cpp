@@ -20,7 +20,7 @@ auto TextureSamplerDescriptor::Empty() const -> bool
     return m_texture.expired() || m_sampler.expired();
 }
 
-void TextureSamplerDescriptor::Bind(GLint unit, Shader& shader) const
+void TextureSamplerDescriptor::Bind(GLint unit, const Shader& shader) const
 {
     auto texture = m_texture.lock();
     auto sampler = m_sampler.lock();

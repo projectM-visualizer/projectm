@@ -544,7 +544,7 @@ void main() {
 
     // Initial texture coordinates, with built-in zoom factor
     vec2 uv = vec2(pos.x * aspectX * 0.5 * zoom2Inverse + 0.5,
-                   -pos.y * aspectY * 0.5 * zoom2Inverse + 0.5);
+                   pos.y * aspectY * 0.5 * zoom2Inverse + 0.5);
 
     // Stretch on X, Y
     uv.x = (uv.x - center.x) / stretch.x + center.x;

@@ -25,6 +25,12 @@ public:
     ~TextureManager() = default;
 
     /**
+     * @brief Sets the current preset path to search for textures in addition to the configured paths.
+     * @param path
+     */
+    void SetCurrentPresetPath(const std::string& path);
+
+    /**
      * @brief Requests a texture and sampler with the given name.
      * Resets the texture age to zero.
      * @param fullName
@@ -79,6 +85,7 @@ private:
     static void ExtractTextureSettings(const std::string& qualifiedName, GLint& wrapMode, GLint& filterMode, std::string& name);
 
     std::vector<std::string> m_textureSearchPaths;  //!< Search paths to scan for textures.
+    std::string m_currentPresetDir;                 //!< Path of the current preset to add to the search list.
     std::vector<ScannedFile> m_scannedTextureFiles; //!< The cached list with scanned texture files.
     bool m_filesScanned{false};                     //!< true if files were scanned since last preset load.
 

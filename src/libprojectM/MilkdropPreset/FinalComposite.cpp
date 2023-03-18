@@ -7,7 +7,6 @@
 static std::string const defaultCompositeShader = "shader_body\n{\nret = tex2D(sampler_main, uv).xyz;\n}";
 
 FinalComposite::FinalComposite()
-    : RenderItem()
 {
     RenderItem::Init();
 }
@@ -61,6 +60,18 @@ void FinalComposite::LoadCompositeShader(const PresetState& presetState)
 #endif
         }
     }
+    else
+    {
+        // Video echo OR gamma adjustment with random hue.
+        m_videoEcho = std::make_unique<VideoEcho>(presetState);
+        if (presetState.brighten ||
+            presetState.darken ||
+            presetState.solarize ||
+            presetState.invert)
+        {
+            m_filters = std::make_unique<Filters>(presetState);
+        }
+    }
 }
 
 void FinalComposite::CompileCompositeShader(PresetState& presetState)
@@ -90,7 +101,34 @@ void FinalComposite::CompileCompositeShader(PresetState& presetState)
 
 void FinalComposite::Draw(const PresetState& presetState, const PerFrameContext& perFrameContext)
 {
-    InitializeMesh(presetState);
+    if (m_compositeShader)
+    {
+        InitializeMesh(presetState);
+        ApplyHueShaderColors(presetState);
+
+        // Render the grid
+        glDisable(GL_BLEND);
+        glBindVertexArray(m_vaoID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(MeshVertex) * vertexCount, m_vertices.data(), GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        m_compositeShader->LoadVariables(presetState, perFrameContext);
+
+        glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
+    }
+    else
+    {
+        // Apply old-school filters
+        m_videoEcho->Draw();
+        if (m_filters)
+        {
+            m_filters->Draw();
+        }
+    }
+
+    glBindVertexArray(0);
+    Shader::Unbind();
 }
 
 void FinalComposite::InitializeMesh(const PresetState& presetState)
@@ -103,7 +141,7 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
 
     float const dividedByX = 1.0f / static_cast<float>(compositeGridWidth - 2);
     float const dividedByY = 1.0f / static_cast<float>(compositeGridHeight - 2);
-    
+
     constexpr float PI = 3.1415926535898f;
 
     for (int gridY = 0; gridY < compositeGridHeight; gridY++)
@@ -127,19 +165,23 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
             UvToMathSpace(presetState.renderContext.aspectX,
                           presetState.renderContext.aspectY,
                           u, v, rad, ang);
-            
+
             // fix-ups:
             if (gridX == compositeGridWidth / 2 - 1)
             {
-                if (gridY < compositeGridHeight / 2 - 1) {
+                if (gridY < compositeGridHeight / 2 - 1)
+                {
                     ang = PI * 1.5f;
-                } else if (gridY == compositeGridHeight / 2 - 1)
+                }
+                else if (gridY == compositeGridHeight / 2 - 1)
                 {
                     ang = PI * 1.25f;
                 }
-                else if (gridY == compositeGridHeight / 2) {
+                else if (gridY == compositeGridHeight / 2)
+                {
                     ang = PI * 0.75f;
-                } else
+                }
+                else
                 {
                     ang = PI * 0.5f;
                 }
@@ -169,14 +211,6 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
                 {
                     ang = PI * 1.0f;
                 }
-                else if (gridX == compositeGridWidth / 2 - 1)
-                {
-                    ang = PI * 1.25f;
-                }
-                else if (gridX == compositeGridWidth / 2)
-                {
-                    ang = PI * 1.75f;
-                }
                 else
                 {
                     ang = PI * 2.0f;
@@ -188,21 +222,13 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
                 {
                     ang = PI * 1.0f;
                 }
-                else if (gridX == compositeGridWidth / 2 - 1)
-                {
-                    ang = PI * 0.75f;
-                }
-                else if (gridX == compositeGridWidth / 2)
-                {
-                    ang = PI * 0.25f;
-                }
                 else
                 {
                     ang = PI * 0.0f;
                 }
             }
             pComp.u = u;
-            pComp.v = v;
+            pComp.v = 1.0f - v;
 
             pComp.radius = rad;
             pComp.angle = ang;
@@ -255,7 +281,7 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
     }
 
     // Store indices.
-    // ToDo: Probably don't need to store
+    // ToDo: Probably don't need to store m_indices
     glBindVertexArray(m_vaoID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * m_indices.size(), m_indices.data(), GL_STATIC_DRAW);
     glBindVertexArray(0);
@@ -289,5 +315,54 @@ void FinalComposite::UvToMathSpace(float aspectX, float aspectY,
     if (ang < 0)
     {
         ang += 6.2831853071796f;
+    }
+}
+
+void FinalComposite::ApplyHueShaderColors(const PresetState& presetState)
+{
+    std::array<std::array<float, 3>, 4> shade = {{{1.0f, 1.0f, 1.0f},
+                                                  {1.0f, 1.0f, 1.0f},
+                                                  {1.0f, 1.0f, 1.0f},
+                                                  {1.0f, 1.0f, 1.0f}}};
+
+    for (int i = 0; i < 4; i++)
+    {
+        auto const indexFloat = static_cast<float>(i);
+        shade[i][0] = 0.6f + 0.3f * sinf(presetState.renderContext.time * 30.0f * 0.0143f + 3 + indexFloat * 21 + presetState.hueRandomOffsets[3]);
+        shade[i][1] = 0.6f + 0.3f * sinf(presetState.renderContext.time * 30.0f * 0.0107f + 1 + indexFloat * 13 + presetState.hueRandomOffsets[1]);
+        shade[i][2] = 0.6f + 0.3f * sinf(presetState.renderContext.time * 30.0f * 0.0129f + 6 + indexFloat * 9 + presetState.hueRandomOffsets[2]);
+
+        float const max = std::max(shade[i][0], std::max(shade[i][1], shade[i][2]));
+
+        for (int k = 0; k < 3; k++)
+        {
+            shade[i][k] /= max;
+            shade[i][k] = 0.5f + 0.5f * shade[i][k];
+        }
+    }
+
+    // Interpolate and apply to all grid vertices.
+    for (int gridY = 0; gridY < compositeGridHeight; gridY++)
+    {
+        for (int gridX = 0; gridX < compositeGridWidth; gridX++)
+        {
+            auto& vertex = m_vertices[gridX + gridY * compositeGridWidth];
+            float x = vertex.x * 0.5f + 0.5f;
+            float y = vertex.y * 0.5f + 0.5f;
+
+            std::array<float, 3> color{{1.0f, 1.0f, 1.0f}};
+            for (int col = 0; col < 3; col++)
+            {
+                color[col] = shade[0][col] * (x) * (y) +
+                             shade[1][col] * (1 - x) * (y) +
+                             shade[2][col] * (x) * (1 - y) +
+                             shade[3][col] * (1 - x) * (1 - y);
+            }
+
+            vertex.r = color[0];
+            vertex.g = color[1];
+            vertex.b = color[2];
+            vertex.a = 1.0f;
+        }
     }
 }

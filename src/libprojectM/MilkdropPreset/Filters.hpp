@@ -4,25 +4,42 @@
 
 #include <Renderer/RenderItem.hpp>
 
+/**
+ * @brief Classic Milkdrop 1 postprocessing effects.
+ */
 class Filters : public RenderItem
 {
 public:
     Filters() = delete;
-    explicit Filters(PresetState& presetState);
+    explicit Filters(const PresetState& presetState);
 
     void InitVertexAttrib();
 
     /**
-     * @brief Brightens the image
+     * @brief Applies the configured filters to the current output.
+     */
+    void Draw();
+
+private:
+    /**
+     * @brief Brightens the image.
      */
     void Brighten();
 
+    /**
+     * @brief Darkens the image.
+     */
     void Darken();
 
-    void Invert();
-
+    /**
+     * @brief Applies a solarize effect.
+     */
     void Solarize();
 
-private:
-    PresetState& m_presetState; //!< The global preset state.
+    /**
+     * @brief Inverts the image colors.
+     */
+    void Invert();
+
+    const PresetState& m_presetState; //!< The global preset state.
 };
