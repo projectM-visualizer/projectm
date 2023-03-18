@@ -50,7 +50,7 @@ public:
      * @param unit The texture unit to bind the descriptor's contents to.
      * @param shader The shader to register the sampler/texsize uniforms with. Must already be bound.
      */
-    void Bind(GLint unit, Shader& shader) const;
+    void Bind(GLint unit, const Shader& shader) const;
 
     /**
      * @brief Unbinds the texture and sampler in the descriptor from the given texture unit.

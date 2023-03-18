@@ -375,7 +375,6 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     Sampler::Unbind(0);
     Shader::Unbind();

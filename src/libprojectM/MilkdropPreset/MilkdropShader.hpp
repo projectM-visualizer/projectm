@@ -83,6 +83,13 @@ private:
      */
     void TranspileHLSLShader(const PresetState& presetState, std::string& program);
 
+    /**
+     * @brief Updates the requested blur level if higher than before.
+     * Also adds the required samplers.
+     * @param requestedLevel The requested blur level.
+     */
+    void UpdateMaxBlurLevel(BlurTexture::BlurLevel requestedLevel);
+
     ShaderType m_type{ShaderType::WarpShader}; //!< Type of this shader.
     std::string m_fragmentShaderCode;          //!< The original preset fragment shader code.
     std::string m_preprocessedCode;            //!< The preprocessed preset shader code.

@@ -21,6 +21,9 @@ CustomWaveform::CustomWaveform(PresetState& presetState)
     , m_perPointContext(presetState.globalMemory, &presetState.globalRegisters)
 {
     RenderItem::Init();
+
+    m_perFrameContext.RegisterBuiltinVariables();
+    m_perPointContext.RegisterBuiltinVariables();
 }
 
 void CustomWaveform::InitVertexAttrib()
@@ -52,8 +55,6 @@ void CustomWaveform::Initialize(PresetFileParser& parsedFile, int index)
     m_b = parsedFile.GetFloat(wavecodePrefix + "b", m_b);
     m_a = parsedFile.GetFloat(wavecodePrefix + "a", m_a);
 
-    m_perFrameContext.RegisterBuiltinVariables();
-    m_perPointContext.RegisterBuiltinVariables();
 }
 
 void CustomWaveform::CompileCodeAndRunInitExpressions(const PerFrameContext& presetPerFrameContext)
@@ -94,7 +95,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     int sampleCount = std::min(WaveformMaxPoints, static_cast<int>(*m_perFrameContext.samples));
 
     // If there aren't enough samples to draw a single line or dot, skip drawing the waveform.
-    if (sampleCount < 2 || (m_useDots && sampleCount < 1))
+    if ((m_useDots && sampleCount < 1) || sampleCount < 2)
     {
         return;
     }
@@ -145,15 +146,14 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
 
     std::vector<ColoredPoint> pointsTransformed(sampleCount);
 
-    float sampleMultiplicator = sampleCount > 1 ? 1.0f / static_cast<float>(sampleCount - 1) : 0.0f;
+    float const sampleMultiplicator = sampleCount > 1 ? 1.0f / static_cast<float>(sampleCount - 1) : 0.0f;
     for (int sample = 0; sample < sampleCount; sample++)
     {
-        float sampleIndex = static_cast<float>(sample) * sampleMultiplicator;
+        float const sampleIndex = static_cast<float>(sample) * sampleMultiplicator;
         LoadPerPointEvaluationVariables(sampleIndex, sampleDataL[sample], sampleDataR[sample]);
 
         m_perPointContext.ExecutePerPointCode();
 
-        // ToDo: Tweak coordinate multiplications to match DirectX/OpenGL differences.
         pointsTransformed[sample].x = static_cast<float>((*m_perPointContext.x * 2.0 - 1.0) * m_presetState.renderContext.invAspectX);
         pointsTransformed[sample].y = static_cast<float>((*m_perPointContext.y * -2.0 + 1.0) * m_presetState.renderContext.invAspectY);
 
@@ -185,8 +185,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     m_presetState.untexturedShader.Bind();
     m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
 
-    // Always draw "thick" dots.
-    auto iterations = m_drawThick || m_useDots ? 4 : 1;
+    auto iterations = (m_drawThick && !m_useDots) ? 4 : 1;
 
     // Need to use +/- 1.0 here instead of 2.0 used in Milkdrop to achieve the same rendering result.
     auto incrementX = 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeX);

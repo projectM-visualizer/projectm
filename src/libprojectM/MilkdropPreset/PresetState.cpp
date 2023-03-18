@@ -4,7 +4,9 @@
 
 #include "Renderer/StaticGlShaders.hpp"
 
-const glm::mat4 PresetState::orthogonalProjection = glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, -40.0f, 40.0f);
+#include <random>
+
+const glm::mat4 PresetState::orthogonalProjection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -40.0f, 40.0f);
 
 PresetState::PresetState()
     : globalMemory(projectm_eval_memory_buffer_create())
@@ -14,6 +16,15 @@ PresetState::PresetState()
                                       staticShaders->GetV2fC4fFragmentShader());
     texturedShader.CompileProgram(staticShaders->GetV2fC4fT2fVertexShader(),
                                     staticShaders->GetV2fC4fT2fFragmentShader());
+
+    std::random_device randomDevice;
+    std::mt19937 randomGenerator(randomDevice());
+    std::uniform_int_distribution<> distrib(0, std::numeric_limits<int>::max());
+
+    hueRandomOffsets[0] = static_cast<float>(distrib(randomGenerator) % 64841L) * 0.01f;
+    hueRandomOffsets[1] = static_cast<float>(distrib(randomGenerator) % 53751L) * 0.01f;
+    hueRandomOffsets[2] = static_cast<float>(distrib(randomGenerator) % 42661L) * 0.01f;
+    hueRandomOffsets[3] = static_cast<float>(distrib(randomGenerator) % 31571L) * 0.01f;
 }
 
 PresetState::~PresetState()

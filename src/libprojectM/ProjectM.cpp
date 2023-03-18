@@ -93,6 +93,7 @@ void ProjectM::LoadPresetData(std::istream& presetData, bool smoothTransition)
     }
     catch (const PresetFactoryException& ex)
     {
+        m_activePreset.reset();
         PresetSwitchFailedEvent("", ex.message());
     }
 }
@@ -135,6 +136,18 @@ void ProjectM::RenderFrame()
     if (m_windowWidth == 0 || m_windowHeight == 0)
     {
         return;
+    }
+
+    // If no preset is active, load the idle preset.
+    if (!m_activePreset)
+    {
+        LoadIdlePreset();
+        if (!m_activePreset)
+        {
+            return;
+        }
+
+        m_activePreset->Initialize(GetRenderContext());
     }
 
     m_timeKeeper->UpdateTimers();
@@ -277,7 +290,15 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
         return;
     }
 
-    preset->Initialize(GetRenderContext());
+    try
+    {
+        preset->Initialize(GetRenderContext());
+    }
+    catch (std::exception& ex)
+    {
+        m_activePreset.reset();
+        PresetSwitchFailedEvent(preset->Filename(), ex.what());
+    }
 
     // ToDo: Continue only if preset is fully loaded.
 

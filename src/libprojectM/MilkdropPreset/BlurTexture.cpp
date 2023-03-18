@@ -263,8 +263,8 @@ void BlurTexture::Bind(GLint& unit, Shader& shader) const
     {
         if (i % 2 == 1)
         {
-            m_blurTextures[i]->Bind(unit);
-            m_blurSampler->Bind(unit);
+            m_blurTextures[i]->Bind(unit, m_blurSampler);
+            shader.SetUniformInt(std::string("sampler_blur" + std::to_string(i / 2 + 1)).c_str(), unit);
             unit++;
         }
     }

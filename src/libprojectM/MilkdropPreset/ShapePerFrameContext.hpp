@@ -26,12 +26,10 @@ public:
     /**
      * @brief Loads the current state values into the expression evaluator variables.
      * @param state The preset state container.
-     * @param presetPerFrameContext The preset per-frame context (for q vars).
      * @param shape The shape this context belongs to.
      * @param inst The current shape isntance.
      */
-    void LoadStateVariables(PresetState& state,
-                            const PerFrameContext& presetPerFrameContext,
+    void LoadStateVariables(const PresetState& state,
                             CustomShape& shape,
                             int inst);
 
@@ -92,7 +90,7 @@ public:
     double* textured{};
     double* additive{};
     double* thick{};
-    double* instances{};
+    double* num_inst{};
     double* instance{};
     double* tex_zoom{};
     double* tex_ang{};

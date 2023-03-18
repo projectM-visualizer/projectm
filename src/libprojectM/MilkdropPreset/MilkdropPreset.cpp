@@ -57,6 +57,9 @@ void MilkdropPreset::Initialize(const RenderContext& renderContext)
     assert(renderContext.textureManager);
     m_state.renderContext = renderContext;
 
+    // Initialize variables and code now we have a proper render state.
+    CompileCodeAndRunInitExpressions();
+
     // Update framebuffer size if needed
     m_framebuffer.SetSize(renderContext.viewportSizeX, renderContext.viewportSizeY);
     if (m_state.mainTexture.expired())
@@ -98,9 +101,6 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     // Unmask the motion vector u/v texture for the warp mesh draw and clean both buffers.
     m_framebuffer.MaskDrawBuffer(1, false);
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
     // Draw previous frame image warped via per-pixel mesh and warp shader
     m_perPixelMesh.Draw(m_state, m_perFrameContext, m_perPixelContext);
     m_framebuffer.MaskDrawBuffer(1, true);
@@ -111,7 +111,7 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     // Draw audio-data-related stuff
     for (auto& shape : m_customShapes)
     {
-        shape->Draw(m_perFrameContext);
+        shape->Draw();
     }
     for (auto& wave : m_customWaveforms)
     {
@@ -141,13 +141,16 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     m_framebuffer.BindRead(m_previousFrameBuffer);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     glBlitFramebuffer(0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
-                      0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
+                      renderContext.viewportSizeX, renderContext.viewportSizeY,0, 0,
                       GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
     // Swap framebuffers for the next frame.
     std::swap(m_currentFrameBuffer, m_previousFrameBuffer);
 
     m_isFirstFrame = false;
+
+    // Reset color mask state for attachment 1
+    m_framebuffer.MaskDrawBuffer(1, false);
 }
 
 
@@ -177,6 +180,9 @@ void MilkdropPreset::Load(const std::string& pathname)
 
     if (!parser.Read(pathname))
     {
+#ifdef MILKDROP_PRESET_DEBUG
+        std::cerr << "[Preset] Could not parse preset file." << std::endl;
+#endif
         throw MilkdropPresetLoadException("Could not parse preset file \"" + pathname + "\"");
     }
 
@@ -193,6 +199,9 @@ void MilkdropPreset::Load(std::istream& stream)
 
     if (!parser.Read(stream))
     {
+#ifdef MILKDROP_PRESET_DEBUG
+        std::cerr << "[Preset] Could not parse preset data." << std::endl;
+#endif
         throw MilkdropPresetLoadException("Could not parse preset data.");
     }
 
@@ -203,9 +212,9 @@ void MilkdropPreset::InitializePreset(PresetFileParser& parsedFile)
 {
     // Create the offscreen rendering surfaces.
     m_framebuffer.CreateColorAttachment(0, 0); // Main image
-    m_framebuffer.CreateColorAttachment(0, 1, GL_RG32F, GL_RG, GL_FLOAT); // Motion vector u/v
+    m_framebuffer.CreateColorAttachment(0, 1, GL_RG16F, GL_RG, GL_FLOAT); // Motion vector u/v
     m_framebuffer.CreateColorAttachment(1, 0); // Main image
-    m_framebuffer.CreateColorAttachment(1, 1, GL_RG32F, GL_RG, GL_FLOAT); // Motion vector u/v
+    m_framebuffer.CreateColorAttachment(1, 1, GL_RG16F, GL_RG, GL_FLOAT); // Motion vector u/v
 
     // Mask the motion vector buffer by default.
     m_framebuffer.MaskDrawBuffer(1, true);
@@ -214,6 +223,10 @@ void MilkdropPreset::InitializePreset(PresetFileParser& parsedFile)
 
     // Load global init variables into the state
     m_state.Initialize(parsedFile);
+
+    // Register code context variables
+    m_perFrameContext.RegisterBuiltinVariables();
+    m_perPixelContext.RegisterBuiltinVariables();
 
     // Custom waveforms:
     for (int i = 0; i < CustomWaveformCount; i++)
@@ -231,20 +244,18 @@ void MilkdropPreset::InitializePreset(PresetFileParser& parsedFile)
         m_customShapes[i] = std::move(shape);
     }
 
-    CompileCodeAndRunInitExpressions();
-    CompileShaders();
+    // Preload shaders
+    LoadShaderCode();
 }
 
 void MilkdropPreset::CompileCodeAndRunInitExpressions()
 {
     // Per-frame init and code
-    m_perFrameContext.RegisterBuiltinVariables();
     m_perFrameContext.LoadStateVariables(m_state);
     m_perFrameContext.EvaluateInitCode(m_state);
     m_perFrameContext.CompilePerFrameCode(m_state.perFrameCode);
 
     // Per-vertex code
-    m_perPixelContext.RegisterBuiltinVariables();
     m_perPixelContext.CompilePerPixelCode(m_state.perPixelCode);
 
     for (int i = 0; i < CustomWaveformCount; i++)
@@ -256,11 +267,11 @@ void MilkdropPreset::CompileCodeAndRunInitExpressions()
     for (int i = 0; i < CustomShapeCount; i++)
     {
         auto& shape = m_customShapes[i];
-        shape->CompileCodeAndRunInitExpressions(m_perFrameContext);
+        shape->CompileCodeAndRunInitExpressions();
     }
 }
 
-void MilkdropPreset::CompileShaders()
+void MilkdropPreset::LoadShaderCode()
 {
     m_perPixelMesh.LoadWarpShader(m_state);
     m_finalComposite.LoadCompositeShader(m_state);

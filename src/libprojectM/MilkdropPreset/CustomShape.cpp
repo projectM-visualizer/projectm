@@ -10,8 +10,7 @@
 #include <vector>
 
 CustomShape::CustomShape(PresetState& presetState)
-    : RenderItem()
-    , m_presetState(presetState)
+    : m_presetState(presetState)
     , m_perFrameContext(presetState.globalMemory, &presetState.globalRegisters)
 {
     glGenVertexArrays(1, &m_vaoIdTextured);
@@ -27,12 +26,9 @@ CustomShape::CustomShape(PresetState& presetState)
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE,
-                          sizeof(TexturedPoint), nullptr); // Positions
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE,
-                          sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r))); // Colors
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE,
-                          sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, u))); // Textures
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x))); // Position
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r))); // Color
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, u))); // Texture coordinate
 
     glBindVertexArray(m_vaoIdUntextured);
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIdUntextured);
@@ -40,12 +36,12 @@ CustomShape::CustomShape(PresetState& presetState)
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE,
-                          sizeof(TexturedPoint), nullptr); // Points
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE,
-                          sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r))); // Colors
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x))); // Position
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r))); // Color
 
     RenderItem::Init();
+
+    m_perFrameContext.RegisterBuiltinVariables();
 }
 
 CustomShape::~CustomShape()
@@ -96,13 +92,11 @@ void CustomShape::Initialize(PresetFileParser& parsedFile, int index)
 
     // projectM addition: texture name to use for rendering the shape
     m_image = parsedFile.GetString("image", "");
-
-    m_perFrameContext.RegisterBuiltinVariables();
 }
 
-void CustomShape::CompileCodeAndRunInitExpressions(const PerFrameContext& presetPerFrameContext)
+void CustomShape::CompileCodeAndRunInitExpressions()
 {
-    m_perFrameContext.LoadStateVariables(m_presetState, presetPerFrameContext, *this, 0);
+    m_perFrameContext.LoadStateVariables(m_presetState, *this, 0);
     m_perFrameContext.EvaluateInitCode(m_presetState.customShapeInitCode[m_index], *this);
 
     for (int t = 0; t < TVarCount; t++)
@@ -113,7 +107,7 @@ void CustomShape::CompileCodeAndRunInitExpressions(const PerFrameContext& preset
     m_perFrameContext.CompilePerFrameCode(m_presetState.customShapePerFrameCode[m_index], *this);
 }
 
-void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
+void CustomShape::Draw()
 {
     static constexpr float pi = 3.141592653589793f;
 
@@ -126,7 +120,7 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
 
     for (int instance = 0; instance < m_instances; instance++)
     {
-        m_perFrameContext.LoadStateVariables(m_presetState, presetPerFrameContext, *this, instance);
+        m_perFrameContext.LoadStateVariables(m_presetState, *this, instance);
         m_perFrameContext.ExecutePerFrameCode();
 
         int sides = static_cast<int>(*m_perFrameContext.sides);
@@ -196,7 +190,7 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
                 auto desc = m_presetState.renderContext.textureManager->GetTexture(m_image);
                 if (!desc.Empty())
                 {
-                    desc.Bind(0,  m_presetState.texturedShader);
+                    desc.Bind(0, m_presetState.texturedShader);
                     textureAspectY = 1.0f;
                 }
                 else
@@ -249,9 +243,9 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
 
         if (*m_perFrameContext.border_a > 0.0001f)
         {
-            std::vector<ShapeVertex> points(sides + 1);
+            std::vector<ShapeVertex> points(sides);
 
-            for (int i = 0; i < sides + 1; i++)
+            for (int i = 0; i < sides; i++)
             {
                 points[i].x = vertexData[i + 1].x;
                 points[i].y = vertexData[i + 1].y;
@@ -289,28 +283,28 @@ void CustomShape::Draw(const PerFrameContext& presetPerFrameContext)
                         break;
 
                     case 1:
-                        for (auto j = 0; j < sides + 1; j++)
+                        for (auto j = 0; j < sides; j++)
                         {
                             points[j].x += incrementX;
                         }
                         break;
 
                     case 2:
-                        for (auto j = 0; j < sides + 1; j++)
+                        for (auto j = 0; j < sides; j++)
                         {
                             points[j].y += incrementY;
                         }
                         break;
 
                     case 3:
-                        for (auto j = 0; j < sides + 1; j++)
+                        for (auto j = 0; j < sides; j++)
                         {
                             points[j].x -= incrementX;
                         }
                         break;
                 }
 
-                glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair) * (sides), points.data(), GL_DYNAMIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(sizeof(Point) * sides), points.data(), GL_DYNAMIC_DRAW);
                 glDrawArrays(GL_LINE_LOOP, 0, sides);
             }
         }

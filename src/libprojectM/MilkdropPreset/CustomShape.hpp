@@ -35,15 +35,13 @@ public:
     /**
      * @brief Compiles all code blocks and runs the init expression.
      * @throws MilkdropCompileException Thrown if one of the code blocks couldn't be compiled.
-     * @param presetPerFrameContext The per-frame context to retrieve the init Q vars from.
      */
-    void CompileCodeAndRunInitExpressions(const PerFrameContext& presetPerFrameContext);
+    void CompileCodeAndRunInitExpressions();
 
     /**
      * @brief Renders the shape.
-     * @param presetPerFrameContext The per-frame context to retrieve the init Q vars from.
      */
-    void Draw(const PerFrameContext& presetPerFrameContext);
+    void Draw();
 
 private:
     struct ShapeVertex {
