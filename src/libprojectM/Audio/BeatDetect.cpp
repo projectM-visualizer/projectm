@@ -74,6 +74,7 @@ auto BeatDetect::GetFrameAudioData() const -> FrameAudioData
     pcm.GetPcm(data.waveformLeft.data(), CHANNEL_L, WaveformSamples);
     pcm.GetPcm(data.waveformRight.data(), CHANNEL_R, WaveformSamples);
     pcm.GetSpectrum(data.spectrumLeft.data(), CHANNEL_L, SpectrumSamples);
+    pcm.GetSpectrum(data.spectrumRight.data(), CHANNEL_R, SpectrumSamples);
 
     data.vol = vol;
     data.volAtt = volAtt;

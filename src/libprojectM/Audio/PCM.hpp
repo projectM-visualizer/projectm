@@ -108,10 +108,8 @@ protected:
     void CopyPcm(float* to, size_t channel, size_t count) const;
     void CopyPcm(double* to, size_t channel, size_t count) const;
 
-    // update FFT data if new samples are available.
-    void UpdateFFT();
+    // Updates FFT data
     void UpdateFftChannel(size_t channel);
-
 
 private:
     // mem-usage:
