@@ -546,6 +546,10 @@ void main() {
     vec2 uv = vec2(pos.x * aspectX * 0.5 * zoom2Inverse + 0.5,
                    pos.y * aspectY * 0.5 * zoom2Inverse + 0.5);
 
+    // original UV coordinates
+    vec2 uv_original = vec2(pos.x * 0.5 + 0.5 + texelOffset.x,
+                            -pos.y * 0.5 + 0.5 + texelOffset.y);
+
     // Stretch on X, Y
     uv.x = (uv.x - center.x) / stretch.x + center.x;
     uv.y = (uv.y - center.y) / stretch.y + center.y;
@@ -577,7 +581,7 @@ void main() {
 
     frag_COLOR = vec4(decay, decay, decay, 1.0);
     frag_TEXCOORD0.xy = uv;
-    frag_TEXCOORD0.zw = gl_Position.xy;
+    frag_TEXCOORD0.zw = uv_original;
     frag_TEXCOORD1 = vertex_position.zw;
 }
 )";
