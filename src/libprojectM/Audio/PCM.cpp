@@ -102,7 +102,6 @@ void PCM::AddPcm(
         max = std::max(std::max(max, std::abs(m_pcmL[j])), std::abs(m_pcmR[j]));
     }
     m_start = (m_start + count) % maxSamples;
-    m_newSamples += count;
     m_level = m_leveler.UpdateLevel(count, sum / 2, max);
 }
 
@@ -180,7 +179,7 @@ void PCM::GetSpectrum(
     size_t const samples)
 {
     assert(channel == 0 || channel == 1);
-    UpdateFFT();
+    UpdateFftChannel(channel);
 
     auto const& spectrum = channel == 0 ? m_spectrumL : m_spectrumR;
     size_t const count = samples <= fftLength ? samples : fftLength;
@@ -198,18 +197,6 @@ void PCM::ResetAutoLevel()
 {
     m_leveler = AutoLevel();
     m_level = 1.0f;
-}
-
-void PCM::UpdateFFT()
-{
-    if (m_newSamples == 0)
-    {
-        return;
-    }
-
-    UpdateFftChannel(0);
-    UpdateFftChannel(1);
-    m_newSamples = 0;
 }
 
 void PCM::UpdateFftChannel(size_t const channel)
