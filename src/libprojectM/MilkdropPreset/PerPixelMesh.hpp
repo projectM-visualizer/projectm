@@ -111,15 +111,15 @@ private:
     int m_gridSizeX{}; //!< Warp mesh X resolution.
     int m_gridSizeY{}; //!< Warp mesh Y resolution.
 
-    int m_viewportWidth{}; //!< Last known viewport width.
+    int m_viewportWidth{};  //!< Last known viewport width.
     int m_viewportHeight{}; //!< Last known viewport height.
 
     VertexList m_vertices; //!< The calculated mesh vertices.
 
-    std::vector<int> m_listIndices;         //!< List of vertex indices to render.
-    VertexList m_drawVertices; //!< Temp data buffer for the vertices to be drawn.
+    std::vector<int> m_listIndices; //!< List of vertex indices to render.
+    VertexList m_drawVertices;      //!< Temp data buffer for the vertices to be drawn.
 
-    Shader m_perPixelMeshShader; //!< Special shader which calculates the per-pixel UV coordinates.
+    Shader m_perPixelMeshShader;                            //!< Special shader which calculates the per-pixel UV coordinates.
     std::unique_ptr<MilkdropShader> m_warpShader;           //!< The warp shader. Either preset-defined or a default shader.
     Sampler m_perPixelSampler{GL_CLAMP_TO_EDGE, GL_LINEAR}; //!< The main texture sampler.
 };

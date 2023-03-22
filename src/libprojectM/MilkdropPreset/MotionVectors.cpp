@@ -86,7 +86,7 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     m_motionVectorShader.Bind();
-    m_motionVectorShader.SetUniformMat4x4("vertex_transformation", m_presetState.orthogonalProjection);
+    m_motionVectorShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
     m_motionVectorShader.SetUniformFloat("length_multiplier", static_cast<float>(*presetPerFrameContext.mv_l));
     m_motionVectorShader.SetUniformFloat("minimum_length", minimumLength);
 

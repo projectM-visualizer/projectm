@@ -110,7 +110,7 @@ public:
     BlendableFloat mvR{1.0f};
     BlendableFloat mvG{1.0f};
     BlendableFloat mvB{1.0f};
-    BlendableFloat mvA{1.0f};
+    BlendableFloat mvA{0.0f};
     BlendableFloat blur1Min{0.0f};
     BlendableFloat blur2Min{0.0f};
     BlendableFloat blur3Min{0.0f};
@@ -160,4 +160,5 @@ public:
     std::map<int, TextureSamplerDescriptor> randomTextureDescriptors; //!< Descriptors for random texture IDs. Should be the same across both warp and comp shaders.
 
     static const glm::mat4 orthogonalProjection; //!< Projection matrix that transforms DirectX screen-space coordinates into the OpenGL coordinate frame.
+    static const glm::mat4 orthogonalProjectionFlipped; //!< Projection matrix that transforms DirectX screen-space coordinates into the OpenGL coordinate frame.
 };
