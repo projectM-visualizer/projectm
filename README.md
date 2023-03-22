@@ -6,8 +6,6 @@
 
 ## projectM - The most advanced open-source music visualizer
 
-
-
 **Experience psychedelic and mesmerizing visuals by transforming music into equations that render into a limitless array
 of user-contributed visualizations.**
 
@@ -25,49 +23,68 @@ outsourced into separate repositories. If you're not a developer and just look f
 your machine or device, please use one of the links listed below. The releases section in this repository only contains
 source-code and binary releases of the projectM development libraries and headers, which aren't useful for end users.
 
-### Available For
+### End-User Applications
+
+**Important**: projectM is currently undergoing heavy development, so the available end-user frontends are either
+outdated or unavailable. We've released a few development previews, which are not feature-complete and may have bugs. As
+soon as we've finished the current modernization of libprojectM, we'll release new and tested versions of most of the
+frontends listed below, while we may remove or replace some of those which are no longer maintained by their original
+developers.
 
 ##### Windows
 
-- [Standalone](https://github.com/projectM-visualizer/frontend-sdl2/releases) ([latest build](https://ci.appveyor.com/project/revmischa/projectm/build/artifacts))
-  (Requires the
-  latest [Visual C++ redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
-  to run)
-- [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/)
-- [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
+- Standalone (currently only available as
+  a [development preview](https://github.com/kblaschke/frontend-sdl2/releases/tag/2.0-windows-pre1))
+- [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/) (Same as standalone development
+  preview)
+- [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN) (Old 3.1.12 release )
 
 #### macOS
 
-- [Standalone](https://github.com/projectM-visualizer/frontend-sdl2/releases)
-- [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/)
-- [Music.app Plugin](https://github.com/projectM-visualizer/frontend-music-plug-in/releases)
-- [Brew](https://formulae.brew.sh/formula/projectm)
+- Standalone (currently only available as
+  a [development preview](https://github.com/kblaschke/frontend-sdl2/releases/tag/2.0-macos-pre1))
+- [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/) (Old 3.1.12 release)
+- Music.app Plugin  (currently only available as an
+  _unsigned_ [development preview](https://github.com/kblaschke/frontend-music-plug-in/releases/tag/v3.0-pre1))
+- [Brew](https://formulae.brew.sh/formula/projectm) (Old 3.1.12 release)
 
 #### Linux
 
-- [Standalone](https://github.com/projectM-visualizer/frontend-sdl2/releases)
-- [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/)
-- Check your distribution's package manager for a binary release.
+- Standalone (currently only available as
+  a [development preview](https://github.com/kblaschke/frontend-sdl2/releases/tag/2.0-linux-pre1) for Ubuntu 22.04 and
+  compatible distributions)
+- [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/) (Same as standalone development
+  preview)
+
+Or check your distribution's package manager for a binary release. If it is outdated, please contact the package
+maintainer, as the projectM development team does not maintain any of the distribution-specific packages.
 
 #### Android
 
-- [Google Play](https://play.google.com/store/apps/details?id=com.psperl.prjM) (**Note**: This app is _not_ created or
-  supported by the projectM developers!)
+- [Google Play](https://play.google.com/store/apps/details?id=com.psperl.prjM)
+
+**Note**: Both the free and paid apps plus the Android TV app are _not_ created or supported by the projectM developers!
+If you have technical troubles or other inquiries, please contact the app author via the means provided in the Play
+Store. Any bug reports in the projectM issue tracker regarding the apps will be closed immediately.
 
 #### Xbox / Windows Phone
 
-- [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
+- [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN) (Old 3.1.12 release)
 
 #### Other
 
-- [Library source code](https://github.com/projectM-visualizer/projectm/)
+Source code and other resources, mostly aimed at developers.
+
+- [Library source code](https://github.com/projectM-visualizer/projectm/) (this repository)
 - [Qt5](https://www.qt.io/) based [PulseAudio](https://www.freedesktop.org/wiki/Software/PulseAudio/) and JACK desktop
-  apps [as source code for Linux](https://github.com/projectM-visualizer/frontend-qt)
-- [ALSA, XMMS, Winamp, JACK](https://sourceforge.net/projects/projectm/files/) (source, unmaintained)
+  apps [as source code for Linux](https://github.com/projectM-visualizer/frontend-qt), currently broken and needs some
+  updating (help wanted!).
+- [ALSA, XMMS, Winamp, JACK](https://sourceforge.net/projects/projectm/files/) (legacy 2.x sources for historic
+  purposes, unmaintained since 2012)
 
 ### Discord chat
 
-[Chat with us on Discord.](https://discord.gg/mMrxAqaa3W)
+[Chat with us on Discord!](https://discord.gg/mMrxAqaa3W)
 
 ### Demo Video
 
@@ -80,8 +97,15 @@ The preset files define the visualizations via pixel shaders and Milkdrop-style 
 The projectM library does not ship with any presets. The frontends come with varying preset packs which can be found in
 separate repositories in the projectM repository list:
 
-- [Base Milkdrop texture pack](https://github.com/projectM-visualizer/presets-milkdrop-texture-pack)
--
+- [Base Milkdrop texture pack](https://github.com/projectM-visualizer/presets-milkdrop-texture-pack) - Recommended for
+  use with _any_ preset pack!
+- [Cream of the Crop Pack](https://github.com/projectM-visualizer/presets-cream-of-the-crop) - A collection of about 10K
+  presets compiled by Jason Fletcher. Currently, projectM's default preset pack.
+- [Classic projectM Presets](https://github.com/projectM-visualizer/presets-projectm-classic) - A bit over 4K presets
+  shipped with previous versions of projectM.
+- [Milkdrop 2 Presets](https://github.com/projectM-visualizer/presets-milkdrop-original) - The original preset
+  collection shipped with Milkdrop and Winamp.
+- [En D Presets](https://github.com/projectM-visualizer/presets-en-d) - About 50 presets created by "En D".
 
 Included with projectM are the bltc201, Milkdrop 1 and 2, projectM, tryptonaut and yin collections. You can grab these
 presets [here](http://spiegelmc.com/pub/projectm_presets.zip).
@@ -91,13 +115,16 @@ presets [here](https://mischa.lol/projectM/presets_community.zip) (123MB zipped)
 
 ### Also Featured In
 
-[![Kodi](https://github.com/projectM-visualizer/projectm/raw/master/web/kodi.png) Kodi (formerly XBMC)](https://kodi.tv/)
+[![Kodi](web/kodi.png) Kodi (formerly XBMC)](https://kodi.tv/)
 
-[![Helix](https://github.com/projectM-visualizer/projectm/raw/master/web/helix.jpg) Helix](https://web.archive.org/web/20180628174410/http://ghostfiregames.com/helixhome.html)
+[![Helix](web/helix.jpg) Helix](https://web.archive.org/web/20180628174410/http://ghostfiregames.com/helixhome.html)
 
-[![Silverjuke](https://github.com/projectM-visualizer/projectm/raw/master/web/silverjuke.png) Silverjuke (FOSS Jukebox)](https://www.silverjuke.net)
+[![Silverjuke](web/silverjuke.png) Silverjuke (FOSS Jukebox)](https://www.silverjuke.net)
 
-[<img src="https://silentradiance.com/demos/projectM_vr/projectm_vr.png" width="200" > Silent Radiance Distance Disco](https://silentradiance.com)
+[![VLC Media Player](web/vlc.png) VLC Media Player (AKA VideoLAN Client)](https://www.videolan.org/vlc/)
+
+Reminder: These are all third-party integrations of libprojectM and not developed or supported by the projectM
+development team. Please report bugs in those applications to their respective developers.
 
 ---
 
@@ -147,7 +174,7 @@ the [projectM organization's repositories](https://github.com/projectM-visualize
 
 # Todo
 
-- Steal cool stuff from the recently-released Milkdrop source.
+- Improve projectM using the recently-released Milkdrop source (WIP).
 - Update the various implementations using libprojectM.
 - Update downstream projects with new versions.
 
@@ -164,9 +191,10 @@ Report issues on GitHub in the respective repositories:
 - Issues regarding the **projectM Android apps in the Play Store**, please contact the app author via the Play Store. We
   cannot help with any problems or requests.
 
-If unsure, post your issue in the main [libprojectM repository](https://github.com/projectM-visualizer/projectm/issues).
+If unsure, post your issue in the
+main [libprojectM issue tracker](https://github.com/projectM-visualizer/projectm/issues).
 Please always check any existing issues if your problem has already been posted by another user. If so, add your logs
-and findings to the existing issue instead of opening a new one.
+and findings to the existing issue instead of opening a new ticket.
 
 ## Get in contact with us
 
@@ -181,7 +209,7 @@ Before starting to write code, please take your time to read
 the [contribution guidelines](https://github.com/projectM-visualizer/projectm/wiki#contributing-to-projectm) in our
 wiki.
 
-## Maintainers
+## Package Maintainers
 
 If you maintain packages of libprojectM, we are happy to work with you! Please note well:
 
@@ -201,11 +229,11 @@ If you maintain packages of libprojectM, we are happy to work with you! Please n
 
 ## License
 
-projectM is released under
+The core projectM library is released under
 the [GNU Lesser General Public License 2.1](https://github.com/projectM-visualizer/projectm/raw/master/LICENSE.txt) to
-keep any changes to the core library open-sourced, but also enable the use of libprojectM in closed-source
-applications (as a shared library)
-as long as the license terms are adhered to.
+keep any changes open-sourced, but also enable the use of libprojectM in closed-source applications (as a shared
+library) as long as the license terms are adhered to. The up- and downstream projects may use different licenses -
+please check all parts of the software to be compatible with your specific project if you plan an integration.
 
 ## Wiki
 
