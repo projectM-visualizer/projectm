@@ -72,10 +72,6 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
         const auto smoothedSamples = SmoothWave(waveVertices, smoothedWave.data());
 
         m_tempAlpha = static_cast<float>(*presetPerFrameContext.wave_a);
-        if (m_presetState.modWaveAlphaByvolume)
-        {
-            ModulateOpacityByVolume(presetPerFrameContext);
-        }
         MaximizeColors(presetPerFrameContext);
 
         // Always draw "thick" dots.
@@ -159,8 +155,7 @@ void Waveform::MaximizeColors(const PerFrameContext& presetPerFrameContext)
     // the rest accordingly
     int texsize = std::max(m_presetState.renderContext.viewportSizeX, m_presetState.renderContext.viewportSizeY);
 
-
-    if (m_mode == Mode::Blob2 || m_mode == Mode::ExplosiveHash)
+    if (m_mode == Mode::CenteredSpiro || m_mode == Mode::ExplosiveHash)
     {
         if (texsize <= 256)
         {
@@ -184,7 +179,7 @@ void Waveform::MaximizeColors(const PerFrameContext& presetPerFrameContext)
             m_tempAlpha *= 0.15f;
         }
     }
-    else if (m_mode == Mode::Blob3)
+    else if (m_mode == Mode::CenteredSpiroVolume)
     {
         if (texsize <= 256)
         {
@@ -211,6 +206,11 @@ void Waveform::MaximizeColors(const PerFrameContext& presetPerFrameContext)
         m_tempAlpha *= std::pow(m_presetState.audioData.treb, 2.0f);
     }
 
+    if (m_presetState.modWaveAlphaByvolume)
+    {
+        ModulateOpacityByVolume(presetPerFrameContext);
+    }
+
     if (m_tempAlpha < 0.0f)
     {
         m_tempAlpha = 0.0f;
@@ -221,39 +221,32 @@ void Waveform::MaximizeColors(const PerFrameContext& presetPerFrameContext)
         m_tempAlpha = 1.0f;
     }
 
+    float waveR{static_cast<float>(*presetPerFrameContext.wave_r)};
+    float waveG{static_cast<float>(*presetPerFrameContext.wave_g)};
+    float waveB{static_cast<float>(*presetPerFrameContext.wave_b)};
+
     if (*presetPerFrameContext.wave_brighten > 0)
     {
         constexpr float fMaximizeWaveColorAmount = 1.0f;
-        float cr{static_cast<float>(*presetPerFrameContext.wave_r)};
-        float cg{static_cast<float>(*presetPerFrameContext.wave_g)};
-        float cb{static_cast<float>(*presetPerFrameContext.wave_b)};
 
-        float max = cr;
-        if (max < cg)
+        float max = waveR;
+        if (max < waveG)
         {
-            max = cg;
+            max = waveG;
         }
-        if (max < cb)
+        if (max < waveB)
         {
-            max = cb;
+            max = waveB;
         }
         if (max > 0.01f)
         {
-            cr = cr / max * fMaximizeWaveColorAmount + cr * (1.0f - fMaximizeWaveColorAmount);
-            cg = cg / max * fMaximizeWaveColorAmount + cg * (1.0f - fMaximizeWaveColorAmount);
-            cb = cb / max * fMaximizeWaveColorAmount + cb * (1.0f - fMaximizeWaveColorAmount);
+            waveR = waveR / max * fMaximizeWaveColorAmount + waveR * (1.0f - fMaximizeWaveColorAmount);
+            waveG = waveG / max * fMaximizeWaveColorAmount + waveG * (1.0f - fMaximizeWaveColorAmount);
+            waveB = waveB / max * fMaximizeWaveColorAmount + waveB * (1.0f - fMaximizeWaveColorAmount);
         }
+    }
 
-        glVertexAttrib4f(1, cr, cg, cb, m_tempAlpha);
-    }
-    else
-    {
-        glVertexAttrib4f(1,
-                         static_cast<float>(*presetPerFrameContext.wave_r),
-                         static_cast<float>(*presetPerFrameContext.wave_g),
-                         static_cast<float>(*presetPerFrameContext.wave_b),
-                         m_tempAlpha);
-    }
+    glVertexAttrib4f(1, waveR, waveG, waveB, m_tempAlpha);
 }
 
 
@@ -378,8 +371,8 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
             break;
         }
 
-        case Mode::Blob2:
-        case Mode::Blob3: { // Both "centered spiro" waveforms are identical. Only difference is the alpha value.
+        case Mode::CenteredSpiro:
+        case Mode::CenteredSpiroVolume: { // Both "centered spiro" waveforms are identical. Only difference is the alpha value.
             // Alpha calculation is handled in MaximizeColors().
             m_samples = RenderWaveformSamples;
 

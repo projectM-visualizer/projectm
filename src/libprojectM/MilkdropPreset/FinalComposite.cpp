@@ -139,6 +139,9 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
         return;
     }
 
+    float const halfTexelWidth = 0.5f / static_cast<float>(presetState.renderContext.viewportSizeX);
+    float const halfTexelHeight = 0.5f / static_cast<float>(presetState.renderContext.viewportSizeY);
+
     float const dividedByX = 1.0f / static_cast<float>(compositeGridWidth - 2);
     float const dividedByY = 1.0f / static_cast<float>(compositeGridHeight - 2);
 
@@ -147,18 +150,19 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
     for (int gridY = 0; gridY < compositeGridHeight; gridY++)
     {
         int const gridY2 = gridY - gridY / (compositeGridHeight / 2);
-        float v = gridY2 * dividedByY;
-        v = SquishToCenter(v, 3.0f);
-        float sy = -((v) *2 - 1);
+        float const v = SquishToCenter(gridY2 * dividedByY, 3.0f);
+        float const sy = -((v - halfTexelHeight) * 2.0f - 1.0f);
+
         for (int gridX = 0; gridX < compositeGridWidth; gridX++)
         {
-            int i2 = gridX - gridX / (compositeGridWidth / 2);
-            float u = i2 * dividedByX;
-            u = SquishToCenter(u, 3.0f);
-            float sx = (u) *2 - 1;
-            auto& pComp = m_vertices.at(gridX + gridY * compositeGridWidth);
-            pComp.x = sx;
-            pComp.y = sy;
+            int const gridX2 = gridX - gridX / (compositeGridWidth / 2);
+            float const u = SquishToCenter(gridX2 * dividedByX, 3.0f);
+            float const sx = (u - halfTexelWidth) * 2.0f - 1.0f;
+
+            auto& vertex = m_vertices.at(gridX + gridY * compositeGridWidth);
+
+            vertex.x = sx;
+            vertex.y = sy;
 
             float rad;
             float ang;
@@ -227,11 +231,11 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
                     ang = PI * 0.0f;
                 }
             }
-            pComp.u = u;
-            pComp.v = 1.0f - v;
+            vertex.u = u;
+            vertex.v = v;
 
-            pComp.radius = rad;
-            pComp.angle = ang;
+            vertex.radius = rad;
+            vertex.angle = ang;
         }
     }
 
@@ -254,8 +258,8 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
 
             bool const leftHalf = (gridX < compositeGridWidth / 2);
             bool const topHalf = (gridY < compositeGridHeight / 2);
-            bool const center4 = ((gridX == compositeGridWidth / 2 || gridX == compositeGridWidth / 2 - 1) &&
-                                  (gridY == compositeGridHeight / 2 || gridY == compositeGridHeight / 2 - 1));
+            bool const center4 = ((gridX == compositeGridWidth / 2) &&
+                                  (gridY == compositeGridHeight / 2));
 
             if ((static_cast<int>(leftHalf) + static_cast<int>(topHalf) + static_cast<int>(center4)) % 2 == 1)
             {

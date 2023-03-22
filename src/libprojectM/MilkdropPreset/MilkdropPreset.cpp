@@ -81,16 +81,18 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     {
         m_isFirstFrame = true;
     }
+
     m_state.mainTexture = m_framebuffer.GetColorAttachmentTexture(m_previousFrameBuffer, 0);
+    m_framebuffer.MaskDrawBuffer(1, true);
 
     // First evaluate per-frame code
     PerFrameUpdate();
 
+    m_framebuffer.Bind(m_previousFrameBuffer);
     // Motion vector field. Drawn to the previous frame texture before warping it.
     // Only do it after drawing one frame after init or resize.
     if (!m_isFirstFrame)
     {
-        m_framebuffer.Bind(m_previousFrameBuffer);
         m_motionVectors.Draw(m_perFrameContext, m_framebuffer.GetColorAttachmentTexture(m_previousFrameBuffer, 1));
     }
 
@@ -103,6 +105,7 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
 
     // Draw previous frame image warped via per-pixel mesh and warp shader
     m_perPixelMesh.Draw(m_state, m_perFrameContext, m_perPixelContext);
+
     m_framebuffer.MaskDrawBuffer(1, true);
 
     // Update blur textures
@@ -128,7 +131,7 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
 
     // Todo: Song title anim would go here
 
-    // We no longer need the previous frame image, as the composite shader reads from the current frame image.
+    // We no longer need the previous frame image, use it to render the final composite.
     m_framebuffer.BindRead(m_currentFrameBuffer);
     m_framebuffer.BindDraw(m_previousFrameBuffer);
     m_state.mainTexture = m_framebuffer.GetColorAttachmentTexture(m_currentFrameBuffer, 0);
@@ -140,8 +143,10 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     // TEST: Copy result to default framebuffer
     m_framebuffer.BindRead(m_previousFrameBuffer);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    glDrawBuffer(GL_COLOR_ATTACHMENT0);
     glBlitFramebuffer(0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
-                      renderContext.viewportSizeX, renderContext.viewportSizeY,0, 0,
+                      0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
                       GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
     // Swap framebuffers for the next frame.
@@ -211,9 +216,9 @@ void MilkdropPreset::Load(std::istream& stream)
 void MilkdropPreset::InitializePreset(PresetFileParser& parsedFile)
 {
     // Create the offscreen rendering surfaces.
-    m_framebuffer.CreateColorAttachment(0, 0); // Main image
+    m_framebuffer.CreateColorAttachment(0, 0);                            // Main image
     m_framebuffer.CreateColorAttachment(0, 1, GL_RG16F, GL_RG, GL_FLOAT); // Motion vector u/v
-    m_framebuffer.CreateColorAttachment(1, 0); // Main image
+    m_framebuffer.CreateColorAttachment(1, 0);                            // Main image
     m_framebuffer.CreateColorAttachment(1, 1, GL_RG16F, GL_RG, GL_FLOAT); // Motion vector u/v
 
     // Mask the motion vector buffer by default.

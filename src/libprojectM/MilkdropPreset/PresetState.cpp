@@ -7,6 +7,7 @@
 #include <random>
 
 const glm::mat4 PresetState::orthogonalProjection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -40.0f, 40.0f);
+const glm::mat4 PresetState::orthogonalProjectionFlipped = glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, -40.0f, 40.0f);
 
 PresetState::PresetState()
     : globalMemory(projectm_eval_memory_buffer_create())
@@ -81,7 +82,7 @@ void PresetState::Initialize(PresetFileParser& parsedFile)
     mvR = parsedFile.GetFloat("mv_r", mvR);
     mvG = parsedFile.GetFloat("mv_g", mvG);
     mvB = parsedFile.GetFloat("mv_b", mvB);
-    mvA = parsedFile.GetBool("bMotionVectorsOn", false) ? 0.0 : 1.0; // for backwards compatibility
+    mvA = parsedFile.GetBool("bMotionVectorsOn", false) ? 1.0 : 0.0; // for backwards compatibility
     mvA = parsedFile.GetFloat("mv_a", mvA);
 
     // Motion:
@@ -99,6 +100,8 @@ void PresetState::Initialize(PresetFileParser& parsedFile)
     warpAnimSpeed = parsedFile.GetFloat("fWarpAnimSpeed", warpAnimSpeed);
     warpScale = parsedFile.GetFloat("fWarpScale", warpScale);
     zoomExponent = parsedFile.GetFloat("fZoomExponent", zoomExponent);
+
+    // Borders:
     outerBorderSize = parsedFile.GetFloat("ob_size", outerBorderSize);
     outerBorderR = parsedFile.GetFloat("ob_r", outerBorderR);
     outerBorderG = parsedFile.GetFloat("ob_g", outerBorderG);

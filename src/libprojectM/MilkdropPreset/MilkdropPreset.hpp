@@ -96,11 +96,6 @@ private:
 
     auto ParseFilename(const std::string& filename) -> std::string;
 
-    /**
-     * @brief Draws the composite shader quad to create the final output image.
-     */
-    void ApplyCompositeShader();
-
     std::string m_absoluteFilePath; //!< The absolute file path of the MilkdropPreset
     std::string m_absolutePath;     //!< The absolute path of the MilkdropPreset
 

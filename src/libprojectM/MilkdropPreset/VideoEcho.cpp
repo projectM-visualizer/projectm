@@ -69,7 +69,7 @@ void VideoEcho::Draw()
     }
 
     m_presetState.texturedShader.Bind();
-    m_presetState.texturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+    m_presetState.texturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjectionFlipped);
     m_presetState.texturedShader.SetUniformInt("texture_sampler", 0);
 
     auto mainTexture = m_presetState.mainTexture.lock();
@@ -122,13 +122,13 @@ void VideoEcho::DrawVideoEcho()
         float const tempLow = 0.5f - 0.5f / zoom;
         float const temphigh = 0.5f + 0.5f / zoom;
         m_vertices[0].u = tempLow;
-        m_vertices[0].v = temphigh;
+        m_vertices[0].v = tempLow;
         m_vertices[1].u = temphigh;
-        m_vertices[1].v = temphigh;
+        m_vertices[1].v = tempLow;
         m_vertices[2].u = tempLow;
-        m_vertices[2].v = tempLow;
+        m_vertices[2].v = temphigh;
         m_vertices[3].u = temphigh;
-        m_vertices[3].v = tempLow;
+        m_vertices[3].v = temphigh;
 
         // Flipping
         if (pass == 1)
@@ -197,13 +197,13 @@ void VideoEcho::DrawVideoEcho()
 void VideoEcho::DrawGammaAdjustment()
 {
     m_vertices[0].u = 0.0f;
-    m_vertices[0].v = 1.0f;
+    m_vertices[0].v = 0.0f;
     m_vertices[1].u = 1.0f;
-    m_vertices[1].v = 1.0f;
+    m_vertices[1].v = 0.0f;
     m_vertices[2].u = 0.0f;
-    m_vertices[2].v = 0.0f;
+    m_vertices[2].v = 1.0f;
     m_vertices[3].u = 1.0f;
-    m_vertices[3].v = 0.0f;
+    m_vertices[3].v = 1.0f;
 
     glDisable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ZERO);

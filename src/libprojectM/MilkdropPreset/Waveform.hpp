@@ -15,8 +15,8 @@ public:
     {
         Circle = 0,          //!< Circular wave.
         XYOscillationSpiral, //!< X-Y osc. that goes around in a spiral, in time.
-        Blob2,               //!< Centered spiro (alpha constant). Aimed at not being so sound-responsive, but being very "nebula-like".
-        Blob3,               //!< Centered spiro (alpha tied to volume). Aimed at having a strong audio-visual tie-in.
+        CenteredSpiro,               //!< Centered spiro (alpha constant). Aimed at not being so sound-responsive, but being very "nebula-like".
+        CenteredSpiroVolume,               //!< Centered spiro (alpha tied to volume). Aimed at having a strong audio-visual tie-in.
         DerivativeLine,      //!< Horizontal "script", left channel.
         ExplosiveHash,       //!< Weird explosive complex # thingy.
         Line,                //!< Angle-adjustable left channel, with temporal wave alignment.

@@ -33,13 +33,15 @@ void PerPixelMesh::InitVertexAttrib()
     glEnableVertexAttribArray(2);
     glEnableVertexAttribArray(3);
     glEnableVertexAttribArray(4);
+    glEnableVertexAttribArray(5);
 
     // Only position & texture coordinates are per-vertex, colors are equal all over the grid (used for decay).
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, x)));         // Position, radius & angle
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, zoom)));      // zoom, zoom exponent, rotation & warp
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, centerX)));   // Center coord
-    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, distanceX))); // Distance
-    glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, stretchX)));  // Stretch
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, x)));         // Position, radius & angle
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, radius)));    // Position, radius & angle
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, zoom)));      // zoom, zoom exponent, rotation & warp
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, centerX)));   // Center coord
+    glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, distanceX))); // Distance
+    glVertexAttribPointer(5, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, stretchX)));  // Stretch
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -134,6 +136,9 @@ void PerPixelMesh::InitializeMesh(const PresetState& presetState)
         return;
     }
 
+    float aspectX = static_cast<float>(presetState.renderContext.aspectX);
+    float aspectY = static_cast<float>(presetState.renderContext.aspectY);
+
     // Either viewport size or mesh size changed, reinitialize the vertices.
     int vertexIndex{0};
     for (int gridY = 0; gridY <= m_gridSizeY; gridY++)
@@ -146,16 +151,14 @@ void PerPixelMesh::InitializeMesh(const PresetState& presetState)
             vertex.y = static_cast<float>(gridY) / static_cast<float>(m_gridSizeY) * 2.0f - 1.0f;
 
             // Milkdrop uses sqrtf, but hypotf is probably safer.
-            vertex.radius = hypotf(vertex.x * static_cast<float>(presetState.renderContext.aspectX),
-                                   vertex.y * static_cast<float>(presetState.renderContext.aspectY));
+            vertex.radius = hypotf(vertex.x * aspectX, vertex.y * aspectY);
             if (gridY == m_gridSizeY / 2 && gridX == m_gridSizeX / 2)
             {
                 vertex.angle = 0.0f;
             }
             else
             {
-                vertex.angle = atan2f(vertex.y * static_cast<float>(presetState.renderContext.aspectY),
-                                      vertex.x * static_cast<float>(presetState.renderContext.aspectX));
+                vertex.angle = atan2f(vertex.y * aspectY, vertex.x * aspectX);
             }
 
             vertexIndex++;
@@ -303,7 +306,7 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
     if (!m_warpShader)
     {
         m_perPixelMeshShader.Bind();
-        m_perPixelMeshShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+        m_perPixelMeshShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjectionFlipped);
         m_perPixelMeshShader.SetUniformInt("texture_sampler", 0);
         m_perPixelMeshShader.SetUniformFloat4("aspect", {presetState.renderContext.aspectX,
                                                          presetState.renderContext.aspectY,
@@ -320,9 +323,9 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
         m_warpShader->LoadVariables(presetState, perFrameContext);
         auto& shader = m_warpShader->Shader();
         shader.SetUniformFloat4("aspect", {presetState.renderContext.aspectX,
-                                                         presetState.renderContext.aspectY,
-                                                         presetState.renderContext.invAspectX,
-                                                         presetState.renderContext.invAspectY});
+                                           presetState.renderContext.aspectY,
+                                           presetState.renderContext.invAspectX,
+                                           presetState.renderContext.invAspectY});
         shader.SetUniformFloat("warpTime", warpTime);
         shader.SetUniformFloat("warpScaleInverse", warpScaleInverse);
         shader.SetUniformFloat4("warpFactors", warpFactors);
