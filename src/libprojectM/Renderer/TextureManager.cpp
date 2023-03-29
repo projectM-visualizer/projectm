@@ -66,7 +66,7 @@ void TextureManager::Preload()
         M_bytes,
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
+        SOIL_FLAG_INVERT_Y | SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
 
 
     auto newTex = std::make_shared<Texture>("idlem", tex, GL_TEXTURE_2D, width, height, false);
@@ -77,7 +77,7 @@ void TextureManager::Preload()
         headphones_bytes,
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
+        SOIL_FLAG_INVERT_Y | SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
 
     newTex = std::make_shared<Texture>("idleheadphones", tex, GL_TEXTURE_2D, width, height, false);
     m_textures["idleheadphones"] = newTex;

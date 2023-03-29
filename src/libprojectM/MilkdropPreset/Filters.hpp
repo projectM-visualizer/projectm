@@ -21,6 +21,8 @@ public:
     void Draw();
 
 private:
+    void UpdateMesh();
+
     /**
      * @brief Brightens the image.
      */
@@ -42,4 +44,7 @@ private:
     void Invert();
 
     const PresetState& m_presetState; //!< The global preset state.
+
+    int m_viewportWidth{}; //!< Last known viewport width
+    int m_viewportHeight{}; //!< Last known viewport height
 };

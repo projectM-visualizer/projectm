@@ -91,7 +91,7 @@ void CustomShape::Initialize(PresetFileParser& parsedFile, int index)
     m_border_a = parsedFile.GetFloat(shapecodePrefix + "border_a", m_border_a);
 
     // projectM addition: texture name to use for rendering the shape
-    m_image = parsedFile.GetString("image", "");
+    m_image = parsedFile.GetString(shapecodePrefix + "image", "");
 }
 
 void CustomShape::CompileCodeAndRunInitExpressions()
@@ -175,7 +175,7 @@ void CustomShape::Draw()
         if (static_cast<int>(*m_perFrameContext.textured) != 0)
         {
             m_presetState.texturedShader.Bind();
-            m_presetState.texturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+            m_presetState.texturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjectionFlipped);
             m_presetState.texturedShader.SetUniformInt("texture_sampler", 0);
 
             // Textured shape, either main texture or texture from "image" key
@@ -210,7 +210,7 @@ void CustomShape::Draw()
                 const float angle = cornerProgress * pi * 2.0f + static_cast<float>(*m_perFrameContext.tex_ang) + pi * 0.25f;
 
                 vertexData[i].u = 0.5f + 0.5f * cosf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom) * textureAspectY;
-                vertexData[i].v = 0.5f + 0.5f * sinf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom);
+                vertexData[i].v = 0.5f - 0.5f * sinf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom);
             }
 
             vertexData[sides + 1] = vertexData[1];
@@ -234,7 +234,7 @@ void CustomShape::Draw()
             glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * (sides + 2), vertexData.data(), GL_DYNAMIC_DRAW);
 
             m_presetState.untexturedShader.Bind();
-            m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+            m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjectionFlipped);
 
             glBindVertexArray(m_vaoIdUntextured);
             glDrawArrays(GL_TRIANGLE_FAN, 0, sides + 2);
@@ -252,7 +252,7 @@ void CustomShape::Draw()
             }
 
             m_presetState.untexturedShader.Bind();
-            m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+            m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjectionFlipped);
 
             glVertexAttrib4f(1,
                              static_cast<float>(*m_perFrameContext.border_r),
