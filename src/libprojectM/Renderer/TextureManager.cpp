@@ -66,7 +66,7 @@ void TextureManager::Preload()
         M_bytes,
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_INVERT_Y | SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
+        SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
 
 
     auto newTex = std::make_shared<Texture>("idlem", tex, GL_TEXTURE_2D, width, height, false);
@@ -77,7 +77,7 @@ void TextureManager::Preload()
         headphones_bytes,
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_INVERT_Y | SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
+        SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
 
     newTex = std::make_shared<Texture>("idleheadphones", tex, GL_TEXTURE_2D, width, height, false);
     m_textures["idleheadphones"] = newTex;
@@ -192,11 +192,14 @@ void TextureManager::PurgeTextures()
     {
         return;
     }
-
     // Purge one texture. No need to inform presets, as the texture shouldn't be in use anymore.
     // If this really happens for some reason, it'll simply be reloaded on the next frame.
     m_textures.erase(m_textures.find(biggestName));
     m_textureStats.erase(m_textureStats.find(biggestName));
+
+#ifdef DEBUG
+    std::cerr << "Purged texture " << biggestName << std::endl;
+#endif
 }
 
 TextureSamplerDescriptor TextureManager::TryLoadingTexture(const std::string& name)
@@ -233,14 +236,14 @@ TextureSamplerDescriptor TextureManager::TryLoadingTexture(const std::string& na
         if (!texDesc.Empty())
         {
 #ifdef DEBUG
-            std::cerr << "Located texture " << unqualifiedName << std::endl;
+            std::cerr << "Loaded texture " << unqualifiedName << std::endl;
 #endif
             return texDesc;
         }
     }
 
 #ifdef DEBUG
-    std::cerr << "Failed to locate texture " << unqualifiedName << std::endl;
+    std::cerr << "Failed to find texture " << unqualifiedName << std::endl;
 #endif
 
     // Return a placeholder.

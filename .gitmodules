@@ -1,0 +1,3 @@
+[submodule "vendor/projectm-eval"]
+	path = vendor/projectm-eval
+	url = https://github.com/projectM-visualizer/projectm-eval.git

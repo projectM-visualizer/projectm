@@ -32,13 +32,16 @@ If you want to use a stable version of projectM, download the latest release fro
 the [Releases page on GitHub](https://github.com/projectM-visualizer/projectm/releases) and unpack it. You can then skip
 to the next step.
 
-If you prefer a bleeding-edge version or want to modify the code, clone the Git repository:
+If you prefer a bleeding-edge version or want to modify the code, clone the Git repository and initialize any
+submodules:
 
 ```bash
 sudo apt install git # Probably already installed
 git clone https://github.com/projectM-visualizer/projectm.git /path/to/local/repo
 cd /path/to/local/repo
 git fetch --all --tags
+git submodule init
+git submodule update
 ```
 
 ### Build and install projectM

@@ -175,7 +175,7 @@ void CustomShape::Draw()
         if (static_cast<int>(*m_perFrameContext.textured) != 0)
         {
             m_presetState.texturedShader.Bind();
-            m_presetState.texturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjectionFlipped);
+            m_presetState.texturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
             m_presetState.texturedShader.SetUniformInt("texture_sampler", 0);
 
             // Textured shape, either main texture or texture from "image" key
@@ -234,7 +234,7 @@ void CustomShape::Draw()
             glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * (sides + 2), vertexData.data(), GL_DYNAMIC_DRAW);
 
             m_presetState.untexturedShader.Bind();
-            m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjectionFlipped);
+            m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
 
             glBindVertexArray(m_vaoIdUntextured);
             glDrawArrays(GL_TRIANGLE_FAN, 0, sides + 2);
@@ -252,7 +252,7 @@ void CustomShape::Draw()
             }
 
             m_presetState.untexturedShader.Bind();
-            m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjectionFlipped);
+            m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
 
             glVertexAttrib4f(1,
                              static_cast<float>(*m_perFrameContext.border_r),

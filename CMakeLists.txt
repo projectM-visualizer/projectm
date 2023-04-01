@@ -65,8 +65,6 @@ option(ENABLE_SYSTEM_GLM "Enable use of system-install GLM library" OFF)
 cmake_dependent_option(ENABLE_LLVM "Enable experimental LLVM JIT support" OFF "NOT ENABLE_EMSCRIPTEN" OFF)
 option(ENABLE_CXX_INTERFACE "Enable exporting C++ symbols for ProjectM and PCM classes, not only the C API. Warning: This is not very portable." OFF)
 
-find_package(projectM-Eval REQUIRED)
-
 if(ENABLE_SYSTEM_GLM)
     find_package(GLM REQUIRED)
 else()
