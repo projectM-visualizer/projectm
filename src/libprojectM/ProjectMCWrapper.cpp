@@ -148,7 +148,7 @@ char* projectm_get_version_string()
 {
     auto versionLength = strlen(PROJECTM_VERSION_STRING);
     auto buffer = projectm_alloc_string(versionLength + 1);
-    strncpy(buffer, PROJECTM_VERSION_STRING, versionLength);
+    strncpy(buffer, PROJECTM_VERSION_STRING, versionLength + 1);
     return buffer;
 }
 
@@ -156,7 +156,7 @@ char* projectm_get_vcs_version_string()
 {
     auto versionLength = strlen(PROJECTM_VERSION_VCS);
     auto buffer = projectm_alloc_string(versionLength + 1);
-    strncpy(buffer, PROJECTM_VERSION_VCS, versionLength);
+    strncpy(buffer, PROJECTM_VERSION_VCS, versionLength + 1);
     return buffer;
 }
 
