@@ -110,7 +110,7 @@ auto PresetFileParser::GetInt(const std::string& key, int defaultValue) -> int
         {
             return std::stoi(m_presetValues.at(key));
         }
-        catch (std::logic_error& ex)
+        catch (std::logic_error&)
         {
         }
     }
@@ -126,7 +126,7 @@ auto PresetFileParser::GetFloat(const std::string& key, float defaultValue) -> f
         {
             return std::stof(m_presetValues.at(key));
         }
-        catch (std::logic_error& ex)
+        catch (std::logic_error&)
         {
         }
     }

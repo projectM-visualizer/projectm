@@ -128,18 +128,20 @@ set_target_properties(projectM PROPERTIES
         )
 
 if(BUILD_SHARED_LIBS)
-    set_source_files_properties(ProjectMCWrapper.cpp PROPERTIES
-            COMPILE_DEFINITIONS projectM_api_EXPORTS
-            )
+    target_compile_definitions(projectM_main
+        PRIVATE
+        projectM_api_EXPORTS
+        )
 
     target_link_libraries(projectM
             PUBLIC
             ${CMAKE_DL_LIBS}
             )
 else()
-    set_source_files_properties(ProjectMCWrapper.cpp PROPERTIES
-            COMPILE_DEFINITIONS PROJECTM_STATIC_DEFINE
-            )
+    target_compile_definitions(projectM_main
+        PUBLIC
+        PROJECTM_STATIC_DEFINE
+        )
 
     set_target_properties(projectM PROPERTIES
             OUTPUT_NAME $<IF:$<PLATFORM_ID:Windows>,libprojectM,projectM>
@@ -165,10 +167,6 @@ if(ENABLE_CXX_INTERFACE)
                 )
     endif()
 
-    set_source_files_properties(ProjectM.cpp Audio/PCM.cpp PROPERTIES
-            COMPILE_DEFINITIONS projectM_api_EXPORTS
-            )
-
     install(FILES
             Common.hpp
             Audio/PCM.hpp
@@ -179,8 +177,12 @@ if(ENABLE_CXX_INTERFACE)
 else()
     # Set PROJECTM_STATIC_EXPORT for C++ implementations to use project default visibility
     # and no dllimport/dllexport.
-    set_source_files_properties(ProjectM.cpp Audio/PCM.cpp PROPERTIES
+    set_source_files_properties(ProjectM.cpp Audio/PCM.cpp Audio/FrameAudioData.cpp PROPERTIES
             COMPILE_DEFINITIONS PROJECTM_STATIC_DEFINE
+            )
+    target_compile_definitions(projectM
+            INTERFACE
+            PROJECTM_STATIC_DEFINE
             )
 endif()
 

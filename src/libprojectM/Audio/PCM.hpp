@@ -137,7 +137,7 @@ private:
     std::array<int, 34> m_ip{0};
 
     // see https://github.com/projectM-visualizer/projectm/issues/161
-    class AutoLevel
+    class PROJECTM_EXPORT AutoLevel
     {
     public:
         auto UpdateLevel(size_t samples, double sum, double max) -> double;
