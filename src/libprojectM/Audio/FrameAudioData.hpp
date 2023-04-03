@@ -6,6 +6,7 @@
  */
 #pragma once
 
+#include "projectM-4/projectM_export.h"
 #include "AudioConstants.hpp"
 
 #include <array>
@@ -13,7 +14,7 @@
 namespace libprojectM {
 namespace Audio {
 
-class FrameAudioData
+class PROJECTM_EXPORT FrameAudioData
 {
 public:
     float bass{0.f};

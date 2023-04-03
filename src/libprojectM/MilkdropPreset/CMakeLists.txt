@@ -69,6 +69,13 @@ target_link_libraries(MilkdropPreset
         ${PROJECTM_OPENGL_LIBRARIES}
         )
 
+if(NOT BUILD_SHARED_LIBS)
+    target_compile_definitions(MilkdropPreset
+        PRIVATE
+        PROJECTM_STATIC_DEFINE
+        )
+endif()
+
 if(ENABLE_DEBUG_MILKDROP_PRESET)
     target_compile_definitions(MilkdropPreset
             PRIVATE

@@ -64,8 +64,7 @@ unsigned int const numQVariables(32);
 //CPP17: std::filesystem::path::extension
 inline auto ParseExtension(const std::string& filename) -> std::string
 {
-
-    const std::size_t start = filename.find_last_of('.');
+    const auto start = filename.find_last_of('.');
 
     if (start == std::string::npos || start >= (filename.length() - 1)) {
         return "";
@@ -78,8 +77,7 @@ inline auto ParseExtension(const std::string& filename) -> std::string
 //CPP17: std::filesystem::path::filename
 inline auto ParseFilename(const std::string& filename) -> std::string
 {
-
-    const std::size_t start = filename.find_last_of('/');
+    const auto start = filename.find_last_of('/');
 
     if (start == std::string::npos || start >= (filename.length() - 1)) {
         return "";
