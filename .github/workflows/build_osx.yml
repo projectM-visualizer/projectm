@@ -18,6 +18,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
 
       - name: Install Packages
         run: brew install sdl2 ninja googletest
@@ -51,6 +53,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
 
       - name: Install Packages
         run: brew install sdl2 ninja googletest

@@ -18,6 +18,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
       
       - name: Setup emsdk
         uses: mymindstorm/setup-emsdk@v11
