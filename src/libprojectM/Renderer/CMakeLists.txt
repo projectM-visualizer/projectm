@@ -32,6 +32,7 @@ target_include_directories(Renderer
 
 target_link_libraries(Renderer
         PRIVATE
+        omptl
         libprojectM::API # For export header
         PUBLIC
         GLM::GLM
