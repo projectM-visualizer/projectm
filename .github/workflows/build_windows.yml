@@ -18,6 +18,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
 
       - name: Install Dependencies
         run: vcpkg --triplet=x64-windows install glew gtest
@@ -51,6 +53,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
 
       - name: Install Dependencies
         run: vcpkg --triplet=x64-windows-static install glew gtest
