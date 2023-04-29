@@ -10,7 +10,7 @@ MotionVectors::MotionVectors(PresetState& presetState)
 {
     auto staticShaders = libprojectM::MilkdropPreset::MilkdropStaticShaders::Get();
     m_motionVectorShader.CompileProgram(staticShaders->GetPresetMotionVectorsVertexShader(),
-                                        staticShaders->GetV2fC4fFragmentShader());
+                                        staticShaders->GetUntexturedDrawFragmentShader());
     RenderItem::Init();
 }
 
