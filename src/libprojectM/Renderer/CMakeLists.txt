@@ -12,16 +12,15 @@ add_library(Renderer OBJECT
         Sampler.hpp
         Shader.cpp
         Shader.hpp
-        ShaderEngine.cpp
-        ShaderEngine.hpp
-        StaticGlShaders.cpp
         Texture.cpp
         Texture.hpp
         TextureAttachment.cpp
         TextureAttachment.hpp
         TextureManager.cpp
         TextureManager.hpp
-        TextureSamplerDescriptor.cpp TextureSamplerDescriptor.hpp)
+        TextureSamplerDescriptor.cpp
+        TextureSamplerDescriptor.hpp
+        )
 
 target_include_directories(Renderer
         PRIVATE

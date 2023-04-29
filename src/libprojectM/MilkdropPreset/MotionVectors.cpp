@@ -1,13 +1,14 @@
 #include "MotionVectors.hpp"
 
-#include <Renderer/StaticGlShaders.hpp>
+#include <MilkdropStaticShaders.hpp>
+
 #include <Renderer/TextureManager.hpp>
 
 MotionVectors::MotionVectors(PresetState& presetState)
     : RenderItem()
     , m_presetState(presetState)
 {
-    auto staticShaders = StaticGlShaders::Get();
+    auto staticShaders = libprojectM::MilkdropPreset::MilkdropStaticShaders::Get();
     m_motionVectorShader.CompileProgram(staticShaders->GetPresetMotionVectorsVertexShader(),
                                         staticShaders->GetV2fC4fFragmentShader());
     RenderItem::Init();

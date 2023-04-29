@@ -2,7 +2,6 @@
 
 #include "Audio/BeatDetect.hpp"
 
-#include "ShaderEngine.hpp"
 #include "projectM-opengl.h"
 
 #include <chrono>
@@ -109,7 +108,6 @@ private:
     int nearestPower2(int value);
 
     libprojectM::Audio::BeatDetect& m_beatDetect;
-    ShaderEngine m_shaderEngine;
 
     std::string m_fps;
 
