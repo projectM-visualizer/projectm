@@ -2,7 +2,7 @@
 
 #include "PresetFileParser.hpp"
 
-#include "Renderer/StaticGlShaders.hpp"
+#include <MilkdropStaticShaders.hpp>
 
 #include <random>
 
@@ -12,7 +12,7 @@ const glm::mat4 PresetState::orthogonalProjectionFlipped = glm::ortho(-1.0f, 1.0
 PresetState::PresetState()
     : globalMemory(projectm_eval_memory_buffer_create())
 {
-    auto staticShaders = StaticGlShaders::Get();
+    auto staticShaders = libprojectM::MilkdropPreset::MilkdropStaticShaders::Get();
     untexturedShader.CompileProgram(staticShaders->GetV2fC4fVertexShader(),
                                       staticShaders->GetV2fC4fFragmentShader());
     texturedShader.CompileProgram(staticShaders->GetV2fC4fT2fVertexShader(),

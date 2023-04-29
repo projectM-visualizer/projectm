@@ -2,8 +2,6 @@
 
 #include "projectM-opengl.h"
 
-#include "Renderer/ShaderEngine.hpp"
-
 Filters::Filters(const PresetState& presetState)
     : RenderItem()
     , m_presetState(presetState)

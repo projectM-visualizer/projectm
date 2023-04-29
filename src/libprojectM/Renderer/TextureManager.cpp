@@ -1,5 +1,4 @@
 #include "TextureManager.hpp"
-#include "Common.hpp"
 #include "IdleTextures.hpp"
 #include "SOIL2/SOIL2.h"
 #include "Texture.hpp"
@@ -21,6 +20,10 @@ TextureManager::TextureManager(const std::vector<std::string>& textureSearchPath
     , m_placeholderTexture(std::make_shared<Texture>("placeholder", 1, 1, false))
 {
     Preload();
+}
+
+void TextureManager::SetCurrentPresetPath(const std::string& path)
+{
 }
 
 TextureSamplerDescriptor TextureManager::GetTexture(const std::string& fullName)
@@ -388,4 +391,3 @@ void TextureManager::ExtractTextureSettings(const std::string& qualifiedName, GL
         wrapMode = GL_REPEAT;
     }
 }
-

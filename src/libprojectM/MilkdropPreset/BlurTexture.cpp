@@ -3,18 +3,20 @@
 #include "PerFrameContext.hpp"
 #include "PresetState.hpp"
 
-#include <Renderer/StaticGlShaders.hpp>
+#include "MilkdropStaticShaders.hpp"
 
 #include <array>
 
 BlurTexture::BlurTexture()
     : m_blurSampler(std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR))
 {
+    auto staticShaders = libprojectM::MilkdropPreset::MilkdropStaticShaders::Get();
+
     // Compile shader sources
-    m_blur1Shader.CompileProgram(StaticGlShaders::Get()->GetBlurVertexShader(),
-                                 StaticGlShaders::Get()->GetBlur1FragmentShader());
-    m_blur2Shader.CompileProgram(StaticGlShaders::Get()->GetBlurVertexShader(),
-                                 StaticGlShaders::Get()->GetBlur2FragmentShader());
+    m_blur1Shader.CompileProgram(staticShaders->GetBlurVertexShader(),
+                                 staticShaders->GetBlur1FragmentShader());
+    m_blur2Shader.CompileProgram(staticShaders->GetBlurVertexShader(),
+                                 staticShaders->GetBlur2FragmentShader());
 
     m_blurFramebuffer.CreateColorAttachment(0, 0);
 

@@ -5,7 +5,7 @@
 #include "PerPixelContext.hpp"
 #include "PresetState.hpp"
 
-#include <Renderer/StaticGlShaders.hpp>
+#include <MilkdropStaticShaders.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -15,7 +15,7 @@ PerPixelMesh::PerPixelMesh()
 {
     RenderItem::Init();
 
-    auto staticShaders = StaticGlShaders::Get();
+    auto staticShaders = libprojectM::MilkdropPreset::MilkdropStaticShaders::Get();
     m_perPixelMeshShader.CompileProgram(staticShaders->GetPresetWarpVertexShader(),
                                         staticShaders->GetPresetWarpFragmentShader());
 }

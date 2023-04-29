@@ -1,0 +1,151 @@
+#include "MilkdropStaticShaders.hpp"
+
+#include "projectM-opengl.h"
+
+#include <cstring>
+#include <stdexcept>
+
+namespace libprojectM {
+namespace MilkdropPreset {
+
+@STATIC_SHADER_CONTENTS@
+
+MilkdropStaticShaders::MilkdropStaticShaders(bool useGLES)
+    : m_useGLES(useGLES)
+{
+    m_GLSLVersion = QueryGlslVersion();
+
+    if (m_GLSLVersion.major == 0)
+    {
+        throw std::runtime_error("Could not retrieve OpenGL shader language version. Is OpenGL available and the context initialized?");
+    }
+    if (m_GLSLVersion.major < 3)
+    {
+        throw std::runtime_error("OpenGL shader language version 3 or higher is required, but not available in the current context.");
+    }
+
+    if (m_useGLES)
+    {
+        // If GLES is enabled, use the embedded specification language variant.
+        m_versionHeader = "#version 300 es";
+        m_GLSLGeneratorVersion = M4::GLSLGenerator::Version::Version_300_ES;
+    }
+    else
+    {
+        m_versionHeader = "#version 330";
+        m_GLSLGeneratorVersion = M4::GLSLGenerator::Version::Version_330;
+    }
+}
+
+MilkdropStaticShaders::GlslVersion MilkdropStaticShaders::QueryGlslVersion()
+{
+    /* In the linux desktop environment with --use-gles configured, the parsing of the GL_SHADING_LANGUAGE_VERSION
+     * string comes back as "OpenGL ES GLSL ES 3"
+     * And I think this was supposed to be parsing something like
+     * "3.10 etc etc"
+     * This caused exceptions to be raised in the std::stoi section;
+     *
+     * So - The parsing will look for <anything> <number> ['.' <number>] [<anything else>]
+     * and will default to 3.0 for the version in case of errors
+     */
+    int major = 3; /* 3.0 is default */
+    int minor = 0;
+
+    const char* shaderLanguageVersion = reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+    if (shaderLanguageVersion == nullptr)
+    {
+        return GlslVersion{0, 0};
+    }
+
+    std::string glslVersionString{shaderLanguageVersion};
+
+    size_t versionLength = glslVersionString.length();
+    /* make a c version of the string and do the conversion to integers manually just for this case */
+    if (versionLength)
+    { // find the number
+        size_t position = 0;
+        char* cstr = new char[versionLength + 1];
+
+        strcpy(cstr, glslVersionString.c_str());
+
+        /* scan the anything before the number */
+        while (position < versionLength)
+        {
+            char ch = cstr[position];
+            if ((ch >= '0') && (ch <= '9'))
+            {
+                break;
+            }
+            position++;
+        }
+
+        /* scan the first number */
+        {
+            int possible_major = 0;
+            while (position < versionLength)
+            {
+                char ch = cstr[position];
+                if ((ch >= '0') && (ch <= '9'))
+                {
+                    possible_major = (possible_major * 10) + ch - '0';
+                }
+                else if (ch == '.')
+                { /* got the minor */
+                    int possible_minor = 0;
+                    position++;
+                    while (position < versionLength)
+                    {
+                        ch = cstr[position];
+                        if ((ch >= '0') && (ch <= '9'))
+                        {
+                            possible_minor = (possible_minor * 10) + ch - '0';
+                        }
+                        else
+                            break;
+                        position++;
+                    } /* while scanning the minor version */
+                    if (possible_major)
+                    { /* set the minor version only if the major number is valid */
+                        minor = possible_minor;
+                    }
+                    break; // We scanned it
+                }
+                else
+                { /* not a number or period */
+                    break;
+                }
+                position++;
+            } /* while scanning the major number */
+            if (possible_major)
+            {
+                major = possible_major;
+            }
+        } /* scanning block */
+        delete[] cstr;
+    } /* if there is a string to parse */
+
+    return {major, minor};
+}
+
+std::string MilkdropStaticShaders::AddVersionHeader(std::string shader_text)
+{
+    return m_versionHeader + "\n" + shader_text;
+}
+
+#define DECLARE_SHADER_ACCESSOR(name)              \
+    std::string MilkdropStaticShaders::Get##name()       \
+    {                                              \
+        return AddVersionHeader(k##name##Glsl330); \
+    }
+
+#define DECLARE_SHADER_ACCESSOR_NO_HEADER(name) \
+    std::string MilkdropStaticShaders::Get##name()    \
+    {                                           \
+        return k##name##Glsl330;                \
+    }
+
+@STATIC_SHADER_ACCESSOR_DEFINITIONS@
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

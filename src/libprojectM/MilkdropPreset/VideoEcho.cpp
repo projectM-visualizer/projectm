@@ -1,6 +1,5 @@
 #include "VideoEcho.hpp"
 
-#include "Renderer/ShaderEngine.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
 VideoEcho::VideoEcho(const PresetState& presetState)

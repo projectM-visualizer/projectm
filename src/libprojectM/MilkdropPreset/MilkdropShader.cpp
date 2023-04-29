@@ -3,7 +3,7 @@
 #include "PerFrameContext.hpp"
 #include "PresetState.hpp"
 
-#include "Renderer/StaticGlShaders.hpp"
+#include <MilkdropStaticShaders.hpp>
 
 #include <GLSLGenerator.h>
 #include <HLSLParser.h>
@@ -14,6 +14,8 @@
 #include <algorithm>
 #include <regex>
 #include <set>
+
+using libprojectM::MilkdropPreset::MilkdropStaticShaders;
 
 static auto floatRand = []() { return static_cast<float>(rand() % 7381) / 7380.0f; };
 
@@ -407,7 +409,7 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
 
     // First copy the generic "header" into the shader. Includes uniforms and some defines
     // to unwrap the packed 4-element uniforms into single values.
-    fullSource.append(StaticGlShaders::Get()->GetPresetShaderHeader());
+    fullSource.append(MilkdropStaticShaders::Get()->GetPresetShaderHeader());
 
     if (m_type == ShaderType::WarpShader)
     {
@@ -568,7 +570,7 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
 
     // Then generate GLSL from the resulting parser tree
     if (!generator.Generate(&tree, M4::GLSLGenerator::Target_FragmentShader,
-                            StaticGlShaders::Get()->GetGlslGeneratorVersion(),
+                            MilkdropStaticShaders::Get()->GetGlslGeneratorVersion(),
                             "PS"))
     {
         throw ShaderException("Error translating HLSL " + shaderTypeString + " shader: GLSL generating failes.\nSource:\n" + sourcePreprocessed);
@@ -578,11 +580,11 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
     // Compile the preset shader fragment shader with the standard vertex shader and cross our fingers.
     if (m_type == ShaderType::WarpShader)
     {
-        m_shader.CompileProgram(StaticGlShaders::Get()->GetPresetWarpVertexShader(), generator.GetResult());
+        m_shader.CompileProgram(MilkdropStaticShaders::Get()->GetPresetWarpVertexShader(), generator.GetResult());
     }
     else
     {
-        m_shader.CompileProgram(StaticGlShaders::Get()->GetPresetCompVertexShader(), generator.GetResult());
+        m_shader.CompileProgram(MilkdropStaticShaders::Get()->GetPresetCompVertexShader(), generator.GetResult());
     }
 }
 

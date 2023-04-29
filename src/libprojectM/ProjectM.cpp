@@ -24,6 +24,7 @@
 #include "Preset.hpp"
 #include "PresetFactoryManager.hpp"
 #include "Renderer.hpp"
+#include "TextureManager.hpp"
 #include "TimeKeeper.hpp"
 #include "libprojectM/Audio/BeatDetect.hpp"
 #include "libprojectM/Audio/PCM.hpp" //Sound data handler (buffering, FFT, etc.)

@@ -165,8 +165,6 @@ void Renderer::reset(int viewportWidth, int viewportHeight)
     m_fInvAspectX = 1.0f / m_fAspectX;
     m_fInvAspectY = 1.0f / m_fAspectY;
 
-    m_shaderEngine.reset();
-
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glClear(GL_COLOR_BUFFER_BIT);
