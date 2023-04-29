@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
 # Run as custom command in script mode if any shader file has changed.
-# Recreates the MilkdropStaticShaders.h/.cpp files accordingly.
+# Recreates the MilkdropStaticShaders.hpp/.cpp files accordingly.
 
 set(STATIC_SHADER_CONTENTS "")
 set(STATIC_SHADER_ACCESSOR_DECLARATIONS "")
