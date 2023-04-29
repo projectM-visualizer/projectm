@@ -10,10 +10,10 @@ set(SHADER_FILES
         Shaders/PresetShaderHeaderGlsl330.inc
         Shaders/PresetWarpFragmentShaderGlsl330.frag
         Shaders/PresetWarpVertexShaderGlsl330.vert
-        Shaders/V2fC4fFragmentShaderGlsl330.frag
-        Shaders/V2fC4fT2fFragmentShaderGlsl330.frag
-        Shaders/V2fC4fT2fVertexShaderGlsl330.vert
-        Shaders/V2fC4fVertexShaderGlsl330.vert
+        Shaders/TexturedDrawFragmentShaderGlsl330.frag
+        Shaders/TexturedDrawVertexShaderGlsl330.vert
+        Shaders/UntexturedDrawFragmentShaderGlsl330.frag
+        Shaders/UntexturedDrawVertexShaderGlsl330.vert
         )
 
 string(REPLACE ";" "\\;" SHADER_FILES_ARG "${SHADER_FILES}")

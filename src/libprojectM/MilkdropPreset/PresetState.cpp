@@ -13,10 +13,10 @@ PresetState::PresetState()
     : globalMemory(projectm_eval_memory_buffer_create())
 {
     auto staticShaders = libprojectM::MilkdropPreset::MilkdropStaticShaders::Get();
-    untexturedShader.CompileProgram(staticShaders->GetV2fC4fVertexShader(),
-                                      staticShaders->GetV2fC4fFragmentShader());
-    texturedShader.CompileProgram(staticShaders->GetV2fC4fT2fVertexShader(),
-                                    staticShaders->GetV2fC4fT2fFragmentShader());
+    untexturedShader.CompileProgram(staticShaders->GetUntexturedDrawVertexShader(),
+                                      staticShaders->GetUntexturedDrawFragmentShader());
+    texturedShader.CompileProgram(staticShaders->GetTexturedDrawVertexShader(),
+                                    staticShaders->GetTexturedDrawFragmentShader());
 
     std::random_device randomDevice;
     std::mt19937 randomGenerator(randomDevice());
