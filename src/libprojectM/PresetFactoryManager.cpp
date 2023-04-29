@@ -11,10 +11,9 @@
 //
 #include "PresetFactoryManager.hpp"
 
-#include "Common.hpp"
-
 #include <MilkdropPreset/MilkdropPresetFactory.hpp>
 
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <sstream>
@@ -135,4 +134,17 @@ std::vector<std::string> PresetFactoryManager::extensionsHandled() const
         retval.push_back(element.first);
     }
     return retval;
+}
+
+//CPP17: std::filesystem::path::extension
+auto PresetFactoryManager::ParseExtension(const std::string& filename) -> std::string
+{
+    const auto start = filename.find_last_of('.');
+
+    if (start == std::string::npos || start >= (filename.length() - 1)) {
+        return "";
+    }
+    std::string ext = filename.substr(start + 1, filename.length());
+    std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
+    return ext;
 }

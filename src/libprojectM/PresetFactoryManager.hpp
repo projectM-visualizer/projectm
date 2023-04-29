@@ -80,6 +80,8 @@ public:
 private:
     void registerFactory(const std::string& extension, PresetFactory* factory);
 
+    auto ParseExtension(const std::string& filename) -> std::string;
+
     mutable std::map<std::string, PresetFactory*> m_factoryMap;
     mutable std::vector<PresetFactory*> m_factoryList;
     void ClearFactories();

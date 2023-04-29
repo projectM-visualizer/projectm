@@ -26,18 +26,11 @@
  * you'll find it online
  */
 
-#include <numeric>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "wipemalloc.h"
-
 #include "BeatDetect.hpp"
 #include "PCM.hpp"
 
 #include <algorithm>
-#include <cmath>
-
+#include <numeric>
 
 namespace libprojectM {
 namespace Audio {
