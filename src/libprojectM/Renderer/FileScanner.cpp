@@ -5,12 +5,17 @@
 //
 
 #include "FileScanner.hpp"
-#include "Common.hpp"
 
-#ifndef _WIN32
+/** Per-platform path separators and includes */
+#ifdef _WIN32
+char constexpr pathSeparator{'\\'};
+#else
+char constexpr pathSeparator{'/'};
 #include <sys/stat.h>
 #include <sys/types.h>
 #endif
+
+#include <algorithm>
 
 FileScanner::FileScanner()
 {

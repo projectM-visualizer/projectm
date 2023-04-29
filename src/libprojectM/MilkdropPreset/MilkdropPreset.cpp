@@ -88,6 +88,8 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     // First evaluate per-frame code
     PerFrameUpdate();
 
+    glViewport(0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY);
+
     m_framebuffer.Bind(m_previousFrameBuffer);
     // Motion vector field. Drawn to the previous frame texture before warping it.
     // Only do it after drawing one frame after init or resize.

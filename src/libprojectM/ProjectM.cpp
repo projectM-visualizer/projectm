@@ -112,7 +112,6 @@ void ProjectM::ResetTextures()
 
 void ProjectM::DumpDebugImageOnNextFrame(const std::string& outputFile)
 {
-    m_renderer->frameDumpOutputFile = outputFile;
 }
 
 #if PROJECTM_USE_THREADS
@@ -200,15 +199,6 @@ void ProjectM::RenderFrame()
     m_frameCount++;
 }
 
-void ProjectM::Reset()
-{
-    this->m_frameCount = 0;
-
-    m_presetFactoryManager->initialize();
-
-    ResetEngine();
-}
-
 void ProjectM::Initialize()
 {
     /** Initialise start time */
@@ -225,11 +215,7 @@ void ProjectM::Initialize()
 
     m_beatDetect = std::make_unique<libprojectM::Audio::BeatDetect>(m_pcm);
 
-    m_renderer = std::make_unique<Renderer>(m_windowWidth,
-                                            m_windowHeight,
-                                            m_meshX,
-                                            m_meshY,
-                                            *m_beatDetect);
+    m_renderer = std::make_unique<Renderer>(m_windowWidth, m_windowHeight);
 
     m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths);
 
@@ -272,6 +258,7 @@ void ProjectM::ResetOpenGL(size_t width, size_t height)
     /** Stash the new dimensions */
     m_windowWidth = width;
     m_windowHeight = height;
+
     try
     {
         m_renderer->reset(width, height);
@@ -408,7 +395,6 @@ auto ProjectM::TargetFramesPerSecond() const -> int32_t
 void ProjectM::SetTargetFramesPerSecond(int32_t fps)
 {
     m_targetFps = fps;
-    m_renderer->setFPS(fps); // ToDo: Renderer should ideally calculate this.
 }
 
 auto ProjectM::AspectCorrection() const -> bool
@@ -488,13 +474,6 @@ void ProjectM::TouchDestroyAll()
     {
         m_renderer->touchDestroyAll();
     }
-}
-
-void ProjectM::RecreateRenderer()
-{
-    m_renderer = std::make_unique<Renderer>(m_windowWidth, m_windowHeight,
-                                            m_meshX, m_meshY,
-                                            *m_beatDetect.get());
 }
 
 auto ProjectM::GetRenderContext() -> RenderContext

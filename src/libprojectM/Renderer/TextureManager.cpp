@@ -1,13 +1,17 @@
 #include "TextureManager.hpp"
+
 #include "IdleTextures.hpp"
+
+#include "MilkdropPreset/MilkdropNoise.hpp"
+
 #include "SOIL2/SOIL2.h"
+
 #include "Texture.hpp"
 #include "projectM-opengl.h"
+
 #include <algorithm>
 #include <memory>
 #include <vector>
-
-#include "MilkdropPreset/MilkdropNoise.hpp"
 
 // Missing in macOS SDK. Query will most certainly fail, but then use the default format.
 #ifndef GL_TEXTURE_IMAGE_FORMAT

@@ -26,9 +26,6 @@ add_library(projectM_main OBJECT
         Audio/PCM.hpp
         Audio/fftsg.cpp
         Audio/fftsg.h
-        Common.hpp
-        HungarianMethod.hpp
-        IdleTextures.hpp
         Preset.hpp
         PresetFactory.cpp
         PresetFactory.hpp
@@ -41,11 +38,7 @@ add_library(projectM_main OBJECT
         RandomNumberGenerators.hpp
         TimeKeeper.cpp
         TimeKeeper.hpp
-        fatal.h
-        glError.h
-        gltext.h
         projectM-opengl.h
-        resource.h
         wipemalloc.cpp
         wipemalloc.h
         )
@@ -168,7 +161,6 @@ if(ENABLE_CXX_INTERFACE)
     endif()
 
     install(FILES
-            Common.hpp
             Audio/PCM.hpp
             ProjectM.hpp
             DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4"

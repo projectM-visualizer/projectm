@@ -3,6 +3,7 @@ add_library(Renderer OBJECT
         FileScanner.hpp
         Framebuffer.cpp
         Framebuffer.hpp
+        IdleTextures.hpp
         RenderContext.hpp
         RenderItem.cpp
         RenderItem.hpp

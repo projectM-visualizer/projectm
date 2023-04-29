@@ -18,7 +18,6 @@ public:
     int frame{0};          //!< Frames rendered so far.
     float fps{0.0f};       //!< Frames per second.
     float progress{0.0f};  //!< Preset progress.
-    int texsize{512};      //!< Size of the internal render texture.
     int viewportSizeX{0};  //!< Horizontal viewport size in pixels
     int viewportSizeY{0};  //!< Vertical viewport size in pixels
     float aspectX{1.0};    //!< X aspect ratio.
