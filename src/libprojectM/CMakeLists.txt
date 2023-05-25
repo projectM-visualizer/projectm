@@ -1,6 +1,6 @@
 add_compile_definitions(
         DATADIR_PATH="${PROJECTM_DATADIR_PATH}"
-        GL_SILENCE_DEPRECATION
+        $<IF:$<PLATFORM_ID:Darwin>,GL_SILENCE_DEPRECATION,>
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
