@@ -203,254 +203,254 @@ include(CheckCXXCompilerFlag)
 
 # TODO: Install this macro separately?
 macro(_check_cxx_compiler_attribute _ATTRIBUTE _RESULT)
-    check_cxx_source_compiles("${_ATTRIBUTE} int somefunc() { return 0; }
+  check_cxx_source_compiles("${_ATTRIBUTE} int somefunc() { return 0; }
     int main() { return somefunc();}" ${_RESULT}
-            )
+  )
 endmacro()
 
 # TODO: Install this macro separately?
 macro(_check_c_compiler_attribute _ATTRIBUTE _RESULT)
-    check_c_source_compiles("${_ATTRIBUTE} int somefunc() { return 0; }
+  check_c_source_compiles("${_ATTRIBUTE} int somefunc() { return 0; }
     int main() { return somefunc();}" ${_RESULT}
-            )
+  )
 endmacro()
 
 macro(_test_compiler_hidden_visibility)
 
-    if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.2")
-        set(GCC_TOO_OLD TRUE)
-    elseif(CMAKE_COMPILER_IS_GNUCC AND CMAKE_C_COMPILER_VERSION VERSION_LESS "4.2")
-        set(GCC_TOO_OLD TRUE)
-    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "12.0")
-        set(_INTEL_TOO_OLD TRUE)
-    endif()
+  if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.2")
+    set(GCC_TOO_OLD TRUE)
+  elseif(CMAKE_COMPILER_IS_GNUCC AND CMAKE_C_COMPILER_VERSION VERSION_LESS "4.2")
+    set(GCC_TOO_OLD TRUE)
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "12.0")
+    set(_INTEL_TOO_OLD TRUE)
+  endif()
 
-    # Exclude XL here because it misinterprets -fvisibility=hidden even though
-    # the check_cxx_compiler_flag passes
-    if(NOT GCC_TOO_OLD
-            AND NOT _INTEL_TOO_OLD
-            AND NOT WIN32
-            AND NOT CYGWIN
-            AND NOT CMAKE_CXX_COMPILER_ID MATCHES "^(IBMClang|XLClang|XL)$"
-            AND NOT CMAKE_CXX_COMPILER_ID MATCHES "^(PGI|NVHPC)$"
-            AND NOT CMAKE_CXX_COMPILER_ID MATCHES Watcom)
-        if (CMAKE_CXX_COMPILER_LOADED)
-            check_cxx_compiler_flag(-fvisibility=hidden COMPILER_HAS_HIDDEN_VISIBILITY)
-            check_cxx_compiler_flag(-fvisibility-inlines-hidden
-                    COMPILER_HAS_HIDDEN_INLINE_VISIBILITY)
-        else()
-            check_c_compiler_flag(-fvisibility=hidden COMPILER_HAS_HIDDEN_VISIBILITY)
-            check_c_compiler_flag(-fvisibility-inlines-hidden
-                    COMPILER_HAS_HIDDEN_INLINE_VISIBILITY)
-        endif()
+  # Exclude XL here because it misinterprets -fvisibility=hidden even though
+  # the check_cxx_compiler_flag passes
+  if(NOT GCC_TOO_OLD
+      AND NOT _INTEL_TOO_OLD
+      AND NOT WIN32
+      AND NOT CYGWIN
+      AND NOT CMAKE_CXX_COMPILER_ID MATCHES "^(IBMClang|XLClang|XL)$"
+      AND NOT CMAKE_CXX_COMPILER_ID MATCHES "^(PGI|NVHPC)$"
+      AND NOT CMAKE_CXX_COMPILER_ID MATCHES Watcom)
+    if (CMAKE_CXX_COMPILER_LOADED)
+      check_cxx_compiler_flag(-fvisibility=hidden COMPILER_HAS_HIDDEN_VISIBILITY)
+      check_cxx_compiler_flag(-fvisibility-inlines-hidden
+        COMPILER_HAS_HIDDEN_INLINE_VISIBILITY)
+    else()
+      check_c_compiler_flag(-fvisibility=hidden COMPILER_HAS_HIDDEN_VISIBILITY)
+      check_c_compiler_flag(-fvisibility-inlines-hidden
+        COMPILER_HAS_HIDDEN_INLINE_VISIBILITY)
     endif()
+  endif()
 endmacro()
 
 macro(_test_compiler_has_deprecated)
-    # NOTE:  Some Embarcadero compilers silently compile __declspec(deprecated)
-    # without error, but this is not a documented feature and the attribute does
-    # not actually generate any warnings.
-    if(CMAKE_CXX_COMPILER_ID MATCHES Borland
-            OR CMAKE_CXX_COMPILER_ID MATCHES Embarcadero
-            OR CMAKE_CXX_COMPILER_ID MATCHES HP
-            OR GCC_TOO_OLD
-            OR CMAKE_CXX_COMPILER_ID MATCHES "^(PGI|NVHPC)$"
-            OR CMAKE_CXX_COMPILER_ID MATCHES Watcom)
-        set(COMPILER_HAS_DEPRECATED "" CACHE INTERNAL
-                "Compiler support for a deprecated attribute")
+  # NOTE:  Some Embarcadero compilers silently compile __declspec(deprecated)
+  # without error, but this is not a documented feature and the attribute does
+  # not actually generate any warnings.
+  if(CMAKE_CXX_COMPILER_ID MATCHES Borland
+      OR CMAKE_CXX_COMPILER_ID MATCHES Embarcadero
+      OR CMAKE_CXX_COMPILER_ID MATCHES HP
+      OR GCC_TOO_OLD
+      OR CMAKE_CXX_COMPILER_ID MATCHES "^(PGI|NVHPC)$"
+      OR CMAKE_CXX_COMPILER_ID MATCHES Watcom)
+    set(COMPILER_HAS_DEPRECATED "" CACHE INTERNAL
+      "Compiler support for a deprecated attribute")
+  else()
+    if (CMAKE_CXX_COMPILER_LOADED)
+      _check_cxx_compiler_attribute("__attribute__((__deprecated__))"
+        COMPILER_HAS_DEPRECATED_ATTR)
+      if(COMPILER_HAS_DEPRECATED_ATTR)
+        set(COMPILER_HAS_DEPRECATED "${COMPILER_HAS_DEPRECATED_ATTR}"
+          CACHE INTERNAL "Compiler support for a deprecated attribute")
+      else()
+        _check_cxx_compiler_attribute("__declspec(deprecated)"
+          COMPILER_HAS_DEPRECATED)
+      endif()
     else()
-        if (CMAKE_CXX_COMPILER_LOADED)
-            _check_cxx_compiler_attribute("__attribute__((__deprecated__))"
-                    COMPILER_HAS_DEPRECATED_ATTR)
-            if(COMPILER_HAS_DEPRECATED_ATTR)
-                set(COMPILER_HAS_DEPRECATED "${COMPILER_HAS_DEPRECATED_ATTR}"
-                        CACHE INTERNAL "Compiler support for a deprecated attribute")
-            else()
-                _check_cxx_compiler_attribute("__declspec(deprecated)"
-                        COMPILER_HAS_DEPRECATED)
-            endif()
-        else()
-            _check_c_compiler_attribute("__attribute__((__deprecated__))"
-                    COMPILER_HAS_DEPRECATED_ATTR)
-            if(COMPILER_HAS_DEPRECATED_ATTR)
-                set(COMPILER_HAS_DEPRECATED "${COMPILER_HAS_DEPRECATED_ATTR}"
-                        CACHE INTERNAL "Compiler support for a deprecated attribute")
-            else()
-                _check_c_compiler_attribute("__declspec(deprecated)"
-                        COMPILER_HAS_DEPRECATED)
-            endif()
+      _check_c_compiler_attribute("__attribute__((__deprecated__))"
+        COMPILER_HAS_DEPRECATED_ATTR)
+      if(COMPILER_HAS_DEPRECATED_ATTR)
+        set(COMPILER_HAS_DEPRECATED "${COMPILER_HAS_DEPRECATED_ATTR}"
+          CACHE INTERNAL "Compiler support for a deprecated attribute")
+      else()
+        _check_c_compiler_attribute("__declspec(deprecated)"
+          COMPILER_HAS_DEPRECATED)
+      endif()
 
-        endif()
     endif()
+  endif()
 endmacro()
 
 get_filename_component(_GENERATE_EXPORT_HEADER_MODULE_DIR
-        "${CMAKE_CURRENT_LIST_FILE}" PATH)
+  "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
 macro(_DO_SET_MACRO_VALUES TARGET_LIBRARY)
-    set(DEFINE_DEPRECATED)
-    set(DEFINE_EXPORT)
-    set(DEFINE_IMPORT)
-    set(DEFINE_NO_EXPORT)
+  set(DEFINE_DEPRECATED)
+  set(DEFINE_EXPORT)
+  set(DEFINE_IMPORT)
+  set(DEFINE_NO_EXPORT)
 
-    if (COMPILER_HAS_DEPRECATED_ATTR)
-        set(DEFINE_DEPRECATED "__attribute__ ((__deprecated__))")
-    elseif(COMPILER_HAS_DEPRECATED)
-        set(DEFINE_DEPRECATED "__declspec(deprecated)")
+  if (COMPILER_HAS_DEPRECATED_ATTR)
+    set(DEFINE_DEPRECATED "__attribute__ ((__deprecated__))")
+  elseif(COMPILER_HAS_DEPRECATED)
+    set(DEFINE_DEPRECATED "__declspec(deprecated)")
+  endif()
+
+  get_property(type TARGET ${TARGET_LIBRARY} PROPERTY TYPE)
+
+  if(NOT ${type} STREQUAL "STATIC_LIBRARY")
+    if(WIN32 OR CYGWIN)
+      set(DEFINE_EXPORT "__declspec(dllexport)")
+      set(DEFINE_IMPORT "__declspec(dllimport)")
+    elseif(COMPILER_HAS_HIDDEN_VISIBILITY)
+      set(DEFINE_EXPORT "__attribute__((visibility(\"default\")))")
+      set(DEFINE_IMPORT "__attribute__((visibility(\"default\")))")
+      set(DEFINE_NO_EXPORT "__attribute__((visibility(\"hidden\")))")
     endif()
-
-    get_property(type TARGET ${TARGET_LIBRARY} PROPERTY TYPE)
-
-    if(NOT ${type} STREQUAL "STATIC_LIBRARY")
-        if(WIN32 OR CYGWIN)
-            set(DEFINE_EXPORT "__declspec(dllexport)")
-            set(DEFINE_IMPORT "__declspec(dllimport)")
-        elseif(COMPILER_HAS_HIDDEN_VISIBILITY)
-            set(DEFINE_EXPORT "__attribute__((visibility(\"default\")))")
-            set(DEFINE_IMPORT "__attribute__((visibility(\"default\")))")
-            set(DEFINE_NO_EXPORT "__attribute__((visibility(\"hidden\")))")
-        endif()
-    endif()
+  endif()
 endmacro()
 
 macro(_DO_GENERATE_EXPORT_HEADER TARGET_LIBRARY)
-    # Option overrides
-    set(options DEFINE_NO_DEPRECATED)
-    set(oneValueArgs PREFIX_NAME BASE_NAME EXPORT_MACRO_NAME EXPORT_FILE_NAME
-            DEPRECATED_MACRO_NAME NO_EXPORT_MACRO_NAME STATIC_DEFINE
-            NO_DEPRECATED_MACRO_NAME CUSTOM_CONTENT_FROM_VARIABLE INCLUDE_GUARD_NAME)
-    set(multiValueArgs)
+  # Option overrides
+  set(options DEFINE_NO_DEPRECATED)
+  set(oneValueArgs PREFIX_NAME BASE_NAME EXPORT_MACRO_NAME EXPORT_FILE_NAME
+    DEPRECATED_MACRO_NAME NO_EXPORT_MACRO_NAME STATIC_DEFINE
+    NO_DEPRECATED_MACRO_NAME CUSTOM_CONTENT_FROM_VARIABLE INCLUDE_GUARD_NAME)
+  set(multiValueArgs)
 
-    cmake_parse_arguments(_GEH "${options}" "${oneValueArgs}" "${multiValueArgs}"
-            ${ARGN})
+  cmake_parse_arguments(_GEH "${options}" "${oneValueArgs}" "${multiValueArgs}"
+    ${ARGN})
 
-    set(BASE_NAME "${TARGET_LIBRARY}")
+  set(BASE_NAME "${TARGET_LIBRARY}")
 
-    if(_GEH_BASE_NAME)
-        set(BASE_NAME ${_GEH_BASE_NAME})
+  if(_GEH_BASE_NAME)
+    set(BASE_NAME ${_GEH_BASE_NAME})
+  endif()
+
+  string(TOUPPER ${BASE_NAME} BASE_NAME_UPPER)
+  string(TOLOWER ${BASE_NAME} BASE_NAME_LOWER)
+
+  # Default options
+  set(EXPORT_MACRO_NAME "${_GEH_PREFIX_NAME}${BASE_NAME_UPPER}_EXPORT")
+  set(NO_EXPORT_MACRO_NAME "${_GEH_PREFIX_NAME}${BASE_NAME_UPPER}_NO_EXPORT")
+  set(EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/${BASE_NAME_LOWER}_export.h")
+  set(DEPRECATED_MACRO_NAME "${_GEH_PREFIX_NAME}${BASE_NAME_UPPER}_DEPRECATED")
+  set(STATIC_DEFINE "${_GEH_PREFIX_NAME}${BASE_NAME_UPPER}_STATIC_DEFINE")
+  set(NO_DEPRECATED_MACRO_NAME
+    "${_GEH_PREFIX_NAME}${BASE_NAME_UPPER}_NO_DEPRECATED")
+
+  if(_GEH_UNPARSED_ARGUMENTS)
+    message(FATAL_ERROR "Unknown keywords given to GENERATE_EXPORT_HEADER(): \"${_GEH_UNPARSED_ARGUMENTS}\"")
+  endif()
+
+  if(_GEH_EXPORT_MACRO_NAME)
+    set(EXPORT_MACRO_NAME ${_GEH_PREFIX_NAME}${_GEH_EXPORT_MACRO_NAME})
+  endif()
+  string(MAKE_C_IDENTIFIER ${EXPORT_MACRO_NAME} EXPORT_MACRO_NAME)
+  if(_GEH_EXPORT_FILE_NAME)
+    if(IS_ABSOLUTE ${_GEH_EXPORT_FILE_NAME})
+      set(EXPORT_FILE_NAME ${_GEH_EXPORT_FILE_NAME})
+    else()
+      set(EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/${_GEH_EXPORT_FILE_NAME}")
     endif()
+  endif()
+  if(_GEH_DEPRECATED_MACRO_NAME)
+    set(DEPRECATED_MACRO_NAME ${_GEH_PREFIX_NAME}${_GEH_DEPRECATED_MACRO_NAME})
+  endif()
+  string(MAKE_C_IDENTIFIER ${DEPRECATED_MACRO_NAME} DEPRECATED_MACRO_NAME)
+  if(_GEH_NO_EXPORT_MACRO_NAME)
+    set(NO_EXPORT_MACRO_NAME ${_GEH_PREFIX_NAME}${_GEH_NO_EXPORT_MACRO_NAME})
+  endif()
+  string(MAKE_C_IDENTIFIER ${NO_EXPORT_MACRO_NAME} NO_EXPORT_MACRO_NAME)
+  if(_GEH_STATIC_DEFINE)
+    set(STATIC_DEFINE ${_GEH_PREFIX_NAME}${_GEH_STATIC_DEFINE})
+  endif()
+  string(MAKE_C_IDENTIFIER ${STATIC_DEFINE} STATIC_DEFINE)
 
-    string(TOUPPER ${BASE_NAME} BASE_NAME_UPPER)
-    string(TOLOWER ${BASE_NAME} BASE_NAME_LOWER)
+  if(_GEH_DEFINE_NO_DEPRECATED)
+    set(DEFINE_NO_DEPRECATED 1)
+  else()
+    set(DEFINE_NO_DEPRECATED 0)
+  endif()
 
-    # Default options
-    set(EXPORT_MACRO_NAME "${_GEH_PREFIX_NAME}${BASE_NAME_UPPER}_EXPORT")
-    set(NO_EXPORT_MACRO_NAME "${_GEH_PREFIX_NAME}${BASE_NAME_UPPER}_NO_EXPORT")
-    set(EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/${BASE_NAME_LOWER}_export.h")
-    set(DEPRECATED_MACRO_NAME "${_GEH_PREFIX_NAME}${BASE_NAME_UPPER}_DEPRECATED")
-    set(STATIC_DEFINE "${_GEH_PREFIX_NAME}${BASE_NAME_UPPER}_STATIC_DEFINE")
+  if(_GEH_NO_DEPRECATED_MACRO_NAME)
     set(NO_DEPRECATED_MACRO_NAME
-            "${_GEH_PREFIX_NAME}${BASE_NAME_UPPER}_NO_DEPRECATED")
+      ${_GEH_PREFIX_NAME}${_GEH_NO_DEPRECATED_MACRO_NAME})
+  endif()
+  string(MAKE_C_IDENTIFIER ${NO_DEPRECATED_MACRO_NAME} NO_DEPRECATED_MACRO_NAME)
 
-    if(_GEH_UNPARSED_ARGUMENTS)
-        message(FATAL_ERROR "Unknown keywords given to GENERATE_EXPORT_HEADER(): \"${_GEH_UNPARSED_ARGUMENTS}\"")
-    endif()
+  if(_GEH_INCLUDE_GUARD_NAME)
+    set(INCLUDE_GUARD_NAME ${_GEH_INCLUDE_GUARD_NAME})
+  else()
+    set(INCLUDE_GUARD_NAME "${EXPORT_MACRO_NAME}_H")
+  endif()
 
-    if(_GEH_EXPORT_MACRO_NAME)
-        set(EXPORT_MACRO_NAME ${_GEH_PREFIX_NAME}${_GEH_EXPORT_MACRO_NAME})
-    endif()
-    string(MAKE_C_IDENTIFIER ${EXPORT_MACRO_NAME} EXPORT_MACRO_NAME)
-    if(_GEH_EXPORT_FILE_NAME)
-        if(IS_ABSOLUTE ${_GEH_EXPORT_FILE_NAME})
-            set(EXPORT_FILE_NAME ${_GEH_EXPORT_FILE_NAME})
-        else()
-            set(EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/${_GEH_EXPORT_FILE_NAME}")
-        endif()
-    endif()
-    if(_GEH_DEPRECATED_MACRO_NAME)
-        set(DEPRECATED_MACRO_NAME ${_GEH_PREFIX_NAME}${_GEH_DEPRECATED_MACRO_NAME})
-    endif()
-    string(MAKE_C_IDENTIFIER ${DEPRECATED_MACRO_NAME} DEPRECATED_MACRO_NAME)
-    if(_GEH_NO_EXPORT_MACRO_NAME)
-        set(NO_EXPORT_MACRO_NAME ${_GEH_PREFIX_NAME}${_GEH_NO_EXPORT_MACRO_NAME})
-    endif()
-    string(MAKE_C_IDENTIFIER ${NO_EXPORT_MACRO_NAME} NO_EXPORT_MACRO_NAME)
-    if(_GEH_STATIC_DEFINE)
-        set(STATIC_DEFINE ${_GEH_PREFIX_NAME}${_GEH_STATIC_DEFINE})
-    endif()
-    string(MAKE_C_IDENTIFIER ${STATIC_DEFINE} STATIC_DEFINE)
+  get_target_property(EXPORT_IMPORT_CONDITION ${TARGET_LIBRARY} DEFINE_SYMBOL)
 
-    if(_GEH_DEFINE_NO_DEPRECATED)
-        set(DEFINE_NO_DEPRECATED 1)
+  if(NOT EXPORT_IMPORT_CONDITION)
+    set(EXPORT_IMPORT_CONDITION ${TARGET_LIBRARY}_EXPORTS)
+  endif()
+  string(MAKE_C_IDENTIFIER ${EXPORT_IMPORT_CONDITION} EXPORT_IMPORT_CONDITION)
+
+  if(_GEH_CUSTOM_CONTENT_FROM_VARIABLE)
+    if(DEFINED "${_GEH_CUSTOM_CONTENT_FROM_VARIABLE}")
+      set(CUSTOM_CONTENT "${${_GEH_CUSTOM_CONTENT_FROM_VARIABLE}}")
     else()
-        set(DEFINE_NO_DEPRECATED 0)
+      set(CUSTOM_CONTENT "")
     endif()
+  endif()
 
-    if(_GEH_NO_DEPRECATED_MACRO_NAME)
-        set(NO_DEPRECATED_MACRO_NAME
-                ${_GEH_PREFIX_NAME}${_GEH_NO_DEPRECATED_MACRO_NAME})
-    endif()
-    string(MAKE_C_IDENTIFIER ${NO_DEPRECATED_MACRO_NAME} NO_DEPRECATED_MACRO_NAME)
-
-    if(_GEH_INCLUDE_GUARD_NAME)
-        set(INCLUDE_GUARD_NAME ${_GEH_INCLUDE_GUARD_NAME})
-    else()
-        set(INCLUDE_GUARD_NAME "${EXPORT_MACRO_NAME}_H")
-    endif()
-
-    get_target_property(EXPORT_IMPORT_CONDITION ${TARGET_LIBRARY} DEFINE_SYMBOL)
-
-    if(NOT EXPORT_IMPORT_CONDITION)
-        set(EXPORT_IMPORT_CONDITION ${TARGET_LIBRARY}_EXPORTS)
-    endif()
-    string(MAKE_C_IDENTIFIER ${EXPORT_IMPORT_CONDITION} EXPORT_IMPORT_CONDITION)
-
-    if(_GEH_CUSTOM_CONTENT_FROM_VARIABLE)
-        if(DEFINED "${_GEH_CUSTOM_CONTENT_FROM_VARIABLE}")
-            set(CUSTOM_CONTENT "${${_GEH_CUSTOM_CONTENT_FROM_VARIABLE}}")
-        else()
-            set(CUSTOM_CONTENT "")
-        endif()
-    endif()
-
-    configure_file("${_GENERATE_EXPORT_HEADER_MODULE_DIR}/exportheader.cmake.in"
-            "${EXPORT_FILE_NAME}" @ONLY)
+  configure_file("${_GENERATE_EXPORT_HEADER_MODULE_DIR}/exportheader.cmake.in"
+    "${EXPORT_FILE_NAME}" @ONLY)
 endmacro()
 
 function(GENERATE_EXPORT_HEADER TARGET_LIBRARY)
-    get_property(type TARGET ${TARGET_LIBRARY} PROPERTY TYPE)
-    if(NOT ${type} STREQUAL "STATIC_LIBRARY"
-            AND NOT ${type} STREQUAL "SHARED_LIBRARY"
-            AND NOT ${type} STREQUAL "OBJECT_LIBRARY"
-            AND NOT ${type} STREQUAL "MODULE_LIBRARY"
-            AND NOT ${type} STREQUAL "INTERFACE_LIBRARY")
-        message(WARNING "This macro can only be used with libraries")
-        return()
-    endif()
-    _test_compiler_hidden_visibility()
-    _test_compiler_has_deprecated()
-    _do_set_macro_values(${TARGET_LIBRARY})
-    _do_generate_export_header(${TARGET_LIBRARY} ${ARGN})
+  get_property(type TARGET ${TARGET_LIBRARY} PROPERTY TYPE)
+  if(NOT ${type} STREQUAL "STATIC_LIBRARY"
+      AND NOT ${type} STREQUAL "SHARED_LIBRARY"
+      AND NOT ${type} STREQUAL "OBJECT_LIBRARY"
+      AND NOT ${type} STREQUAL "MODULE_LIBRARY"
+      AND NOT ${type} STREQUAL "INTERFACE_LIBRARY")
+    message(WARNING "This macro can only be used with libraries")
+    return()
+  endif()
+  _test_compiler_hidden_visibility()
+  _test_compiler_has_deprecated()
+  _do_set_macro_values(${TARGET_LIBRARY})
+  _do_generate_export_header(${TARGET_LIBRARY} ${ARGN})
 endfunction()
 
 function(add_compiler_export_flags)
-    if(NOT CMAKE_MINIMUM_REQUIRED_VERSION VERSION_LESS 2.8.12)
-        message(DEPRECATION "The add_compiler_export_flags function is obsolete. Use the CXX_VISIBILITY_PRESET and VISIBILITY_INLINES_HIDDEN target properties instead.")
-    endif()
+  if(NOT CMAKE_MINIMUM_REQUIRED_VERSION VERSION_LESS 2.8.12)
+    message(DEPRECATION "The add_compiler_export_flags function is obsolete. Use the CXX_VISIBILITY_PRESET and VISIBILITY_INLINES_HIDDEN target properties instead.")
+  endif()
 
-    _test_compiler_hidden_visibility()
-    _test_compiler_has_deprecated()
+  _test_compiler_hidden_visibility()
+  _test_compiler_has_deprecated()
 
-    option(USE_COMPILER_HIDDEN_VISIBILITY
-            "Use HIDDEN visibility support if available." ON)
-    mark_as_advanced(USE_COMPILER_HIDDEN_VISIBILITY)
-    if(NOT (USE_COMPILER_HIDDEN_VISIBILITY AND COMPILER_HAS_HIDDEN_VISIBILITY))
-        # Just return if there are no flags to add.
-        return()
-    endif()
+  option(USE_COMPILER_HIDDEN_VISIBILITY
+    "Use HIDDEN visibility support if available." ON)
+  mark_as_advanced(USE_COMPILER_HIDDEN_VISIBILITY)
+  if(NOT (USE_COMPILER_HIDDEN_VISIBILITY AND COMPILER_HAS_HIDDEN_VISIBILITY))
+    # Just return if there are no flags to add.
+    return()
+  endif()
 
-    set (EXTRA_FLAGS "-fvisibility=hidden")
+  set (EXTRA_FLAGS "-fvisibility=hidden")
 
-    if(COMPILER_HAS_HIDDEN_INLINE_VISIBILITY)
-        set (EXTRA_FLAGS "${EXTRA_FLAGS} -fvisibility-inlines-hidden")
-    endif()
+  if(COMPILER_HAS_HIDDEN_INLINE_VISIBILITY)
+    set (EXTRA_FLAGS "${EXTRA_FLAGS} -fvisibility-inlines-hidden")
+  endif()
 
-    # Either return the extra flags needed in the supplied argument, or to the
-    # CMAKE_CXX_FLAGS if no argument is supplied.
-    if(ARGC GREATER 0)
-        set(${ARGV0} "${EXTRA_FLAGS}" PARENT_SCOPE)
-    else()
-        string(APPEND CMAKE_CXX_FLAGS " ${EXTRA_FLAGS}")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" PARENT_SCOPE)
-    endif()
+  # Either return the extra flags needed in the supplied argument, or to the
+  # CMAKE_CXX_FLAGS if no argument is supplied.
+  if(ARGC GREATER 0)
+    set(${ARGV0} "${EXTRA_FLAGS}" PARENT_SCOPE)
+  else()
+    string(APPEND CMAKE_CXX_FLAGS " ${EXTRA_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" PARENT_SCOPE)
+  endif()
 endfunction()
