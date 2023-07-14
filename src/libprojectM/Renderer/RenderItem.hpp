@@ -2,6 +2,7 @@
 
 #include "RenderContext.hpp"
 
+class RenderItemVisitor;
 /**
  * Base class of all renderable items in the projectM render queue.
  */
@@ -33,8 +34,8 @@ public:
      * Renders the current item.
      * @param context The render context data.
      */
-    virtual void Draw(RenderContext &context) = 0;
-
+    virtual void DrawVisit(RenderContext& context, RenderItemVisitor& visitor) = 0;
+    virtual void Draw(RenderContext& context) = 0;
     float masterAlpha{ 1.0 }; //!< Alpha value for the whole RenderItem.
 
 protected:

@@ -23,6 +23,10 @@ void Brighten::InitVertexAttrib() {
     glDisableVertexAttribArray(1);
 }
 
+void Brighten::DrawVisit(RenderContext& context, RenderItemVisitor& visitor){
+
+}
+
 void Brighten::Draw(RenderContext &context)
 {
     glUseProgram(context.programID_v2f_c4f);

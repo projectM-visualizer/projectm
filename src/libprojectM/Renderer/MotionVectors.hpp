@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RenderItem.hpp"
-
+#include "RenderItemVisitor.hpp"
 /**
  * @brief Draws a flexible motion vector field.
  *
@@ -26,7 +26,8 @@ public:
      * Redners the motion vectors.
      * @param context The render context data.
      */
-    void Draw(RenderContext &context);
+    void Draw(RenderContext &context) override;
+	void DrawVisit(RenderContext& context, RenderItemVisitor& visitor) override;
 
     float r{ 0.0 }; //!< Red color channel of the motion vectors.
     float g{ 0.0 }; //!< Green color channel of the motion vectors.

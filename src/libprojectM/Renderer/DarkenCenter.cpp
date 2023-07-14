@@ -27,6 +27,9 @@ void DarkenCenter::InitVertexAttrib()
     glBufferData(GL_ARRAY_BUFFER, sizeof(points_colors), points_colors, GL_STATIC_DRAW);
 }
 
+void DarkenCenter::DrawVisit(RenderContext& context, RenderItemVisitor& visitor){
+
+}
 
 void DarkenCenter::Draw(RenderContext& context)
 {

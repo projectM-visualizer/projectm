@@ -10,6 +10,7 @@
 
 #include "projectM-opengl.h"
 #include "RenderItem.hpp"
+#include "RenderItemVisitor.hpp"
 
 enum Orientation
 {
@@ -27,7 +28,8 @@ public:
 	Orientation orientation;
 
     void InitVertexAttrib();
-	void Draw(RenderContext &context);
+	void Draw(RenderContext &context) override;
+	void DrawVisit(RenderContext& context, RenderItemVisitor& visitor) override;
 };
 
 #endif /* VIDEOECHO_HPP_ */

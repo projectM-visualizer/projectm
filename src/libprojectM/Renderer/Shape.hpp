@@ -2,12 +2,15 @@
 
 #include "RenderItem.hpp"
 
+class RenderItemVisitor;
+
 /**
  * @brief Renders a custom shape with or without a texture.
  *
  * The class creates two sets of VBO/VAO as it's only known later (in the Draw() call) whether the shape is textured
  * or not.
  */
+
 class Shape : public RenderItem
 {
 public:
@@ -17,6 +20,7 @@ public:
 
     void InitVertexAttrib() override;
 
+    void DrawVisit(RenderContext& context, RenderItemVisitor& visitor) override;
     void Draw(RenderContext& context) override;
 
     std::string image; //!< Texture filename to be rendered on this shape

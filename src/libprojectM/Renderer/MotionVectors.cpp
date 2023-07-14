@@ -14,6 +14,10 @@ void MotionVectors::InitVertexAttrib() {
     glDisableVertexAttribArray(1);
 }
 
+void MotionVectors::DrawVisit(RenderContext& context, RenderItemVisitor& visitor){
+
+}
+
 void MotionVectors::Draw(RenderContext &context)
 {
     float  intervalx=1.0/x_num;

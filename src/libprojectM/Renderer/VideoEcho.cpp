@@ -28,6 +28,11 @@ void VideoEcho::InitVertexAttrib() {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, (void*)(sizeof(float)*2)); // Textures
 }
 
+void VideoEcho::DrawVisit(RenderContext& context, RenderItemVisitor& visitor){
+
+}
+
+
 void VideoEcho::Draw(RenderContext &context)
 {
 		int flipx=1, flipy=1;

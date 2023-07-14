@@ -9,6 +9,7 @@
 #define MILKDROPWAVEFORM_HPP_
 
 #include "RenderItem.hpp"
+#include "RenderItemVisitor.hpp"
 
 enum MilkdropWaveformMode
 	{
@@ -32,6 +33,7 @@ public:
     ~MilkdropWaveform() override;
 
     void Draw(RenderContext &context) override;
+	void DrawVisit(RenderContext& context, RenderItemVisitor& visitor) override;
     void InitVertexAttrib() override;
 
 	float x{ 0.5f };

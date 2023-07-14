@@ -14,6 +14,7 @@
 #include <chrono>
 #include <ctime>
 #include "stb_image_write.h"
+#include "RenderItemVisitor.hpp"
 
 using namespace std::chrono;
 
@@ -174,8 +175,10 @@ void Renderer::RenderItems(const Pipeline& pipeline, const PipelineContext& pipe
 
 	for (std::vector<RenderItem*>::const_iterator pos = pipeline.drawables.begin(); pos != pipeline.drawables.end(); ++pos)
 	{
-		if (*pos != nullptr)
-			(*pos)->Draw(m_renderContext);
+		if (*pos != nullptr){
+				RenderItemVisitor visitor;
+				(*pos)->DrawVisit(m_renderContext,visitor);
+			}
 	}
 	
 	// If we have touch waveforms, render them.
@@ -195,8 +198,11 @@ void Renderer::RenderTouch(const Pipeline& pipeline, const PipelineContext& pipe
 		// Render waveform
 		for (std::vector<RenderItem*>::const_iterator pos = pipelineTouch.drawables.begin(); pos != pipelineTouch.drawables.end(); ++pos)
 		{
-			if (*pos != nullptr)
-				(*pos)->Draw(m_renderContext);
+			if (*pos != nullptr){
+				RenderItemVisitor visitor;
+				(*pos)->DrawVisit(m_renderContext,visitor);
+			}
+				
 		}
 	}
 }
@@ -586,9 +592,10 @@ void Renderer::CompositeOutput(const Pipeline& pipeline, const PipelineContext& 
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	for (auto drawable : pipeline.compositeDrawables)
-		drawable->Draw(m_renderContext);
-
+	for (auto drawable : pipeline.compositeDrawables){
+		RenderItemVisitor visitor;
+		drawable->DrawVisit(m_renderContext, visitor);
+	}
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 

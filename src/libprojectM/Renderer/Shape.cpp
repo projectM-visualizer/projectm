@@ -55,6 +55,10 @@ void Shape::InitVertexAttrib()
     glDisableVertexAttribArray(1);
 }
 
+void Shape::DrawVisit(RenderContext& context, RenderItemVisitor& visitor){
+
+}
+
 void Shape::Draw(RenderContext& context)
 {
     constexpr float pi = 3.141592653589793f;

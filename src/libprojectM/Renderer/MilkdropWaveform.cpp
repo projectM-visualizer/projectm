@@ -5,7 +5,7 @@
  *      Author: pete
  */
 #include "MilkdropWaveform.hpp"
-
+#include "RenderItemVisitor.hpp"
 #include "BeatDetect.hpp"
 #include "projectM-opengl.h"
 
@@ -32,6 +32,9 @@ void MilkdropWaveform::InitVertexAttrib()
     glDisableVertexAttribArray(1);
 }
 
+void MilkdropWaveform::DrawVisit(RenderContext& context, RenderItemVisitor& visitor){
+
+}
 
 void MilkdropWaveform::Draw(RenderContext& context)
 {

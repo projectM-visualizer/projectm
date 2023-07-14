@@ -9,7 +9,7 @@
 #define WAVEFORM_HPP_
 
 #include "RenderItem.hpp"
-
+#include "RenderItemVisitor.hpp"
 #include <vector>
 
 
@@ -63,6 +63,7 @@ public:
      * @brief Renders the waveform.
      * @param context The rendering context instance.
      */
+    void DrawVisit(RenderContext& context, RenderItemVisitor& visitor) override;
     void Draw(RenderContext& context) override;
 
     int samples{ 0 }; //!< Number of samples associated with this wave form. Usually powers of 2.

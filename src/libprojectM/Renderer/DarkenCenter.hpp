@@ -20,5 +20,6 @@ public:
      * Applies the darkening area.
      * @param context The render context data.
      */
-    void Draw(RenderContext &context);
+    void Draw(RenderContext &context) override;
+	void DrawVisit(RenderContext& context, RenderItemVisitor& visitor) override;
 };

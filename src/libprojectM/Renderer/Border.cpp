@@ -15,6 +15,9 @@ void Border::InitVertexAttrib()
     glDisableVertexAttribArray(1);
 }
 
+void Border::DrawVisit(RenderContext& context, RenderItemVisitor& visitor){
+
+}
 void Border::Draw(RenderContext& context)
 {
     //Draw Borders
