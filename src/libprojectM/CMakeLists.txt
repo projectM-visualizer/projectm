@@ -39,8 +39,6 @@ add_library(projectM_main OBJECT
         TimeKeeper.cpp
         TimeKeeper.hpp
         projectM-opengl.h
-        wipemalloc.cpp
-        wipemalloc.h
         )
 
 target_link_libraries(projectM_main
