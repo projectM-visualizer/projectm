@@ -138,18 +138,6 @@ void ProjectM::RenderFrame()
         return;
     }
 
-    // If no preset is active, load the idle preset.
-    if (!m_activePreset)
-    {
-        LoadIdlePreset();
-        if (!m_activePreset)
-        {
-            return;
-        }
-
-        m_activePreset->Initialize(GetRenderContext());
-    }
-
     m_timeKeeper->UpdateTimers();
     m_beatDetect->CalculateBeatStatistics();
 
@@ -174,6 +162,18 @@ void ProjectM::RenderFrame()
             m_presetChangeNotified = true;
             PresetSwitchRequestedEvent(true);
         }
+    }
+
+    // If no preset is active, load the idle preset.
+    if (!m_activePreset)
+    {
+        LoadIdlePreset();
+        if (!m_activePreset)
+        {
+            return;
+        }
+
+        m_activePreset->Initialize(GetRenderContext());
     }
 
     // ToDo: Encapsulate preset loading check and transition in Renderer?
