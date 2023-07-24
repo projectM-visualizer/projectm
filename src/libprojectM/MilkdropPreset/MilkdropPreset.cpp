@@ -146,7 +146,14 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     m_framebuffer.BindRead(m_previousFrameBuffer);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     glReadBuffer(GL_COLOR_ATTACHMENT0);
+#if USE_GLES
+    {
+        GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0 };
+        glDrawBuffers(1, drawBuffers);
+    }
+#else
     glDrawBuffer(GL_COLOR_ATTACHMENT0);
+#endif
     glBlitFramebuffer(0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
                       0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
                       GL_COLOR_BUFFER_BIT, GL_NEAREST);
