@@ -1,5 +1,10 @@
 #include "TextureAttachment.hpp"
 
+// OpenGL ES might not define this constant in its headers, e.g. in the iOS and Emscripten SDKs.
+#ifndef GL_STENCIL_INDEX
+#define GL_STENCIL_INDEX 0x1901
+#endif
+
 TextureAttachment::TextureAttachment(AttachmentType attachment, int width, int height)
     : m_attachmentType(attachment)
 {
