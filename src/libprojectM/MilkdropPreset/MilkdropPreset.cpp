@@ -148,7 +148,7 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     glReadBuffer(GL_COLOR_ATTACHMENT0);
 #if USE_GLES
     {
-        GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0 };
+        GLenum drawBuffers[] = { GL_BACK };
         glDrawBuffers(1, drawBuffers);
     }
 #else
