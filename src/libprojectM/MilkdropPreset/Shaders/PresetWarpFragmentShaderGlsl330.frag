@@ -1,3 +1,5 @@
+precision mediump float;
+
 in vec4 frag_COLOR;
 in vec4 frag_TEXCOORD0;
 in vec2 frag_TEXCOORD1;
