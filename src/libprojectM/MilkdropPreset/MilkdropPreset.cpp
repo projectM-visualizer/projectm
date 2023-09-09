@@ -60,8 +60,9 @@ void MilkdropPreset::Initialize(const RenderContext& renderContext)
     // Initialize variables and code now we have a proper render state.
     CompileCodeAndRunInitExpressions();
 
-    // Update framebuffer size if needed
+    // Update framebuffer and texture sizes if needed
     m_framebuffer.SetSize(renderContext.viewportSizeX, renderContext.viewportSizeY);
+    m_motionVectorUVMap->SetSize(renderContext.viewportSizeX, renderContext.viewportSizeY);
     if (m_state.mainTexture.expired())
     {
         m_state.mainTexture = m_framebuffer.GetColorAttachmentTexture(1, 0);
