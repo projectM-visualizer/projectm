@@ -76,14 +76,14 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     m_state.audioData = audioData;
     m_state.renderContext = renderContext;
 
-    // Update framebuffer size if needed
+    // Update framebuffer and u/v texture size if needed
     if (m_framebuffer.SetSize(renderContext.viewportSizeX, renderContext.viewportSizeY))
     {
+        m_motionVectorUVMap->SetSize(renderContext.viewportSizeX, renderContext.viewportSizeY);
         m_isFirstFrame = true;
     }
 
     m_state.mainTexture = m_framebuffer.GetColorAttachmentTexture(m_previousFrameBuffer, 0);
-    m_framebuffer.MaskDrawBuffer(1, true);
 
     // First evaluate per-frame code
     PerFrameUpdate();
@@ -95,20 +95,21 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     // Only do it after drawing one frame after init or resize.
     if (!m_isFirstFrame)
     {
-        m_motionVectors.Draw(m_perFrameContext, m_framebuffer.GetColorAttachmentTexture(m_previousFrameBuffer, 1));
+        m_motionVectors.Draw(m_perFrameContext, m_motionVectorUVMap->Texture());
     }
 
     // We now draw to the first framebuffer, but read from the second one for warping and textured shapes.
     m_framebuffer.BindRead(m_previousFrameBuffer);
     m_framebuffer.BindDraw(m_currentFrameBuffer);
 
-    // Unmask the motion vector u/v texture for the warp mesh draw and clean both buffers.
-    m_framebuffer.MaskDrawBuffer(1, false);
+    // Add motion vector u/v texture for the warp mesh draw and clean both buffers.
+    m_framebuffer.SetAttachment(m_currentFrameBuffer, 1, m_motionVectorUVMap);
 
     // Draw previous frame image warped via per-pixel mesh and warp shader
     m_perPixelMesh.Draw(m_state, m_perFrameContext, m_perPixelContext);
 
-    m_framebuffer.MaskDrawBuffer(1, true);
+    // Remove the u/v texture from the framebuffer.
+    m_framebuffer.RemoveColorAttachment(m_currentFrameBuffer, 1);
 
     // Update blur textures
     m_state.blurTexture.Update(m_state, m_perFrameContext);
@@ -148,7 +149,7 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     glReadBuffer(GL_COLOR_ATTACHMENT0);
 #if USE_GLES
     {
-        GLenum drawBuffers[] = { GL_BACK };
+        GLenum drawBuffers[] = {GL_BACK};
         glDrawBuffers(1, drawBuffers);
     }
 #else
@@ -162,9 +163,6 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     std::swap(m_currentFrameBuffer, m_previousFrameBuffer);
 
     m_isFirstFrame = false;
-
-    // Reset color mask state for attachment 1
-    m_framebuffer.MaskDrawBuffer(1, false);
 }
 
 
@@ -225,13 +223,9 @@ void MilkdropPreset::Load(std::istream& stream)
 void MilkdropPreset::InitializePreset(PresetFileParser& parsedFile)
 {
     // Create the offscreen rendering surfaces.
-    m_framebuffer.CreateColorAttachment(0, 0);                            // Main image
-    m_framebuffer.CreateColorAttachment(0, 1, GL_RG16F, GL_RG, GL_FLOAT); // Motion vector u/v
-    m_framebuffer.CreateColorAttachment(1, 0);                            // Main image
-    m_framebuffer.CreateColorAttachment(1, 1, GL_RG16F, GL_RG, GL_FLOAT); // Motion vector u/v
-
-    // Mask the motion vector buffer by default.
-    m_framebuffer.MaskDrawBuffer(1, true);
+    m_motionVectorUVMap = std::make_shared<TextureAttachment>(GL_RG16F, GL_RG, GL_FLOAT, 0, 0);
+    m_framebuffer.CreateColorAttachment(0, 0); // Main image 1
+    m_framebuffer.CreateColorAttachment(1, 0); // Main image 2
 
     Framebuffer::Unbind();
 
