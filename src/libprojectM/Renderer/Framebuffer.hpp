@@ -94,10 +94,19 @@ public:
     bool SetSize(int width, int height);
 
     /**
+     * @brief Sets a texture attachment slot to the given object.
+     * @param framebufferIndex The framebuffer index.
+     * @param attachmentIndex The index of the color attachment, at least indices 0-7 are guaranteed
+     *                        to be available. Ignored for non-color attachments.
+     * @param attachment The attachment to add to the framebuffer.
+     */
+    void SetAttachment(int framebufferIndex, int attachmentIndex, const std::shared_ptr<TextureAttachment>& attachment);
+
+    /**
      * @brief Adds a new color attachment to the framebuffer.
      * The texture is always created in RGBA format.
      * @param framebufferIndex The framebuffer index.
-     * @param index The index of the attachment, at least indices 0-7 are guaranteed to be available.
+     * @param attachmentIndex The index of the attachment, at least indices 0-7 are guaranteed to be available.
      */
     void CreateColorAttachment(int framebufferIndex, int attachmentIndex);
 
@@ -111,6 +120,13 @@ public:
      */
     void CreateColorAttachment(int framebufferIndex, int attachmentIndex,
                                GLint internalFormat, GLenum format, GLenum type);
+
+    /**
+     * Removes the color attachment from the given slot, if there is any assigned.
+     * @param framebufferIndex The framebuffer index.
+     * @param attachmentIndex The index of the attachment to remove, at least indices 0-7 are guaranteed to be available.
+     */
+    void RemoveColorAttachment(int framebufferIndex, int attachmentIndex);
 
     /**
      * @brief Returns the texture ID of the given framebuffer and color attachment.
@@ -127,10 +143,22 @@ public:
     void CreateDepthAttachment(int framebufferIndex);
 
     /**
+     * @brief Removes the depth attachment from the given framebuffer, if there is any assigned.
+     * @param framebufferIndex The framebuffer index.
+     */
+    void RemoveDepthAttachment(int framebufferIndex);
+
+    /**
      * @brief Adds a stencil buffer attachment to the framebuffer.
      * @param framebufferIndex The framebuffer index.
      */
     void CreateStencilAttachment(int framebufferIndex);
+
+    /**
+     * @brief Removes the stencil attachment from the given framebuffer, if there is any assigned.
+     * @param framebufferIndex The framebuffer index.
+     */
+    void RemoveStencilAttachment(int framebufferIndex);
 
     /**
      * @brief Adds a depth stencil buffer attachment to the framebuffer.
@@ -139,8 +167,15 @@ public:
     void CreateDepthStencilAttachment(int framebufferIndex);
 
     /**
+     * @brief Removes the depth stencil attachment from the given framebuffer, if there is any assigned.
+     * @param framebufferIndex The framebuffer index.
+     */
+    void RemoveDepthStencilAttachment(int framebufferIndex);
+
+    /**
      * @brief Sets the masked flag for a specific draw buffer.
      * This can be used to enable or disable rendering to specific color attachments.
+     * With GLES 3.1 and lower, this will always mask all buffers.
      * @param bufferIndex The index of the buffer to set the mask flag on.
      * @param masked true if the attachment should be masked, false if not.
      */
@@ -154,7 +189,14 @@ private:
      */
     void UpdateDrawBuffers(int framebufferIndex);
 
-    using AttachmentsPerSlot = std::map<GLenum, TextureAttachment>;
+    /**
+     * @brief Removes the given attachment type from the framebuffer.
+     * @param framebufferIndex The framebuffer index.
+     * @param attachmentType The attachment type to remove.
+     */
+    void RemoveAttachment(int framebufferIndex, GLenum attachmentType);
+
+    using AttachmentsPerSlot = std::map<GLenum, std::shared_ptr<TextureAttachment>>;
     std::vector<unsigned int> m_framebufferIds{}; //!< The framebuffer IDs returned by OpenGL
     std::map<int, AttachmentsPerSlot> m_attachments; //!< Framebuffer texture attachments.
 
