@@ -95,6 +95,8 @@ public:
 
     /**
      * @brief Sets a texture attachment slot to the given object.
+     * Sets the read/write FBOs to the previously used ones in this instance. If a different
+     * Framebuffer instance was used to read or draw, it must be bound again explicitly after this call.
      * @param framebufferIndex The framebuffer index.
      * @param attachmentIndex The index of the color attachment, at least indices 0-7 are guaranteed
      *                        to be available. Ignored for non-color attachments.
@@ -123,6 +125,8 @@ public:
 
     /**
      * Removes the color attachment from the given slot, if there is any assigned.
+     * Sets the read/write FBOs to the previously used ones in this instance. If a different
+     * Framebuffer instance was used to read or draw, it must be bound again explicitly after this call.
      * @param framebufferIndex The framebuffer index.
      * @param attachmentIndex The index of the attachment to remove, at least indices 0-7 are guaranteed to be available.
      */
@@ -144,6 +148,8 @@ public:
 
     /**
      * @brief Removes the depth attachment from the given framebuffer, if there is any assigned.
+     * Sets the read/write FBOs to the previously used ones in this instance. If a different
+     * Framebuffer instance was used to read or draw, it must be bound again explicitly after this call.
      * @param framebufferIndex The framebuffer index.
      */
     void RemoveDepthAttachment(int framebufferIndex);
@@ -156,6 +162,8 @@ public:
 
     /**
      * @brief Removes the stencil attachment from the given framebuffer, if there is any assigned.
+     * Sets the read/write FBOs to the previously used ones in this instance. If a different
+     * Framebuffer instance was used to read or draw, it must be bound again explicitly after this call.
      * @param framebufferIndex The framebuffer index.
      */
     void RemoveStencilAttachment(int framebufferIndex);
@@ -168,6 +176,8 @@ public:
 
     /**
      * @brief Removes the depth stencil attachment from the given framebuffer, if there is any assigned.
+     * Sets the read/write FBOs to the previously used ones in this instance. If a different
+     * Framebuffer instance was used to read or draw, it must be bound again explicitly after this call.
      * @param framebufferIndex The framebuffer index.
      */
     void RemoveDepthStencilAttachment(int framebufferIndex);
@@ -202,4 +212,7 @@ private:
 
     int m_width{}; //!< Framebuffers texture width
     int m_height{}; //!< Framebuffers texture height.
+
+    int m_readFramebuffer{}; //!< Index of the framebuffer currently being read.
+    int m_drawFramebuffer{}; //!< Index of the framebuffer currently being drawn to.
 };

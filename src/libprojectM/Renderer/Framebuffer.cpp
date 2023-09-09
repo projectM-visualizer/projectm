@@ -44,6 +44,8 @@ void Framebuffer::Bind(int framebufferIndex)
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferIds.at(framebufferIndex));
+
+    m_readFramebuffer = m_drawFramebuffer = framebufferIndex;
 }
 
 void Framebuffer::BindRead(int framebufferIndex)
@@ -54,6 +56,8 @@ void Framebuffer::BindRead(int framebufferIndex)
     }
 
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_framebufferIds.at(framebufferIndex));
+
+    m_readFramebuffer = framebufferIndex;
 }
 
 void Framebuffer::BindDraw(int framebufferIndex)
@@ -64,6 +68,8 @@ void Framebuffer::BindDraw(int framebufferIndex)
     }
 
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_framebufferIds.at(framebufferIndex));
+
+    m_drawFramebuffer = framebufferIndex;
 }
 
 void Framebuffer::Unbind()
@@ -103,8 +109,13 @@ void Framebuffer::SetAttachment(int framebufferIndex, int attachmentIndex, const
         return;
     }
 
+    if (framebufferIndex < 0 || framebufferIndex >= static_cast<int>(m_framebufferIds.size()))
+    {
+        return;
+    }
+
     GLenum textureType;
-    Bind(framebufferIndex);
+
     switch (attachment->Type())
     {
         case TextureAttachment::AttachmentType::Color:
@@ -121,12 +132,18 @@ void Framebuffer::SetAttachment(int framebufferIndex, int attachmentIndex, const
             break;
     }
     m_attachments.at(framebufferIndex).insert({textureType, attachment});
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferIds.at(framebufferIndex));
+
     if (m_width > 0 && m_height > 0)
     {
         glFramebufferTexture2D(GL_FRAMEBUFFER, textureType, GL_TEXTURE_2D, attachment->Texture()->TextureID(), 0);
     }
     UpdateDrawBuffers(framebufferIndex);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // Reset to previous read/draw buffers
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, m_framebufferIds.at(m_readFramebuffer));
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_framebufferIds.at(m_drawFramebuffer));
 }
 
 void Framebuffer::CreateColorAttachment(int framebufferIndex, int attachmentIndex)
@@ -321,9 +338,19 @@ void Framebuffer::UpdateDrawBuffers(int framebufferIndex)
 
 void Framebuffer::RemoveAttachment(int framebufferIndex, GLenum attachmentType)
 {
-    m_attachments.at(framebufferIndex).erase(attachmentType);
-    Bind(framebufferIndex);
+    if (framebufferIndex < 0 || framebufferIndex >= static_cast<int>(m_framebufferIds.size()))
+    {
+        return;
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferIds.at(framebufferIndex));
+
     glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, GL_TEXTURE_2D, 0, 0);
     UpdateDrawBuffers(framebufferIndex);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    m_attachments.at(framebufferIndex).erase(attachmentType);
+
+    // Reset to previous read/draw buffers
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, m_framebufferIds.at(m_readFramebuffer));
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_framebufferIds.at(m_drawFramebuffer));
 }
