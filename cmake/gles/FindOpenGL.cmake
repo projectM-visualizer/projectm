@@ -394,83 +394,92 @@ else()
   # it must look for.  First clear any previous config we might have done:
   set(_OpenGL_REQUIRED_VARS)
 
-  # now we append the libraries as appropriate.  The complicated logic
-  # basically comes down to "use libOpenGL when we can, and add in specific
-  # context mechanisms when requested, or we need them to preserve the previous
-  # default where glx is always available."
-  if((NOT OPENGL_USE_EGL AND
-      NOT OPENGL_opengl_LIBRARY AND
-          OPENGL_glx_LIBRARY AND
-      NOT OPENGL_gl_LIBRARY) OR
-     (NOT OPENGL_USE_EGL AND
-      NOT OPENGL_glx_LIBRARY AND
-      NOT OPENGL_gl_LIBRARY) OR
-     (NOT OPENGL_USE_EGL AND
-          OPENGL_opengl_LIBRARY AND
-          OPENGL_glx_LIBRARY) OR
-     (    OPENGL_USE_EGL))
-    list(APPEND _OpenGL_REQUIRED_VARS OPENGL_opengl_LIBRARY)
-  endif()
-
-  # GLVND GLX library.  Preferred when available.
-  if((NOT OPENGL_USE_OPENGL AND
-      NOT OPENGL_USE_GLX AND
-      NOT OPENGL_USE_EGL AND
-      NOT OPENGL_glx_LIBRARY AND
-      NOT OPENGL_gl_LIBRARY) OR
-     (    OPENGL_USE_GLX AND
-      NOT OPENGL_USE_EGL AND
-      NOT OPENGL_glx_LIBRARY AND
-      NOT OPENGL_gl_LIBRARY) OR
-     (NOT OPENGL_USE_EGL AND
-          OPENGL_opengl_LIBRARY AND
-          OPENGL_glx_LIBRARY) OR
-     (OPENGL_USE_GLX AND OPENGL_USE_EGL))
-    list(APPEND _OpenGL_REQUIRED_VARS OPENGL_glx_LIBRARY)
-  endif()
-
-  # GLVND EGL library.
-  if(OPENGL_USE_EGL)
-    list(APPEND _OpenGL_REQUIRED_VARS OPENGL_egl_LIBRARY)
-  endif()
-
-  # Old-style "libGL" library: used as a fallback when GLVND isn't available.
-  if((NOT OPENGL_USE_EGL AND
-      NOT OPENGL_opengl_LIBRARY AND
-          OPENGL_glx_LIBRARY AND
-          OPENGL_gl_LIBRARY) OR
-     (NOT OPENGL_USE_EGL AND
-      NOT OPENGL_glx_LIBRARY AND
-          OPENGL_gl_LIBRARY))
-    list(APPEND _OpenGL_REQUIRED_VARS OPENGL_gl_LIBRARY)
-  endif()
-
-  # GLES version 1 library
-  if(OPENGL_USE_GLES AND
-     OPENGL_GLES_INCLUDE_DIR AND
-     OPENGL_gles_LIBRARY)
-    list(APPEND _OpenGL_REQUIRED_VARS OPENGL_gles_LIBRARY)
-  endif()
-
-  # GLES version 2 library
-  if(OPENGL_USE_GLES2 AND
-     OPENGL_GLES2_INCLUDE_DIR AND
-     OPENGL_gles2_LIBRARY)
-    list(APPEND _OpenGL_REQUIRED_VARS OPENGL_gles2_LIBRARY)
-  endif()
-
-  # GLES version 3 library
-  if(OPENGL_USE_GLES3 AND
-     OPENGL_GLES3_INCLUDE_DIR)
-
-    # Some systems have a dedicated GLESv3 library, e.g. Android. Prefer it if present,
-    # otherwise fall back to GLESv2.
-    if(OPENGL_gles2_LIBRARY AND NOT OPENGL_gles3_LIBRARY)
-      set(OPENGL_gles3_LIBRARY "${OPENGL_gles2_LIBRARY}")
+  if (NOT OPENGL_USE_GLES AND
+      NOT OPENGL_USE_GLES2 AND
+      NOT OPENGL_USE_GLES3)
+    # now we append the libraries as appropriate.  The complicated logic
+    # basically comes down to "use libOpenGL when we can, and add in specific
+    # context mechanisms when requested, or we need them to preserve the previous
+    # default where glx is always available."
+    if((NOT OPENGL_USE_EGL AND
+        NOT OPENGL_opengl_LIBRARY AND
+            OPENGL_glx_LIBRARY AND
+        NOT OPENGL_gl_LIBRARY) OR
+       (NOT OPENGL_USE_EGL AND
+        NOT OPENGL_glx_LIBRARY AND
+        NOT OPENGL_gl_LIBRARY) OR
+       (NOT OPENGL_USE_EGL AND
+            OPENGL_opengl_LIBRARY AND
+            OPENGL_glx_LIBRARY) OR
+       (    OPENGL_USE_EGL))
+      list(APPEND _OpenGL_REQUIRED_VARS OPENGL_opengl_LIBRARY)
     endif()
 
-    if(OPENGL_gles3_LIBRARY)
-      list(APPEND _OpenGL_REQUIRED_VARS OPENGL_gles3_LIBRARY)
+    # GLVND GLX library.  Preferred when available.
+    if((NOT OPENGL_USE_OPENGL AND
+        NOT OPENGL_USE_GLX AND
+        NOT OPENGL_USE_EGL AND
+        NOT OPENGL_glx_LIBRARY AND
+        NOT OPENGL_gl_LIBRARY) OR
+       (    OPENGL_USE_GLX AND
+        NOT OPENGL_USE_EGL AND
+        NOT OPENGL_glx_LIBRARY AND
+        NOT OPENGL_gl_LIBRARY) OR
+       (NOT OPENGL_USE_EGL AND
+            OPENGL_opengl_LIBRARY AND
+            OPENGL_glx_LIBRARY) OR
+       (OPENGL_USE_GLX AND OPENGL_USE_EGL))
+      list(APPEND _OpenGL_REQUIRED_VARS OPENGL_glx_LIBRARY)
+    endif()
+
+    # GLVND EGL library.
+    if(OPENGL_USE_EGL)
+      list(APPEND _OpenGL_REQUIRED_VARS OPENGL_egl_LIBRARY)
+    endif()
+
+    # Old-style "libGL" library: used as a fallback when GLVND isn't available.
+    if((NOT OPENGL_USE_EGL AND
+        NOT OPENGL_opengl_LIBRARY AND
+            OPENGL_glx_LIBRARY AND
+            OPENGL_gl_LIBRARY) OR
+       (NOT OPENGL_USE_EGL AND
+        NOT OPENGL_glx_LIBRARY AND
+            OPENGL_gl_LIBRARY))
+      list(APPEND _OpenGL_REQUIRED_VARS OPENGL_gl_LIBRARY)
+    endif()
+
+  else()
+
+    # GLES version 1 library
+    if(OPENGL_USE_GLES AND
+       OPENGL_GLES_INCLUDE_DIR AND
+       OPENGL_gles_LIBRARY)
+      list(APPEND _OpenGL_REQUIRED_VARS OPENGL_gles_LIBRARY)
+      set(OPENGL_INCLUDE_DIR "${OPENGL_GLES_INCLUDE_DIR}")
+    endif()
+
+    # GLES version 2 library
+    if(OPENGL_USE_GLES2 AND
+       OPENGL_GLES2_INCLUDE_DIR AND
+       OPENGL_gles2_LIBRARY)
+      list(APPEND _OpenGL_REQUIRED_VARS OPENGL_gles2_LIBRARY)
+      set(OPENGL_INCLUDE_DIR "${OPENGL_GLES2_INCLUDE_DIR}")
+    endif()
+
+    # GLES version 3 library
+    if(OPENGL_USE_GLES3 AND
+       OPENGL_GLES3_INCLUDE_DIR)
+
+      # Some systems have a dedicated GLESv3 library, e.g. Android. Prefer it if present,
+      # otherwise fall back to GLESv2.
+      if(OPENGL_gles2_LIBRARY AND NOT OPENGL_gles3_LIBRARY)
+        set(OPENGL_gles3_LIBRARY "${OPENGL_gles2_LIBRARY}")
+      endif()
+
+      if(OPENGL_gles3_LIBRARY)
+        list(APPEND _OpenGL_REQUIRED_VARS OPENGL_gles3_LIBRARY)
+        set(OPENGL_INCLUDE_DIR "${OPENGL_GLES3_INCLUDE_DIR}")
+      endif()
     endif()
   endif()
 
