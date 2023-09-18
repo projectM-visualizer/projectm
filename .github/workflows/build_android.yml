@@ -1,0 +1,81 @@
+name: Android (arm64-v8a, API level 33)
+
+on:
+  push:
+      branches: 
+        - "*"
+      tags:
+        - "*"
+    
+  pull_request:
+      branches: 
+        - "*"
+
+jobs:
+  build-shared:
+    name: Shared Library
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Install Packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build
+
+      - name: Configure Build
+        run: cmake -G "Ninja Multi-Config" -S "${{ github.workspace }}" -B "${{ github.workspace }}/cmake-build" -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake" -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" -DANDROID_PLATFORM=33 -DANDROID_ABI=arm64-v8a -DCMAKE_VERBOSE_MAKEFILE=YES -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=NO -DENABLE_SDL_UI=OFF
+
+      - name: Build Debug
+        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --parallel
+
+      - name: Build Release
+        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --parallel
+
+      - name: Install
+        run: |
+          cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --target install
+          cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target install
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+            name: projectm-android-shared-latest
+            path: install/*
+
+  build-static:
+    name: Static Library
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Install Packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1-mesa-dev mesa-common-dev libsdl2-dev libglm-dev llvm-dev libgtest-dev libgmock-dev ninja-build
+
+      - name: Configure Build
+        run: cmake -G "Ninja Multi-Config" -S "${{ github.workspace }}" -B "${{ github.workspace }}/cmake-build" -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake" -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" -DANDROID_PLATFORM=33 -DANDROID_ABI=arm64-v8a -DCMAKE_VERBOSE_MAKEFILE=YES -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=NO -DENABLE_SDL_UI=OFF
+
+      - name: Build Debug
+        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --parallel
+
+      - name: Build Release
+        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --parallel
+
+      - name: Install
+        run: |
+          cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --target install
+          cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target install
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: projectm-android-static-latest
+          path: install/*
