@@ -106,22 +106,23 @@ using the `-D` switch.
 | `BUILD_SHARED_LIBS` | `ON`    |                       | Build projectM as shared libraries. If `OFF`, build static libraries.                       |
 | `ENABLE_PLAYLIST`   | `ON`    |                       | Builds and installs the playlist library.                                                   |
 | `ENABLE_EMSCRIPTEN` | `OFF`   | `Emscripten`          | Build for the web using Emscripten. Only supports build as a static library and using GLES. |
+| `ENABLE_GLES`       | `OFF`   | `GLES`                | Use OpenGL ES 3 profile for rendering instead of the Core profile.                          |
+
+Note that `ENABLE_GLES` will be forcibly set to `ON` for Emscripten and Android builds, making it mandatory.
 
 ### Experimental and application-dependent build switches
 
 The following table contains a list of build options which are only useful in special circumstances, e.g. when
 developing libprojectM, trying experimental features or building the library for a special use-case/environment.
 
-| CMake option           | Default | Required dependencies | Description                                                                                                                                                   |
-|------------------------|---------|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `ENABLE_SDL_UI`        | `ON`    | `SDL2`                | Builds the SDL-based test application. Only used for development testing, will not be installed.                                                              |
-| `ENABLE_GLES`          | `OFF`   | `GLES`                | Use OpenGL ES 3 profile for rendering instead of the Core profile.                                                                                            |
-| `ENABLE_THREADING`     | `ON`    |                       | Enable multithreading support for preset loading if available.                                                                                                |
-| `ENABLE_OPENMP`        | `ON`    | `OpenMP`              | Enable OpenMP support if available.                                                                                                                           |
-| `ENABLE_DEBUG_POSTFIX` | `ON`    |                       | Adds `d` (by default) to the name of any binary file in debug builds.                                                                                         |
-| `ENABLE_SYSTEM_GLM`    | `OFF`   |                       | Builds against a system-installed GLM library.                                                                                                                |
-| `ENABLE_LLVM`          | `OFF`   | `LLVM`                | Enables **highly experimental** LLVM JIT support. Will most probably not build, as the LLVM API changes frequently.                                           |
-| `ENABLE_CXX_INTERFACE` | `OFF`   |                       | Exports symbols for the `ProjectM` and `PCM` C++ classes and installs the additional the headers. Using the C++ interface is not recommended and unsupported. |
+| CMake option           | Default | Required dependencies          | Description                                                                                                                                                   |
+|------------------------|---------|--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ENABLE_SDL_UI`        | `ON`    | `SDL2`                         | Builds the SDL-based test application. Only used for development testing, will not be installed.                                                              |
+| `ENABLE_THREADING`     | `ON`    |                                | Enable multithreading support for preset loading if available.                                                                                                |
+| `ENABLE_INSTALL`       | `OFF`   | Building as a CMake subproject | Enable projectM install targets when built as a subproject via `add_subdirectory()`.                                                                          |
+| `ENABLE_DEBUG_POSTFIX` | `ON`    |                                | Adds `d` (by default) to the name of any binary file in debug builds.                                                                                         |
+| `ENABLE_SYSTEM_GLM`    | `OFF`   |                                | Builds against a system-installed GLM library.                                                                                                                |
+| `ENABLE_CXX_INTERFACE` | `OFF`   |                                | Exports symbols for the `ProjectM` and `PCM` C++ classes and installs the additional the headers. Using the C++ interface is not recommended and unsupported. |
 
 ### Path options
 
@@ -284,7 +285,7 @@ linked to.
 If you want to use the optional playlist library, you need to specifically request it as a component:
 
 ```cmake
-find_package(libprojectM COMPONENTS Playlist)
+find_package(projectM4 COMPONENTS Playlist)
 ```
 
 You can either use `REQUIRED` to force a fatal error if the component cannot be found or check if the target exists
@@ -303,11 +304,11 @@ If you link the playlist library, the main `libprojectM::projectM` target will b
 Searches for projectM and the playlist library and links both to the application:
 
 ```cmake
-find_package(libprojectM REQUIRED COMPONENTS Playlist)
+find_package(projectM4 REQUIRED COMPONENTS Playlist)
 
 add_executable(MyApp main.cpp)
 
 target_link_libraries(MyApp PRIVATE
-        libprojectM::Playlist
+        libprojectM::playlist
         )
 ```

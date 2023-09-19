@@ -92,8 +92,6 @@ development files. To build projectM, both binaries and development files need t
   autotools or if not installed.
 * [**SDL2**](https://github.com/libsdl-org/SDL): Simple Directmedia Layer. Version 2.0.5 or higher is required to build
   the standalone visualizer application (projectMSDL).
-* [**LLVM**](https://llvm.org/): Low-Level Virtual Machine. Optional and **experimental**, used to speed up preset
-  execution by leveraging the LLVM JIT compiler.
 
 #### Only relevant for Linux distributions, FreeBSD and macOS:
 
@@ -304,12 +302,6 @@ To build projectM using the Android SDK, please refer to the official NDK docs:
 > https://developer.android.com/ndk/guides/cmake
 
 It is highly recommended using the latest NDK and CMake >= 3.21 for building.
-
-### LLVM JIT
-
-There are some optimizations for parsing preset equations that leverage the LLVM JIT. You can try adding the CMake
-option `-DENABLE_LLVM=ON` to enable them. They may not work with a newer version of
-LLVM (https://github.com/projectM-visualizer/projectm/pull/360).
 
 ## libprojectM
 
