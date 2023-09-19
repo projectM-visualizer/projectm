@@ -1,7 +1,11 @@
-cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
 
 include(CMakeDependentOption)
 include(CheckSymbolExists)
+
+# Save the current source/binary dirs if we're in a subdirectory of a larger CMake project.
+set(PROJECTM_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(PROJECTM_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
@@ -32,7 +36,7 @@ set(PROJECTM_SO_VERSION "4")
 # The actual (full) library version of projectM
 set(PROJECTM_LIB_VERSION "${CMAKE_PROJECT_VERSION}")
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${PROJECTM_SOURCE_DIR}/cmake")
 
 include(VCSVersion)
 include(GNUInstallDirs)
@@ -42,7 +46,7 @@ set(PROJECTM_LIB_DIR "${CMAKE_INSTALL_LIBDIR}" CACHE STRING "Library installatio
 set(PROJECTM_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}" CACHE STRING "Header installation directory, relative to the install prefix.")
 
 # Dummy file for merged static libs.
-set(PROJECTM_DUMMY_SOURCE_FILE "${CMAKE_BINARY_DIR}/dummy.cpp")
+set(PROJECTM_DUMMY_SOURCE_FILE "${PROJECTM_BINARY_DIR}/dummy.cpp")
 file(TOUCH "${PROJECTM_DUMMY_SOURCE_FILE}")
 
 if(CMAKE_SYSTEM_NAME STREQUAL Emscripten)
@@ -59,6 +63,7 @@ cmake_dependent_option(ENABLE_SDL_UI "Build the SDL2-based developer test UI" OF
 cmake_dependent_option(ENABLE_GLES "Enable OpenGL ES support" OFF "NOT ENABLE_EMSCRIPTEN AND NOT CMAKE_SYSTEM_NAME STREQUAL Android" ON)
 cmake_dependent_option(ENABLE_OPENMP "Enable OpenMP support if available" ON "NOT ENABLE_EMSCRIPTEN" OFF)
 cmake_dependent_option(ENABLE_THREADING "Enable multithreading support." ON "NOT ENABLE_EMSCRIPTEN" OFF)
+cmake_dependent_option(ENABLE_INSTALL "Enable installing projectM libraries and headers." OFF "NOT PROJECT_IS_TOP_LEVEL" ON)
 option(ENABLE_SYSTEM_GLM "Enable use of system-install GLM library" OFF)
 
 # Experimental/unsupported features
@@ -70,7 +75,7 @@ if(ENABLE_SYSTEM_GLM)
 else()
     add_library(GLM::GLM INTERFACE IMPORTED)
     set_target_properties(GLM::GLM PROPERTIES
-            INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/vendor"
+            INTERFACE_INCLUDE_DIRECTORIES "${PROJECTM_SOURCE_DIR}/vendor"
             )
 endif()
 
@@ -85,21 +90,21 @@ if(ENABLE_EMSCRIPTEN)
     # Instead, specifying the required options directly to emcc is the way to go.
     # Note: The "SHELL:" syntax is required to pass each argument as-is, but without quotes and CMake's de-duplication.
     add_compile_options(
-        "SHELL:-s USE_SDL=2"
-        "SHELL:-s MIN_WEBGL_VERSION=2"
-        "SHELL:-s MAX_WEBGL_VERSION=2"
-        "SHELL:-s ALLOW_MEMORY_GROWTH=1"
-        "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
-        )
+            "SHELL:-s USE_SDL=2"
+            "SHELL:-s MIN_WEBGL_VERSION=2"
+            "SHELL:-s MAX_WEBGL_VERSION=2"
+            "SHELL:-s ALLOW_MEMORY_GROWTH=1"
+            "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
+            )
 
     add_link_options(
-        "SHELL:-s USE_SDL=2"
-        "SHELL:-s MIN_WEBGL_VERSION=2"
-        "SHELL:-s MAX_WEBGL_VERSION=2"
-        "SHELL:-s FULL_ES2=1"
-        "SHELL:-s ALLOW_MEMORY_GROWTH=1"
-        "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
-        )
+            "SHELL:-s USE_SDL=2"
+            "SHELL:-s MIN_WEBGL_VERSION=2"
+            "SHELL:-s MAX_WEBGL_VERSION=2"
+            "SHELL:-s FULL_ES2=1"
+            "SHELL:-s ALLOW_MEMORY_GROWTH=1"
+            "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
+            )
 
     if(ENABLE_THREADING)
         message(AUTHOR_WARNING "Threading on emscripten is deemed stable, but may have issues. Use with care.\n"
@@ -120,12 +125,12 @@ else()
     if(ENABLE_GLES)
         message(STATUS "Building for OpenGL Embedded Profile")
         if(NOT CMAKE_SYSTEM_NAME STREQUAL Linux
-            AND NOT CMAKE_SYSTEM_NAME STREQUAL Android)
+                AND NOT CMAKE_SYSTEM_NAME STREQUAL Android)
             message(FATAL_ERROR "OpenGL ES 3 support is currently only available for Linux platforms. You're building for ${CMAKE_SYSTEM_NAME}.")
         endif()
 
         # We use a local find script for OpenGL::GLES3 until the proposed changes are merged upstream.
-        list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/gles")
+        list(APPEND CMAKE_MODULE_PATH "${PROJECTM_SOURCE_DIR}/cmake/gles")
         find_package(OpenGL REQUIRED COMPONENTS GLES3)
         if(NOT TARGET OpenGL::GLES3)
             message(FATAL_ERROR "No suitable GLES3 library was found.")

@@ -37,22 +37,26 @@ generate_export_header(projectM_api
 add_library(libprojectM::API ALIAS projectM_api)
 
 
-install(TARGETS projectM_api
-        EXPORT libprojectMTargets
-        LIBRARY DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
-        RUNTIME DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
-        ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Devel
-        PUBLIC_HEADER DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4" COMPONENT Devel
-        )
+if(ENABLE_INSTALL)
 
-install(FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4/projectM_export.h"
-        "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4/version.h"
-        DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4"
-        COMPONENT Devel
-        )
+    install(TARGETS projectM_api
+            EXPORT libprojectMTargets
+            LIBRARY DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
+            RUNTIME DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
+            ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Devel
+            PUBLIC_HEADER DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4" COMPONENT Devel
+            )
 
-install(DIRECTORY include/projectM-4
-        DESTINATION "${PROJECTM_INCLUDE_DIR}"
-        COMPONENT Devel
-        )
+    install(FILES
+            "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4/projectM_export.h"
+            "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4/version.h"
+            DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4"
+            COMPONENT Devel
+            )
+
+    install(DIRECTORY include/projectM-4
+            DESTINATION "${PROJECTM_INCLUDE_DIR}"
+            COMPONENT Devel
+            )
+
+endif()

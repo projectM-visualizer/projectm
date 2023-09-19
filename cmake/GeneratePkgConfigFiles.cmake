@@ -30,7 +30,7 @@ macro(GENERATE_PKG_CONFIG_FILES target package_name)
         # multi-config packages such as CMake provides. It's a mess.
         set(PKGCONFIG_PROJECTM_LIBRARY "${_lib_name}")
         set(PKGCONFIG_PACKAGE_REQUIREMENTS "${PKGCONFIG_PACKAGE_REQUIREMENTS_ALL} ${PKGCONFIG_PACKAGE_REQUIREMENTS_RELEASE}")
-        configure_file(${CMAKE_SOURCE_DIR}/cmake/pkgconfig-file.in "${CMAKE_CURRENT_BINARY_DIR}/${package_name}.pc" @ONLY)
+        configure_file(${PROJECTM_SOURCE_DIR}/cmake/pkgconfig-file.in "${CMAKE_CURRENT_BINARY_DIR}/${package_name}.pc" @ONLY)
         install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${package_name}.pc"
                 CONFIGURATIONS Release;RelWithDebInfo;MinSizeRel
                 DESTINATION "${PROJECTM_LIB_DIR}/pkgconfig"
@@ -39,7 +39,7 @@ macro(GENERATE_PKG_CONFIG_FILES target package_name)
 
         set(PKGCONFIG_PROJECTM_LIBRARY "${_lib_name}${CMAKE_DEBUG_POSTFIX}")
         set(PKGCONFIG_PACKAGE_REQUIREMENTS "${PKGCONFIG_PACKAGE_REQUIREMENTS_ALL} ${PKGCONFIG_PACKAGE_REQUIREMENTS_DEBUG}")
-        configure_file(${CMAKE_SOURCE_DIR}/cmake/pkgconfig-file.in "${CMAKE_CURRENT_BINARY_DIR}/${package_name}-debug.pc" @ONLY)
+        configure_file(${PROJECTM_SOURCE_DIR}/cmake/pkgconfig-file.in "${CMAKE_CURRENT_BINARY_DIR}/${package_name}-debug.pc" @ONLY)
         install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${package_name}-debug.pc"
                 CONFIGURATIONS Debug
                 DESTINATION "${PROJECTM_LIB_DIR}/pkgconfig"

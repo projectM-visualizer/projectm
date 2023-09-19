@@ -19,8 +19,8 @@ target_compile_definitions(projectM-unittest
 # Test includes a header file from libprojectM with its full path in the source dir.
 target_include_directories(projectM-unittest
         PRIVATE
-        "${CMAKE_SOURCE_DIR}/src/libprojectM"
-        "${CMAKE_SOURCE_DIR}"
+        "${PROJECTM_SOURCE_DIR}/src/libprojectM"
+        "${PROJECTM_SOURCE_DIR}"
         )
 
 target_link_libraries(projectM-unittest
