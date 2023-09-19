@@ -80,9 +80,9 @@ check_include_files("${_std_c_headers}" STDC_HEADERS LANGUAGE C)
 unset(_std_c_headers)
 
 # Create global configuration header
-file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/include")
-configure_file(config.h.cmake.in "${CMAKE_BINARY_DIR}/include/config.h")
-include_directories("${CMAKE_BINARY_DIR}/include")
+file(MAKE_DIRECTORY "${PROJECTM_BINARY_DIR}/include")
+configure_file(config.h.cmake.in "${PROJECTM_BINARY_DIR}/include/config.h")
+include_directories("${PROJECTM_BINARY_DIR}/include")
 
 # Force-include the file in all targets
 if(MSVC)

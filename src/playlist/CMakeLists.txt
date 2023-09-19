@@ -94,63 +94,67 @@ include(FilesystemSupport.cmake)
 
 add_library(libprojectM::playlist ALIAS projectM_playlist)
 
-install(TARGETS projectM_playlist
-        EXPORT libprojectMPlaylist
-        LIBRARY DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
-        RUNTIME DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
-        ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Devel
-        PUBLIC_HEADER DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4" COMPONENT Devel
-        )
+if(ENABLE_INSTALL)
 
-install(FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4/projectM_playlist_export.h"
-        DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4"
-        COMPONENT Devel
-        )
+    install(TARGETS projectM_playlist
+            EXPORT libprojectMPlaylist
+            LIBRARY DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
+            RUNTIME DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
+            ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Devel
+            PUBLIC_HEADER DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4" COMPONENT Devel
+            )
 
-install(DIRECTORY api/projectM-4
-        DESTINATION "${PROJECTM_INCLUDE_DIR}"
-        COMPONENT Devel
-        )
+    install(FILES
+            "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4/projectM_playlist_export.h"
+            DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4"
+            COMPONENT Devel
+            )
+
+    install(DIRECTORY api/projectM-4
+            DESTINATION "${PROJECTM_INCLUDE_DIR}"
+            COMPONENT Devel
+            )
 
 
-# For use from an installed package (system install, vcpkg, homebrew etc.)
-include(CMakePackageConfigHelpers)
+    # For use from an installed package (system install, vcpkg, homebrew etc.)
+    include(CMakePackageConfigHelpers)
 
-write_basic_package_version_file(
-        "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/projectM4PlaylistConfigVersion.cmake"
-        VERSION ${PROJECT_VERSION}
-        COMPATIBILITY AnyNewerVersion
-)
+    write_basic_package_version_file(
+            "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/projectM4PlaylistConfigVersion.cmake"
+            VERSION ${PROJECT_VERSION}
+            COMPATIBILITY AnyNewerVersion
+            )
 
-configure_package_config_file(projectM4PlaylistConfig.cmake.in
-        "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/projectM4PlaylistConfig.cmake"
-        INSTALL_DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4Playlist"
-        PATH_VARS PROJECTM_BIN_DIR PROJECTM_INCLUDE_DIR
-        )
+    configure_package_config_file(projectM4PlaylistConfig.cmake.in
+            "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/projectM4PlaylistConfig.cmake"
+            INSTALL_DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4Playlist"
+            PATH_VARS PROJECTM_BIN_DIR PROJECTM_INCLUDE_DIR
+            )
 
-install(FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/projectM4PlaylistConfigVersion.cmake"
-        "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/projectM4PlaylistConfig.cmake"
-        DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4Playlist"
-        COMPONENT Devel
-        )
+    install(FILES
+            "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/projectM4PlaylistConfigVersion.cmake"
+            "${CMAKE_CURRENT_BINARY_DIR}/libprojectMPlaylist/projectM4PlaylistConfig.cmake"
+            DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4Playlist"
+            COMPONENT Devel
+            )
 
-install(EXPORT libprojectMPlaylist
-        FILE projectM4PlaylistTargets.cmake
-        NAMESPACE libprojectM::
-        DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4Playlist"
-        COMPONENT Devel
-        )
+    install(EXPORT libprojectMPlaylist
+            FILE projectM4PlaylistTargets.cmake
+            NAMESPACE libprojectM::
+            DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4Playlist"
+            COMPONENT Devel
+            )
 
-# pkg-config export, only supported on UNIX systems.
-if(UNIX)
-    include(GeneratePkgConfigFiles)
+    # pkg-config export, only supported on UNIX systems.
+    if(UNIX)
+        include(GeneratePkgConfigFiles)
 
-    set(PKGCONFIG_PACKAGE_NAME "projectM-4-playlist")
-    set(PKGCONFIG_PACKAGE_DESCRIPTION "projectM Playlist Library")
-    set(PKGCONFIG_PACKAGE_REQUIREMENTS_RELEASE "projectM-4")
-    set(PKGCONFIG_PACKAGE_REQUIREMENTS_DEBUG "projectM-4-debug")
+        set(PKGCONFIG_PACKAGE_NAME "projectM-4-playlist")
+        set(PKGCONFIG_PACKAGE_DESCRIPTION "projectM Playlist Library")
+        set(PKGCONFIG_PACKAGE_REQUIREMENTS_RELEASE "projectM-4")
+        set(PKGCONFIG_PACKAGE_REQUIREMENTS_DEBUG "projectM-4-debug")
 
-    generate_pkg_config_files(projectM_playlist projectM-4-playlist)
+        generate_pkg_config_files(projectM_playlist projectM-4-playlist)
+    endif()
+
 endif()

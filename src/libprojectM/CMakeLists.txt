@@ -4,7 +4,7 @@ add_compile_definitions(
         $<IF:$<PLATFORM_ID:Windows>,NOMINMAX,>
         $<IF:$<PLATFORM_ID:Windows>,WIN32_LEAN_AND_MEAN,>
         $<IF:$<PLATFORM_ID:Windows>,STBI_NO_DDS,>
-)
+        )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     # dirent.h support
@@ -59,10 +59,10 @@ endif()
 
 target_include_directories(projectM_main
         PRIVATE
-        "${CMAKE_SOURCE_DIR}/src"
+        "${PROJECTM_SOURCE_DIR}/src"
         "${CMAKE_CURRENT_SOURCE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}/Renderer"
-        "${CMAKE_SOURCE_DIR}/vendor/hlslparser/src"
+        "${PROJECTM_SOURCE_DIR}/vendor/hlslparser/src"
         "${CMAKE_CURRENT_SOURCE_DIR}/MilkdropPreset"
         "${MSVC_EXTRA_INCLUDE_DIR}"
         )
@@ -92,9 +92,9 @@ target_link_libraries(projectM
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     target_link_libraries(projectM
-        PUBLIC
-        "-framework CoreFoundation"
-        )
+            PUBLIC
+            "-framework CoreFoundation"
+            )
 endif()
 
 if(ENABLE_LLVM)
@@ -120,9 +120,9 @@ set_target_properties(projectM PROPERTIES
 
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(projectM_main
-        PRIVATE
-        projectM_api_EXPORTS
-        )
+            PRIVATE
+            projectM_api_EXPORTS
+            )
 
     target_link_libraries(projectM
             PUBLIC
@@ -130,9 +130,9 @@ if(BUILD_SHARED_LIBS)
             )
 else()
     target_compile_definitions(projectM_main
-        PUBLIC
-        PROJECTM_STATIC_DEFINE
-        )
+            PUBLIC
+            PROJECTM_STATIC_DEFINE
+            )
 
     set_target_properties(projectM PROPERTIES
             OUTPUT_NAME $<IF:$<PLATFORM_ID:Windows>,libprojectM,projectM>
@@ -142,117 +142,121 @@ endif()
 
 add_library(libprojectM::projectM ALIAS projectM)
 
-install(TARGETS projectM
-        EXPORT libprojectMTargets
-        LIBRARY DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
-        RUNTIME DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
-        ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Devel
-        PUBLIC_HEADER DESTINATION "${PROJECTM_INCLUDE_DIR}/libprojectM" COMPONENT Devel
-        )
+if(ENABLE_INSTALL)
 
-if(ENABLE_CXX_INTERFACE)
-    if(ENABLE_THREADING)
+    install(TARGETS projectM
+            EXPORT libprojectMTargets
+            LIBRARY DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
+            RUNTIME DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
+            ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Devel
+            PUBLIC_HEADER DESTINATION "${PROJECTM_INCLUDE_DIR}/libprojectM" COMPONENT Devel
+            )
+
+    if(ENABLE_CXX_INTERFACE)
+        if(ENABLE_THREADING)
+            target_compile_definitions(projectM
+                    INTERFACE
+                    PROJECTM_USE_THREADS
+                    )
+        endif()
+
+        install(FILES
+                Audio/PCM.hpp
+                ProjectM.hpp
+                DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4"
+                COMPONENT Devel
+                )
+    else()
+        # Set PROJECTM_STATIC_EXPORT for C++ implementations to use project default visibility
+        # and no dllimport/dllexport.
+        set_source_files_properties(ProjectM.cpp Audio/PCM.cpp Audio/FrameAudioData.cpp PROPERTIES
+                COMPILE_DEFINITIONS PROJECTM_STATIC_DEFINE
+                )
         target_compile_definitions(projectM
                 INTERFACE
-                PROJECTM_USE_THREADS
+                PROJECTM_STATIC_DEFINE
                 )
     endif()
 
+
+    # CMake target exports
+
+    # For use from a local projectM build tree (without installing)
+    export(TARGETS
+            projectM_api
+            projectM
+            NAMESPACE libprojectM::
+            FILE projectM-exports.cmake
+            )
+
+
+    # For use from an installed package (system install, vcpkg, homebrew etc.)
+    include(CMakePackageConfigHelpers)
+
+    write_basic_package_version_file(
+            "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4ConfigVersion.cmake"
+            VERSION ${PROJECT_VERSION}
+            COMPATIBILITY AnyNewerVersion
+            )
+
+    configure_package_config_file(projectM4Config.cmake.in
+            "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4Config.cmake"
+            INSTALL_DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
+            PATH_VARS PROJECTM_BIN_DIR PROJECTM_INCLUDE_DIR
+            )
+
     install(FILES
-            Audio/PCM.hpp
-            ProjectM.hpp
-            DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4"
-            COMPONENT Devel
-            )
-else()
-    # Set PROJECTM_STATIC_EXPORT for C++ implementations to use project default visibility
-    # and no dllimport/dllexport.
-    set_source_files_properties(ProjectM.cpp Audio/PCM.cpp Audio/FrameAudioData.cpp PROPERTIES
-            COMPILE_DEFINITIONS PROJECTM_STATIC_DEFINE
-            )
-    target_compile_definitions(projectM
-            INTERFACE
-            PROJECTM_STATIC_DEFINE
-            )
-endif()
-
-
-# CMake target exports
-
-# For use from a local projectM build tree (without installing)
-export(TARGETS
-        projectM_api
-        projectM
-        NAMESPACE libprojectM::
-        FILE projectM-exports.cmake
-        )
-
-
-# For use from an installed package (system install, vcpkg, homebrew etc.)
-include(CMakePackageConfigHelpers)
-
-write_basic_package_version_file(
-        "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4ConfigVersion.cmake"
-        VERSION ${PROJECT_VERSION}
-        COMPATIBILITY AnyNewerVersion
-)
-
-configure_package_config_file(projectM4Config.cmake.in
-        "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4Config.cmake"
-        INSTALL_DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
-        PATH_VARS PROJECTM_BIN_DIR PROJECTM_INCLUDE_DIR
-        )
-
-install(FILES
-        "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4ConfigVersion.cmake"
-        "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4Config.cmake"
-        DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
-        COMPONENT Devel
-        )
-
-if(NOT ENABLE_EMSCRIPTEN AND ENABLE_GLES)
-    install(FILES
-            "${CMAKE_SOURCE_DIR}/cmake/gles/FindOpenGL.cmake"
+            "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4ConfigVersion.cmake"
+            "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4Config.cmake"
             DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
             COMPONENT Devel
             )
-endif()
 
-if(ENABLE_LLVM)
-    install(FILES
-            "${CMAKE_SOURCE_DIR}/cmake/gles/FindLLVM.cmake"
-            DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
-            COMPONENT Devel
-            )
-endif()
-
-
-install(EXPORT libprojectMTargets
-        FILE projectM4Targets.cmake
-        NAMESPACE libprojectM::
-        DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
-        COMPONENT Devel
-        )
-
-# pkg-config export, only supported on UNIX systems.
-if(UNIX)
-    include(GeneratePkgConfigFiles)
+    if(NOT ENABLE_EMSCRIPTEN AND ENABLE_GLES)
+        install(FILES
+                "${PROJECTM_SOURCE_DIR}/cmake/gles/FindOpenGL.cmake"
+                DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
+                COMPONENT Devel
+                )
+    endif()
 
     if(ENABLE_LLVM)
-        set(PKGCONFIG_LIBS "${PKGCONFIG_LIBS} -L${LLVM_LIB_DIR} ${LLVM_LIBRARIES}")
+        install(FILES
+                "${PROJECTM_SOURCE_DIR}/cmake/gles/FindLLVM.cmake"
+                DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
+                COMPONENT Devel
+                )
     endif()
 
-    if(ENABLE_OPENMP)
-        set(PKGCONFIG_FLAGS "${PKGCONFIG_FLAGS} ${OpenMP_CXX_FLAGS}")
-        foreach(_library ${OpenMP_CXX_LIBRARIES})
-            set(PKGCONFIG_LIBS "${PKGCONFIG_LIBS} -l${_library}")
-        endforeach()
+
+    install(EXPORT libprojectMTargets
+            FILE projectM4Targets.cmake
+            NAMESPACE libprojectM::
+            DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
+            COMPONENT Devel
+            )
+
+    # pkg-config export, only supported on UNIX systems.
+    if(UNIX)
+        include(GeneratePkgConfigFiles)
+
+        if(ENABLE_LLVM)
+            set(PKGCONFIG_LIBS "${PKGCONFIG_LIBS} -L${LLVM_LIB_DIR} ${LLVM_LIBRARIES}")
+        endif()
+
+        if(ENABLE_OPENMP)
+            set(PKGCONFIG_FLAGS "${PKGCONFIG_FLAGS} ${OpenMP_CXX_FLAGS}")
+            foreach(_library ${OpenMP_CXX_LIBRARIES})
+                set(PKGCONFIG_LIBS "${PKGCONFIG_LIBS} -l${_library}")
+            endforeach()
+        endif()
+
+        set(PKGCONFIG_PACKAGE_NAME "projectM-4")
+        set(PKGCONFIG_PACKAGE_DESCRIPTION "projectM Music Visualizer")
+        set(PKGCONFIG_PACKAGE_REQUIREMENTS_ALL "opengl")
+
+        generate_pkg_config_files(projectM projectM-4)
+
     endif()
-
-    set(PKGCONFIG_PACKAGE_NAME "projectM-4")
-    set(PKGCONFIG_PACKAGE_DESCRIPTION "projectM Music Visualizer")
-    set(PKGCONFIG_PACKAGE_REQUIREMENTS_ALL "opengl")
-
-    generate_pkg_config_files(projectM projectM-4)
 
 endif()
