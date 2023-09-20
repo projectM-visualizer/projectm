@@ -34,7 +34,7 @@ project(libprojectM
 set(PROJECTM_SO_VERSION "4")
 
 # The actual (full) library version of projectM
-set(PROJECTM_LIB_VERSION "${CMAKE_PROJECT_VERSION}")
+set(PROJECTM_LIB_VERSION "${PROJECT_VERSION}")
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECTM_SOURCE_DIR}/cmake")
 
