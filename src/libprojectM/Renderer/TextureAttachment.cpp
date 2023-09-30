@@ -36,6 +36,11 @@ auto TextureAttachment::Texture() const -> std::shared_ptr<class Texture>
     return m_texture;
 }
 
+void TextureAttachment::Texture(const std::shared_ptr<struct Texture>& texture)
+{
+    m_texture = texture;
+}
+
 void TextureAttachment::SetSize(int width, int height)
 {
     if (width > 0 && height > 0)
@@ -53,6 +58,12 @@ void TextureAttachment::ReplaceTexture(int width, int height)
     GLint internalFormat;
     GLint textureFormat;
     GLenum pixelFormat;
+
+    // Don't replace if size hasn't changed
+    if (m_texture->Width() == width && m_texture->Height() == height)
+    {
+        return;
+    }
 
     switch(m_attachmentType)
     {

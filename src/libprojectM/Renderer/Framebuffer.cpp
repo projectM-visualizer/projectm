@@ -102,6 +102,39 @@ bool Framebuffer::SetSize(int width, int height)
     return true;
 }
 
+auto Framebuffer::GetAttachment(int framebufferIndex, TextureAttachment::AttachmentType type, int attachmentIndex) const -> std::shared_ptr<TextureAttachment>
+{
+    if (framebufferIndex < 0 || framebufferIndex >= static_cast<int>(m_framebufferIds.size()))
+    {
+        return {};
+    }
+
+    const auto& framebufferAttachments = m_attachments.at(framebufferIndex);
+    GLenum textureType;
+
+    switch (type)
+    {
+        case TextureAttachment::AttachmentType::Color:
+            textureType = GL_COLOR_ATTACHMENT0 + attachmentIndex;
+            break;
+        case TextureAttachment::AttachmentType::Depth:
+            textureType = GL_DEPTH_ATTACHMENT;
+            break;
+        case TextureAttachment::AttachmentType::Stencil:
+            textureType = GL_STENCIL_ATTACHMENT;
+            break;
+        case TextureAttachment::AttachmentType::DepthStencil:
+            textureType = GL_DEPTH_STENCIL_ATTACHMENT;
+            break;
+    }
+
+    if (framebufferAttachments.find(textureType) == framebufferAttachments.end()) {
+        return {};
+    }
+
+    return framebufferAttachments.at(textureType);
+}
+
 void Framebuffer::SetAttachment(int framebufferIndex, int attachmentIndex, const std::shared_ptr<TextureAttachment>& attachment)
 {
     if (!attachment)

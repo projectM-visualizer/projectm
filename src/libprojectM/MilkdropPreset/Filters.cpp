@@ -29,7 +29,7 @@ void Filters::Draw()
     glEnable(GL_BLEND);
 
     m_presetState.untexturedShader.Bind();
-    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjectionFlipped);
+    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
 
     glBindVertexArray(m_vaoID);
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
@@ -88,6 +88,7 @@ void Filters::Invert()
     glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
+
 void Filters::UpdateMesh()
 {
     if (m_viewportWidth == m_presetState.renderContext.viewportSizeX &&

@@ -68,6 +68,13 @@ public:
     auto Texture() const -> std::shared_ptr<class Texture>;
 
     /**
+     * @brief Replaces the current internal texture with the given one.
+     * Texture size is not changed.
+     * @param texture
+     */
+    void Texture(const std::shared_ptr<class Texture>& texture);
+
+    /**
      * @brief Sets a new texture size.
      * Effectively reallocates the texture.
      * @param width The new width.

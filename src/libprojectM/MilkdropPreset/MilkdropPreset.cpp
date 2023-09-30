@@ -99,9 +99,12 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
         m_motionVectors.Draw(m_perFrameContext, m_motionVectorUVMap->Texture());
     }
 
-    // We now draw to the first framebuffer, but read from the second one for warping and textured shapes.
-    m_framebuffer.BindRead(m_previousFrameBuffer);
-    m_framebuffer.BindDraw(m_currentFrameBuffer);
+    // y-flip the previous frame and assign the flipped texture as "main"
+    m_flipTexture.Draw(m_framebuffer.GetColorAttachmentTexture(m_previousFrameBuffer, 0));
+    m_state.mainTexture = m_flipTexture.FlippedTexture();
+
+    // We now draw to the current framebuffer.
+    m_framebuffer.Bind(m_currentFrameBuffer);
 
     // Add motion vector u/v texture for the warp mesh draw and clean both buffers.
     m_framebuffer.SetAttachment(m_currentFrameBuffer, 1, m_motionVectorUVMap);
@@ -135,14 +138,23 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
 
     // Todo: Song title anim would go here
 
+    // y-flip the image for final compositing again
+    m_flipTexture.Draw(m_framebuffer.GetColorAttachmentTexture(m_currentFrameBuffer, 0));
+    m_state.mainTexture = m_flipTexture.FlippedTexture();
+
     // We no longer need the previous frame image, use it to render the final composite.
     m_framebuffer.BindRead(m_currentFrameBuffer);
     m_framebuffer.BindDraw(m_previousFrameBuffer);
-    m_state.mainTexture = m_framebuffer.GetColorAttachmentTexture(m_currentFrameBuffer, 0);
 
     m_finalComposite.Draw(m_state, m_perFrameContext);
 
     // ToDo: Draw user sprites (can have evaluated code)
+
+    if (!m_finalComposite.HasCompositeShader())
+    {
+        // Flip texture again in "previous" framebuffer as old-school effects are still upside down.
+        m_flipTexture.Draw(m_framebuffer.GetColorAttachmentTexture(m_previousFrameBuffer, 0), m_framebuffer, m_previousFrameBuffer);
+    }
 
     // TEST: Copy result to default framebuffer
     m_framebuffer.BindRead(m_previousFrameBuffer);
