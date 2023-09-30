@@ -23,7 +23,8 @@ void main() {
         // Milkdrop's original code did a simple bilinear interpolation, but here it was already
         // done by the fragment shader during the warp mesh drawing. We just need to look up the
         // motion vector coordinate.
-        vec2 oldUV = texture(warp_coordinates, pos.xy).xy;
+        // We simply invert the y coordinate because it's easier than flipping the u/v texture.
+        vec2 oldUV = texture(warp_coordinates, vec2(pos.x, 1.0 - pos.y)).xy;
 
         // Enforce minimum trail length
         vec2 dist = oldUV - pos;

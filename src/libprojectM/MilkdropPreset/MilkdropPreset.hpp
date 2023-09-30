@@ -29,6 +29,7 @@
 #include "DarkenCenter.hpp"
 #include "Filters.hpp"
 #include "FinalComposite.hpp"
+#include "FlipTexture.hpp"
 #include "MotionVectors.hpp"
 #include "PerFrameContext.hpp"
 #include "PerPixelContext.hpp"
@@ -116,6 +117,7 @@ private:
     std::array<std::unique_ptr<CustomShape>, CustomShapeCount> m_customShapes;          //!< Custom shapes in this preset.
     DarkenCenter m_darkenCenter;                                                        //!< Center darkening effect.
     Border m_border;                                                                    //!< Inner/outer borders.
+    FlipTexture m_flipTexture{ m_state };                                               //!< Texture flip filter
 
     FinalComposite m_finalComposite; //!< Final composite shader or filters.
 

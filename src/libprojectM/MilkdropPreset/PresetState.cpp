@@ -6,17 +6,17 @@
 
 #include <random>
 
-const glm::mat4 PresetState::orthogonalProjection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -40.0f, 40.0f);
-const glm::mat4 PresetState::orthogonalProjectionFlipped = glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, -40.0f, 40.0f);
+const glm::mat4 PresetState::orthogonalProjection = glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, -40.0f, 40.0f);
+const glm::mat4 PresetState::orthogonalProjectionFlipped = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -40.0f, 40.0f);
 
 PresetState::PresetState()
     : globalMemory(projectm_eval_memory_buffer_create())
 {
     auto staticShaders = libprojectM::MilkdropPreset::MilkdropStaticShaders::Get();
     untexturedShader.CompileProgram(staticShaders->GetUntexturedDrawVertexShader(),
-                                      staticShaders->GetUntexturedDrawFragmentShader());
+                                    staticShaders->GetUntexturedDrawFragmentShader());
     texturedShader.CompileProgram(staticShaders->GetTexturedDrawVertexShader(),
-                                    staticShaders->GetTexturedDrawFragmentShader());
+                                  staticShaders->GetTexturedDrawFragmentShader());
 
     std::random_device randomDevice;
     std::mt19937 randomGenerator(randomDevice());

@@ -306,7 +306,7 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
     if (!m_warpShader)
     {
         m_perPixelMeshShader.Bind();
-        m_perPixelMeshShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjectionFlipped);
+        m_perPixelMeshShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
         m_perPixelMeshShader.SetUniformInt("texture_sampler", 0);
         m_perPixelMeshShader.SetUniformFloat4("aspect", {presetState.renderContext.aspectX,
                                                          presetState.renderContext.aspectY,

@@ -94,6 +94,16 @@ public:
     bool SetSize(int width, int height);
 
     /**
+     * @brief Returns a texture attachment object.
+     * @param framebufferIndex The framebuffer index.
+     * @param type The attachment type to retrieve.
+     * @param attachmentIndex The index of the color attachment, at least indices 0-7 are guaranteed
+     *                        to be available. Ignored for non-color attachments.
+     * @return The requested attachment or nullptr if there is no attachment in the requested slot.
+     */
+    auto GetAttachment(int framebufferIndex, TextureAttachment::AttachmentType type, int attachmentIndex = 0) const -> std::shared_ptr<TextureAttachment>;
+
+    /**
      * @brief Sets a texture attachment slot to the given object.
      * Sets the read/write FBOs to the previously used ones in this instance. If a different
      * Framebuffer instance was used to read or draw, it must be bound again explicitly after this call.

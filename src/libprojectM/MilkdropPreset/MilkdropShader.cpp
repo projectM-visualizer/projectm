@@ -122,7 +122,7 @@ void MilkdropShader::LoadVariables(const PresetState& presetState, const PerFram
 
     m_shader.Bind();
 
-    m_shader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjectionFlipped);
+    m_shader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
 
     m_shader.SetUniformFloat4("rand_frame", {floatRand(),
                                              floatRand(),

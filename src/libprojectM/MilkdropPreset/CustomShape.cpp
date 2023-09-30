@@ -210,7 +210,7 @@ void CustomShape::Draw()
                 const float angle = cornerProgress * pi * 2.0f + static_cast<float>(*m_perFrameContext.tex_ang) + pi * 0.25f;
 
                 vertexData[i].u = 0.5f + 0.5f * cosf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom) * textureAspectY;
-                vertexData[i].v = 0.5f - 0.5f * sinf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom);
+                vertexData[i].v = 1.0f - (0.5f - 0.5f * sinf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom)); // Vertical flip required!
             }
 
             vertexData[sides + 1] = vertexData[1];
