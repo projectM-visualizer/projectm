@@ -43,7 +43,7 @@ set_target_properties(projectM_playlist PROPERTIES
         SOVERSION "${PROJECTM_SO_VERSION}"
         EXPORT_NAME playlist
         FOLDER libprojectM
-        OUTPUT_NAME projectM-4-playlist
+        OUTPUT_NAME ${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}-playlist
         )
 
 target_include_directories(projectM_playlist
@@ -75,7 +75,7 @@ else()
             )
 
     set_target_properties(projectM_playlist PROPERTIES
-            OUTPUT_NAME $<IF:$<PLATFORM_ID:Windows>,libprojectM-4-playlist,projectM-4-playlist>
+            OUTPUT_NAME $<IF:$<PLATFORM_ID:Windows>,lib${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}-playlist,${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}-playlist>
             FOLDER libprojectM
             )
 endif()
@@ -149,12 +149,12 @@ if(ENABLE_INSTALL)
     if(UNIX)
         include(GeneratePkgConfigFiles)
 
-        set(PKGCONFIG_PACKAGE_NAME "projectM-4-playlist")
+        set(PKGCONFIG_PACKAGE_NAME "${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}-playlist")
         set(PKGCONFIG_PACKAGE_DESCRIPTION "projectM Playlist Library")
-        set(PKGCONFIG_PACKAGE_REQUIREMENTS_RELEASE "projectM-4")
-        set(PKGCONFIG_PACKAGE_REQUIREMENTS_DEBUG "projectM-4-debug")
+        set(PKGCONFIG_PACKAGE_REQUIREMENTS_RELEASE "${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}")
+        set(PKGCONFIG_PACKAGE_REQUIREMENTS_DEBUG "${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}-debug")
 
-        generate_pkg_config_files(projectM_playlist projectM-4-playlist)
+        generate_pkg_config_files(projectM_playlist ${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}-playlist)
     endif()
 
 endif()

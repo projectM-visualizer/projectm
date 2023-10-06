@@ -115,7 +115,7 @@ set_target_properties(projectM PROPERTIES
         VERSION "${PROJECTM_LIB_VERSION}"
         SOVERSION "${PROJECTM_SO_VERSION}"
         FOLDER libprojectM
-        OUTPUT_NAME projectM-4
+        OUTPUT_NAME ${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}
         )
 
 if(BUILD_SHARED_LIBS)
@@ -135,7 +135,7 @@ else()
             )
 
     set_target_properties(projectM PROPERTIES
-            OUTPUT_NAME $<IF:$<PLATFORM_ID:Windows>,libprojectM-4,projectM-4>
+            OUTPUT_NAME $<IF:$<PLATFORM_ID:Windows>,lib${PROJECTM_LIBRARY_BASE_OUTPUT_NAME},${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}>
             FOLDER libprojectM
             )
 endif()
@@ -251,11 +251,11 @@ if(ENABLE_INSTALL)
             endforeach()
         endif()
 
-        set(PKGCONFIG_PACKAGE_NAME "projectM-4")
+        set(PKGCONFIG_PACKAGE_NAME "${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}")
         set(PKGCONFIG_PACKAGE_DESCRIPTION "projectM Music Visualizer")
         set(PKGCONFIG_PACKAGE_REQUIREMENTS_ALL "opengl")
 
-        generate_pkg_config_files(projectM projectM-4)
+        generate_pkg_config_files(projectM ${PROJECTM_LIBRARY_BASE_OUTPUT_NAME})
 
     endif()
 
