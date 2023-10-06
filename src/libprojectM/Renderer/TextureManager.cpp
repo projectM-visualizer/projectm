@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <random>
 #include <vector>
 
 // Missing in macOS SDK. Query will most certainly fail, but then use the default format.
@@ -218,15 +219,7 @@ TextureSamplerDescriptor TextureManager::TryLoadingTexture(const std::string& na
 
     ExtractTextureSettings(name, wrapMode, filterMode, unqualifiedName);
 
-    if (!m_filesScanned)
-    {
-        FileScanner fileScanner = FileScanner(m_textureSearchPaths, m_extensions);
-
-        // scan for textures
-        using namespace std::placeholders;
-        fileScanner.scan(std::bind(&TextureManager::AddTextureFile, this, _1, _2));
-        m_filesScanned = true;
-    }
+    ScanTextures();
 
     std::string lowerCaseFileName(name);
     std::transform(lowerCaseFileName.begin(), lowerCaseFileName.end(), lowerCaseFileName.begin(), tolower);
@@ -292,47 +285,64 @@ TextureSamplerDescriptor TextureManager::LoadTexture(const std::string& fileName
     return {newTexture, sampler, name, unqualifiedName};
 }
 
-TextureSamplerDescriptor TextureManager::GetRandomTexture(const std::string& randomName)
+auto TextureManager::GetRandomTexture(const std::string& randomName) -> TextureSamplerDescriptor
 {
-    GLint wrapMode;
-    GLint filterMode;
-    std::string unqualifiedName;
+    std::string selectedFilename;
 
-    ExtractTextureSettings(randomName, wrapMode, filterMode, unqualifiedName);
+    std::random_device rndDevice;
+    std::default_random_engine rndEngine(rndDevice());
 
-    std::vector<std::string> user_texture_names;
-    size_t separator = unqualifiedName.find('_');
-    std::string textureNameFilter;
+    ScanTextures();
 
-    if (separator != std::string::npos)
+    std::string lowerCaseName(randomName);
+    std::transform(lowerCaseName.begin(), lowerCaseName.end(), lowerCaseName.begin(), tolower);
+
+    if (m_scannedTextureFiles.empty())
     {
-        textureNameFilter = unqualifiedName.substr(separator + 1);
-        unqualifiedName = unqualifiedName.substr(0, separator);
+        return {};
     }
 
-    for (auto& texture : m_textures)
+    std::string prefix;
+    if (lowerCaseName.length() > 7 && lowerCaseName.at(6) == '_')
     {
-        if (texture.second->IsUserTexture())
+        prefix = lowerCaseName.substr(7);
+    }
+
+    if (prefix.empty())
+    {
+        // Just pick a random index.
+        std::uniform_int_distribution<size_t> distribution(0, m_scannedTextureFiles.size() - 1);
+        selectedFilename = m_scannedTextureFiles.at(distribution(rndEngine)).lowerCaseBaseName;
+    }
+    else
+    {
+
+        std::vector<ScannedFile> filteredFiles;
+        auto prefixLength = prefix.length();
+        std::copy_if(m_scannedTextureFiles.begin(), m_scannedTextureFiles.end(),
+                     std::back_inserter(filteredFiles),
+                     [&prefix, prefixLength](const ScannedFile& file) {
+                         return file.lowerCaseBaseName.substr(0, prefixLength) == prefix;
+                     });
+
+        if (!filteredFiles.empty())
         {
-            if (textureNameFilter.empty() || texture.first.find(textureNameFilter) == 0)
-            {
-                user_texture_names.push_back(texture.first);
-            }
+            std::uniform_int_distribution<size_t> distribution(0, filteredFiles.size() - 1);
+            selectedFilename = filteredFiles.at(distribution(rndEngine)).lowerCaseBaseName;
         }
     }
 
-    if (!user_texture_names.empty())
+    // If a prefix was set and no file matched, filename can be empty.
+    if (selectedFilename.empty())
     {
-        std::string random_name = user_texture_names[rand() % user_texture_names.size()];
-        m_randomTextures.push_back(randomName);
-
-        auto randomTexture = m_textures[random_name];
-        auto sampler = m_samplers.at({wrapMode, filterMode});
-
-        return {randomTexture, sampler, randomName, unqualifiedName};
+        return {};
     }
 
-    return {};
+    // Use selected filename to load the texture.
+    auto desc = GetTexture(selectedFilename);
+
+    // Create new descriptor with the original "rand00[_prefix]" name.
+    return {desc.Texture(), desc.Sampler(), randomName, randomName};
 }
 
 void TextureManager::AddTextureFile(const std::string& fileName, const std::string& baseName)
@@ -393,5 +403,17 @@ void TextureManager::ExtractTextureSettings(const std::string& qualifiedName, GL
         name = qualifiedName.substr(3); // Milkdrop also removes the XY_ prefix in the case nothing matches.
         filterMode = GL_LINEAR;
         wrapMode = GL_REPEAT;
+    }
+}
+
+void TextureManager::ScanTextures()
+{
+    if (!m_filesScanned)
+    {
+        FileScanner fileScanner = FileScanner(m_textureSearchPaths, m_extensions);
+
+        using namespace std::placeholders;
+        fileScanner.scan(std::bind(&TextureManager::AddTextureFile, this, _1, _2));
+        m_filesScanned = true;
     }
 }

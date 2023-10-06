@@ -31,12 +31,20 @@ public:
     void SetCurrentPresetPath(const std::string& path);
 
     /**
-     * @brief Requests a texture and sampler with the given name.
+     * @brief Loads a texture and returns a descriptor with the given name.
      * Resets the texture age to zero.
      * @param fullName
      * @return
      */
     auto GetTexture(const std::string& fullName) -> TextureSamplerDescriptor;
+
+    /**
+     * @brief Returns a random texture descriptor, optionally using a prefix (after the `randXX_` name).
+     * Will use the default texture loading logic by calling GetTexture() if a texture was selected.
+     * @param randomName The filename prefix to filter. If empty, all available textures are matches. Case-insensitive.
+     * @return A texture descriptor with the random texture and a default sampler, or an empty sampler if no texture could be matched.
+     */
+    auto GetRandomTexture(const std::string& randomName) -> TextureSamplerDescriptor;
 
     /**
      * @brief Returns a sampler for the given name.
@@ -74,8 +82,6 @@ private:
 
     auto TryLoadingTexture(const std::string& name) -> TextureSamplerDescriptor;
 
-    auto GetRandomTexture(const std::string& randomName) -> TextureSamplerDescriptor;
-
     void Preload();
 
     TextureSamplerDescriptor LoadTexture(const std::string& fileName, const std::string& name);
@@ -83,6 +89,8 @@ private:
     void AddTextureFile(const std::string& fileName, const std::string& baseName);
 
     static void ExtractTextureSettings(const std::string& qualifiedName, GLint& wrapMode, GLint& filterMode, std::string& name);
+
+    void ScanTextures();
 
     std::vector<std::string> m_textureSearchPaths;  //!< Search paths to scan for textures.
     std::string m_currentPresetDir;                 //!< Path of the current preset to add to the search list.
