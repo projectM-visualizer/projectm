@@ -135,7 +135,7 @@ else()
             )
 
     set_target_properties(projectM PROPERTIES
-            OUTPUT_NAME $<IF:$<PLATFORM_ID:Windows>,libprojectM,projectM>
+            OUTPUT_NAME $<IF:$<PLATFORM_ID:Windows>,libprojectM-4,projectM-4>
             FOLDER libprojectM
             )
 endif()

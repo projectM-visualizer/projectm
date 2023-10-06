@@ -75,7 +75,7 @@ else()
             )
 
     set_target_properties(projectM_playlist PROPERTIES
-            OUTPUT_NAME $<IF:$<PLATFORM_ID:Windows>,libprojectM_playlist,projectM_playlist>
+            OUTPUT_NAME $<IF:$<PLATFORM_ID:Windows>,libprojectM-4-playlist,projectM-4-playlist>
             FOLDER libprojectM
             )
 endif()
