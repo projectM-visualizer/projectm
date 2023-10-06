@@ -55,6 +55,8 @@ void MilkdropShader::LoadCode(const std::string& presetShaderCode)
 
 void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
 {
+    std::locale loc;
+
     // Now request the textures and descriptors from the texture manager.
     for (const auto& name : m_samplerNames)
     {
@@ -93,6 +95,43 @@ void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
         {
             UpdateMaxBlurLevel(BlurTexture::BlurLevel::Blur3);
             continue;
+        }
+
+        // Random textures need special treatment.
+        if (lowerCaseName.length() >= 6 &&
+            lowerCaseName.substr(0, 4) == "rand"
+            && std::isdigit(lowerCaseName.at(4), loc)
+            && std::isdigit(lowerCaseName.at(5), loc)
+            )
+        {
+            // First look up the random texture index in the preset state so the texture matches between warp and composite shaders
+            int randomSlot = -1;
+            try {
+                randomSlot = std::stoi(lowerCaseName.substr(4, 2));
+            }
+            catch (...) // Ignore any conversion errors.
+            {}
+
+            if (randomSlot >= 0 && randomSlot <= 15)
+            {
+                if (presetState.randomTextureDescriptors.find(randomSlot) != presetState.randomTextureDescriptors.end())
+                {
+                    // Use existing texture descriptor.
+                    m_textureSamplerDescriptors.push_back(presetState.randomTextureDescriptors.at(randomSlot));
+                    continue;
+                }
+
+                // Slot empty, request a new random texture.
+                auto desc = presetState.renderContext.textureManager->GetRandomTexture(name);
+
+                // Also store a copy in preset state!
+                presetState.randomTextureDescriptors.insert({randomSlot, desc});
+
+                m_textureSamplerDescriptors.push_back(std::move(desc));
+                continue;
+            }
+
+            // Fall through if slot number is out of range and treat as normal texture.
         }
 
         auto desc = presetState.renderContext.textureManager->GetTexture(name);

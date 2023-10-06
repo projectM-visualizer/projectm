@@ -24,6 +24,7 @@ void TextureSamplerDescriptor::Bind(GLint unit, const Shader& shader) const
 {
     auto texture = m_texture.lock();
     auto sampler = m_sampler.lock();
+
     if (texture && sampler)
     {
         texture->Bind(unit, sampler);
@@ -34,6 +35,14 @@ void TextureSamplerDescriptor::Bind(GLint unit, const Shader& shader) const
                                                                                texture->Height(),
                                                                                1.0f / static_cast<float>(texture->Width()),
                                                                                1.0f / static_cast<float>(texture->Height())});
+        // Bind shorthand random texture size uniform
+        if (m_sizeName.substr(0, 4) == "rand" && m_sizeName.length() > 7 && m_sizeName.at(6) == '_')
+        {
+            shader.SetUniformFloat4(std::string("texsize_" + m_sizeName.substr(0, 6)).c_str(), {texture->Width(),
+                                                                                                texture->Height(),
+                                                                                                1.0f / static_cast<float>(texture->Width()),
+                                                                                                1.0f / static_cast<float>(texture->Height())});
+        }
     }
 }
 
@@ -101,6 +110,15 @@ auto TextureSamplerDescriptor::TexSizeDeclaration() const -> std::string
         declaration.append("uniform float4 texsize_");
         declaration.append(m_sizeName);
         declaration.append(";\n");
+
+        // Add short texsize uniform for prefixed random textures.
+        // E.g. "texsize_rand00" if a sampler "sampler_rand00_smalltiled" was declared
+        if (m_sizeName.substr(0, 4) == "rand" && m_sizeName.length() > 7 && m_sizeName.at(6) == '_')
+        {
+            declaration.append("uniform float4 texsize_");
+            declaration.append(m_sizeName.substr(0, 6));
+            declaration.append(";\n");
+        }
     }
 
     return declaration;
