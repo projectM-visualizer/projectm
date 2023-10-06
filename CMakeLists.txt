@@ -33,6 +33,9 @@ project(libprojectM
 # functions. Adding new function should be okay if documented.
 set(PROJECTM_SO_VERSION "4")
 
+# Base filename of all installed libraries. Also used as package name in pkgconfig.
+set(PROJECTM_LIBRARY_BASE_OUTPUT_NAME "projectM-${PROJECT_VERSION_MAJOR}")
+
 # The actual (full) library version of projectM
 set(PROJECTM_LIB_VERSION "${CMAKE_PROJECT_VERSION}")
 
