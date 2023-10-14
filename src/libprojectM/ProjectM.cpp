@@ -443,15 +443,6 @@ void ProjectM::SetMeshSize(size_t meshResolutionX, size_t meshResolutionY)
     // Constrain per-pixel mesh size to sensible limits
     m_meshX = std::max(static_cast<size_t>(8), std::min(static_cast<size_t>(400), m_meshX));
     m_meshY = std::max(static_cast<size_t>(8), std::min(static_cast<size_t>(400), m_meshY));
-
-    // Update mesh size in all sorts of classes.
-    //m_renderer->SetPerPixelMeshSize(m_meshX, m_meshY);
-    m_presetFactoryManager->initialize();
-
-    // Unload all presets and reload idle preset
-    m_activePreset.reset();
-    m_transitioningPreset.reset();
-    LoadIdlePreset();
 }
 
 auto ProjectM::PCM() -> libprojectM::Audio::PCM&

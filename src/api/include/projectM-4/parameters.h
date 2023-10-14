@@ -159,7 +159,8 @@ PROJECTM_EXPORT double projectm_get_preset_duration(projectm_handle instance);
 
 /**
  * @brief Sets the per-pixel equation mesh size in units.
- * @note This will currently remove any active presets and reload the default "idle" preset.
+ * Will internally be clamped to [8,300] in each axis. If any dimension is set to an odd value, it will be incremented by 1
+ * so only multiples of two are used.
  * @param instance The projectM instance handle.
  * @param width The new width of the mesh.
  * @param height The new height of the mesh.
