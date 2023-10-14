@@ -429,6 +429,21 @@ void ProjectM::SetMeshSize(size_t meshResolutionX, size_t meshResolutionY)
     m_meshX = meshResolutionX;
     m_meshY = meshResolutionY;
 
+    // Need multiples of two, otherwise will not render a horizontal and/or vertical bar in the center of the warp mesh.
+    if (m_meshX % 2 == 1)
+    {
+        m_meshX++;
+    }
+
+    if (m_meshY % 2 == 1)
+    {
+        m_meshY++;
+    }
+
+    // Constrain per-pixel mesh size to sensible limits
+    m_meshX = std::max(static_cast<size_t>(8), std::min(static_cast<size_t>(400), m_meshX));
+    m_meshY = std::max(static_cast<size_t>(8), std::min(static_cast<size_t>(400), m_meshY));
+
     // Update mesh size in all sorts of classes.
     //m_renderer->SetPerPixelMeshSize(m_meshX, m_meshY);
     m_presetFactoryManager->initialize();
