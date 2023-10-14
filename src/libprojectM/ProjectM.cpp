@@ -487,16 +487,16 @@ auto ProjectM::GetRenderContext() -> RenderContext
     RenderContext ctx{};
     ctx.viewportSizeX = m_windowWidth;
     ctx.viewportSizeY = m_windowHeight;
-    ctx.time = m_timeKeeper->GetRunningTime();
-    ctx.progress = m_timeKeeper->PresetProgressA();
-    ctx.fps = m_targetFps;
+    ctx.time = static_cast<float>(m_timeKeeper->GetRunningTime());
+    ctx.progress = static_cast<float>(m_timeKeeper->PresetProgressA());
+    ctx.fps = static_cast<float>(m_targetFps);
     ctx.frame = m_frameCount;
     ctx.aspectX = (m_windowHeight > m_windowWidth) ? static_cast<float>(m_windowWidth) / static_cast<float>(m_windowHeight) : 1.0f;
     ctx.aspectY = (m_windowWidth > m_windowHeight) ? static_cast<float>(m_windowHeight) / static_cast<float>(m_windowWidth) : 1.0f;
     ctx.invAspectX = 1.0f / ctx.aspectX;
     ctx.invAspectY = 1.0f / ctx.aspectY;
-    ctx.perPixelMeshX = m_meshX;
-    ctx.perPixelMeshY = m_meshY;
+    ctx.perPixelMeshX = static_cast<int>(m_meshX);
+    ctx.perPixelMeshY = static_cast<int>(m_meshY);
     ctx.textureManager = m_textureManager.get();
 
     return ctx;
