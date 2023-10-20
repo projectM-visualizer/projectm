@@ -45,6 +45,14 @@ class Shader
 {
 public:
     /**
+     * GLSL version structure
+     */
+    struct GlslVersion {
+        int major{}; //!< Major OpenGL shading language version
+        int minor{}; //!< Minor OpenGL shading language version
+    };
+
+    /**
      * Creates a new shader.
      */
     Shader();
@@ -135,6 +143,14 @@ public:
      * @param values The matrix to set.
      */
     void SetUniformMat4x4(const char* uniform, const glm::mat4x4& values) const;
+
+    /**
+     * @brief Parses the shading language version string returned from OpenGL.
+     * If this function does not return a good version (e.g. "major" not >0), then OpenGL is probably
+     * not properly initialized or the context not made current.
+     * @return The parsed version, or {0,0} if the version could not be parsed.
+     */
+    static auto GetShaderLanguageVersion() -> GlslVersion;
 
 private:
     /**

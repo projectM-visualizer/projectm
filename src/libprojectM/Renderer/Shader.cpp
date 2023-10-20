@@ -173,3 +173,33 @@ GLuint Shader::CompileShader(const std::string& source, GLenum type)
 
     throw ShaderException("Error compiling shader: " + std::string(message.data()));
 }
+
+auto Shader::GetShaderLanguageVersion() -> Shader::GlslVersion
+{
+    const char* shaderLanguageVersion = reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+    if (shaderLanguageVersion == nullptr)
+    {
+        return {};
+    }
+
+    std::string shaderLanguageVersionString(shaderLanguageVersion);
+
+    // Cut off the vendor-specific information, if any
+    auto spacePos = shaderLanguageVersionString.find(' ');
+    if (spacePos != std::string::npos)
+    {
+        shaderLanguageVersionString.resize(spacePos);
+    }
+
+    auto dotPos = shaderLanguageVersionString.find('.');
+    if (dotPos == std::string::npos)
+    {
+        return {};
+    }
+
+    int versionMajor = std::stoi(shaderLanguageVersionString.substr(0, dotPos));
+    int versionMinor = std::stoi(shaderLanguageVersionString.substr(dotPos + 1));
+
+    return {versionMajor, versionMinor};
+}
