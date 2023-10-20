@@ -1,8 +1,10 @@
 #pragma once
 
-#include <memory>
-
 #include "GLSLGenerator.h"
+
+#include "Renderer/Shader.hpp"
+
+#include <memory>
 
 namespace libprojectM {
 namespace MilkdropPreset {
@@ -46,21 +48,6 @@ public:
 
 private:
     /**
-     * POD struct to store parsed GLSL version numbers.
-     */
-    struct GlslVersion {
-        int major{}; //!< Major OpenGL shading language version
-        int minor{}; //!< Minor OpenGL shading language version
-    };
-
-    /**
-     * @brief Queries the system GLSL version.
-     * Uses `glGetString(GL_SHADING_LANGUAGE_VERSION)`.
-     * @return The parsed major and minor version numbers.
-     */
-    GlslVersion QueryGlslVersion();
-
-    /**
      * @brief Constructor, overriding the version to GLES3 if `use_gles` is true.
      * Note - this happens after GlslVersion is called, because it uses the version to determine things.
      * @param use_gles Set to true if GLES is being used.
@@ -77,7 +64,7 @@ private:
     std::string AddVersionHeader(std::string shader_text);
 
     bool m_useGLES{false}; //!< Whether or not to use GLES shaders.
-    GlslVersion m_GLSLVersion{0, 0}; //!< The queried GLSL version.
+    Shader::GlslVersion m_GLSLVersion{}; //!< The queried GLSL version.
     std::string m_versionHeader; //!< The version header to prepended by AddVersionHeader.
     M4::GLSLGenerator::Version m_GLSLGeneratorVersion; //!< The GLSL generator version to pass to the hlslparser generator.
 };
