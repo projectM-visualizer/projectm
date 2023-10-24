@@ -2,7 +2,7 @@
 
 #include "IdleTextures.hpp"
 
-#include "MilkdropPreset/MilkdropNoise.hpp"
+#include "MilkdropNoise.hpp"
 
 #include "SOIL2/SOIL2.h"
 
