@@ -79,6 +79,8 @@ public:
     void RenderFrame(const libprojectM::Audio::FrameAudioData& audioData,
                      const RenderContext& renderContext) override;
 
+    auto OutputTexture() const -> std::shared_ptr<Texture> override;
+
 private:
     void PerFrameUpdate();
 
