@@ -23,7 +23,6 @@
 
 #include "Preset.hpp"
 #include "PresetFactoryManager.hpp"
-#include "Renderer.hpp"
 #include "TextureManager.hpp"
 #include "TimeKeeper.hpp"
 #include "libprojectM/Audio/BeatDetect.hpp"
@@ -215,8 +214,6 @@ void ProjectM::Initialize()
 
     m_beatDetect = std::make_unique<libprojectM::Audio::BeatDetect>(m_pcm);
 
-    m_renderer = std::make_unique<Renderer>(m_windowWidth, m_windowHeight);
-
     m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths);
 
     m_presetFactoryManager->initialize();
@@ -258,15 +255,6 @@ void ProjectM::ResetOpenGL(size_t width, size_t height)
     /** Stash the new dimensions */
     m_windowWidth = width;
     m_windowHeight = height;
-
-    try
-    {
-        m_renderer->reset(width, height);
-    }
-    catch (const RenderException& ex)
-    {
-        // ToDo: Add generic error callback
-    }
 }
 
 void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hardCut)
@@ -452,34 +440,18 @@ auto ProjectM::PCM() -> libprojectM::Audio::PCM&
 
 void ProjectM::Touch(float touchX, float touchY, int pressure, int touchType)
 {
-    if (m_renderer)
-    {
-        m_renderer->touch(touchX, touchY, pressure, touchType);
-    }
 }
 
 void ProjectM::TouchDrag(float touchX, float touchY, int pressure)
 {
-    if (m_renderer)
-    {
-        m_renderer->touchDrag(touchX, touchY, pressure);
-    }
 }
 
 void ProjectM::TouchDestroy(float touchX, float touchY)
 {
-    if (m_renderer)
-    {
-        m_renderer->touchDestroy(touchX, touchY);
-    }
 }
 
 void ProjectM::TouchDestroyAll()
 {
-    if (m_renderer)
-    {
-        m_renderer->touchDestroyAll();
-    }
 }
 
 auto ProjectM::GetRenderContext() -> RenderContext

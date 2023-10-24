@@ -7,8 +7,6 @@ add_library(Renderer OBJECT
         RenderContext.hpp
         RenderItem.cpp
         RenderItem.hpp
-        Renderer.cpp
-        Renderer.hpp
         Sampler.cpp
         Sampler.hpp
         Shader.cpp

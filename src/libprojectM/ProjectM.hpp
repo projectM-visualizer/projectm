@@ -246,7 +246,6 @@ private:
 
     std::unique_ptr<PresetFactoryManager> m_presetFactoryManager; //!< Provides access to all available preset factories.
 
-    std::unique_ptr<Renderer> m_renderer;                         //!< The Preset renderer.
     std::unique_ptr<TextureManager> m_textureManager;             //!< The texture manager.
     std::unique_ptr<libprojectM::Audio::BeatDetect> m_beatDetect; //!< The beat detection class.
     std::unique_ptr<Preset> m_activePreset;                       //!< Currently loaded preset.
