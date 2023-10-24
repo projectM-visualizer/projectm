@@ -113,6 +113,14 @@ public:
     void SetUniformFloat2(const char* uniform, const glm::vec2& values) const;
 
     /**
+     * @brief Sets an int vec2 uniform.
+     * The program must be bound before calling this method!
+     * @param uniform The uniform name
+     * @param values The values to set.
+     */
+    void SetUniformInt2(const char* uniform, const glm::ivec2& values) const;
+
+    /**
      * @brief Sets a float vec3 uniform.
      * The program must be bound before calling this method!
      * @param uniform The uniform name
@@ -121,12 +129,28 @@ public:
     void SetUniformFloat3(const char* uniform, const glm::vec3& values) const;
 
     /**
+     * @brief Sets an int vec3 uniform.
+     * The program must be bound before calling this method!
+     * @param uniform The uniform name
+     * @param values The values to set.
+     */
+    void SetUniformInt3(const char* uniform, const glm::ivec3& values) const;
+
+    /**
      * @brief Sets a float vec4 uniform.
      * The program must be bound before calling this method!
      * @param uniform The uniform name
      * @param values The values to set.
      */
     void SetUniformFloat4(const char* uniform, const glm::vec4& values) const;
+
+    /**
+     * @brief Sets an int vec4 uniform.
+     * The program must be bound before calling this method!
+     * @param uniform The uniform name
+     * @param values The values to set.
+     */
+    void SetUniformInt4(const char* uniform, const glm::ivec4& values) const;
 
     /**
      * @brief Sets a float 3x4 matrix uniform.

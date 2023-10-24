@@ -109,6 +109,16 @@ void Shader::SetUniformFloat2(const char* uniform, const glm::vec2& values) cons
     glUniform2fv(location, 1, glm::value_ptr(values));
 }
 
+void Shader::SetUniformInt2(const char* uniform, const glm::ivec2& values) const
+{
+    auto location = glGetUniformLocation(m_shaderProgram, uniform);
+    if (location < 0)
+    {
+        return;
+    }
+    glUniform2iv(location, 1, glm::value_ptr(values));
+}
+
 void Shader::SetUniformFloat3(const char* uniform, const glm::vec3& values) const
 {
     auto location = glGetUniformLocation(m_shaderProgram, uniform);
@@ -119,6 +129,16 @@ void Shader::SetUniformFloat3(const char* uniform, const glm::vec3& values) cons
     glUniform3fv(location, 1, glm::value_ptr(values));
 }
 
+void Shader::SetUniformInt3(const char* uniform, const glm::ivec3& values) const
+{
+    auto location = glGetUniformLocation(m_shaderProgram, uniform);
+    if (location < 0)
+    {
+        return;
+    }
+    glUniform3iv(location, 1, glm::value_ptr(values));
+}
+
 void Shader::SetUniformFloat4(const char* uniform, const glm::vec4& values) const
 {
     auto location = glGetUniformLocation(m_shaderProgram, uniform);
@@ -127,6 +147,16 @@ void Shader::SetUniformFloat4(const char* uniform, const glm::vec4& values) cons
         return;
     }
     glUniform4fv(location, 1, glm::value_ptr(values));
+}
+
+void Shader::SetUniformInt4(const char* uniform, const glm::ivec4& values) const
+{
+    auto location = glGetUniformLocation(m_shaderProgram, uniform);
+    if (location < 0)
+    {
+        return;
+    }
+    glUniform4iv(location, 1, glm::value_ptr(values));
 }
 
 void Shader::SetUniformMat3x4(const char* uniform, const glm::mat3x4& values) const
