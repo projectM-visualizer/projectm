@@ -6,6 +6,8 @@ add_library(Renderer OBJECT
         IdleTextures.hpp
         MilkdropNoise.cpp
         MilkdropNoise.hpp
+        PresetTransition.cpp
+        PresetTransition.hpp
         RenderContext.hpp
         RenderItem.cpp
         RenderItem.hpp
