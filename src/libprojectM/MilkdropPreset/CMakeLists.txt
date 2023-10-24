@@ -60,8 +60,6 @@ add_library(MilkdropPreset OBJECT
         FlipTexture.hpp
         IdlePreset.cpp
         IdlePreset.hpp
-        MilkdropNoise.cpp
-        MilkdropNoise.hpp
         MilkdropPreset.cpp
         MilkdropPreset.hpp
         MilkdropPresetExceptions.hpp

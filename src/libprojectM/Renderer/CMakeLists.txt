@@ -4,6 +4,8 @@ add_library(Renderer OBJECT
         Framebuffer.cpp
         Framebuffer.hpp
         IdleTextures.hpp
+        MilkdropNoise.cpp
+        MilkdropNoise.hpp
         RenderContext.hpp
         RenderItem.cpp
         RenderItem.hpp
