@@ -36,7 +36,7 @@ auto TextureAttachment::Texture() const -> std::shared_ptr<class Texture>
     return m_texture;
 }
 
-void TextureAttachment::Texture(const std::shared_ptr<struct Texture>& texture)
+void TextureAttachment::Texture(const std::shared_ptr<class Texture>& texture)
 {
     m_texture = texture;
 }
