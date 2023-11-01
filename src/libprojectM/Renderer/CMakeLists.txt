@@ -1,4 +1,32 @@
+set(TRANSITION_SHADER_FILES
+        TransitionShaders/TransitionShaderBuiltInSimpleBlendGlsl330.frag
+        TransitionShaders/TransitionShaderBuiltInSweepGlsl330.frag
+        TransitionShaders/TransitionVertexShaderGlsl330.vert
+        TransitionShaders/TransitionShaderHeaderGlsl330.frag
+        TransitionShaders/TransitionShaderMainGlsl330.frag
+        )
+
+string(REPLACE ";" "\\;" TRANSITION_SHADER_FILES_ARG "${TRANSITION_SHADER_FILES}")
+add_custom_command(OUTPUT
+        ${CMAKE_CURRENT_BINARY_DIR}/BuiltInTransitionsResources.hpp
+
+        COMMAND ${CMAKE_COMMAND}
+
+        ARGS
+        -D SHADER_FILES="${TRANSITION_SHADER_FILES_ARG}"
+        -D OUTPUT_DIR=${CMAKE_CURRENT_BINARY_DIR}
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/GenerateBuiltInTransitionsResources.cmake
+
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        DEPENDS # Files watched for changes:
+        ${TRANSITION_SHADER_FILES}
+        BuiltInTransitionsResources.hpp.in
+        GenerateBuiltInTransitionsResources.cmake
+        )
+
 add_library(Renderer OBJECT
+        ${CMAKE_CURRENT_BINARY_DIR}/BuiltInTransitionsResources.hpp
+        BuiltInTransitionsResources.hpp.in
         FileScanner.cpp
         FileScanner.hpp
         Framebuffer.cpp
@@ -23,11 +51,14 @@ add_library(Renderer OBJECT
         TextureManager.hpp
         TextureSamplerDescriptor.cpp
         TextureSamplerDescriptor.hpp
+        TransitionShaderManager.cpp
+        TransitionShaderManager.hpp
         )
 
 target_include_directories(Renderer
         PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/.."
+        "${CMAKE_CURRENT_BINARY_DIR}"
         PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}"
         )
