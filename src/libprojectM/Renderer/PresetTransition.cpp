@@ -12,6 +12,8 @@ PresetTransition::PresetTransition(const std::shared_ptr<Shader>& transitionShad
 {
     std::mt19937 rand32(m_randomDevice());
     m_staticRandomValues = {rand32(), rand32(), rand32(), rand32()};
+
+    RenderItem::Init();
 }
 
 void PresetTransition::InitVertexAttrib()
@@ -92,7 +94,9 @@ void PresetTransition::Draw(const Preset& oldPreset,
                                                             audioData.trebAtt});
 
     // Texture samplers
+    m_transitionShader->SetUniformInt("iChannel0", 0);
     oldPreset.OutputTexture()->Bind(0, m_presetSampler);
+    m_transitionShader->SetUniformInt("iChannel1", 1);
     newPreset.OutputTexture()->Bind(1, m_presetSampler);
 
     int textureUnit = 2;
@@ -115,7 +119,7 @@ void PresetTransition::Draw(const Preset& oldPreset,
 
     for (int i = 2; i < textureUnit; i++)
     {
-        noiseDescriptors[textureUnit - 2].Unbind(textureUnit);
+        noiseDescriptors[i - 2].Unbind(textureUnit);
     }
 
     Shader::Unbind();
