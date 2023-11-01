@@ -23,10 +23,15 @@
 
 #include "Preset.hpp"
 #include "PresetFactoryManager.hpp"
-#include "TextureManager.hpp"
 #include "TimeKeeper.hpp"
-#include "libprojectM/Audio/BeatDetect.hpp"
-#include "libprojectM/Audio/PCM.hpp" //Sound data handler (buffering, FFT, etc.)
+
+#include "Audio/BeatDetect.hpp"
+#include "Audio/PCM.hpp" //Sound data handler (buffering, FFT, etc.)
+
+#include "Renderer/PresetTransition.hpp"
+#include "Renderer/TextureManager.hpp"
+#include "Renderer/TransitionShaderManager.hpp"
+
 
 #if PROJECTM_USE_THREADS
 
@@ -175,7 +180,6 @@ void ProjectM::RenderFrame()
         m_activePreset->Initialize(GetRenderContext());
     }
 
-    // ToDo: Encapsulate preset loading check and transition in Renderer?
     if (m_timeKeeper->IsSmoothing() && m_transitioningPreset != nullptr)
     {
 #if PROJECTM_USE_THREADS
@@ -192,8 +196,32 @@ void ProjectM::RenderFrame()
         }
     }
 
+    auto renderContext = GetRenderContext();
+    auto audioData = m_beatDetect->GetFrameAudioData();
+
+    if (m_transition != nullptr && m_transitioningPreset != nullptr)
+    {
+        if (m_transition->IsDone())
+        {
+            m_activePreset = std::move(m_transitioningPreset);
+            m_transitioningPreset.reset();
+            m_transition.reset();
+        }
+        else
+        {
+            m_transitioningPreset->RenderFrame(audioData, renderContext);
+        }
+    }
+
+
     // ToDo: Call the to-be-implemented render method in Renderer
-    m_activePreset->RenderFrame(m_beatDetect->GetFrameAudioData(), GetRenderContext());
+    m_activePreset->RenderFrame(audioData, renderContext);
+
+    if (m_transition != nullptr && m_transitioningPreset != nullptr)
+    {
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        m_transition->Draw(*m_activePreset, *m_transitioningPreset, renderContext, audioData);
+    }
 
     m_frameCount++;
 }
@@ -215,6 +243,8 @@ void ProjectM::Initialize()
     m_beatDetect = std::make_unique<libprojectM::Audio::BeatDetect>(m_pcm);
 
     m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths);
+
+    m_transitionShaderManager = std::make_unique<TransitionShaderManager>();
 
     m_presetFactoryManager->initialize();
 
@@ -278,6 +308,8 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
 
     // ToDo: Continue only if preset is fully loaded.
 
+    m_transition.reset();
+
     if (hardCut)
     {
         m_activePreset = std::move(preset);
@@ -287,6 +319,7 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
     {
         m_transitioningPreset = std::move(preset);
         m_timeKeeper->StartSmoothing();
+        m_transition = std::make_unique<PresetTransition>(m_transitionShaderManager->RandomTransition(), m_softCutDuration);
     }
 }
 

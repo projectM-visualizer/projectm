@@ -59,7 +59,11 @@ class Renderer;
 
 class TextureManager;
 
+class TransitionShaderManager;
+
 class Preset;
+
+class PresetTransition;
 
 class TimeKeeper;
 
@@ -225,8 +229,8 @@ private:
     size_t m_meshX{32};              //!< Per-point mesh horizontal resolution.
     size_t m_meshY{24};              //!< Per-point mesh vertical resolution.
     size_t m_targetFps{35};          //!< Target frames per second.
-    int m_windowWidth{0};         //!< EvaluateFrameData window width. If 0, nothing is rendered.
-    int m_windowHeight{0};        //!< EvaluateFrameData window height. If 0, nothing is rendered.
+    int m_windowWidth{0};            //!< EvaluateFrameData window width. If 0, nothing is rendered.
+    int m_windowHeight{0};           //!< EvaluateFrameData window height. If 0, nothing is rendered.
     double m_presetDuration{30.0};   //!< Preset duration in seconds.
     double m_softCutDuration{3.0};   //!< Soft cut transition time.
     double m_hardCutDuration{20.0};  //!< Time after which a hard cut can happen at the earliest.
@@ -246,11 +250,13 @@ private:
 
     std::unique_ptr<PresetFactoryManager> m_presetFactoryManager; //!< Provides access to all available preset factories.
 
-    std::unique_ptr<TextureManager> m_textureManager;             //!< The texture manager.
-    std::unique_ptr<libprojectM::Audio::BeatDetect> m_beatDetect; //!< The beat detection class.
-    std::unique_ptr<Preset> m_activePreset;                       //!< Currently loaded preset.
-    std::unique_ptr<Preset> m_transitioningPreset;                //!< Destination preset when smooth preset switching.
-    std::unique_ptr<TimeKeeper> m_timeKeeper;                     //!< Keeps the different timers used to render and switch presets.
+    std::unique_ptr<TextureManager> m_textureManager;                   //!< The texture manager.
+    std::unique_ptr<TransitionShaderManager> m_transitionShaderManager; //!< The transition shader manager.
+    std::unique_ptr<libprojectM::Audio::BeatDetect> m_beatDetect;       //!< The beat detection class.
+    std::unique_ptr<Preset> m_activePreset;                             //!< Currently loaded preset.
+    std::unique_ptr<Preset> m_transitioningPreset;                      //!< Destination preset when smooth preset switching.
+    std::unique_ptr<PresetTransition> m_transition;                     //!< Transition effect used for blending.
+    std::unique_ptr<TimeKeeper> m_timeKeeper;                           //!< Keeps the different timers used to render and switch presets.
 
 #if PROJECTM_USE_THREADS
     mutable std::recursive_mutex m_presetSwitchMutex;   //!< Mutex for locking preset switching while rendering and vice versa.
