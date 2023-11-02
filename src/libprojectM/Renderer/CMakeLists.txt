@@ -1,6 +1,10 @@
 set(TRANSITION_SHADER_FILES
+        TransitionShaders/TransitionShaderBuiltInCircleGlsl330.frag
+        TransitionShaders/TransitionShaderBuiltInPlasmaGlsl330.frag
         TransitionShaders/TransitionShaderBuiltInSimpleBlendGlsl330.frag
         TransitionShaders/TransitionShaderBuiltInSweepGlsl330.frag
+        TransitionShaders/TransitionShaderBuiltInWarpGlsl330.frag
+        TransitionShaders/TransitionShaderBuiltInZoomBlurGlsl330.frag
         TransitionShaders/TransitionVertexShaderGlsl330.vert
         TransitionShaders/TransitionShaderHeaderGlsl330.frag
         TransitionShaders/TransitionShaderMainGlsl330.frag
