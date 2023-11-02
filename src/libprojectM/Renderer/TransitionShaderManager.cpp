@@ -2,11 +2,17 @@
 
 #include "BuiltInTransitionsResources.hpp"
 
+#include <iostream>
+
 TransitionShaderManager::TransitionShaderManager()
-    : m_mersenneTwister(m_randomDevice())
+    : m_transitionShaders({CompileTransitionShader(kTransitionShaderBuiltInCircleGlsl330),
+                           CompileTransitionShader(kTransitionShaderBuiltInPlasmaGlsl330),
+                           CompileTransitionShader(kTransitionShaderBuiltInSimpleBlendGlsl330),
+                           CompileTransitionShader(kTransitionShaderBuiltInSweepGlsl330),
+                           CompileTransitionShader(kTransitionShaderBuiltInWarpGlsl330),
+                           CompileTransitionShader(kTransitionShaderBuiltInZoomBlurGlsl330)})
+    , m_mersenneTwister(m_randomDevice())
 {
-    m_transitionShaders.push_back(CompileTransitionShader(kTransitionShaderBuiltInSimpleBlendGlsl330));
-    m_transitionShaders.push_back(CompileTransitionShader(kTransitionShaderBuiltInSweepGlsl330));
 }
 
 auto TransitionShaderManager::RandomTransition() -> std::shared_ptr<Shader>
@@ -22,12 +28,12 @@ auto TransitionShaderManager::RandomTransition() -> std::shared_ptr<Shader>
 auto TransitionShaderManager::CompileTransitionShader(const std::string& shaderBodyCode) -> std::shared_ptr<Shader>
 {
 #if USE_GLES
-    std::string versionHeader{"#version 300 es\n\n"};
+    constexpr char versionHeader[] = "#version 300 es\n\n";
 #else
-    std::string versionHeader{"#version 330\n\n"};
+    constexpr char versionHeader[] = "#version 330\n\n";
 #endif
 
-    std::string fragmentShaderSource(versionHeader);
+    std::string fragmentShaderSource(static_cast<const char*>(versionHeader));
     fragmentShaderSource.append(kTransitionShaderHeaderGlsl330);
     fragmentShaderSource.append("\n");
     fragmentShaderSource.append(shaderBodyCode);
@@ -37,7 +43,7 @@ auto TransitionShaderManager::CompileTransitionShader(const std::string& shaderB
     try
     {
         auto transitionShader = std::make_shared<Shader>();
-        transitionShader->CompileProgram(versionHeader + kTransitionVertexShaderGlsl330, fragmentShaderSource);
+        transitionShader->CompileProgram(static_cast<const char*>(versionHeader) + kTransitionVertexShaderGlsl330, fragmentShaderSource);
         return transitionShader;
     }
     catch (const ShaderException& ex)
