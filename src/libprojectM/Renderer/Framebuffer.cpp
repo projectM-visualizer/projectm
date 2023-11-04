@@ -102,6 +102,16 @@ bool Framebuffer::SetSize(int width, int height)
     return true;
 }
 
+auto Framebuffer::Width() const -> int
+{
+    return m_width;
+}
+
+auto Framebuffer::Height() const -> int
+{
+    return m_height;
+}
+
 auto Framebuffer::GetAttachment(int framebufferIndex, TextureAttachment::AttachmentType type, int attachmentIndex) const -> std::shared_ptr<TextureAttachment>
 {
     if (framebufferIndex < 0 || framebufferIndex >= static_cast<int>(m_framebufferIds.size()))
@@ -387,3 +397,4 @@ void Framebuffer::RemoveAttachment(int framebufferIndex, GLenum attachmentType)
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_framebufferIds.at(m_readFramebuffer));
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_framebufferIds.at(m_drawFramebuffer));
 }
+

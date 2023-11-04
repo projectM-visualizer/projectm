@@ -100,8 +100,8 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     }
 
     // y-flip the previous frame and assign the flipped texture as "main"
-    m_flipTexture.Draw(m_framebuffer.GetColorAttachmentTexture(m_previousFrameBuffer, 0));
-    m_state.mainTexture = m_flipTexture.FlippedTexture();
+    m_flipTexture.Draw(m_framebuffer.GetColorAttachmentTexture(m_previousFrameBuffer, 0), nullptr, true, false);
+    m_state.mainTexture = m_flipTexture.Texture();
 
     // We now draw to the current framebuffer.
     m_framebuffer.Bind(m_currentFrameBuffer);
@@ -139,8 +139,8 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     // Todo: Song title anim would go here
 
     // y-flip the image for final compositing again
-    m_flipTexture.Draw(m_framebuffer.GetColorAttachmentTexture(m_currentFrameBuffer, 0));
-    m_state.mainTexture = m_flipTexture.FlippedTexture();
+    m_flipTexture.Draw(m_framebuffer.GetColorAttachmentTexture(m_currentFrameBuffer, 0), nullptr, true, false);
+    m_state.mainTexture = m_flipTexture.Texture();
 
     // We no longer need the previous frame image, use it to render the final composite.
     m_framebuffer.BindRead(m_currentFrameBuffer);
@@ -153,7 +153,7 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     if (!m_finalComposite.HasCompositeShader())
     {
         // Flip texture again in "previous" framebuffer as old-school effects are still upside down.
-        m_flipTexture.Draw(m_framebuffer.GetColorAttachmentTexture(m_previousFrameBuffer, 0), m_framebuffer, m_previousFrameBuffer);
+        m_flipTexture.Draw(m_framebuffer.GetColorAttachmentTexture(m_previousFrameBuffer, 0), m_framebuffer, m_previousFrameBuffer, true, false);
     }
 
     // TEST: Copy result to default framebuffer
