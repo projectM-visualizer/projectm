@@ -35,6 +35,16 @@ public:
      */
     virtual auto OutputTexture() const -> std::shared_ptr<Texture> = 0;
 
+    /**
+     * @brief Draws an initial image into the preset, e.g. the last frame of a previous preset.
+     * It's not guaranteed a preset supports using a previously rendered image. If not
+     * supported, this call is simply a no-op.
+     * @param image The texture to be copied as the initial preset image.
+     * @param renderContext The current render context data.
+     */
+    virtual void DrawInitialImage(const std::shared_ptr<Texture>& image,
+                                  const RenderContext& renderContext) {};
+
     inline void SetFilename(const std::string& filename)
     {
         m_filename = filename;

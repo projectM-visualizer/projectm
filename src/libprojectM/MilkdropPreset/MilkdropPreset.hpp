@@ -81,6 +81,8 @@ public:
 
     auto OutputTexture() const -> std::shared_ptr<Texture> override;
 
+    void DrawInitialImage(const std::shared_ptr<Texture>& image, const RenderContext& renderContext) override;
+
 private:
     void PerFrameUpdate();
 
