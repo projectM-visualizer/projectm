@@ -56,8 +56,6 @@ add_library(MilkdropPreset OBJECT
         Filters.hpp
         FinalComposite.cpp
         FinalComposite.hpp
-        FlipTexture.cpp
-        FlipTexture.hpp
         IdlePreset.cpp
         IdlePreset.hpp
         MilkdropPreset.cpp

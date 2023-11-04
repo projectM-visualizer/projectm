@@ -91,7 +91,19 @@ public:
      * @param height The height of the framebuffer.
      * @return true if the framebuffer was resized, false if it's contents remain unchanged.
      */
-    bool SetSize(int width, int height);
+    auto SetSize(int width, int height) -> bool;
+
+    /**
+     * Returns the width in pixels of the framebuffer.
+     * @return The horizontal resolution.
+     */
+    auto Width() const -> int;
+
+    /**
+     * Returns the height in pixels of the framebuffer.
+     * @return the vertical resolution.
+     */
+    auto Height() const -> int;
 
     /**
      * @brief Returns a texture attachment object.

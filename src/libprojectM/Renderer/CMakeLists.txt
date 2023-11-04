@@ -31,6 +31,8 @@ add_custom_command(OUTPUT
 add_library(Renderer OBJECT
         ${CMAKE_CURRENT_BINARY_DIR}/BuiltInTransitionsResources.hpp
         BuiltInTransitionsResources.hpp.in
+        CopyTexture.cpp
+        CopyTexture.hpp
         FileScanner.cpp
         FileScanner.hpp
         Framebuffer.cpp
