@@ -184,6 +184,14 @@ auto MilkdropPreset::OutputTexture() const -> std::shared_ptr<Texture>
     return m_framebuffer.GetColorAttachmentTexture(m_currentFrameBuffer, 0);
 }
 
+void MilkdropPreset::DrawInitialImage(const std::shared_ptr<Texture>& image, const RenderContext& renderContext)
+{
+    m_framebuffer.SetSize(renderContext.viewportSizeX, renderContext.viewportSizeY);
+
+    // Render to previous framebuffer, as this is the image used to draw the next frame on.
+    m_flipTexture.Draw(image, m_framebuffer, m_previousFrameBuffer);
+}
+
 void MilkdropPreset::PerFrameUpdate()
 {
     m_perFrameContext.LoadStateVariables(m_state);

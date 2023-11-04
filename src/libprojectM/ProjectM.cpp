@@ -302,13 +302,17 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
     }
     catch (std::exception& ex)
     {
-        m_activePreset.reset();
         PresetSwitchFailedEvent(preset->Filename(), ex.what());
     }
 
     // ToDo: Continue only if preset is fully loaded.
 
     m_transition.reset();
+
+    if (m_activePreset)
+    {
+        preset->DrawInitialImage(m_activePreset->OutputTexture(), GetRenderContext());
+    }
 
     if (hardCut)
     {
