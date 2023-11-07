@@ -28,6 +28,7 @@
 #include "Audio/BeatDetect.hpp"
 #include "Audio/PCM.hpp" //Sound data handler (buffering, FFT, etc.)
 
+#include "Renderer/CopyTexture.hpp"
 #include "Renderer/PresetTransition.hpp"
 #include "Renderer/TextureManager.hpp"
 #include "Renderer/TransitionShaderManager.hpp"
@@ -217,10 +218,16 @@ void ProjectM::RenderFrame()
     // ToDo: Call the to-be-implemented render method in Renderer
     m_activePreset->RenderFrame(audioData, renderContext);
 
+    // ToDo: Allow external apps to provide a custom target framebuffer.
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
     if (m_transition != nullptr && m_transitioningPreset != nullptr)
     {
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
         m_transition->Draw(*m_activePreset, *m_transitioningPreset, renderContext, audioData);
+    }
+    else
+    {
+        m_textureCopier->Draw(m_activePreset->OutputTexture(), false, false);
     }
 
     m_frameCount++;
@@ -245,6 +252,8 @@ void ProjectM::Initialize()
     m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths);
 
     m_transitionShaderManager = std::make_unique<TransitionShaderManager>();
+
+    m_textureCopier = std::make_unique<CopyTexture>();
 
     m_presetFactoryManager->initialize();
 

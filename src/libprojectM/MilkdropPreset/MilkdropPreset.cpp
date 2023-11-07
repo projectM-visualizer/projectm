@@ -156,23 +156,7 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
         m_flipTexture.Draw(m_framebuffer.GetColorAttachmentTexture(m_previousFrameBuffer, 0), m_framebuffer, m_previousFrameBuffer, true, false);
     }
 
-    // TEST: Copy result to default framebuffer
-    m_framebuffer.BindRead(m_previousFrameBuffer);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-    glReadBuffer(GL_COLOR_ATTACHMENT0);
-#if USE_GLES
-    {
-        GLenum drawBuffers[] = {GL_BACK};
-        glDrawBuffers(1, drawBuffers);
-    }
-#else
-    glDrawBuffer(GL_COLOR_ATTACHMENT0);
-#endif
-    glBlitFramebuffer(0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
-                      0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY,
-                      GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
-    // Swap framebuffers for the next frame.
+    // Swap framebuffer IDs for the next frame.
     std::swap(m_currentFrameBuffer, m_previousFrameBuffer);
 
     m_isFirstFrame = false;

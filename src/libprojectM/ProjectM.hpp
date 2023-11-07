@@ -61,6 +61,8 @@ class TextureManager;
 
 class TransitionShaderManager;
 
+class CopyTexture;
+
 class Preset;
 
 class PresetTransition;
@@ -252,6 +254,7 @@ private:
 
     std::unique_ptr<TextureManager> m_textureManager;                   //!< The texture manager.
     std::unique_ptr<TransitionShaderManager> m_transitionShaderManager; //!< The transition shader manager.
+    std::unique_ptr<CopyTexture> m_textureCopier;                       //!< Class that copies textures 1:1 to another texture or framebuffer.
     std::unique_ptr<libprojectM::Audio::BeatDetect> m_beatDetect;       //!< The beat detection class.
     std::unique_ptr<Preset> m_activePreset;                             //!< Currently loaded preset.
     std::unique_ptr<Preset> m_transitioningPreset;                      //!< Destination preset when smooth preset switching.

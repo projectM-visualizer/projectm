@@ -93,6 +93,18 @@ void CopyTexture::InitVertexAttrib()
     glBufferData(GL_ARRAY_BUFFER, sizeof(points), points.data(), GL_STATIC_DRAW);
 }
 
+void CopyTexture::Draw(const std::shared_ptr<struct Texture>& originalTexture, bool flipVertical, bool flipHorizontal)
+{
+    if (originalTexture == nullptr)
+    {
+        return;
+    }
+
+    // Just bind the texture and draw it to the currently bound buffer.
+    originalTexture->Bind(0);
+    Copy(flipVertical, flipHorizontal);
+}
+
 void CopyTexture::Draw(const std::shared_ptr<class Texture>& originalTexture, const std::shared_ptr<class Texture>& targetTexture,
                        bool flipVertical, bool flipHorizontal)
 {

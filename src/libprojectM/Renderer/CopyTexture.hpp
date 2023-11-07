@@ -18,6 +18,15 @@ public:
     void InitVertexAttrib() override;
 
     /**
+     * @brief Copies the original texture into the currently bound framebuffer.
+     * @param originalTexture The texture to be copied.
+     * @param flipVertical Flip image on the y axis when copying.
+     * @param flipHorizontal Flip image on the x axis when copying.
+     */
+    void Draw(const std::shared_ptr<class Texture>& originalTexture,
+              bool flipVertical = false, bool flipHorizontal = false);
+
+    /**
      * @brief Copies the original texture either into the object's internal framebuffer or a given target texture.
      * The original and target textures must not be the same.
      * @param originalTexture The texture to be copied.
@@ -26,7 +35,7 @@ public:
      * @param flipHorizontal Flip image on the x axis when copying.
      */
     void Draw(const std::shared_ptr<class Texture>& originalTexture, const std::shared_ptr<class Texture>& targetTexture = {},
-              bool flipVertical  = false, bool flipHorizontal = false);
+              bool flipVertical = false, bool flipHorizontal = false);
 
     /**
      * @brief Copies the texture bound the given framebuffer's first color attachment.
@@ -39,7 +48,7 @@ public:
      * @param flipHorizontal Flip image on the x axis when copying.
      */
     void Draw(const std::shared_ptr<class Texture>& originalTexture, Framebuffer& framebuffer, int framebufferIndex,
-              bool flipVertical  = false, bool flipHorizontal = false);
+              bool flipVertical = false, bool flipHorizontal = false);
 
     /**
      * @brief Returns the flipped texture.
