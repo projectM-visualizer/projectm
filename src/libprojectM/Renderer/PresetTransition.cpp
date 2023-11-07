@@ -6,6 +6,8 @@
 #include <cmath>
 #include <cstddef>
 
+constexpr double PI = 3.14159265358979323846;
+
 PresetTransition::PresetTransition(const std::shared_ptr<Shader>& transitionShader, double durationSeconds)
     : m_transitionShader(transitionShader)
     , m_durationSeconds(durationSeconds)
@@ -59,7 +61,7 @@ void PresetTransition::Draw(const Preset& oldPreset,
     if (m_durationSeconds > 0.0)
     {
         linearProgress = secondsSinceStart / m_durationSeconds;
-        cosineProgress = (-std::cos(linearProgress * M_PI) + 1.0) * 0.5;
+        cosineProgress = (-std::cos(linearProgress * PI) + 1.0) * 0.5;
         bicubicProgress = linearProgress < 0.5 ? 4.0 * linearProgress * linearProgress * linearProgress : 1.0 - pow(-2.0 * linearProgress + 2.0, 3.0) / 2.0;
     }
 
