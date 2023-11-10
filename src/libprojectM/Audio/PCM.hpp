@@ -1,36 +1,22 @@
 /**
- * projectM -- Milkdrop-esque visualisation SDK
- * Copyright (C)2003-2007 projectM Team
+ * @file PCM.hpp
+ * @brief Takes sound data from the outside, analyzes it and hands it back out.
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * See 'LICENSE.txt' included within this release
- *
- */
-/**
- * $Id$
- *
- * Encapsulation of raw sound buffer. Used in beat detection
- *
- * $Log$
- */
+ * Returns waveform and spectrum data, as well as relative beat detection values.
+ **/
 
 #pragma once
 
-#include "projectM-4/projectM_export.h"
+#include "AudioConstants.hpp"
+
+#include "FrameAudioData.hpp"
+#include "Loudness.hpp"
+#include "MilkdropFFT.hpp"
+
+#include <projectM-4/projectM_export.h>
 
 #include <array>
+#include <atomic>
 #include <cstdint>
 #include <cstdlib>
 
@@ -38,124 +24,89 @@
 namespace libprojectM {
 namespace Audio {
 
-// FFT_LENGTH is number of magnitude values available from getSpectrum().
-// Internally this is generated using 2xFFT_LENGTH samples per channel.
-size_t constexpr fftLength = 512;
-
-enum CHANNEL
-{
-    CHANNEL_L = 0,
-    CHANNEL_0 = 0,
-    CHANNEL_R = 1,
-    CHANNEL_1 = 1
-};
-
 class PROJECTM_EXPORT PCM
 {
 public:
-    /* maximum number of sound samples that are actually stored. */
-    static constexpr size_t maxSamples = 2048;
-
     /**
-     * @brief Adds a mono pcm buffer to the storage
+     * @brief Adds new interleaved floating-point PCM data to the buffer.
+     * Left channel is expected at offset 0, right channel at offset 1. Other channels are ignored.
      * @param samples The buffer to be added
+     * @param channels The number of channels in the input data.
      * @param count The amount of samples in the buffer
      */
-    void AddMono(const float* samples, size_t count);
-    void AddMono(const uint8_t* samples, size_t count);
-    void AddMono(const int16_t* samples, size_t count);
+    void Add(const float* samples, uint32_t channels, size_t count);
 
     /**
-     * @brief Adds a stereo pcm buffer to the storage
-     * @param samples The buffer to be added.
-     * The channels are expected to be interleaved, LRLR.
-     * @param count The amount of samples in each channel (not total samples)
+     * @brief Adds new mono unsigned 8-bit PCM data to the storage
+     * Left channel is expected at offset 0, right channel at offset 1. Other channels are ignored.
+     * @param samples The buffer to be added
+     * @param channels The number of channels in the input data.
+     * @param count The amount of samples in the buffer
      */
-    void AddStereo(const float* samples, size_t count);
-    void AddStereo(const uint8_t* samples, size_t count);
-    void AddStereo(const int16_t* samples, size_t count);
+    void Add(const uint8_t* samples, uint32_t channels, size_t count);
 
     /**
-     * PCM data
-     * The returned data will 'wrap' if more than maxsamples are requested.
+     * @brief Adds new mono signed 16-bit PCM data to the storage
+     * Left channel is expected at offset 0, right channel at offset 1. Other channels are ignored.
+     * @param samples The buffer to be added
+     * @param channels The number of channels in the input data.
+     * @param count The amount of samples in the buffer
      */
-    void GetPcm(float* data, CHANNEL channel, size_t samples) const;
-
-    /** Spectrum data
-     * The returned data will be zero padded if more than FFT_LENGTH values are requested
-     */
-    void GetSpectrum(float* data, CHANNEL channel, size_t samples);
+    void Add(const int16_t* samples, uint32_t channels, size_t count);
 
     /**
-     * @brief Resets the auto leveler state.
-     * Makes sense after pausing/resuming audio or other interruptions.
+     * @brief Updates the internal audio data values for rendering the next frame.
+     * This method must only be called once per frame, as it does some temporal blending
+     * and alignments using the previous frame(s) as reference. This function will perform:
+     * - Passing the waveform data into the spectrum analyzer
+     * - Aligning waveforms to a best-fit match to the previous frame to produce a calmer waveform shape.
+     * - Calculating the bass/mid/treb values and their attenuated (time-smoothed) versions.
+     *
+     * @param secondsSinceLastFrame Time passed since rendering the last frame. Basically 1.0/FPS.
+     * @param frame Frames rendered since projectM was started.
      */
-    void ResetAutoLevel();
+    void UpdateFrameAudioData(double secondsSinceLastFrame, uint32_t frame);
 
-protected:
-    // CPP20: Could use a struct for the first 5 params to clarify on call site
-    // together with designated initializers
+    /**
+     * @brief Returns a class holding a copy of the current frame audio data.
+     * @return A FrameAudioData class with waveform, spectrum and other derived values.
+     */
+    auto GetFrameAudioData() const -> FrameAudioData;
+
+private:
     template<
-        size_t lOffset,
-        size_t rOffset,
-        size_t stride,
         int signalAmplitude,
         int signalOffset,
-        class SampleType>
-    void AddPcm(const SampleType* samples, size_t count);
-
-    // copy data out of the circular PCM buffer
-    void CopyPcm(float* to, size_t channel, size_t count) const;
-    void CopyPcm(double* to, size_t channel, size_t count) const;
+        typename SampleType>
+    void AddToBuffer(const SampleType* samples, uint32_t channel, size_t sampleCount);
 
     // Updates FFT data
     void UpdateFftChannel(size_t channel);
 
-private:
-    // mem-usage:
-    // pcmd 2x2048*4b    = 16K
-    // vdata 2x512x2*8b  = 16K
-    // spectrum 2x512*4b = 4k
-    // w = 512*8b        = 4k
+    /**
+     * Copies data out of the circular input buffer into the per-frame waveform buffer.
+     */
+    void CopyNewWaveformData();
 
-    // circular PCM buffer
-    // adjust "volume" of PCM data as we go, this simplifies everything downstream...
-    // normalize to range [-1.0,1.0]
-    std::array<float, maxSamples> m_pcmL{0.f};
-    std::array<float, maxSamples> m_pcmR{0.f};
-    size_t m_start{0};
-    size_t m_newSamples{0};
+    // External input buffer
+    std::array<float, WaveformSamples> m_inputBufferL{0.f}; //!< Circular buffer for left-channel PCM data.
+    std::array<float, WaveformSamples> m_inputBufferR{0.f}; //!< Circular buffer for right-channel PCM data.
+    std::atomic<size_t> m_start{0};                         //!< Circular buffer start index.
 
-    // raw FFT data
-    std::array<double, 2 * fftLength> m_freqL{0.0};
-    std::array<double, 2 * fftLength> m_freqR{0.0};
-    // magnitude data
-    std::array<float, fftLength> m_spectrumL{0.f};
-    std::array<float, fftLength> m_spectrumR{0.f};
+    // Frame waveform data
+    std::array<float, WaveformSamples> m_waveformL{0.f}; //!< Left-channel waveform data, aligned.
+    std::array<float, WaveformSamples> m_waveformR{0.f}; //!< Right-channel waveform data, aligned.
 
-    std::array<double, fftLength> m_w{0.0};
-    std::array<int, 34> m_ip{0};
+    // Frame spectrum data
+    std::array<float, SpectrumSamples> m_spectrumL{0.f}; //!< Left-channel spectrum data.
+    std::array<float, SpectrumSamples> m_spectrumR{0.f}; //!< Right-channel spectrum data.
 
-    // see https://github.com/projectM-visualizer/projectm/issues/161
-    class PROJECTM_EXPORT AutoLevel
-    {
-    public:
-        auto UpdateLevel(size_t samples, double sum, double max) -> double;
+    MilkdropFFT m_fft{WaveformSamples, SpectrumSamples, true}; //!< Spectrum analyzer instance.
 
-    private:
-        double m_level{0.01};
-        // accumulate sample data
-        size_t m_levelSamples{0};
-        double m_levelSum{0.0};
-        double m_levelax{0.0};
-        double m_l0{-1.0};
-        double m_l1{-1.0};
-        double m_l2{-1.0};
-    };
-
-    // state for tracking audio level
-    double m_level{1.f};
-    AutoLevel m_leveler{};
+    // Frame beat detection values
+    Loudness m_bass{Loudness::Band::Bass};       //!< Beat detection/volume for the "bass" band.
+    Loudness m_middles{Loudness::Band::Middles}; //!< Beat detection/volume for the "middles" band.
+    Loudness m_treble{Loudness::Band::Treble};   //!< Beat detection/volume for the "treble" band.
 };
 
 } // namespace Audio
