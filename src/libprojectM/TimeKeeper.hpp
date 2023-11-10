@@ -6,7 +6,6 @@ class TimeKeeper
 {
 
 public:
-
     TimeKeeper(double presetDuration, double smoothDuration, double hardcutDuration, double easterEgg);
 
     void UpdateTimers();
@@ -79,27 +78,31 @@ public:
         m_easterEgg = value;
     }
 
+    inline auto SecondsSinceLastFrame() const -> double
+    {
+        return m_secondsSinceLastFrame;
+    }
+
 private:
-
     /* The first ticks value of the application */
-    std::chrono::high_resolution_clock::time_point m_startTime{ std::chrono::high_resolution_clock::now() };
+    std::chrono::high_resolution_clock::time_point m_startTime{std::chrono::high_resolution_clock::now()};
 
-    double m_easterEgg{ 0.0 };
+    double m_secondsSinceLastFrame{};
 
-    double m_presetDuration{ 0.0 };
-    double m_presetDurationA{ 0.0 };
-    double m_presetDurationB{ 0.0 };
-    double m_softCutDuration{ 0.0 };
-    double m_hardCutDuration{ 0.0 };
+    double m_easterEgg{};
 
-    double m_currentTime{ 0.0 };
-    double m_presetTimeA{ 0.0 };
-    double m_presetTimeB{ 0.0 };
+    double m_presetDuration{};
+    double m_presetDurationA{};
+    double m_presetDurationB{};
+    double m_softCutDuration{};
+    double m_hardCutDuration{};
 
-    int m_presetFrameA{ 0 };
-    int m_presetFrameB{ 0 };
+    double m_currentTime{};
+    double m_presetTimeA{};
+    double m_presetTimeB{};
 
-    bool m_isSmoothing{ false };
+    int m_presetFrameA{};
+    int m_presetFrameB{};
 
-
+    bool m_isSmoothing{false};
 };

@@ -1,239 +1,130 @@
-/**
- * @file PCM.cpp
- * @brief Takes sound data from wherever and hands it back out.
- *
- * Returns PCM Data or spectrum data, or the derivative of the PCM data
- *
- * projectM -- Milkdrop-esque visualisation SDK
- * Copyright (C)2003-2004 projectM Team
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- * See 'LICENSE.txt' included within this release
- *
- */
-
 #include "PCM.hpp"
 
-#include "MilkdropFFT.hpp"
-#include "AudioConstants.hpp"
-
 #include <cassert>
-#include <cstdlib>
 
 namespace libprojectM {
 namespace Audio {
 
-/*
- * Here is where we try to do auto volume setting.  Doing this here
- * means that none of the code downstream (waveforms, beatdetect, etc) needs
- * to worry about it.
- *
- * 1) Don't overreact to level changes within a song
- * 2) Ignore silence/gaps
- *
- * I don't know if it's necessary to have both sum and max, but that makes
- * it easier to experiment...
- */
-auto PCM::AutoLevel::UpdateLevel(
-    size_t const samples,
-    double const sum,
-    double const max) -> double
-{
-
-    // This is an arbitrary number that helps control
-    //   a) how quickly the level can change and
-    //   b) keeps code from being affected by how the caller provides data (lot of short buffers, or fewer long buffers)
-    size_t constexpr autolevelSegment = 4096;
-
-    if (sum / static_cast<double>(samples) < 0.00001)
-    {
-        return m_level;
-    }
-    m_levelSum += sum;
-    m_levelax = std::max(m_levelax, max * 1.02);
-    m_levelSamples += samples;
-    if (m_levelSamples >= autolevelSegment || m_l0 <= 0)
-    {
-        double const maxRecent = std::max(std::max(m_l0, m_l1), std::max(m_l2, m_levelax));
-        m_l0 = m_l1;
-        m_l1 = m_l2;
-        m_l2 = m_levelax;
-        m_levelax *= 0.95;
-        m_levelSamples = 0;
-        m_levelSum = 0;
-        m_level = (m_l0 <= 0) ? maxRecent : m_level * 0.96 + maxRecent * 0.04;
-        m_level = std::max(m_level, 0.0001);
-    }
-    return m_level;
-}
-
-
 template<
-    size_t lOffset,
-    size_t rOffset,
-    size_t stride,
     int signalAmplitude,
     int signalOffset,
-    class SampleType>
-void PCM::AddPcm(
+    typename SampleType>
+void PCM::AddToBuffer(
     SampleType const* const samples,
-    size_t const count)
+    uint32_t channels,
+    size_t const sampleCount)
 {
-    float sum = 0;
-    float max = 0;
-    for (size_t i = 0; i < count; i++)
+    if (channels == 0 || sampleCount == 0)
     {
-        size_t const j = (m_start + i) % maxSamples;
-        m_pcmL[j] = (samples[lOffset + i * stride] - signalOffset) / float(signalAmplitude);
-        m_pcmR[j] = (samples[rOffset + i * stride] - signalOffset) / float(signalAmplitude);
-        sum += std::abs(m_pcmL[j]) + std::abs(m_pcmR[j]);
-        max = std::max(std::max(max, std::abs(m_pcmL[j])), std::abs(m_pcmR[j]));
+        return;
     }
-    m_start = (m_start + count) % maxSamples;
-    m_level = m_leveler.UpdateLevel(count, sum / 2, max);
-}
 
-
-void PCM::AddMono(float const* const samples, size_t const count)
-{
-    AddPcm<0, 0, 1, 1, 0>(samples, count);
-}
-void PCM::AddMono(uint8_t const* const samples, size_t const count)
-{
-    AddPcm<0, 0, 1, 128, 0>(samples, count);
-}
-void PCM::AddMono(int16_t const* const samples, size_t const count)
-{
-    AddPcm<0, 0, 1, 32768, 0>(samples, count);
-}
-
-
-void PCM::AddStereo(float const* const samples, size_t const count)
-{
-    AddPcm<0, 1, 2, 1, 0>(samples, count);
-}
-void PCM::AddStereo(uint8_t const* const samples, size_t const count)
-{
-    AddPcm<0, 1, 2, 128, 0>(samples, count);
-}
-void PCM::AddStereo(int16_t const* const samples, size_t const count)
-{
-    AddPcm<0, 1, 2, 32768, 0>(samples, count);
-}
-
-
-// puts sound data requested at provided pointer
-//
-// samples is number of PCM samples to return
-// returned values are normalized from -1 to 1
-
-void PCM::GetPcm(
-    float* const data,
-    CHANNEL const channel,
-    size_t const samples) const
-{
-    assert(channel == 0 || channel == 1);
-
-    CopyPcm(data, channel, samples);
-}
-
-
-void PCM::GetSpectrum(
-    float* const data,
-    CHANNEL const channel,
-    size_t const samples)
-{
-    assert(channel == 0 || channel == 1);
-    UpdateFftChannel(channel);
-
-    auto const& spectrum = channel == 0 ? m_spectrumL : m_spectrumR;
-    size_t const count = samples <= fftLength ? samples : fftLength;
-    for (size_t i = 0; i < count; i++)
+    for (size_t i = 0; i < sampleCount; i++)
     {
-        data[i] = spectrum[i];
+        size_t const bufferOffset = (m_start + i) % WaveformSamples;
+        m_inputBufferL[bufferOffset] = 128.0f * (static_cast<float>(samples[0 + i * channels]) - float(signalOffset)) / float(signalAmplitude);
+        if (channels > 1)
+        {
+            m_inputBufferR[bufferOffset] = 128.0f * (static_cast<float>(samples[1 + i * channels]) - float(signalOffset)) / float(signalAmplitude);
+        }
+        else
+        {
+            m_inputBufferR[bufferOffset] = m_inputBufferL[bufferOffset];
+        }
     }
-    for (size_t i = count; i < samples; i++)
-    {
-        data[0] = 0;
-    }
+    m_start = (m_start + sampleCount) % WaveformSamples;
 }
 
-void PCM::ResetAutoLevel()
+void PCM::Add(float const* const samples, uint32_t channels, size_t const count)
 {
-    m_leveler = AutoLevel();
-    m_level = 1.0f;
+    AddToBuffer<1, 0>(samples, channels, count);
+}
+void PCM::Add(uint8_t const* const samples, uint32_t channels, size_t const count)
+{
+    AddToBuffer<128, 128>(samples, channels, count);
+}
+void PCM::Add(int16_t const* const samples, uint32_t channels, size_t const count)
+{
+    AddToBuffer<0, 32768>(samples, channels, count);
+}
+
+void PCM::UpdateFrameAudioData(double secondsSinceLastFrame, uint32_t frame)
+{
+    // 1. Copy audio data from input buffer
+    CopyNewWaveformData();
+
+    // 2. Align waveforms
+
+    // 3. Update spectrum analyzer data for both channels
+    UpdateFftChannel(0);
+    UpdateFftChannel(1);
+
+    // 4. Update beat detection values
+    m_bass.Update(m_spectrumL, secondsSinceLastFrame, frame);
+    m_middles.Update(m_spectrumL, secondsSinceLastFrame, frame);
+    m_treble.Update(m_spectrumL, secondsSinceLastFrame, frame);
+}
+
+auto PCM::GetFrameAudioData() const -> FrameAudioData
+{
+    FrameAudioData data{};
+
+    std::copy(m_waveformL.begin(), m_waveformL.end(), data.waveformLeft.begin());
+    std::copy(m_waveformR.begin(), m_waveformR.end(), data.waveformRight.begin());
+    std::copy(m_spectrumL.begin(), m_spectrumL.end(), data.spectrumLeft.begin());
+    std::copy(m_spectrumR.begin(), m_spectrumR.end(), data.spectrumRight.begin());
+
+    data.bass = m_bass.CurrentRelative();
+    data.mid = m_middles.CurrentRelative();
+    data.treb = m_treble.CurrentRelative();
+
+    data.bassAtt = m_bass.AverageRelative();
+    data.midAtt = m_middles.AverageRelative();
+    data.trebAtt = m_treble.AverageRelative();
+
+    data.vol = (data.bass + data.mid + data.treb) * 0.333f;
+    data.volAtt = (data.bassAtt + data.midAtt + data.trebAtt) * 0.333f;
+
+    return data;
 }
 
 void PCM::UpdateFftChannel(size_t const channel)
 {
     assert(channel == 0 || channel == 1);
 
-    // ToDo: Add as member, init only once.
-    MilkdropFFT fft;
-    fft.Init(WaveformSamples, fftLength, true);
-
     std::vector<float> waveformSamples(WaveformSamples);
     std::vector<float> spectrumValues;
 
-    // Get waveform data from ring buffer
-    auto const& from = channel == 0 ? m_pcmL : m_pcmR;
-    for (size_t i = 0, pos = m_start; i < WaveformSamples; i++)
+    auto const& from = channel == 0 ? m_waveformL : m_waveformR;
+    auto& spectrum = channel == 0 ? m_spectrumL : m_spectrumR;
+
+    size_t oldI{0};
+    for (size_t i = 0; i < WaveformSamples; i++)
     {
-        if (pos == 0)
-        {
-            pos = maxSamples;
-        }
-        waveformSamples[i] = static_cast<float>(from[--pos]);
+        // Damp the input into the FFT a bit, to reduce high-frequency noise:
+        waveformSamples[i] = 0.5f * (from[i] + from[oldI]);
+        oldI = i;
     }
 
-    fft.TimeToFrequencyDomain(waveformSamples, spectrumValues);
+    m_fft.TimeToFrequencyDomain(waveformSamples, spectrumValues);
 
-    auto& spectrum = channel == 0 ? m_spectrumL : m_spectrumR;
     std::copy(spectrumValues.begin(), spectrumValues.end(), spectrum.begin());
 }
 
-// pull data from circular buffer
-void PCM::CopyPcm(float* const to, size_t const channel, size_t const count) const
+void PCM::CopyNewWaveformData()
 {
-    assert(channel == 0 || channel == 1);
-    assert(count < maxSamples);
-    auto const& from = channel == 0 ? m_pcmL : m_pcmR;
-    const double volume = 1.0 / m_level;
-    for (size_t i = 0, pos = m_start; i < count; i++)
+    const auto& copyChannel =
+        [](size_t start, const std::array<float, WaveformSamples>& inputSamples, std::array<float, WaveformSamples>& outputSamples)
     {
-        if (pos == 0)
+        for (size_t i = 0; i < WaveformSamples; i++)
         {
-            pos = maxSamples;
+            outputSamples[i] = inputSamples[(start + i) % WaveformSamples];
         }
-        to[i] = static_cast<float>(from[--pos] * volume);
-    }
-}
+    };
 
-void PCM::CopyPcm(double* const to, size_t const channel, size_t const count) const
-{
-    assert(channel == 0 || channel == 1);
-    auto const& from = channel == 0 ? m_pcmL : m_pcmR;
-    double const volume = 1.0 / m_level;
-    for (size_t i = 0, pos = m_start; i < count; i++)
-    {
-        if (pos == 0)
-        {
-            pos = maxSamples;
-        }
-        to[i] = from[--pos] * volume;
-    }
+    auto const bufferStartIndex = m_start.load();
+    copyChannel(bufferStartIndex, m_inputBufferL, m_waveformL);
+    copyChannel(bufferStartIndex, m_inputBufferR, m_waveformR);
 }
 
 } // namespace Audio

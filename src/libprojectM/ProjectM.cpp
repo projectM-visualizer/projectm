@@ -25,7 +25,6 @@
 #include "PresetFactoryManager.hpp"
 #include "TimeKeeper.hpp"
 
-#include "Audio/BeatDetect.hpp"
 #include "Audio/PCM.hpp" //Sound data handler (buffering, FFT, etc.)
 
 #include "Renderer/CopyTexture.hpp"
@@ -143,13 +142,16 @@ void ProjectM::RenderFrame()
         return;
     }
 
-    m_timeKeeper->UpdateTimers();
-    m_beatDetect->CalculateBeatStatistics();
-
 #if PROJECTM_USE_THREADS
     std::lock_guard<std::recursive_mutex> guard(m_presetSwitchMutex);
 #endif
 
+    // Update FPS and other timer values.
+    m_timeKeeper->UpdateTimers();
+
+    // Update and retrieve audio data
+    m_audioStorage.UpdateFrameAudioData(m_timeKeeper->SecondsSinceLastFrame(), m_frameCount);
+    auto audioData = m_audioStorage.GetFrameAudioData();
 
     // Check if the preset isn't locked, and we've not already notified the user
     if (!m_presetChangeNotified)
@@ -161,7 +163,8 @@ void ProjectM::RenderFrame()
             PresetSwitchRequestedEvent(false);
         }
         else if (m_hardCutEnabled &&
-                 (m_beatDetect->vol - m_beatDetect->volOld > m_hardCutSensitivity) &&
+                 m_frameCount > 50 &&
+                 (audioData.vol - m_previousFrameVolume > m_hardCutSensitivity) &&
                  m_timeKeeper->CanHardCut())
         {
             m_presetChangeNotified = true;
@@ -198,7 +201,6 @@ void ProjectM::RenderFrame()
     }
 
     auto renderContext = GetRenderContext();
-    auto audioData = m_beatDetect->GetFrameAudioData();
 
     if (m_transition != nullptr && m_transitioningPreset != nullptr)
     {
@@ -231,6 +233,7 @@ void ProjectM::RenderFrame()
     }
 
     m_frameCount++;
+    m_previousFrameVolume = audioData.vol;
 }
 
 void ProjectM::Initialize()
@@ -245,10 +248,6 @@ void ProjectM::Initialize()
 
     /** Initialise per-pixel matrix calculations */
     /** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
-    assert(!m_beatDetect);
-
-    m_beatDetect = std::make_unique<libprojectM::Audio::BeatDetect>(m_pcm);
-
     m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths);
 
     m_transitionShaderManager = std::make_unique<TransitionShaderManager>();
@@ -260,7 +259,6 @@ void ProjectM::Initialize()
     /* Set the seed to the current time in seconds */
     srand(time(nullptr));
 
-    ResetEngine();
     LoadIdlePreset();
 
 #if PROJECTM_USE_THREADS
@@ -275,17 +273,6 @@ void ProjectM::LoadIdlePreset()
 {
     LoadPresetFile("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk", false);
     assert(m_activePreset);
-}
-
-/* Reinitializes the engine variables to a default (conservative and sane) value */
-void ProjectM::ResetEngine()
-{
-
-    if (m_beatDetect != NULL)
-    {
-        m_beatDetect->Reset();
-        m_beatDetect->beatSensitivity = m_beatSensitivity;
-    }
 }
 
 /** Resets OpenGL state */
@@ -361,12 +348,12 @@ auto ProjectM::PresetLocked() const -> bool
 
 void ProjectM::SetBeatSensitivity(float sensitivity)
 {
-    m_beatDetect->beatSensitivity = std::min(std::max(0.0f, sensitivity), 2.0f);
+    m_beatSensitivity = std::min(std::max(0.0f, sensitivity), 2.0f);
 }
 
 auto ProjectM::GetBeatSensitivity() const -> float
 {
-    return m_beatDetect->beatSensitivity;
+    return m_beatSensitivity;
 }
 
 auto ProjectM::SoftCutDuration() const -> double
@@ -481,7 +468,7 @@ void ProjectM::SetMeshSize(size_t meshResolutionX, size_t meshResolutionY)
 
 auto ProjectM::PCM() -> libprojectM::Audio::PCM&
 {
-    return m_pcm;
+    return m_audioStorage;
 }
 
 void ProjectM::Touch(float touchX, float touchY, int pressure, int touchType)

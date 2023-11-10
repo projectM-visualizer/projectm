@@ -34,11 +34,10 @@ namespace Audio {
 
 constexpr auto PI = 3.141592653589793238462643383279502884197169399f;
 
-void MilkdropFFT::Init(size_t samplesIn, size_t samplesOut, bool equalize, float envelopePower)
+MilkdropFFT::MilkdropFFT(size_t samplesIn, size_t samplesOut, bool equalize, float envelopePower)
+    : m_samplesIn(samplesIn)
+    , m_numFrequencies(samplesOut * 2)
 {
-    m_samplesIn = samplesIn;
-    m_numFrequencies = samplesOut * 2;
-
     InitBitRevTable();
     InitCosSinTable();
     InitEnvelopeTable(envelopePower);

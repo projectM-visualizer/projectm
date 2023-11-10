@@ -93,6 +93,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     InitPerPointEvaluationVariables();
 
     int sampleCount = std::min(WaveformMaxPoints, static_cast<int>(*m_perFrameContext.samples));
+    sampleCount -= m_sep;
 
     // If there aren't enough samples to draw a single line or dot, skip drawing the waveform.
     if ((m_useDots && sampleCount < 1) || sampleCount < 2)
@@ -107,8 +108,8 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
                            ? m_presetState.audioData.spectrumRight.data()
                            : m_presetState.audioData.waveformRight.data();
 
-    //const float mult = m_scaling * m_presetState.waveScale * (m_spectrum ? 0.15f : 0.004f);
-    const float mult = m_scaling * m_presetState.waveScale * (m_spectrum ? 0.05f : 1.0f);
+    const float mult = m_scaling * m_presetState.waveScale * (m_spectrum ? 0.15f : 0.004f);
+    //const float mult = m_scaling * m_presetState.waveScale * (m_spectrum ? 0.05f : 1.0f);
 
     // PCM data smoothing
     const int offset1 = m_spectrum ? 0 : (maxSampleCount - sampleCount) / 2 - m_sep / 2;

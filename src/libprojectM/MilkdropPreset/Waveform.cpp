@@ -3,7 +3,6 @@
 #include "PerFrameContext.hpp"
 #include "PresetState.hpp"
 
-#include "Audio/BeatDetect.hpp"
 #include "projectM-opengl.h"
 
 #include <glm/gtc/type_ptr.hpp>
@@ -284,15 +283,16 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
 
     // Tie size of waveform to beatSensitivity
     // ToDo: Beat sensitivity was probably not the correct value here?
-    const float volumeScale = m_presetState.audioData.vol;
-    if (volumeScale != 1.0)
+    //const float volumeScale = m_presetState.audioData.vol;
+    //if (volumeScale != 1.0)
+    //{
+    // Scale waveform data to -1 .. 1 range
+    for (size_t i = 0; i < pcmDataL.size(); ++i)
     {
-        for (size_t i = 0; i < pcmDataL.size(); ++i)
-        {
-            pcmDataL[i] *= volumeScale;
-            pcmDataR[i] *= volumeScale;
-        }
+        pcmDataL[i] /= 128.0f;
+        pcmDataR[i] /= 128.0f;
     }
+    //}
 
     // Aspect multipliers
     float aspectX{1.0f};

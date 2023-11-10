@@ -2,8 +2,9 @@
 
 #include "projectM-4/projectM.h"
 
+#include "Audio/AudioConstants.hpp"
+
 #include <cstring>
-#include <utility>
 #include <sstream>
 
 void projectMWrapper::PresetSwitchRequestedEvent(bool isHardCut) const
@@ -337,7 +338,7 @@ void projectm_set_window_size(projectm_handle instance, size_t width, size_t hei
 
 unsigned int projectm_pcm_get_max_samples()
 {
-    return libprojectM::Audio::PCM::maxSamples;
+    return libprojectM::Audio::WaveformSamples;
 }
 
 template<class BufferType>
@@ -345,14 +346,7 @@ static auto PcmAdd(projectm_handle instance, const BufferType* samples, unsigned
 {
     auto* projectMInstance = handle_to_instance(instance);
 
-    if (channels == PROJECTM_MONO)
-    {
-        projectMInstance->PCM().AddMono(samples, count);
-    }
-    else
-    {
-        projectMInstance->PCM().AddStereo(samples, count);
-    }
+    projectMInstance->PCM().Add(samples, channels, count);
 }
 
 auto projectm_pcm_add_float(projectm_handle instance, const float* samples, unsigned int count, projectm_channels channels) -> void

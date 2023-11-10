@@ -2,7 +2,6 @@
 
 #include "PresetFileParser.hpp"
 
-#include "Audio/BeatDetect.hpp"
 #include "Renderer/TextureManager.hpp"
 
 #include <glm/gtc/type_ptr.hpp>

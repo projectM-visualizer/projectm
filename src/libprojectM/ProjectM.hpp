@@ -212,8 +212,6 @@ public:
 private:
     void Initialize();
 
-    void ResetEngine();
-
     void StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hardCut);
 
     void LoadIdlePreset();
@@ -226,7 +224,6 @@ private:
 
 #endif
 
-    class libprojectM::Audio::PCM m_pcm; //!< Audio data buffer and analyzer instance.
 
     size_t m_meshX{32};              //!< Per-point mesh horizontal resolution.
     size_t m_meshY{24};              //!< Per-point mesh vertical resolution.
@@ -241,6 +238,7 @@ private:
     float m_beatSensitivity{1.0};    //!< General beat sensitivity modifier for presets.
     bool m_aspectCorrection{true};   //!< If true, corrects aspect ratio for non-rectangular windows.
     float m_easterEgg{0.0};          //!< Random preset duration modifier. See TimeKeeper class.
+    float m_previousFrameVolume{};   //!< Volume in previous frame, used for hard cuts.
 
     std::vector<std::string> m_textureSearchPaths; ///!< List of paths to search for texture files
 
@@ -252,10 +250,10 @@ private:
 
     std::unique_ptr<PresetFactoryManager> m_presetFactoryManager; //!< Provides access to all available preset factories.
 
+    libprojectM::Audio::PCM m_audioStorage;                             //!< Audio data buffer and analyzer instance.
     std::unique_ptr<TextureManager> m_textureManager;                   //!< The texture manager.
     std::unique_ptr<TransitionShaderManager> m_transitionShaderManager; //!< The transition shader manager.
     std::unique_ptr<CopyTexture> m_textureCopier;                       //!< Class that copies textures 1:1 to another texture or framebuffer.
-    std::unique_ptr<libprojectM::Audio::BeatDetect> m_beatDetect;       //!< The beat detection class.
     std::unique_ptr<Preset> m_activePreset;                             //!< Currently loaded preset.
     std::unique_ptr<Preset> m_transitioningPreset;                      //!< Destination preset when smooth preset switching.
     std::unique_ptr<PresetTransition> m_transition;                     //!< Transition effect used for blending.

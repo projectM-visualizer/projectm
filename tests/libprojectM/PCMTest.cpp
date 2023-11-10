@@ -18,6 +18,24 @@ public:
     {
         PCM::CopyPcm(to, channel, count);
     }
+
+    /**
+     * @brief Returns a copy of the current frame's PCM data.
+     * The returned data will 'wrap' if more than maxsamples are requested.
+     */
+    void GetPcm(float* data, uint channel, size_t samples) const
+    {
+        PCM::GetPcm(data, channel, samples);
+    }
+
+    /** Spectrum data
+     * The returned data will be zero padded if more than FFT_LENGTH values are requested
+     */
+    void GetSpectrum(float* data, uint channel, size_t samples) const
+    {
+        PCM::GetSpectrum(data, channel, samples);
+    }
+
 };
 
 TEST(PCM, AddDataMonoFloat)
@@ -32,11 +50,10 @@ TEST(PCM, AddDataMonoFloat)
     }
     for (size_t i = 0; i < 10; i++)
     {
-        pcm.AddMono(data.data(), samples);
+        pcm.Add(data.data(), 1, samples);
     }
 
     std::array<float, samples> copy{};
-    pcm.ResetAutoLevel();
     pcm.CopyPcm(copy.data(), 0, copy.size());
     for (size_t i = 0; i < samples; i++)
     {
@@ -62,12 +79,11 @@ TEST(PCM, AddDataStereoFloat)
     }
     for (size_t i = 0; i < 10; i++)
     {
-        pcm.AddStereo(data.data(), samples);
+        pcm.Add(data.data(), 2, samples);
     }
 
     std::array<float, samples> copy0{};
     std::array<float, samples> copy1{};
-    pcm.ResetAutoLevel();
     pcm.CopyPcm(copy0.data(), 0, copy0.size());
     pcm.CopyPcm(copy1.data(), 1, copy1.size());
     for (size_t i = 0; i < samples; i++)
@@ -89,22 +105,21 @@ TEST(PCM, DISABLED_FastFourierTransformLowFrequency)
         data[i * 2] = std::sin(f);
         data[i * 2 + 1] = std::sin(f + 1.f);// out of phase
     }
-    pcm.AddStereo(data.data(), samples);
-    pcm.AddStereo(data.data(), samples);
+    pcm.Add(data.data(), 2, samples);
+    pcm.Add(data.data(), 2, samples);
 
-    std::array<float, fftLength> freq0{};
-    std::array<float, fftLength> freq1{};
-    pcm.ResetAutoLevel();
-    pcm.GetSpectrum(freq0.data(), CHANNEL_0, fftLength);
-    pcm.GetSpectrum(freq1.data(), CHANNEL_1, fftLength);
+    std::array<float, SpectrumSamples> freq0{};
+    std::array<float, SpectrumSamples> freq1{};
+    pcm.GetSpectrum(freq0.data(), 0, SpectrumSamples);
+    pcm.GetSpectrum(freq1.data(), 1, SpectrumSamples);
 
     // freq0 and freq1 should be equal
-    for (size_t i = 0; i < fftLength; i++)
+    for (size_t i = 0; i < SpectrumSamples; i++)
     {
         EXPECT_FLOAT_EQ(freq0[i], freq1[i]);
     }
     EXPECT_GT(freq0[0], 500);
-    for (size_t i = 1; i < fftLength; i++)
+    for (size_t i = 1; i < SpectrumSamples; i++)
     {
         EXPECT_LT(freq0[i], 0.1);
     }
@@ -118,23 +133,22 @@ TEST(PCM, FastFourierTransformHighFrequency)
     std::array<float, 4> constexpr data{1.0, 0.0, 0.0, 1.0};
     for (size_t i = 0; i < 1024; i++)
     {
-        pcm.AddStereo(data.data(), samples);
+        pcm.Add(data.data(), 2, samples);
     }
 
-    std::array<float, fftLength> freq0{};
-    std::array<float, fftLength> freq1{};
-    pcm.ResetAutoLevel();
-    pcm.GetSpectrum(freq0.data(), CHANNEL_0, fftLength);
-    pcm.GetSpectrum(freq1.data(), CHANNEL_1, fftLength);
+    std::array<float, SpectrumSamples> freq0{};
+    std::array<float, SpectrumSamples> freq1{};
+    pcm.GetSpectrum(freq0.data(), 0, SpectrumSamples);
+    pcm.GetSpectrum(freq1.data(), 1, SpectrumSamples);
 
     // freq0 and freq1 should be equal
-    for (size_t i = 0; i < fftLength; i++)
+    for (size_t i = 0; i < SpectrumSamples; i++)
     {
         EXPECT_FLOAT_EQ(freq0[i], freq1[i]);
     }
-    for (size_t i = 0; i < fftLength - 1; i++)
+    for (size_t i = 0; i < SpectrumSamples - 1; i++)
     {
         EXPECT_FLOAT_EQ(freq0[i], 0);
     }
-    EXPECT_GT(freq0[fftLength - 1], 100000);
+    EXPECT_GT(freq0[SpectrumSamples - 1], 100000);
 }

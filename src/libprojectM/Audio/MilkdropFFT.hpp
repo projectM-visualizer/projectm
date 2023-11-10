@@ -52,7 +52,7 @@ public:
      * @param envelopePower Specifies the envelope power. Set to any negative value to disable the envelope.
      *                      See InitEnvelopeTable for more info.
      */
-    void Init(size_t samplesIn, size_t samplesOut, bool equalize = true, float envelopePower = 1.0f);
+    MilkdropFFT(size_t samplesIn, size_t samplesOut, bool equalize = true, float envelopePower = 1.0f);
 
     /**
      * @breif Converts time-domain samples into frequency-domain samples.
