@@ -1,0 +1,22 @@
+
+add_library(Audio OBJECT
+        AudioConstants.hpp
+        BeatDetect.cpp
+        BeatDetect.hpp
+        MilkdropFFT.cpp
+        MilkdropFFT.hpp
+        FrameAudioData.cpp
+        FrameAudioData.hpp
+        PCM.cpp
+        PCM.hpp
+        )
+
+target_include_directories(Audio
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        )
+
+target_link_libraries(Audio
+        PUBLIC
+        libprojectM::API
+        )

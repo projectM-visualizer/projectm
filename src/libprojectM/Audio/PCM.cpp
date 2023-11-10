@@ -26,11 +26,11 @@
 
 #include "PCM.hpp"
 
-#include "fftsg.h"
+#include "MilkdropFFT.hpp"
+#include "AudioConstants.hpp"
 
-#include <cstdio>
-#include <cstdlib>
 #include <cassert>
+#include <cstdlib>
 
 namespace libprojectM {
 namespace Audio {
@@ -40,7 +40,7 @@ namespace Audio {
  * means that none of the code downstream (waveforms, beatdetect, etc) needs
  * to worry about it.
  *
- * 1) Don't over react to level changes within a song
+ * 1) Don't overreact to level changes within a song
  * 2) Ignore silence/gaps
  *
  * I don't know if it's necessary to have both sum and max, but that makes
@@ -134,29 +134,6 @@ void PCM::AddStereo(int16_t const* const samples, size_t const count)
 }
 
 
-template<size_t aSize, size_t ipSize, size_t wSize>
-void Rdft(
-    int const isgn,
-    std::array<double, aSize>& a,
-    std::array<int, ipSize>& ip,
-    std::array<double, wSize>& w)
-{
-    // per rdft() documentation
-    //    length of ip >= 2+sqrt(n/2) and length of w == n/2
-    //    n: length of a, power of 2, n >= 2
-    // see fftsg.cpp
-    static_assert(2 * (ipSize - 2) * (ipSize - 2) >= aSize,
-                  "rdft invariant not preserved: length of ip >= 2+sqrt(n/2)");
-    static_assert(2 * wSize == aSize,
-                  "rdft invariant not preserved: length of w == n/2");
-    static_assert(aSize >= 2,
-                  "rdft invariant not preserved: n >= 2");
-    static_assert((aSize & (aSize - 1)) == 0,
-                  "rdft invariant not preserved: n is power of two");
-    rdft(aSize, isgn, a.data(), ip.data(), w.data());
-}
-
-
 // puts sound data requested at provided pointer
 //
 // samples is number of PCM samples to return
@@ -203,25 +180,28 @@ void PCM::UpdateFftChannel(size_t const channel)
 {
     assert(channel == 0 || channel == 1);
 
-    auto& freq = channel == 0 ? m_freqL : m_freqR;
-    CopyPcm(freq.data(), channel, freq.size());
-    Rdft(1, freq, m_ip, m_w);
+    // ToDo: Add as member, init only once.
+    MilkdropFFT fft;
+    fft.Init(WaveformSamples, fftLength, true);
 
-    // compute magnitude data (m^2 actually)
-    auto& spectrum = channel == 0 ? m_spectrumL : m_spectrumR;
-    for (size_t i = 1; i < fftLength; i++)
+    std::vector<float> waveformSamples(WaveformSamples);
+    std::vector<float> spectrumValues;
+
+    // Get waveform data from ring buffer
+    auto const& from = channel == 0 ? m_pcmL : m_pcmR;
+    for (size_t i = 0, pos = m_start; i < WaveformSamples; i++)
     {
-        auto const m2 = static_cast<float>(freq[i * 2] * freq[i * 2] + freq[i * 2 + 1] * freq[i * 2 + 1]);
-        spectrum[i - 1] = static_cast<float>(i) * m2 / fftLength;
+        if (pos == 0)
+        {
+            pos = maxSamples;
+        }
+        waveformSamples[i] = static_cast<float>(from[--pos]);
     }
-    spectrum[fftLength - 1] = static_cast<float>(freq[1] * freq[1]);
-}
 
-// CPP17: std::clamp
-auto Clamp(double const x, double const lo, double const hi) -> double
-{
-    return x > hi ? hi : x < lo ? lo
-                                : x;
+    fft.TimeToFrequencyDomain(waveformSamples, spectrumValues);
+
+    auto& spectrum = channel == 0 ? m_spectrumL : m_spectrumR;
+    std::copy(spectrumValues.begin(), spectrumValues.end(), spectrum.begin());
 }
 
 // pull data from circular buffer

@@ -12,20 +12,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     include_directories("${MSVC_EXTRA_INCLUDE_DIR}")
 endif()
 
+add_subdirectory(Audio)
 add_subdirectory(MilkdropPreset)
 add_subdirectory(Renderer)
 
 add_library(projectM_main OBJECT
         "${PROJECTM_EXPORT_HEADER}"
-        Audio/AudioConstants.hpp
-        Audio/BeatDetect.cpp
-        Audio/BeatDetect.hpp
-        Audio/FrameAudioData.cpp
-        Audio/FrameAudioData.hpp
-        Audio/PCM.cpp
-        Audio/PCM.hpp
-        Audio/fftsg.cpp
-        Audio/fftsg.h
         Preset.hpp
         PresetFactory.cpp
         PresetFactory.hpp
@@ -43,6 +35,7 @@ add_library(projectM_main OBJECT
 
 target_link_libraries(projectM_main
         PUBLIC
+        Audio
         MilkdropPreset
         Renderer
         hlslparser
@@ -71,6 +64,7 @@ target_include_directories(projectM_main
 # This syntax will pull in the compiled object files into the final library.
 add_library(projectM
         ${PROJECTM_DUMMY_SOURCE_FILE} # CMake needs at least one "real" source file.
+        $<TARGET_OBJECTS:Audio>
         $<TARGET_OBJECTS:MilkdropPreset>
         $<TARGET_OBJECTS:Renderer>
         $<TARGET_OBJECTS:hlslparser>

@@ -4,6 +4,7 @@ add_executable(projectM-unittest
         PCMTest.cpp
         PresetFileParserTest.cpp
 
+        $<TARGET_OBJECTS:Audio>
         $<TARGET_OBJECTS:MilkdropPreset>
         $<TARGET_OBJECTS:Renderer>
         $<TARGET_OBJECTS:hlslparser>
