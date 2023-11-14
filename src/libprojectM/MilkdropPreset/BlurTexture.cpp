@@ -91,23 +91,20 @@ auto BlurTexture::GetDescriptorsForBlurLevel(BlurTexture::BlurLevel blurLevel) c
     return descriptors;
 }
 
-void BlurTexture::Update(const PresetState& presetState, const PerFrameContext& perFrameContext)
+void BlurTexture::Update(const Texture& sourceTexture, const PerFrameContext& perFrameContext)
 {
     if (m_blurLevel == BlurLevel::None)
     {
         return;
     }
 
-    auto sourceTexture = presetState.mainTexture.lock();
-
-    if (!sourceTexture ||
-        sourceTexture->Width() == 0 ||
-        sourceTexture->Height() == 0)
+    if (sourceTexture.Width() == 0 ||
+        sourceTexture.Height() == 0)
     {
         return;
     }
 
-    AllocateTextures(*sourceTexture);
+    AllocateTextures(sourceTexture);
 
     unsigned int const passes = static_cast<int>(m_blurLevel) * 2;
     auto const blur1EdgeDarken = static_cast<float>(*perFrameContext.blur1_edge_darken);
@@ -170,16 +167,18 @@ void BlurTexture::Update(const PresetState& presetState, const PerFrameContext& 
         // hook up correct source texture - assume there is only one, at stage 0
         if (pass == 0)
         {
-            sourceTexture->Bind(0);
+            sourceTexture.Bind(0);
+            blurShader->SetUniformInt("flipVertical", 1);
         }
         else
         {
             m_blurTextures[pass - 1]->Bind(0);
+            blurShader->SetUniformInt("flipVertical", 0);
         }
         m_blurSampler->Bind(0);
 
-        float srcWidth = static_cast<float>((pass == 0) ? sourceTexture->Width() : m_blurTextures[pass - 1]->Width());
-        float srcHeight = static_cast<float>((pass == 0) ? sourceTexture->Height() : m_blurTextures[pass - 1]->Height());
+        float srcWidth = static_cast<float>((pass == 0) ? sourceTexture.Width() : m_blurTextures[pass - 1]->Width());
+        float srcHeight = static_cast<float>((pass == 0) ? sourceTexture.Height() : m_blurTextures[pass - 1]->Height());
 
         float scaleNow = scale[pass / 2];
         float biasNow = bias[pass / 2];
@@ -254,7 +253,7 @@ void BlurTexture::Update(const PresetState& presetState, const PerFrameContext& 
     // Bind previous framebuffer and reset viewport size
     glBindFramebuffer(GL_READ_FRAMEBUFFER, origReadFramebuffer);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, origDrawFramebuffer);
-    glViewport(0, 0, sourceTexture->Width(), sourceTexture->Height());
+    glViewport(0, 0, sourceTexture.Width(), sourceTexture.Height());
 
     Shader::Unbind();
 }

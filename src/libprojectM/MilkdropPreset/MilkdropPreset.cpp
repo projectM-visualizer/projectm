@@ -116,7 +116,11 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     m_framebuffer.RemoveColorAttachment(m_currentFrameBuffer, 1);
 
     // Update blur textures
-    m_state.blurTexture.Update(m_state, m_perFrameContext);
+    {
+        const auto warpedImage = m_framebuffer.GetColorAttachmentTexture(m_currentFrameBuffer, 0);
+        assert(warpedImage.get());
+        m_state.blurTexture.Update(*warpedImage, m_perFrameContext);
+    }
 
     // Draw audio-data-related stuff
     for (auto& shape : m_customShapes)
