@@ -62,10 +62,10 @@ public:
 
     /**
      * @brief Renders the required blur passes on the given texture.
-     * @param presetState The preset state with initial values and the main texture.
+     * @param sourceTexture The texture to create the blur levels from.
      * @param perFrameContext The per-frame variables.
      */
-    void Update(const PresetState& presetState, const PerFrameContext& perFrameContext);
+    void Update(const Texture& sourceTexture, const PerFrameContext& perFrameContext);
 
     /**
      * @brief Binds the user-readable blur textures to the texture slots starting with the given index.
