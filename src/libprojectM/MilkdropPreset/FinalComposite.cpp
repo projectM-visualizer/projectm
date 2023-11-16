@@ -156,13 +156,13 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
     {
         int const gridY2 = gridY - gridY / (compositeGridHeight / 2);
         float const v = SquishToCenter(gridY2 * dividedByY, 3.0f);
-        float const sy = -((v - halfTexelHeight) * 2.0f - 1.0f);
+        float const sy = -(v * 2.0f - 1.0f);
 
         for (int gridX = 0; gridX < compositeGridWidth; gridX++)
         {
             int const gridX2 = gridX - gridX / (compositeGridWidth / 2);
             float const u = SquishToCenter(gridX2 * dividedByX, 3.0f);
-            float const sx = (u - halfTexelWidth) * 2.0f - 1.0f;
+            float const sx = u * 2.0f - 1.0f;
 
             auto& vertex = m_vertices.at(gridX + gridY * compositeGridWidth);
 
@@ -236,8 +236,8 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
                     ang = PI * 0.0f;
                 }
             }
-            vertex.u = u;
-            vertex.v = v;
+            vertex.u = u + halfTexelWidth;
+            vertex.v = v + halfTexelHeight;
 
             vertex.radius = rad;
             vertex.angle = ang;
