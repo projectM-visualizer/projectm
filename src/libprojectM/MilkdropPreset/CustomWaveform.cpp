@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <cmath>
 
-static constexpr int CustomWaveformMaxSamples = std::max(RenderWaveformSamples, libprojectM::Audio::SpectrumSamples);
+static constexpr int CustomWaveformMaxSamples = std::max(libprojectM::Audio::WaveformSamples, libprojectM::Audio::SpectrumSamples);
 
 CustomWaveform::CustomWaveform(PresetState& presetState)
     : RenderItem()
@@ -73,17 +73,15 @@ void CustomWaveform::CompileCodeAndRunInitExpressions(const PerFrameContext& pre
 
 void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
 {
-    // Some safety assertions if someone plays around and changes the values in the wrong way.
-    static_assert(WaveformMaxPoints <= libprojectM::Audio::SpectrumSamples, "CustomWaveformMaxPoints is larger than SpectrumSamples");
-    static_assert(WaveformMaxPoints <= libprojectM::Audio::WaveformSamples, "CustomWaveformMaxPoints is larger than WaveformSamples");
-    static_assert(RenderWaveformSamples <= WaveformMaxPoints, "CustomWaveformSamples is larger than CustomWaveformMaxPoints");
+    static_assert(libprojectM::Audio::WaveformSamples <= WaveformMaxPoints, "WaveformMaxPoints is larger than WaveformSamples");
+    static_assert(libprojectM::Audio::SpectrumSamples <= WaveformMaxPoints, "WaveformMaxPoints is larger than SpectrumSamples");
 
     if (!m_enabled)
     {
         return;
     }
 
-    int const maxSampleCount{m_spectrum ? libprojectM::Audio::SpectrumSamples : RenderWaveformSamples};
+    int const maxSampleCount{m_spectrum ? libprojectM::Audio::SpectrumSamples : libprojectM::Audio::WaveformSamples};
 
     // Initialize and execute per-frame code
     LoadPerFrameEvaluationVariables(presetPerFrameContext);
@@ -92,7 +90,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     // Copy Q and T vars to per-point context
     InitPerPointEvaluationVariables();
 
-    int sampleCount = std::min(WaveformMaxPoints, static_cast<int>(*m_perFrameContext.samples));
+    int sampleCount = std::min(maxSampleCount, static_cast<int>(*m_perFrameContext.samples));
     sampleCount -= m_sep;
 
     // If there aren't enough samples to draw a single line or dot, skip drawing the waveform.

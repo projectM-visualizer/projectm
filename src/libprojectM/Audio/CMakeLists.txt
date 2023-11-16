@@ -9,6 +9,8 @@ add_library(Audio OBJECT
         PCM.hpp
         Loudness.cpp
         Loudness.hpp
+        WaveformAligner.cpp
+        WaveformAligner.hpp
         )
 
 target_include_directories(Audio

@@ -8,14 +8,13 @@
 #pragma once
 
 #include "AudioConstants.hpp"
-
 #include "FrameAudioData.hpp"
 #include "Loudness.hpp"
 #include "MilkdropFFT.hpp"
+#include "WaveformAligner.hpp"
 
 #include <projectM-4/projectM_export.h>
 
-#include <array>
 #include <atomic>
 #include <cstdint>
 #include <cstdlib>
@@ -89,19 +88,23 @@ private:
     void CopyNewWaveformData();
 
     // External input buffer
-    std::array<float, WaveformSamples> m_inputBufferL{0.f}; //!< Circular buffer for left-channel PCM data.
-    std::array<float, WaveformSamples> m_inputBufferR{0.f}; //!< Circular buffer for right-channel PCM data.
-    std::atomic<size_t> m_start{0};                         //!< Circular buffer start index.
+    WaveformBuffer m_inputBufferL{0.f}; //!< Circular buffer for left-channel PCM data.
+    WaveformBuffer m_inputBufferR{0.f}; //!< Circular buffer for right-channel PCM data.
+    std::atomic<size_t> m_start{0};     //!< Circular buffer start index.
 
     // Frame waveform data
-    std::array<float, WaveformSamples> m_waveformL{0.f}; //!< Left-channel waveform data, aligned.
-    std::array<float, WaveformSamples> m_waveformR{0.f}; //!< Right-channel waveform data, aligned.
+    WaveformBuffer m_waveformL{0.f}; //!< Left-channel waveform data, aligned. Only the first WaveformSamples number of samples are valid.
+    WaveformBuffer m_waveformR{0.f}; //!< Right-channel waveform data, aligned. Only the first WaveformSamples number of samples are valid.
 
     // Frame spectrum data
-    std::array<float, SpectrumSamples> m_spectrumL{0.f}; //!< Left-channel spectrum data.
-    std::array<float, SpectrumSamples> m_spectrumR{0.f}; //!< Right-channel spectrum data.
+    SpectrumBuffer m_spectrumL{0.f}; //!< Left-channel spectrum data.
+    SpectrumBuffer m_spectrumR{0.f}; //!< Right-channel spectrum data.
 
     MilkdropFFT m_fft{WaveformSamples, SpectrumSamples, true}; //!< Spectrum analyzer instance.
+
+    // Alignment data
+    WaveformAligner m_alignL; //!< Left-channel waveform alignment.
+    WaveformAligner m_alignR; //!< Left-channel waveform alignment.
 
     // Frame beat detection values
     Loudness m_bass{Loudness::Band::Bass};       //!< Beat detection/volume for the "bass" band.

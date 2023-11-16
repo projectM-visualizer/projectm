@@ -5,6 +5,8 @@
 
 #include "projectM-opengl.h"
 
+#include "Audio/AudioConstants.hpp"
+
 #include <glm/gtc/type_ptr.hpp>
 
 #include <cmath>
@@ -251,7 +253,11 @@ void Waveform::MaximizeColors(const PerFrameContext& presetPerFrameContext)
 
 void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
 {
-    constexpr size_t audioSamples{512};
+    static_assert(libprojectM::Audio::WaveformSamples <= WaveformMaxPoints, "WaveformMaxPoints is larger than WaveformSamples");
+
+    using libprojectM::Audio::WaveformSamples;
+    
+    constexpr size_t audioSamples{WaveformMaxPoints};
 
     delete[] m_wave1Vertices;
     m_wave1Vertices = nullptr;
@@ -328,11 +334,11 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
         case Mode::Circle: {
             m_loop = true;
 
-            m_samples = RenderWaveformSamples / 2;
+            m_samples = WaveformSamples / 2;
 
             m_wave1Vertices = new Point[m_samples]();
 
-            const int sampleOffset{(RenderWaveformSamples - m_samples) / 2};
+            const int sampleOffset{(WaveformSamples - m_samples) / 2};
 
             const float inverseSamplesMinusOne{1.0f / static_cast<float>(m_samples)};
 
@@ -356,7 +362,7 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
 
         case Mode::XYOscillationSpiral: //circularly moving waveform
         {
-            m_samples = RenderWaveformSamples / 2;
+            m_samples = WaveformSamples / 2;
 
             m_wave1Vertices = new Point[m_samples]();
 
@@ -374,7 +380,7 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
         case Mode::CenteredSpiro:
         case Mode::CenteredSpiroVolume: { // Both "centered spiro" waveforms are identical. Only difference is the alpha value.
             // Alpha calculation is handled in MaximizeColors().
-            m_samples = RenderWaveformSamples;
+            m_samples = WaveformSamples;
 
             m_wave1Vertices = new Point[m_samples]();
 
@@ -388,7 +394,7 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
         }
 
         case Mode::DerivativeLine: {
-            m_samples = RenderWaveformSamples;
+            m_samples = WaveformSamples;
 
             if (m_samples > m_presetState.renderContext.viewportSizeX / 3)
             {
@@ -397,7 +403,7 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
 
             m_wave1Vertices = new Point[m_samples]();
 
-            int const sampleOffset = (RenderWaveformSamples - m_samples) / 2;
+            int const sampleOffset = (WaveformSamples - m_samples) / 2;
 
             const float w1 = 0.45f + 0.5f * (mysteryWaveParam * 0.5f + 0.5f);
             const float w2 = 1.0f - w1;
@@ -422,7 +428,7 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
         }
 
         case Mode::ExplosiveHash: {
-            m_samples = RenderWaveformSamples;
+            m_samples = WaveformSamples;
 
             m_wave1Vertices = new Point[m_samples]();
 
@@ -449,7 +455,7 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
             }
             else
             {
-                m_samples = RenderWaveformSamples / 2;
+                m_samples = WaveformSamples / 2;
 
                 if (m_samples > m_presetState.renderContext.viewportSizeX / 3)
                 {
@@ -463,7 +469,7 @@ void Waveform::WaveformMath(const PerFrameContext& presetPerFrameContext)
                 m_wave2Vertices = new Point[m_samples]();
             }
 
-            const int sampleOffset = (RenderWaveformSamples - m_samples) / 2;
+            const int sampleOffset = (WaveformSamples - m_samples) / 2;
 
             const float angle = 1.57f * mysteryWaveParam; // from -PI/2 to PI/2
             float dx = cosf(angle);
