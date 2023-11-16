@@ -21,7 +21,7 @@ void PCM::AddToBuffer(
 
     for (size_t i = 0; i < sampleCount; i++)
     {
-        size_t const bufferOffset = (m_start + i) % WaveformSamples;
+        size_t const bufferOffset = (m_start + i) % AudioBufferSamples;
         m_inputBufferL[bufferOffset] = 128.0f * (static_cast<float>(samples[0 + i * channels]) - float(signalOffset)) / float(signalAmplitude);
         if (channels > 1)
         {
@@ -32,7 +32,7 @@ void PCM::AddToBuffer(
             m_inputBufferR[bufferOffset] = m_inputBufferL[bufferOffset];
         }
     }
-    m_start = (m_start + sampleCount) % WaveformSamples;
+    m_start = (m_start + sampleCount) % AudioBufferSamples;
 }
 
 void PCM::Add(float const* const samples, uint32_t channels, size_t const count)
@@ -53,16 +53,19 @@ void PCM::UpdateFrameAudioData(double secondsSinceLastFrame, uint32_t frame)
     // 1. Copy audio data from input buffer
     CopyNewWaveformData();
 
-    // 2. Align waveforms
-
-    // 3. Update spectrum analyzer data for both channels
+    // 2. Update spectrum analyzer data for both channels
     UpdateFftChannel(0);
     UpdateFftChannel(1);
+
+    // 3. Align waveforms
+    m_alignL.Align(m_waveformL);
+    m_alignR.Align(m_waveformR);
 
     // 4. Update beat detection values
     m_bass.Update(m_spectrumL, secondsSinceLastFrame, frame);
     m_middles.Update(m_spectrumL, secondsSinceLastFrame, frame);
     m_treble.Update(m_spectrumL, secondsSinceLastFrame, frame);
+
 }
 
 auto PCM::GetFrameAudioData() const -> FrameAudioData
@@ -92,14 +95,14 @@ void PCM::UpdateFftChannel(size_t const channel)
 {
     assert(channel == 0 || channel == 1);
 
-    std::vector<float> waveformSamples(WaveformSamples);
+    std::vector<float> waveformSamples(AudioBufferSamples);
     std::vector<float> spectrumValues;
 
     auto const& from = channel == 0 ? m_waveformL : m_waveformR;
     auto& spectrum = channel == 0 ? m_spectrumL : m_spectrumR;
 
     size_t oldI{0};
-    for (size_t i = 0; i < WaveformSamples; i++)
+    for (size_t i = 0; i < AudioBufferSamples; i++)
     {
         // Damp the input into the FFT a bit, to reduce high-frequency noise:
         waveformSamples[i] = 0.5f * (from[i] + from[oldI]);
@@ -114,11 +117,11 @@ void PCM::UpdateFftChannel(size_t const channel)
 void PCM::CopyNewWaveformData()
 {
     const auto& copyChannel =
-        [](size_t start, const std::array<float, WaveformSamples>& inputSamples, std::array<float, WaveformSamples>& outputSamples)
+        [](size_t start, const std::array<float, AudioBufferSamples>& inputSamples, std::array<float, AudioBufferSamples>& outputSamples)
     {
-        for (size_t i = 0; i < WaveformSamples; i++)
+        for (size_t i = 0; i < AudioBufferSamples; i++)
         {
-            outputSamples[i] = inputSamples[(start + i) % WaveformSamples];
+            outputSamples[i] = inputSamples[(start + i) % AudioBufferSamples];
         }
     };
 
@@ -126,6 +129,7 @@ void PCM::CopyNewWaveformData()
     copyChannel(bufferStartIndex, m_inputBufferL, m_waveformL);
     copyChannel(bufferStartIndex, m_inputBufferR, m_waveformR);
 }
+
 
 } // namespace Audio
 } // namespace libprojectM
