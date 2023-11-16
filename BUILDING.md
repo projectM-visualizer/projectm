@@ -209,19 +209,9 @@ dependencies using the project files, while CMake requires the libraries before 
 #### Installing the dependencies with vcpkg
 
 As stated above, using vcpkg is the easiest way to get the required dependencies. First,
-install [vcpkg from GitHub](https://github.com/microsoft/vcpkg) by following the official guide. Then install the
-following packages for your desired architecture (called "triplet"):
+install [vcpkg from GitHub](https://github.com/microsoft/vcpkg) by following the official guide.
 
-- `glew`
-- `sdl2`
-
-The `glew` package will also pull in the `opengl` libraries.
-
-Example to install the libraries for the x64 architecture, run from a Visual Studio command prompt:
-
-```commandline
-vcpkg install glew:x64-windows sdl2:x64-windows
-```
+We've included a vcpkg manifest file in the repository root, designed to automatically install dependencies when you create your solution.
 
 #### Creating the Visual Studio solution
 
