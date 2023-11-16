@@ -51,11 +51,12 @@ void PCM::Add(int16_t const* const samples, uint32_t channels, size_t const coun
 void PCM::UpdateFrameAudioData(double secondsSinceLastFrame, uint32_t frame)
 {
     // 1. Copy audio data from input buffer
-    CopyNewWaveformData();
+    CopyNewWaveformData(m_inputBufferL, m_waveformL);
+    CopyNewWaveformData(m_inputBufferR, m_waveformR);
 
     // 2. Update spectrum analyzer data for both channels
-    UpdateFftChannel(0);
-    UpdateFftChannel(1);
+    UpdateSpectrum(m_waveformL, m_spectrumL);
+    UpdateSpectrum(m_waveformR, m_spectrumR);
 
     // 3. Align waveforms
     m_alignL.Align(m_waveformL);
@@ -91,43 +92,32 @@ auto PCM::GetFrameAudioData() const -> FrameAudioData
     return data;
 }
 
-void PCM::UpdateFftChannel(size_t const channel)
+void PCM::UpdateSpectrum(const WaveformBuffer& waveformData, SpectrumBuffer& spectrumData)
 {
-    assert(channel == 0 || channel == 1);
-
     std::vector<float> waveformSamples(AudioBufferSamples);
     std::vector<float> spectrumValues;
-
-    auto const& from = channel == 0 ? m_waveformL : m_waveformR;
-    auto& spectrum = channel == 0 ? m_spectrumL : m_spectrumR;
 
     size_t oldI{0};
     for (size_t i = 0; i < AudioBufferSamples; i++)
     {
         // Damp the input into the FFT a bit, to reduce high-frequency noise:
-        waveformSamples[i] = 0.5f * (from[i] + from[oldI]);
+        waveformSamples[i] = 0.5f * (waveformData[i] + waveformData[oldI]);
         oldI = i;
     }
 
     m_fft.TimeToFrequencyDomain(waveformSamples, spectrumValues);
 
-    std::copy(spectrumValues.begin(), spectrumValues.end(), spectrum.begin());
+    std::copy(spectrumValues.begin(), spectrumValues.end(), spectrumData.begin());
 }
 
-void PCM::CopyNewWaveformData()
+void PCM::CopyNewWaveformData(const WaveformBuffer& source, WaveformBuffer& destination)
 {
-    const auto& copyChannel =
-        [](size_t start, const std::array<float, AudioBufferSamples>& inputSamples, std::array<float, AudioBufferSamples>& outputSamples)
-    {
-        for (size_t i = 0; i < AudioBufferSamples; i++)
-        {
-            outputSamples[i] = inputSamples[(start + i) % AudioBufferSamples];
-        }
-    };
-
     auto const bufferStartIndex = m_start.load();
-    copyChannel(bufferStartIndex, m_inputBufferL, m_waveformL);
-    copyChannel(bufferStartIndex, m_inputBufferR, m_waveformR);
+
+    for (size_t i = 0; i < AudioBufferSamples; i++)
+    {
+        destination[i] = source[(bufferStartIndex + i) % AudioBufferSamples];
+    }
 }
 
 
