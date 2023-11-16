@@ -79,13 +79,15 @@ private:
         typename SampleType>
     void AddToBuffer(const SampleType* samples, uint32_t channel, size_t sampleCount);
 
-    // Updates FFT data
-    void UpdateFftChannel(size_t channel);
+    /**
+     * Updates FFT data
+     */
+    void UpdateSpectrum(const WaveformBuffer& waveformData, SpectrumBuffer& spectrumData);
 
     /**
      * Copies data out of the circular input buffer into the per-frame waveform buffer.
      */
-    void CopyNewWaveformData();
+    void CopyNewWaveformData(const WaveformBuffer& source, WaveformBuffer& destination);
 
     // External input buffer
     WaveformBuffer m_inputBufferL{0.f}; //!< Circular buffer for left-channel PCM data.
