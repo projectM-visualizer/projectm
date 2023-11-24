@@ -184,7 +184,7 @@ GLuint Shader::CompileShader(const std::string& source, GLenum type)
     GLint shaderCompiled{};
 
     auto shader = glCreateShader(type);
-    const auto *shaderSourceCStr = source.c_str();
+    const auto* shaderSourceCStr = source.c_str();
     glShaderSource(shader, 1, &shaderSourceCStr, nullptr);
 
     glCompileShader(shader);
@@ -214,6 +214,14 @@ auto Shader::GetShaderLanguageVersion() -> Shader::GlslVersion
     }
 
     std::string shaderLanguageVersionString(shaderLanguageVersion);
+
+    // Some OpenGL implementations add non-standard-conforming text in front, e.g. WebGL, which returns "OpenGL ES GLSL ES 3.00 ..."
+    // Find the first digit and start there.
+    auto firstDigit = shaderLanguageVersionString.find_first_of("0123456789");
+    if (firstDigit != std::string::npos && firstDigit != 0)
+    {
+        shaderLanguageVersionString = shaderLanguageVersionString.substr(firstDigit);
+    }
 
     // Cut off the vendor-specific information, if any
     auto spacePos = shaderLanguageVersionString.find(' ');
