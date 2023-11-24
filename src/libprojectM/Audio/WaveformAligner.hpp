@@ -1,11 +1,6 @@
 /**
  * @file WaveformAligner.hpp
  * @brief Mip-based waveform alignment algorithm
- *
- * Calculates the absolute error between the previous and current waveforms over several octaves
- * and sample offsets, then shifts the new waveform forward to best align with the previous frame.
- * This will keep similar features in-place instead of randomly jumping around on each frame and creates
- * for a smoother-looking waveform visualization.
  */
 
 #pragma once
@@ -19,6 +14,7 @@ namespace libprojectM {
 namespace Audio {
 
 /**
+ * @class WaveformAligner
  * @brief Mip-based waveform alignment algorithm
  *
  * Calculates the absolute error between the previous and current waveforms over several octaves

@@ -55,7 +55,7 @@ public:
     MilkdropFFT(size_t samplesIn, size_t samplesOut, bool equalize = true, float envelopePower = 1.0f);
 
     /**
-     * @breif Converts time-domain samples into frequency-domain samples.
+     * @brief Converts time-domain samples into frequency-domain samples.
      * The array lengths are the two parameters to Init().
      *
      * The last sample of the output data will represent the frequency
