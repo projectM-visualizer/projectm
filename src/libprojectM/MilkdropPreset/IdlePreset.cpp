@@ -127,8 +127,8 @@ shapecode_1_border_g=0
 shapecode_1_border_b=0
 shapecode_1_border_a=0
 shape_1_per_frame1=ang = q10;
-shape_1_per_frame2=x = x + q1 + sin(q10) * q9 * rad;
-shape_1_per_frame3=y = y + q2 + cos(q10) * q9;
+shape_1_per_frame2=x = x + q1 - sin(q10) * q9 * rad;
+shape_1_per_frame3=y = y + q2 - cos(q10) * q9;
 shape_1_per_frame4=rad = rad + bass * 0.1;
 shape_1_per_frame5=a = q3;
 shape_1_per_frame6=a2 = q3;
