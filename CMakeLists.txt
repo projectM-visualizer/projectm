@@ -82,6 +82,11 @@ else()
             )
 endif()
 
+if(NOT BUILD_SHARED_LIBS AND CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    # Add "lib" in front of static library files to allow installing both shared and static libs in the same dir.
+    set(CMAKE_STATIC_LIBRARY_PREFIX lib)
+endif()
+
 if(ENABLE_EMSCRIPTEN)
     message(STATUS "${CMAKE_C_COMPILER} on ${CMAKE_SYSTEM_NAME}")
     check_symbol_exists(__EMSCRIPTEN__ "" HAVE_EMSCRIPTEN)
