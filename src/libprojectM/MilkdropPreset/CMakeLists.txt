@@ -109,6 +109,13 @@ target_link_libraries(MilkdropPreset
         ${PROJECTM_OPENGL_LIBRARIES}
         )
 
+if(CMAKE_SYSTEM_NAME STREQUAL iOS)
+    target_link_libraries(MilkdropPreset
+            PUBLIC
+            "-framework OpenGLES"
+    )
+endif()
+
 if(NOT BUILD_SHARED_LIBS)
     target_compile_definitions(MilkdropPreset
         PRIVATE

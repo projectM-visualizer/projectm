@@ -84,6 +84,18 @@ target_link_libraries(projectM
         libprojectM::API
         )
 
+if(CMAKE_SYSTEM_NAME STREQUAL iOS)
+    target_include_directories(projectM
+            PUBLIC
+            "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/OpenGLES.framework/Headers/ES3"
+    )
+
+    target_link_libraries(projectM
+            PUBLIC
+            "-framework OpenGLES"
+    )
+endif()
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     target_link_libraries(projectM
             PUBLIC

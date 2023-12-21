@@ -135,12 +135,7 @@ else()
 
         # We use a local find script for OpenGL::GLES3 until the proposed changes are merged upstream.
         if(CMAKE_SYSTEM_NAME STREQUAL iOS)
-            list(APPEND CMAKE_MODULE_PATH "${PROJECTM_SOURCE_DIR}/cmake/gles-ios")
-            find_package(OpenGL REQUIRED COMPONENTS GLES2)
-            if(NOT TARGET OpenGL::GLES2)
-                message(FATAL_ERROR "No suitable GLES2 library was found.")
-            endif()
-            set(PROJECTM_OPENGL_LIBRARIES OpenGL::GLES2)
+            # Do nothing, link directly to OpenGLES.framework later
         else()
             list(APPEND CMAKE_MODULE_PATH "${PROJECTM_SOURCE_DIR}/cmake/gles")
             find_package(OpenGL REQUIRED COMPONENTS GLES3)

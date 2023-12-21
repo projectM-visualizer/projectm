@@ -42,7 +42,12 @@
 #endif
 
 #if defined( SOIL_GLES3 )
+#ifdef SOIL_PLATFORM_IOS
+    #include <OpenGLES/ES3/gl.h>
+    #include <OpenGLES/ES3/glext.h>
+#else
     #include <GLES3/gl3.h>
+#endif
 
 	#define APIENTRY GL_APIENTRY
 #endif

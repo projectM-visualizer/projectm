@@ -31,21 +31,18 @@ target_link_libraries(SOIL2
         ${PROJECTM_OPENGL_LIBRARIES}
         )
 
+if(CMAKE_SYSTEM_NAME STREQUAL iOS)
+    target_link_libraries(SOIL2
+            PUBLIC
+            "-framework OpenGLES"
+    )
+endif()
+
 if(USE_GLES)
-    if(CMAKE_SYSTEM_NAME STREQUAL iOS)
-        target_compile_definitions(SOIL2
-                PRIVATE
-                SOIL_GLES2
-        )
-    else()
-        target_compile_definitions(SOIL2
-                PRIVATE
-                SOIL_GLES3
-        )
-    endif()
     target_compile_definitions(SOIL2
             PRIVATE
             SOIL_NO_EGL
+            SOIL_GLES3
             )
     target_link_libraries(SOIL2
             PUBLIC
