@@ -32,9 +32,19 @@ target_link_libraries(SOIL2
         )
 
 if(USE_GLES)
+    if(CMAKE_SYSTEM_NAME STREQUAL iOS)
+        target_compile_definitions(SOIL2
+                PRIVATE
+                SOIL_GLES2
+        )
+    else()
+        target_compile_definitions(SOIL2
+                PRIVATE
+                SOIL_GLES3
+        )
+    endif()
     target_compile_definitions(SOIL2
             PRIVATE
-            SOIL_GLES3
             SOIL_NO_EGL
             )
     target_link_libraries(SOIL2

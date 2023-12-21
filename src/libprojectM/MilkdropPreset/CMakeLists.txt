@@ -101,7 +101,7 @@ target_include_directories(MilkdropPreset
 
 target_link_libraries(MilkdropPreset
         PRIVATE
-        #projectM::Eval
+        projectM::Eval
         libprojectM::API # For export header
         PUBLIC
         hlslparser

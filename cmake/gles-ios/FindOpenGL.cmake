@@ -3,12 +3,12 @@
 
 set(CMAKE_OSX_SYSROOT "iphoneos")
 
-find_library(OPENGL_gles3_LIBRARY
-        NAMES GLESv3
+find_library(OPENGL_gles2_LIBRARY
+        NAMES GLESv2
         PATHS
 )
 
-add_library(OpenGL::GLES3 INTERFACE IMPORTED)
+add_library(OpenGL::GLES2 INTERFACE IMPORTED)
 
-set_target_properties(OpenGL::GLES3 PROPERTIES
-        IMPORTED_LIBNAME "${OPENGL_gles3_LIBRARY}")
+set_target_properties(OpenGL::GLES2 PROPERTIES
+        IMPORTED_LIBNAME "${OPENGL_gles2_LIBRARY}")

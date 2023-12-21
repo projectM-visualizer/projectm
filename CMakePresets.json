@@ -1,0 +1,119 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 19,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "config-base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/cmake-build-${presetName}"
+    },
+    {
+      "name": "macos",
+      "description": "macOS",
+      "hidden": true,
+      "generator": "Ninja Multi-Config",
+      "inherits": ["config-base"],
+      "cacheVariables": {
+        "CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM": "NQ2VLM7NM7",
+        "CPM_USE_NAMED_CACHE_DIRECTORIES": "ON"
+      },
+      "condition":{
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "ios",
+      "description": "iOS",
+      "inherits": ["macos"],
+      "displayName": "iOS",
+      "generator": "Xcode",
+      "toolchainFile": "${sourceDir}/cmake/toolchains/ios.toolchain.cmake",
+      "cacheVariables": {
+        "PLATFORM": "OS64COMBINED",
+        "ENABLE_ARC": "FALSE",
+        "ENABLE_BITCODE": "FALSE"
+      }
+    },
+    {
+      "name": "linux",
+      "description": "Linux desktop",
+      "generator": "Ninja Multi-Config",
+      "inherits": ["config-base"],
+      "condition":{
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "build-base",
+      "hidden": true,
+      "inheritConfigureEnvironment": true
+    },
+    {
+      "name": "macos",
+      "description": "Base configuration for all macOS builds",
+      "hidden": true,
+      "inherits": ["build-base"],
+      "condition":{
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "ios",
+      "description": "Base configuration for all iOS builds",
+      "configurePreset": "ios",
+      "hidden": true,
+      "inherits": ["macos"]
+    },
+    {
+      "name": "ios-debug",
+      "description": "iOS configuration debug build",
+      "inherits": ["ios"],
+      "configuration": "Debug",
+      "nativeToolOptions": ["-allowProvisioningUpdates"]
+    },
+    {
+      "name": "ios-release",
+      "description": "iOS configuration release build",
+      "inherits": ["ios"],
+      "configurePreset": "ios",
+      "configuration": "Release",
+      "nativeToolOptions": ["-allowProvisioningUpdates"]
+    },
+    {
+      "name": "linux",
+      "description": "Base configuration for all Linux builds",
+      "configurePreset": "linux",
+      "hidden": true,
+      "inherits": ["build-base"],
+      "condition":{
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "linux-debug",
+      "description": "Linux Debug build",
+      "inherits": ["linux"],
+      "configuration": "Debug"
+    },
+    {
+      "name": "linux-release",
+      "description": "Linux Release build",
+      "inherits": ["linux"],
+      "configuration": "Release"
+    }
+  ]
+}
