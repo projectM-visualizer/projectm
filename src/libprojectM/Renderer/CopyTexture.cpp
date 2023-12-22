@@ -3,7 +3,7 @@
 #include <array>
 #include <iostream>
 
-#ifdef USE_GLES
+#if USE_GLES
 static constexpr char ShaderVersion[] = "#version 300 es\n\n";
 #else
 static constexpr char ShaderVersion[] = "#version 330\n\n";
