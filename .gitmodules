@@ -1,3 +1,6 @@
 [submodule "vendor/projectm-eval"]
 	path = vendor/projectm-eval
 	url = https://github.com/projectM-visualizer/projectm-eval.git
+[submodule "frontend-qt"]
+	path = frontend-qt
+	url = https://github.com/serjykalstryke/projectm
