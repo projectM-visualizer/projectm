@@ -1,5 +1,6 @@
 build_logs/
 
+.gitmodules
 xcuserdata
 src/libprojectM/config.inp
 src/libprojectM/config.inp.b
