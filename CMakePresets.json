@@ -44,11 +44,46 @@
       "name": "linux",
       "description": "Linux desktop",
       "generator": "Ninja Multi-Config",
-      "inherits": ["config-base"],
-      "condition":{
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Linux"
+      "inherits": ["config-base"]
+    },
+    {
+      "name": "android",
+      "description": "Android",
+      "hidden": true,
+      "inherits": ["linux"],
+      "displayName": "Android",
+      "toolchainFile": "$penv{ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake"
+    },
+    {
+      "name":"android-arm64-v8a",
+      "inherits": ["android"],
+      "displayName": "Android arm64-v8a",
+      "cacheVariables": {
+        "ANDROID_ABI": "arm64-v8a"
+      }
+    },
+    {
+      "name":"android-armeabi-v7a",
+      "inherits": ["android"],
+      "displayName": "Android armeabi-v7a",
+      "cacheVariables": {
+        "ANDROID_ABI": "armeabi-v7a"
+      }
+    },
+    {
+      "name":"android-x86",
+      "inherits": ["android"],
+      "displayName": "Android x86",
+      "cacheVariables": {
+        "ANDROID_ABI": "x86"
+      }
+    },
+    {
+      "name":"android-x86_64",
+      "inherits": ["android"],
+      "displayName": "Android x86_64",
+      "cacheVariables": {
+        "ANDROID_ABI": "x86_64"
       }
     }
   ],
@@ -96,12 +131,7 @@
       "description": "Base configuration for all Linux builds",
       "configurePreset": "linux",
       "hidden": true,
-      "inherits": ["build-base"],
-      "condition":{
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Linux"
-      }
+      "inherits": ["build-base"]
     },
     {
       "name": "linux-debug",
@@ -113,6 +143,74 @@
       "name": "linux-release",
       "description": "Linux Release build",
       "inherits": ["linux"],
+      "configuration": "Release"
+    },
+    {
+      "name": "android-arm64-v8a",
+      "description": "Android arm64 configuration base build",
+      "inherits": [ "linux" ],
+      "hidden": true,
+      "configurePreset": "android-arm64-v8a"
+    },
+    {
+      "name": "android-armeabi-v7a",
+      "description": "Android armeabi configuration base build",
+      "inherits": [ "linux" ],
+      "hidden": true,
+      "configurePreset": "android-armeabi-v7a"
+    },
+    {
+      "name": "android-x86",
+      "description": "Android x86 configuration base build",
+      "inherits": [ "linux" ],
+      "hidden": true,
+      "configurePreset": "android-x86"
+    },
+    {
+      "name": "android-x86_64",
+      "description": "Android x86_64 configuration base build",
+      "inherits": [ "linux" ],
+      "hidden": true,
+      "configurePreset": "android-x86_64"
+    },
+    {
+      "name": "android-arm64-v8a-debug",
+      "inherits": ["android-arm64-v8a"],
+      "configuration": "Debug"
+    },
+    {
+      "name": "android-arm64-v8a-release",
+      "inherits": ["android-arm64-v8a"],
+      "configuration": "Release"
+    },
+    {
+      "name": "android-armeabi-v7a-debug",
+      "inherits": ["android-armeabi-v7a"],
+      "configuration": "Debug"
+    },
+    {
+      "name": "android-armeabi-v7a-release",
+      "inherits": ["android-armeabi-v7a"],
+      "configuration": "Release"
+    },
+    {
+      "name": "android-x86-debug",
+      "inherits": ["android-x86"],
+      "configuration": "Debug"
+    },
+    {
+      "name": "android-x86-release",
+      "inherits": ["android-x86"],
+      "configuration": "Release"
+    },
+    {
+      "name": "android-x86_64-debug",
+      "inherits": ["android-x86_64"],
+      "configuration": "Debug"
+    },
+    {
+      "name": "android-x86_64-release",
+      "inherits": ["android-x86_64"],
       "configuration": "Release"
     }
   ]
