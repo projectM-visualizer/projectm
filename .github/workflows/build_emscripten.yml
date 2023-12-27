@@ -41,7 +41,7 @@ jobs:
 
       - name: Build GoogleTest From Source
         run: |
-          git clone https://github.com/anomievision/build-gtest.git ${{ github.workspace }}/build-gtest
+          git clone https://github.com/projectM-visualizer/build-gtest.git ${{ github.workspace }}/build-gtest
           cd ${{ github.workspace }}/build-gtest && ./setup.sh && ./build-emscripten.sh
 
       - name: Configure Build
