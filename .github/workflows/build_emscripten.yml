@@ -25,7 +25,7 @@ jobs:
         uses: mymindstorm/setup-emsdk@v13
         with:
           # Make sure to set a version number!
-          version: 3.1.27
+          version: 3.1.51
           # This is the name of the cache folder.
           # The cache folder will be placed in the build directory,
           #  so make sure it doesn't conflict with anything!
