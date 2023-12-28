@@ -22,10 +22,10 @@ jobs:
           submodules: 'recursive'
       
       - name: Setup emsdk
-        uses: mymindstorm/setup-emsdk@v11
+        uses: mymindstorm/setup-emsdk@v13
         with:
           # Make sure to set a version number!
-          version: 3.1.27
+          version: 3.1.51
           # This is the name of the cache folder.
           # The cache folder will be placed in the build directory,
           #  so make sure it doesn't conflict with anything!
@@ -41,7 +41,7 @@ jobs:
 
       - name: Build GoogleTest From Source
         run: |
-          git clone https://github.com/anomievision/build-gtest.git ${{ github.workspace }}/build-gtest
+          git clone https://github.com/projectM-visualizer/build-gtest.git ${{ github.workspace }}/build-gtest
           cd ${{ github.workspace }}/build-gtest && ./setup.sh && ./build-emscripten.sh
 
       - name: Configure Build
