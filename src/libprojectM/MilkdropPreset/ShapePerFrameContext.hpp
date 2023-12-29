@@ -2,8 +2,10 @@
 
 #include "PresetState.hpp"
 
-class PerFrameContext;
+namespace libprojectM {
+namespace MilkdropPreset {
 
+class PerFrameContext;
 class CustomShape;
 
 class ShapePerFrameContext
@@ -95,3 +97,6 @@ public:
     double* tex_zoom{};
     double* tex_ang{};
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

@@ -25,6 +25,8 @@
 
 #include "projectM-4/projectM.h"
 
+namespace libprojectM {
+
 class projectMWrapper : public ProjectM
 {
 public:
@@ -38,3 +40,5 @@ public:
     projectm_preset_switch_requested_event m_presetSwitchRequestedEventCallback{nullptr};
     void* m_presetSwitchRequestedEventUserData{nullptr};
 };
+
+} // namespace libprojectM

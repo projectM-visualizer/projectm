@@ -10,6 +10,9 @@
 #include <algorithm>
 #include <cmath>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 PerPixelMesh::PerPixelMesh()
     : RenderItem()
 {
@@ -62,7 +65,7 @@ void PerPixelMesh::LoadWarpShader(const PresetState& presetState)
                 std::cerr << "[Warp Shader] Loaded preset warp shader code." << std::endl;
 #endif
             }
-            catch (ShaderException& ex)
+            catch (Renderer::ShaderException& ex)
             {
 #ifdef MILKDROP_PRESET_DEBUG
                 std::cerr << "[Warp Shader] Error loading warp shader code:" << ex.message() << std::endl;
@@ -84,7 +87,7 @@ void PerPixelMesh::CompileWarpShader(PresetState& presetState)
             std::cerr << "[Warp Shader] Successfully compiled warp shader code." << std::endl;
 #endif
         }
-        catch (ShaderException& ex)
+        catch (Renderer::ShaderException& ex)
         {
 #ifdef MILKDROP_PRESET_DEBUG
             std::cerr << "[Warp Shader] Error compiling warp shader code:" << ex.message() << std::endl;
@@ -379,6 +382,9 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    Sampler::Unbind(0);
-    Shader::Unbind();
+    Renderer::Sampler::Unbind(0);
+    Renderer::Shader::Unbind();
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

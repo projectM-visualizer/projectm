@@ -6,6 +6,9 @@
 
 #include <random>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 const glm::mat4 PresetState::orthogonalProjection = glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, -40.0f, 40.0f);
 const glm::mat4 PresetState::orthogonalProjectionFlipped = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -40.0f, 40.0f);
 
@@ -159,3 +162,6 @@ void PresetState::Initialize(PresetFileParser& parsedFile)
     warpShader = parsedFile.GetCode("warp_");
     compositeShader = parsedFile.GetCode("comp_");
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

@@ -4,7 +4,8 @@
 
 #include <algorithm>
 
-using ProjectM::Playlist::Playlist;
+using libprojectM::Playlist::Item;
+using libprojectM::Playlist::Playlist;
 
 TEST(projectMPlaylistPlaylist, Create)
 {
@@ -162,13 +163,13 @@ TEST(projectMPlaylistPlaylist, AddPathRecursively)
     const auto& items = playlist.Items();
     ASSERT_EQ(items.size(), 4);
 
-    EXPECT_NE(std::find_if(items.cbegin(), items.cend(), [](const ProjectM::Playlist::Item& item) {
+    EXPECT_NE(std::find_if(items.cbegin(), items.cend(), [](const Item& item) {
                   return item.Filename().substr(item.Filename().length() - 11, 11) == "Test_D.milk";
               }),
               items.cend())
         << "Expected file not found in playlist.";
 
-    EXPECT_EQ(std::find_if(items.cbegin(), items.cend(), [](const ProjectM::Playlist::Item& item) {
+    EXPECT_EQ(std::find_if(items.cbegin(), items.cend(), [](const Item& item) {
                   return item.Filename().substr(item.Filename().length() - 10, 10) == "Other.file";
               }),
               items.cend())
@@ -197,19 +198,19 @@ TEST(projectMPlaylistPlaylist, AddPathNonRecursively)
     const auto& items = playlist.Items();
     ASSERT_EQ(items.size(), 3);
 
-    EXPECT_NE(std::find_if(items.cbegin(), items.cend(), [](const ProjectM::Playlist::Item& item) {
+    EXPECT_NE(std::find_if(items.cbegin(), items.cend(), [](const Item& item) {
                   return item.Filename().substr(item.Filename().length() - 11, 11) == "Test_B.milk";
               }),
               items.cend())
         << "Expected file not found in playlist.";
 
-    EXPECT_EQ(std::find_if(items.cbegin(), items.cend(), [](const ProjectM::Playlist::Item& item) {
+    EXPECT_EQ(std::find_if(items.cbegin(), items.cend(), [](const Item& item) {
                   return item.Filename().substr(item.Filename().length() - 11, 11) == "Test_D.milk";
               }),
               items.cend())
         << "Unexpected file found in playlist.";
 
-    EXPECT_EQ(std::find_if(items.cbegin(), items.cend(), [](const ProjectM::Playlist::Item& item) {
+    EXPECT_EQ(std::find_if(items.cbegin(), items.cend(), [](const Item& item) {
                   return item.Filename().substr(item.Filename().length() - 10, 10) == "Other.file";
               }),
               items.cend())
@@ -461,7 +462,7 @@ TEST(projectMPlaylistPlaylist, NextPresetIndexEmptyPlaylist)
 {
     Playlist playlist;
 
-    EXPECT_THROW(playlist.NextPresetIndex(), ProjectM::Playlist::PlaylistEmptyException);
+    EXPECT_THROW(playlist.NextPresetIndex(), libprojectM::Playlist::PlaylistEmptyException);
 }
 
 
@@ -509,7 +510,7 @@ TEST(projectMPlaylistPlaylist, PreviousPresetIndexEmptyPlaylist)
 {
     Playlist playlist;
 
-    EXPECT_THROW(playlist.PreviousPresetIndex(), ProjectM::Playlist::PlaylistEmptyException);
+    EXPECT_THROW(playlist.PreviousPresetIndex(), libprojectM::Playlist::PlaylistEmptyException);
 }
 
 
@@ -596,7 +597,7 @@ TEST(projectMPlaylistPlaylist, LastPresetIndexEmptyPlaylist)
 {
     Playlist playlist;
 
-    EXPECT_THROW(playlist.LastPresetIndex(), ProjectM::Playlist::PlaylistEmptyException);
+    EXPECT_THROW(playlist.LastPresetIndex(), libprojectM::Playlist::PlaylistEmptyException);
 }
 
 
@@ -630,7 +631,7 @@ TEST(projectMPlaylistPlaylist, SetPresetIndexException)
 {
     Playlist playlist;
 
-    EXPECT_THROW(playlist.SetPresetIndex(0), ProjectM::Playlist::PlaylistEmptyException);
+    EXPECT_THROW(playlist.SetPresetIndex(0), libprojectM::Playlist::PlaylistEmptyException);
 }
 
 
@@ -652,7 +653,7 @@ TEST(projectMPlaylistPlaylist, PresetIndexException)
 {
     Playlist playlist;
 
-    EXPECT_THROW(playlist.PresetIndex(), ProjectM::Playlist::PlaylistEmptyException);
+    EXPECT_THROW(playlist.PresetIndex(), libprojectM::Playlist::PlaylistEmptyException);
 }
 
 

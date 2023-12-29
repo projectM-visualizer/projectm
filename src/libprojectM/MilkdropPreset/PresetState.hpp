@@ -21,6 +21,9 @@
 
 #include <string>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 class PresetFileParser;
 
 using BlendableFloat = float; //!< Currently a placeholder to mark blendable values.
@@ -124,41 +127,44 @@ public:
     int frame{0};
     double progress{0.0};
 
-    int presetVersion{100}; //!< Value of MILKDROP_PRESET_VERSION in preset files.
-    int warpShaderVersion{2}; //!< PSVERSION or PSVERSION_WARP.
+    int presetVersion{100};        //!< Value of MILKDROP_PRESET_VERSION in preset files.
+    int warpShaderVersion{2};      //!< PSVERSION or PSVERSION_WARP.
     int compositeShaderVersion{2}; //!< PSVERSION or PSVERSION_COMP.
 
     std::array<float, 4> hueRandomOffsets; //!< Per-preset constant offsets for the hue animation
 
-    projectm_eval_mem_buffer globalMemory{nullptr}; //!< gmegabuf data. Using per-frame buffers in projectM to reduce interference.
-    double globalRegisters[100]{}; //!< Global reg00-reg99 variables.
+    projectm_eval_mem_buffer globalMemory{nullptr};  //!< gmegabuf data. Using per-frame buffers in projectM to reduce interference.
+    double globalRegisters[100]{};                   //!< Global reg00-reg99 variables.
     std::array<double, QVarCount> frameQVariables{}; //!< Q variables after per-frame code evaluation.
 
     libprojectM::Audio::FrameAudioData audioData; //!< Holds audio/spectrum data and values for beat detection.
-    RenderContext renderContext; //!< Current renderer state data like viewport size and generic shaders.
+    Renderer::RenderContext renderContext;        //!< Current renderer state data like viewport size and generic shaders.
 
     std::string perFrameInitCode; //!< Preset init code, run once on load.
-    std::string perFrameCode; //!< Preset per-frame code, run once at the start of each frame.
-    std::string perPixelCode; //!< Preset per-pixel/per-vertex code, run once per warp mesh vertex.
+    std::string perFrameCode;     //!< Preset per-frame code, run once at the start of each frame.
+    std::string perPixelCode;     //!< Preset per-pixel/per-vertex code, run once per warp mesh vertex.
 
-    std::array<std::string, CustomWaveformCount> customWaveInitCode; //!< Custom wave init code, run once on load.
+    std::array<std::string, CustomWaveformCount> customWaveInitCode;     //!< Custom wave init code, run once on load.
     std::array<std::string, CustomWaveformCount> customWavePerFrameCode; //!< Custom wave per-frame code, run once after the per-frame code.
     std::array<std::string, CustomWaveformCount> customWavePerPointCode; //!< Custom wave per-point code, run once per waveform vertex.
 
-    std::array<std::string, CustomShapeCount> customShapeInitCode; //!< Custom shape init code, run once on load.
+    std::array<std::string, CustomShapeCount> customShapeInitCode;     //!< Custom shape init code, run once on load.
     std::array<std::string, CustomShapeCount> customShapePerFrameCode; //!< Custom shape per-frame code, run once per shape instance.
 
-    std::string warpShader; //!< Warp shader code.
+    std::string warpShader;      //!< Warp shader code.
     std::string compositeShader; //!< Composite shader code.
 
-    Shader untexturedShader; //!< Shader used to draw untextured primitives, e.g. waveforms.
-    Shader texturedShader; //!< Shader used to draw textured primitives, e.g. textured shapes and the warp mesh.
+    Renderer::Shader untexturedShader; //!< Shader used to draw untextured primitives, e.g. waveforms.
+    Renderer::Shader texturedShader;   //!< Shader used to draw textured primitives, e.g. textured shapes and the warp mesh.
 
-    std::weak_ptr<Texture> mainTexture; //!< A weak reference to the main texture in the preset framebuffer.
-    BlurTexture blurTexture; //!< The blur textures used in this preset. Contents depend on the shader code using GetBlurX().
+    std::weak_ptr<Renderer::Texture> mainTexture; //!< A weak reference to the main texture in the preset framebuffer.
+    BlurTexture blurTexture;                      //!< The blur textures used in this preset. Contents depend on the shader code using GetBlurX().
 
-    std::map<int, TextureSamplerDescriptor> randomTextureDescriptors; //!< Descriptors for random texture IDs. Should be the same across both warp and comp shaders.
+    std::map<int, Renderer::TextureSamplerDescriptor> randomTextureDescriptors; //!< Descriptors for random texture IDs. Should be the same across both warp and comp shaders.
 
-    static const glm::mat4 orthogonalProjection; //!< Projection matrix that transforms DirectX screen-space coordinates into the OpenGL coordinate frame.
+    static const glm::mat4 orthogonalProjection;        //!< Projection matrix that transforms DirectX screen-space coordinates into the OpenGL coordinate frame.
     static const glm::mat4 orthogonalProjectionFlipped; //!< Projection matrix that transforms DirectX screen-space coordinates into the OpenGL coordinate frame.
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

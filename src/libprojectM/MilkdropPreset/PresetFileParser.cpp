@@ -6,6 +6,9 @@
 #include <sstream>
 #include <vector>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 auto PresetFileParser::Read(const std::string& presetFile) -> bool
 {
     std::ifstream presetStream(presetFile.c_str(), std::ios_base::in | std::ios_base::binary);
@@ -174,3 +177,6 @@ void PresetFileParser::ParseLine(const std::string& line)
         m_presetValues.emplace(std::move(varName), std::move(value));
     }
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

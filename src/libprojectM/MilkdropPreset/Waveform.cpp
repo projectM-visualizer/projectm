@@ -11,6 +11,11 @@
 
 #include <cmath>
 
+using libprojectM::Renderer::RenderItem;
+
+namespace libprojectM {
+namespace MilkdropPreset {
+
 Waveform::Waveform(PresetState& presetState)
     : RenderItem()
     , m_presetState(presetState)
@@ -124,7 +129,7 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    Shader::Unbind();
+    Renderer::Shader::Unbind();
 }
 
 void Waveform::ModulateOpacityByVolume(const PerFrameContext& presetPerFrameContext)
@@ -611,3 +616,6 @@ int Waveform::SmoothWave(const RenderItem::Point* inputVertices,
 
     return outputIndex + 1;
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

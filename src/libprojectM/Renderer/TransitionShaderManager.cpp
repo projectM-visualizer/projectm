@@ -4,6 +4,9 @@
 
 #include <iostream>
 
+namespace libprojectM {
+namespace Renderer {
+
 TransitionShaderManager::TransitionShaderManager()
     : m_transitionShaders({CompileTransitionShader(kTransitionShaderBuiltInCircleGlsl330),
                            CompileTransitionShader(kTransitionShaderBuiltInPlasmaGlsl330),
@@ -52,3 +55,6 @@ auto TransitionShaderManager::CompileTransitionShader(const std::string& shaderB
         return {};
     }
 }
+
+} // namespace Renderer
+} // namespace libprojectM

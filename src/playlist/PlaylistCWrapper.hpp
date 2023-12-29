@@ -7,7 +7,10 @@
 #include <string>
 #include <vector>
 
-class PlaylistCWrapper : public ProjectM::Playlist::Playlist
+namespace libprojectM {
+namespace Playlist {
+
+class PlaylistCWrapper : public Playlist
 {
 public:
     PlaylistCWrapper() = delete;
@@ -84,3 +87,6 @@ private:
     projectm_playlist_preset_switch_failed_event m_presetSwitchFailedEventCallback{nullptr}; //!< Preset switch failed callback pointer set by the application.
     void* m_presetSwitchFailedEventUserData{nullptr};                                        //!< Context data pointer set by the application.
 };
+
+} // namespace Playlist
+} // namespace libprojectM

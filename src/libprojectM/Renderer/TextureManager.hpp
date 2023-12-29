@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+namespace libprojectM {
+namespace Renderer {
 
 class TextureManager
 {
@@ -104,3 +106,6 @@ private:
     std::vector<std::string> m_randomTextures;
     std::vector<std::string> m_extensions{".jpg", ".jpeg", ".dds", ".png", ".tga", ".bmp", ".dib"};
 };
+
+} // namespace Renderer
+} // namespace libprojectM

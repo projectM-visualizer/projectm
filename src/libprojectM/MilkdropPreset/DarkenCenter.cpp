@@ -1,5 +1,8 @@
 #include "DarkenCenter.hpp"
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 DarkenCenter::DarkenCenter(PresetState& presetState)
     : RenderItem()
     , m_presetState(presetState)
@@ -48,5 +51,8 @@ void DarkenCenter::Draw()
 
     glDisable(GL_BLEND);
     glBindVertexArray(0);
-    Shader::Unbind();
+    Renderer::Shader::Unbind();
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

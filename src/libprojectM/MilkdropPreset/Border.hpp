@@ -5,10 +5,14 @@
 
 #include "Renderer/RenderItem.hpp"
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
+
 /**
  * @brief Renders a border around the screen.
  */
-class Border : public RenderItem
+class Border : public Renderer::RenderItem
 {
 public:
     Border() = delete;
@@ -26,3 +30,6 @@ public:
 private:
     PresetState& m_presetState; //!< The global preset state.
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

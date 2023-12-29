@@ -2,6 +2,9 @@
 
 #include "projectM-opengl.h"
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 Filters::Filters(const PresetState& presetState)
     : RenderItem()
     , m_presetState(presetState)
@@ -53,7 +56,7 @@ void Filters::Draw()
 
     glBindVertexArray(0);
 
-    Shader::Unbind();
+    Renderer::Shader::Unbind();
 
     glDisable(GL_BLEND);
 }
@@ -119,3 +122,6 @@ void Filters::UpdateMesh()
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

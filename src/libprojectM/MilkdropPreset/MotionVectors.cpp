@@ -4,6 +4,9 @@
 
 #include <Renderer/TextureManager.hpp>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 MotionVectors::MotionVectors(PresetState& presetState)
     : RenderItem()
     , m_presetState(presetState)
@@ -24,7 +27,7 @@ void MotionVectors::InitVertexAttrib()
     glVertexAttribIPointer(2, 1, GL_INT, sizeof(MotionVectorVertex), reinterpret_cast<void*>(offsetof(MotionVectorVertex, index)));
 }
 
-void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shared_ptr<class Texture> motionTexture)
+void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shared_ptr<Renderer::Texture> motionTexture)
 {
     // Don't draw if invisible.
     if (*presetPerFrameContext.mv_a < 0.0001f)
@@ -146,7 +149,10 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
     glDisable(GL_LINE_SMOOTH);
 #endif
 
-    Shader::Unbind();
+    Renderer::Shader::Unbind();
 
     glDisable(GL_BLEND);
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

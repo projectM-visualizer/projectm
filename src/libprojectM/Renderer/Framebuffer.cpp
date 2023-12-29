@@ -1,6 +1,7 @@
 #include "Framebuffer.hpp"
 
-#include <cassert>
+namespace libprojectM {
+namespace Renderer {
 
 Framebuffer::Framebuffer()
 {
@@ -398,3 +399,5 @@ void Framebuffer::RemoveAttachment(int framebufferIndex, GLenum attachmentType)
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_framebufferIds.at(m_drawFramebuffer));
 }
 
+} // namespace Renderer
+} // namespace libprojectM

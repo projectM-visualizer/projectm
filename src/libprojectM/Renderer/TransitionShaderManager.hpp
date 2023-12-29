@@ -4,6 +4,9 @@
 
 #include <random>
 
+namespace libprojectM {
+namespace Renderer {
+
 /**
  * @brief Manages all available transition shaders.
  */
@@ -30,3 +33,6 @@ private:
     std::random_device m_randomDevice; //!< Seed for the random number generator
     std::mt19937 m_mersenneTwister; //!< Random engine to select shader
 };
+
+} // namespace Renderer
+} // namespace libprojectM

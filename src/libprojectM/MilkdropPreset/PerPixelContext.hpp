@@ -5,6 +5,9 @@
 
 #include <projectm-eval.h>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 class PerPixelContext
 {
 public:
@@ -90,3 +93,6 @@ public:
     PRJM_EVAL_F* aspectx{};
     PRJM_EVAL_F* aspecty{};
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

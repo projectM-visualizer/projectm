@@ -2,6 +2,9 @@
 
 #include <utility>
 
+namespace libprojectM {
+namespace Renderer {
+
 Texture::Texture(std::string name, const int width, const int height, const bool isUserTexture)
     : m_target(GL_TEXTURE_2D)
     , m_name(std::move(name))
@@ -103,3 +106,6 @@ void Texture::CreateEmptyTexture()
     glTexImage2D(m_target, 0, m_internalFormat, m_width, m_height, 0, m_format, m_type, nullptr);
     glBindTexture(m_target, 0);
 }
+
+} // namespace Renderer
+} // namespace libprojectM

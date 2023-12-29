@@ -11,6 +11,9 @@
 #define REG_VAR(var) \
     var = projectm_eval_context_register_variable(perFrameCodeContext, #var);
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 ShapePerFrameContext::ShapePerFrameContext(projectm_eval_mem_buffer gmegabuf, PRJM_EVAL_F (*globalRegisters)[100])
     : perFrameCodeContext(projectm_eval_context_create(gmegabuf, globalRegisters))
 {
@@ -191,3 +194,6 @@ void ShapePerFrameContext::ExecutePerFrameCode()
         projectm_eval_code_execute(perFrameCodeHandle);
     }
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

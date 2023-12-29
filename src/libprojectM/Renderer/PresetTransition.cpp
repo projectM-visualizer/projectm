@@ -6,6 +6,9 @@
 #include <cmath>
 #include <cstddef>
 
+namespace libprojectM {
+namespace Renderer {
+
 constexpr double PI = 3.14159265358979323846;
 
 PresetTransition::PresetTransition(const std::shared_ptr<Shader>& transitionShader, double durationSeconds)
@@ -129,3 +132,6 @@ void PresetTransition::Draw(const Preset& oldPreset,
     // Update last frame time.
     m_lastFrameTime = std::chrono::system_clock::now();
 }
+
+} // namespace Renderer
+} // namespace libprojectM

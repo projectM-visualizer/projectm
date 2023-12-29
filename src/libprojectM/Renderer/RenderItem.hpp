@@ -2,6 +2,9 @@
 
 #include "RenderContext.hpp"
 
+namespace libprojectM {
+namespace Renderer {
+
 /**
  * @brief Base class for render meshes.
  * Also defines a few standard vertex attribute structures for use with the shaders.
@@ -74,3 +77,6 @@ protected:
     GLuint m_vboID{0}; //!< This RenderItem's vertex buffer object ID
     GLuint m_vaoID{0}; //!< This RenderItem's vertex array object ID
 };
+
+} // namespace Renderer
+} // namespace libprojectM

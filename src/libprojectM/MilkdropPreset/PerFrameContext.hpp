@@ -4,6 +4,9 @@
 
 #include <projectm-eval.h>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 /**
  * @brief Hold the per-frame state variables and code execution context.
  *
@@ -142,3 +145,6 @@ public:
 
     PRJM_EVAL_F q_values_after_init_code[QVarCount]{};
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

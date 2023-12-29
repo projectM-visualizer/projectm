@@ -15,6 +15,9 @@
 #include <regex>
 #include <set>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 using libprojectM::MilkdropPreset::MilkdropStaticShaders;
 
 static auto floatRand = []() { return static_cast<float>(rand() % 7381) / 7380.0f; };
@@ -72,10 +75,10 @@ void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
         // The "main" and "blurX" textures are preset-specific and are not managed by TextureManager.
         if (lowerCaseName == "main")
         {
-            TextureSamplerDescriptor desc(presetState.mainTexture.lock(),
-                                          presetState.renderContext.textureManager->GetSampler(name),
-                                          name,
-                                          "main");
+            Renderer::TextureSamplerDescriptor desc(presetState.mainTexture.lock(),
+                                                    presetState.renderContext.textureManager->GetSampler(name),
+                                                    name,
+                                                    "main");
             m_mainTextureDescriptors.push_back(std::move(desc));
             continue;
         }
@@ -99,18 +102,17 @@ void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
 
         // Random textures need special treatment.
         if (lowerCaseName.length() >= 6 &&
-            lowerCaseName.substr(0, 4) == "rand"
-            && std::isdigit(lowerCaseName.at(4), loc)
-            && std::isdigit(lowerCaseName.at(5), loc)
-            )
+            lowerCaseName.substr(0, 4) == "rand" && std::isdigit(lowerCaseName.at(4), loc) && std::isdigit(lowerCaseName.at(5), loc))
         {
             // First look up the random texture index in the preset state so the texture matches between warp and composite shaders
             int randomSlot = -1;
-            try {
+            try
+            {
                 randomSlot = std::stoi(lowerCaseName.substr(4, 2));
             }
             catch (...) // Ignore any conversion errors.
-            {}
+            {
+            }
 
             if (randomSlot >= 0 && randomSlot <= 15)
             {
@@ -322,7 +324,7 @@ void MilkdropShader::LoadVariables(const PresetState& presetState, const PerFram
     }
 }
 
-auto MilkdropShader::Shader() -> class Shader&
+auto MilkdropShader::Shader() -> Renderer::Shader&
 {
     return m_shader;
 }
@@ -332,7 +334,7 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
 
     if (program.length() <= 0)
     {
-        throw ShaderException("Preset shader is declared, but empty.");
+        throw Renderer::ShaderException("Preset shader is declared, but empty.");
     }
 
     size_t found;
@@ -378,7 +380,7 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
     }
     else
     {
-        throw ShaderException("Preset shader is missing \"shader_body\" entry point.");
+        throw Renderer::ShaderException("Preset shader is missing \"shader_body\" entry point.");
     }
 
     // replace the "{" immediately following shader_body with some variable declarations
@@ -394,7 +396,7 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
     }
     else
     {
-        throw ShaderException("Preset shader has no opening braces.");
+        throw Renderer::ShaderException("Preset shader has no opening braces.");
     }
 
     // replace "}" with return statement (this can probably be optimized for the GLSL conversion...)
@@ -406,7 +408,7 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
     }
     else
     {
-        throw ShaderException("Preset shader has no closing brace.");
+        throw Renderer::ShaderException("Preset shader has no closing brace.");
     }
 
     // Find matching closing brace and cut off excess text after shader's main function
@@ -551,7 +553,7 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
     std::string sourcePreprocessed;
     if (!parser.ApplyPreprocessor("", program.c_str(), program.size(), sourcePreprocessed))
     {
-        throw ShaderException("Error translating HLSL " + shaderTypeString + " shader: Preprocessing failed.\nSource:\n" + program);
+        throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: Preprocessing failed.\nSource:\n" + program);
     }
 
     // Remove previous shader declarations
@@ -604,7 +606,7 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
     // First, parse HLSL into a tree
     if (!parser.Parse("", sourcePreprocessed.c_str(), sourcePreprocessed.size()))
     {
-        throw ShaderException("Error translating HLSL " + shaderTypeString + " shader: HLSL parsing failed.\nSource:\n" + sourcePreprocessed);
+        throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: HLSL parsing failed.\nSource:\n" + sourcePreprocessed);
     }
 
     // Then generate GLSL from the resulting parser tree
@@ -612,7 +614,7 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
                             MilkdropStaticShaders::Get()->GetGlslGeneratorVersion(),
                             "PS"))
     {
-        throw ShaderException("Error translating HLSL " + shaderTypeString + " shader: GLSL generating failes.\nSource:\n" + sourcePreprocessed);
+        throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: GLSL generating failes.\nSource:\n" + sourcePreprocessed);
     }
 
     // Now we have GLSL source for the preset shader program (hopefully it's valid!)
@@ -652,3 +654,6 @@ void MilkdropShader::UpdateMaxBlurLevel(BlurTexture::BlurLevel requestedLevel)
         m_samplerNames.insert("blur1");
     }
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

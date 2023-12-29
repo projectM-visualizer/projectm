@@ -16,7 +16,10 @@
 
 #include <memory>
 
-class MilkdropPresetFactory : public PresetFactory
+namespace libprojectM {
+namespace MilkdropPreset {
+
+class Factory : public PresetFactory
 {
 
 public:
@@ -30,3 +33,6 @@ public:
     }
 
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

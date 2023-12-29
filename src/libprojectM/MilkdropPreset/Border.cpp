@@ -2,6 +2,9 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 Border::Border(PresetState& presetState)
     : RenderItem()
     , m_presetState(presetState)
@@ -75,9 +78,12 @@ void Border::Draw(const PerFrameContext& presetPerFrameContext)
         }
     }
 
-    Shader::Unbind();
+    Renderer::Shader::Unbind();
 
     glDisable(GL_BLEND);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

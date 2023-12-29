@@ -3,6 +3,8 @@
 #include <condition_variable>
 #include <mutex>
 
+namespace libprojectM {
+
 /**
  * Small class to encapsulate synchronization of a simple background task runner
  */
@@ -70,3 +72,5 @@ private:
     volatile bool m_finished{ false };
 
 };
+
+} // namespace libprojectM

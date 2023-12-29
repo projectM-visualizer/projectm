@@ -3,11 +3,11 @@
 #include <memory>
 #include <string>
 
-class MilkdropPresetFactory;
-
-class PresetOutputs;
+namespace libprojectM {
 
 class Preset;
+
+namespace MilkdropPreset {
 
 /**
  * A preset that does not depend on the file system to be loaded. This allows projectM to render
@@ -24,8 +24,11 @@ public:
      * @brief Allocate a new idle preset instance.
      * @return A newly allocated auto pointer of an idle preset instance
      */
-    static std::unique_ptr<Preset> allocate();
+    static std::unique_ptr<::libprojectM::Preset> allocate();
 
 private:
     static std::string presetText();
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

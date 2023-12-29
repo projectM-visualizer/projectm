@@ -3,7 +3,8 @@
 #include "projectM-4/callbacks.h"
 #include "projectM-4/core.h"
 
-using ProjectM::Playlist::Playlist;
+namespace libprojectM {
+namespace Playlist {
 
 PlaylistCWrapper::PlaylistCWrapper(projectm_handle projectMInstance)
     : m_projectMInstance(projectMInstance)
@@ -47,7 +48,7 @@ void PlaylistCWrapper::OnPresetSwitchRequested(bool isHardCut, void* userData)
     {
         playlist->PlayPresetIndex(playlist->NextPresetIndex(), isHardCut, true);
     }
-    catch (ProjectM::Playlist::PlaylistEmptyException&)
+    catch (PlaylistEmptyException&)
     {
     }
 }
@@ -135,10 +136,12 @@ void PlaylistCWrapper::PlayPresetIndex(size_t index, bool hardCut, bool resetFai
     }
 }
 
+} // namespace Playlist
+} // namespace libprojectM
 
-auto playlist_handle_to_instance(projectm_playlist_handle instance) -> PlaylistCWrapper*
+auto playlist_handle_to_instance(projectm_playlist_handle instance) -> libprojectM::Playlist::PlaylistCWrapper*
 {
-    return reinterpret_cast<PlaylistCWrapper*>(instance);
+    return reinterpret_cast<libprojectM::Playlist::PlaylistCWrapper*>(instance);
 }
 
 
@@ -164,7 +167,7 @@ auto projectm_playlist_create(projectm_handle projectm_instance) -> projectm_pla
 {
     try
     {
-        auto* instance = new PlaylistCWrapper(projectm_instance);
+        auto* instance = new libprojectM::Playlist::PlaylistCWrapper(projectm_instance);
         return reinterpret_cast<projectm_playlist*>(instance);
     }
     catch (...)
@@ -269,7 +272,7 @@ auto projectm_playlist_add_path(projectm_playlist_handle instance, const char* p
 {
     auto* playlist = playlist_handle_to_instance(instance);
 
-    return playlist->AddPath(path, Playlist::InsertAtEnd, recurse_subdirs, allow_duplicates);
+    return playlist->AddPath(path, libprojectM::Playlist::Playlist::InsertAtEnd, recurse_subdirs, allow_duplicates);
 }
 
 
@@ -287,7 +290,7 @@ auto projectm_playlist_add_preset(projectm_playlist_handle instance, const char*
 {
     auto* playlist = playlist_handle_to_instance(instance);
 
-    return playlist->AddItem(filename, Playlist::InsertAtEnd, allow_duplicates);
+    return playlist->AddItem(filename, libprojectM::Playlist::Playlist::InsertAtEnd, allow_duplicates);
 }
 
 
@@ -319,7 +322,7 @@ uint32_t projectm_playlist_add_presets(projectm_playlist_handle instance, const 
             continue;
         }
 
-        if (playlist->AddItem(filenames[index], Playlist::InsertAtEnd, allow_duplicates))
+        if (playlist->AddItem(filenames[index], libprojectM::Playlist::Playlist::InsertAtEnd, allow_duplicates))
         {
             addCount++;
         }
@@ -407,17 +410,17 @@ void projectm_playlist_sort(projectm_playlist_handle instance, uint32_t start_in
 {
     auto* playlist = playlist_handle_to_instance(instance);
 
-    Playlist::SortPredicate predicatePlaylist{ProjectM::Playlist::Playlist::SortPredicate::FullPath};
-    Playlist::SortOrder orderPlaylist{ProjectM::Playlist::Playlist::SortOrder::Ascending};
+    libprojectM::Playlist::Playlist::SortPredicate predicatePlaylist{libprojectM::Playlist::Playlist::SortPredicate::FullPath};
+    libprojectM::Playlist::Playlist::SortOrder orderPlaylist{libprojectM::Playlist::Playlist::SortOrder::Ascending};
 
     if (predicate == SORT_PREDICATE_FILENAME_ONLY)
     {
-        predicatePlaylist = ProjectM::Playlist::Playlist::SortPredicate::FilenameOnly;
+        predicatePlaylist = libprojectM::Playlist::Playlist::SortPredicate::FilenameOnly;
     }
 
     if (order == SORT_ORDER_DESCENDING)
     {
-        orderPlaylist = ProjectM::Playlist::Playlist::SortOrder::Descending;
+        orderPlaylist = libprojectM::Playlist::Playlist::SortOrder::Descending;
     }
 
     playlist->Sort(start_index, count, predicatePlaylist, orderPlaylist);
@@ -445,7 +448,7 @@ auto projectm_playlist_get_position(projectm_playlist_handle instance) -> uint32
     {
         return playlist->PresetIndex();
     }
-    catch (ProjectM::Playlist::PlaylistEmptyException&)
+    catch (libprojectM::Playlist::PlaylistEmptyException&)
     {
         return 0;
     }
@@ -462,7 +465,7 @@ auto projectm_playlist_set_position(projectm_playlist_handle instance, uint32_t 
         playlist->PlayPresetIndex(newIndex, hard_cut, true);
         return playlist->PresetIndex();
     }
-    catch (ProjectM::Playlist::PlaylistEmptyException&)
+    catch (libprojectM::Playlist::PlaylistEmptyException&)
     {
         return 0;
     }
@@ -478,7 +481,7 @@ uint32_t projectm_playlist_play_next(projectm_playlist_handle instance, bool har
         playlist->PlayPresetIndex(newIndex, hard_cut, true);
         return playlist->PresetIndex();
     }
-    catch (ProjectM::Playlist::PlaylistEmptyException&)
+    catch (libprojectM::Playlist::PlaylistEmptyException&)
     {
         return 0;
     }
@@ -494,7 +497,7 @@ uint32_t projectm_playlist_play_previous(projectm_playlist_handle instance, bool
         playlist->PlayPresetIndex(newIndex, hard_cut, true);
         return playlist->PresetIndex();
     }
-    catch (ProjectM::Playlist::PlaylistEmptyException&)
+    catch (libprojectM::Playlist::PlaylistEmptyException&)
     {
         return 0;
     }
@@ -510,7 +513,7 @@ uint32_t projectm_playlist_play_last(projectm_playlist_handle instance, bool har
         playlist->PlayPresetIndex(newIndex, hard_cut, true);
         return playlist->PresetIndex();
     }
-    catch (ProjectM::Playlist::PlaylistEmptyException&)
+    catch (libprojectM::Playlist::PlaylistEmptyException&)
     {
         return 0;
     }

@@ -2,8 +2,10 @@
 
 #include "PresetState.hpp"
 
-class CustomWaveform;
+namespace libprojectM {
+namespace MilkdropPreset {
 
+class CustomWaveform;
 class PerFrameContext;
 
 class WaveformPerPointContext
@@ -68,3 +70,6 @@ public:
     PRJM_EVAL_F* b{};
     PRJM_EVAL_F* a{};
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

@@ -19,6 +19,8 @@
 #define GL_TEXTURE_IMAGE_FORMAT 0x828F
 #endif
 
+namespace libprojectM {
+namespace Renderer {
 
 TextureManager::TextureManager(const std::vector<std::string>& textureSearchPaths)
     : m_textureSearchPaths(textureSearchPaths)
@@ -417,3 +419,6 @@ void TextureManager::ScanTextures()
         m_filesScanned = true;
     }
 }
+
+} // namespace Renderer
+} // namespace libprojectM

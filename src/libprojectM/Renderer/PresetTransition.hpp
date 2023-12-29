@@ -11,6 +11,9 @@
 #include <chrono>
 #include <random>
 
+namespace libprojectM {
+namespace Renderer {
+
 /**
  * @brief Implements the shader and rendering logic to blend two presets into each other.
  */
@@ -64,3 +67,6 @@ private:
 
     std::random_device m_randomDevice; //!< Seed for the random number generator
 };
+
+} // namespace Renderer
+} // namespace libprojectM

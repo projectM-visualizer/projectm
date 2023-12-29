@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-namespace ProjectM {
+namespace libprojectM {
 namespace Playlist {
 
 /**
@@ -50,4 +50,4 @@ private:
 };
 
 } // namespace Playlist
-} // namespace ProjectM
+} // namespace libprojectM

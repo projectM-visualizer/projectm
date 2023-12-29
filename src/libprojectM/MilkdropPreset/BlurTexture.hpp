@@ -11,6 +11,9 @@
 #include <array>
 #include <memory>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 class PerFrameContext;
 class PresetState;
 
@@ -58,14 +61,14 @@ public:
      * The blur textures don't need to be present and can be empty placeholders.
      * @param blurLevel The blur level.
      */
-    auto GetDescriptorsForBlurLevel(BlurLevel blurLevel) const -> std::vector<TextureSamplerDescriptor>;
+    auto GetDescriptorsForBlurLevel(BlurLevel blurLevel) const -> std::vector<Renderer::TextureSamplerDescriptor>;
 
     /**
      * @brief Renders the required blur passes on the given texture.
      * @param sourceTexture The texture to create the blur levels from.
      * @param perFrameContext The per-frame variables.
      */
-    void Update(const Texture& sourceTexture, const PerFrameContext& perFrameContext);
+    void Update(const Renderer::Texture& sourceTexture, const PerFrameContext& perFrameContext);
 
     /**
      * @brief Binds the user-readable blur textures to the texture slots starting with the given index.
@@ -74,7 +77,7 @@ public:
      *                     free unit, which can be the same as the input slot if no blur textures
      *                     are used.
      */
-    void Bind(GLint& unit, Shader& shader) const;
+    void Bind(GLint& unit, Renderer::Shader& shader) const;
 
     /**
      * @brief Returns properly scaled and clamped vlur values from the given context.
@@ -93,19 +96,22 @@ private:
      * Allocates the blur textures.
      * @param sourceTexture The source texture.
      */
-    void AllocateTextures(const Texture& sourceTexture);
+    void AllocateTextures(const Renderer::Texture& sourceTexture);
 
     GLuint m_vboBlur; //!< Vertex buffer object for the fullscreen blur quad.
     GLuint m_vaoBlur; //!< Vertex array object for the fullscreen blur quad.
 
-    Shader m_blur1Shader; //!< The shader used on the first blur pass.
-    Shader m_blur2Shader; //!< The shader used for subsequent blur passes after the initial pass.
+    Renderer::Shader m_blur1Shader; //!< The shader used on the first blur pass.
+    Renderer::Shader m_blur2Shader; //!< The shader used for subsequent blur passes after the initial pass.
 
-    int m_sourceTextureWidth{}; //!< Width of the source texture used to create the blur textures.
+    int m_sourceTextureWidth{};  //!< Width of the source texture used to create the blur textures.
     int m_sourceTextureHeight{}; //!< Height of the source texture used to create the blur textures.
 
-    Framebuffer m_blurFramebuffer;                                        //!< The framebuffer used to draw the blur textures.
-    std::shared_ptr<Sampler> m_blurSampler;                               //!< The blur sampler.
-    std::array<std::shared_ptr<Texture>, NumBlurTextures> m_blurTextures; //!< The blur textures for each pass.
-    BlurLevel m_blurLevel{BlurLevel::None};                               //!< Current blur level.
+    Renderer::Framebuffer m_blurFramebuffer;                                        //!< The framebuffer used to draw the blur textures.
+    std::shared_ptr<Renderer::Sampler> m_blurSampler;                               //!< The blur sampler.
+    std::array<std::shared_ptr<Renderer::Texture>, NumBlurTextures> m_blurTextures; //!< The blur textures for each pass.
+    BlurLevel m_blurLevel{BlurLevel::None};                                         //!< Current blur level.
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

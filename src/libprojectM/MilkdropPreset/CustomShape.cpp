@@ -8,6 +8,9 @@
 
 #include <vector>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 CustomShape::CustomShape(PresetState& presetState)
     : m_presetState(presetState)
     , m_perFrameContext(presetState.globalMemory, &presetState.globalRegisters)
@@ -223,7 +226,7 @@ void CustomShape::Draw()
             glBindVertexArray(0);
 
             glBindTexture(GL_TEXTURE_2D, 0);
-            Sampler::Unbind(0);
+            Renderer::Sampler::Unbind(0);
         }
         else
         {
@@ -317,5 +320,8 @@ void CustomShape::Draw()
 #endif
     glDisable(GL_BLEND);
 
-    Shader::Unbind();
+    Renderer::Shader::Unbind();
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

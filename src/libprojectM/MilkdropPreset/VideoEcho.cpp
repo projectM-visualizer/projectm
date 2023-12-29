@@ -2,6 +2,9 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 VideoEcho::VideoEcho(const PresetState& presetState)
     : RenderItem()
     , m_presetState(presetState)
@@ -95,12 +98,12 @@ void VideoEcho::Draw()
 
     glDisable(GL_BLEND);
 
-    Shader::Unbind();
+    Renderer::Shader::Unbind();
 
     if (mainTexture)
     {
         mainTexture->Unbind(0);
-        Sampler::Unbind(0);
+        Renderer::Sampler::Unbind(0);
     }
 }
 
@@ -240,3 +243,6 @@ void VideoEcho::DrawGammaAdjustment()
         }
     }
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

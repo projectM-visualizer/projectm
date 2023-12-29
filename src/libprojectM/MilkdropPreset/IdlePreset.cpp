@@ -3,8 +3,10 @@
 #include <sstream>
 #include <string>
 
-// Original preset name: "Geiss & Sperl - Feedback (projectM idle HDR mix).milk"
+namespace libprojectM {
+namespace MilkdropPreset {
 
+// Original preset name: "Geiss & Sperl - Feedback (projectM idle HDR mix).milk"
 std::string IdlePresets::presetText()
 {    return R"([preset00]
 fRating=2.000000
@@ -194,3 +196,6 @@ IdlePresets::allocate()
     std::istringstream in(presetText());
     return std::unique_ptr<Preset>(new MilkdropPreset(in));
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

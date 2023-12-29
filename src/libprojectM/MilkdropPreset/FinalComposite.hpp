@@ -9,10 +9,13 @@
 #include <array>
 #include <memory>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 /**
  * @brief Draws the final composite effect, either a shader or Milkdrop 1 effects.
  */
-class FinalComposite : public RenderItem
+class FinalComposite : public Renderer::RenderItem
 {
 public:
     FinalComposite();
@@ -98,3 +101,6 @@ private:
     std::unique_ptr<VideoEcho> m_videoEcho; //!< Video echo effect. Used if no composite shader is loaded and video echo is enabled.
     std::unique_ptr<Filters> m_filters; //!< Color post-processing filters. Used if no composite shader is loaded.
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

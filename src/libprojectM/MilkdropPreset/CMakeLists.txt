@@ -61,8 +61,8 @@ add_library(MilkdropPreset OBJECT
         MilkdropPreset.cpp
         MilkdropPreset.hpp
         MilkdropPresetExceptions.hpp
-        MilkdropPresetFactory.cpp
-        MilkdropPresetFactory.hpp
+        Factory.cpp
+        Factory.hpp
         MilkdropShader.cpp
         MilkdropShader.hpp
         MilkdropStaticShaders.cpp.in

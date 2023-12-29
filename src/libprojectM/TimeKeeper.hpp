@@ -2,6 +2,8 @@
 
 #include <chrono>
 
+namespace libprojectM {
+
 class TimeKeeper
 {
 
@@ -106,3 +108,5 @@ private:
 
     bool m_isSmoothing{false};
 };
+
+} // namespace libprojectM

@@ -3,6 +3,10 @@
 #include <array>
 #include <iostream>
 
+
+namespace libprojectM {
+namespace Renderer {
+
 #ifdef USE_GLES
 static constexpr char ShaderVersion[] = "#version 300 es\n\n";
 #else
@@ -218,3 +222,6 @@ void CopyTexture::Copy(bool flipVertical, bool flipHorizontal) const
     Sampler::Unbind(0);
     Shader::Unbind();
 }
+
+} // namespace Renderer
+} // namespace libprojectM

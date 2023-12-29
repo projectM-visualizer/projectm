@@ -3,6 +3,9 @@
 #include <map>
 #include <string>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 /**
  * @brief Milkdrop preset file parser
  *
@@ -117,3 +120,6 @@ protected:
 private:
     ValueMap m_presetValues; //!< Map with preset keys and their value.
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace ProjectM {
+namespace libprojectM {
 namespace Playlist {
 
 class Item
@@ -30,4 +30,4 @@ private:
 };
 
 } // namespace Playlist
-} // namespace ProjectM
+} // namespace libprojectM

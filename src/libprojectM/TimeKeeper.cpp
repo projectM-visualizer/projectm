@@ -4,6 +4,8 @@
 
 #include <algorithm>
 
+namespace libprojectM {
+
 TimeKeeper::TimeKeeper(double presetDuration, double smoothDuration, double hardcutDuration, double easterEgg)
     : m_easterEgg(easterEgg)
     , m_presetDuration(presetDuration)
@@ -108,3 +110,5 @@ double TimeKeeper::sampledPresetDuration()
     return std::max<double>(1, RandomNumberGenerators::gaussian(m_presetDuration, m_easterEgg));
 
 }
+
+} // namespace libprojectM

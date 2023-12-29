@@ -10,13 +10,15 @@
 //
 //
 //
-#include "MilkdropPresetFactory.hpp"
+#include "Factory.hpp"
 
-#include "MilkdropPreset.hpp"
 #include "IdlePreset.hpp"
+#include "MilkdropPreset.hpp"
 
-std::unique_ptr<Preset>
-MilkdropPresetFactory::LoadPresetFromFile(const std::string& filename)
+namespace libprojectM {
+namespace MilkdropPreset {
+
+std::unique_ptr<::libprojectM::Preset> Factory::LoadPresetFromFile(const std::string& filename)
 {
     std::string path;
     auto protocol = PresetFactory::Protocol(filename, path);
@@ -35,7 +37,10 @@ MilkdropPresetFactory::LoadPresetFromFile(const std::string& filename)
     }
 }
 
-std::unique_ptr<Preset> MilkdropPresetFactory::LoadPresetFromStream(std::istream& data)
+std::unique_ptr<Preset> Factory::LoadPresetFromStream(std::istream& data)
 {
     return std::make_unique<MilkdropPreset>(data);
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

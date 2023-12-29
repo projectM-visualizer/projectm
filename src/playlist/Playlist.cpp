@@ -6,7 +6,7 @@
 #include FS_INCLUDE
 using namespace FS_NAMESPACE::filesystem;
 
-namespace ProjectM {
+namespace libprojectM {
 namespace Playlist {
 
 const char* PlaylistEmptyException::what() const noexcept
@@ -382,4 +382,4 @@ void Playlist::AddCurrentPresetIndexToHistory()
 
 
 } // namespace Playlist
-} // namespace ProjectM
+} // namespace libprojectM

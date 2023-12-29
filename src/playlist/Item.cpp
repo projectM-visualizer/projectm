@@ -1,6 +1,6 @@
 #include "Item.hpp"
 
-namespace ProjectM {
+namespace libprojectM {
 namespace Playlist {
 
 Item::Item(std::string filename)
@@ -21,4 +21,4 @@ auto Item::operator==(const std::string& other) const -> bool
 }
 
 } // namespace Playlist
-} // namespace ProjectM
+} // namespace libprojectM

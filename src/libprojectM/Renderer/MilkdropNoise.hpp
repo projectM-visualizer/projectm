@@ -3,6 +3,9 @@
 #include <cstdint>
 #include <vector>
 
+namespace libprojectM {
+namespace Renderer {
+
 /**
  * @brief Implementation of Milkdrop's noise texture generator.
  *
@@ -68,4 +71,5 @@ protected:
     static uint32_t dwCubicInterpolate(uint32_t y0, uint32_t y1, uint32_t y2, uint32_t y3, float t);
 };
 
-
+} // namespace Renderer
+} // namespace libprojectM
