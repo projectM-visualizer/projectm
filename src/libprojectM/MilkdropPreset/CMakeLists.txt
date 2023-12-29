@@ -52,6 +52,8 @@ add_library(MilkdropPreset OBJECT
         DarkenCenter.cpp
         DarkenCenter.hpp
         EvalLibMutex.cpp
+        Factory.cpp
+        Factory.hpp
         Filters.cpp
         Filters.hpp
         FinalComposite.cpp
@@ -61,8 +63,6 @@ add_library(MilkdropPreset OBJECT
         MilkdropPreset.cpp
         MilkdropPreset.hpp
         MilkdropPresetExceptions.hpp
-        Factory.cpp
-        Factory.hpp
         MilkdropShader.cpp
         MilkdropShader.hpp
         MilkdropStaticShaders.cpp.in
@@ -85,10 +85,35 @@ add_library(MilkdropPreset OBJECT
         VideoEcho.hpp
         Waveform.cpp
         Waveform.hpp
+        WaveformMode.hpp
         WaveformPerFrameContext.cpp
         WaveformPerFrameContext.hpp
         WaveformPerPointContext.cpp
         WaveformPerPointContext.hpp
+        Waveforms/CenteredSpiro.cpp
+        Waveforms/CenteredSpiro.hpp
+        Waveforms/Circle.cpp
+        Waveforms/Circle.hpp
+        Waveforms/DerivativeLine.cpp
+        Waveforms/DerivativeLine.hpp
+        Waveforms/DoubleLine.cpp
+        Waveforms/DoubleLine.hpp
+        Waveforms/ExplosiveHash.cpp
+        Waveforms/ExplosiveHash.hpp
+        Waveforms/Factory.cpp
+        Waveforms/Factory.hpp
+        Waveforms/Line.cpp
+        Waveforms/Line.hpp
+        Waveforms/LineBase.cpp
+        Waveforms/LineBase.hpp
+        Waveforms/SpectrumLine.cpp
+        Waveforms/SpectrumLine.hpp
+        Waveforms/WaveformMath.cpp
+        Waveforms/WaveformMath.hpp
+        Waveforms/XYOscillationSpiral.cpp
+        Waveforms/XYOscillationSpiral.hpp
+        Waveforms/CenteredSpiro.cpp
+        Waveforms/CenteredSpiro.hpp
         )
 
 target_include_directories(MilkdropPreset
