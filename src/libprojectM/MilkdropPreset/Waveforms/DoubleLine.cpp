@@ -8,7 +8,7 @@ namespace libprojectM {
 namespace MilkdropPreset {
 namespace Waveforms {
 
-void DoubleLine::ResizeVertexLists(const PresetState& presetState)
+void DoubleLine::GenerateVertices(const PresetState& presetState, const PerFrameContext& presetPerFrameContext)
 {
     m_samples = Audio::WaveformSamples / 2;
 
@@ -19,10 +19,9 @@ void DoubleLine::ResizeVertexLists(const PresetState& presetState)
 
     m_wave1Vertices.resize(m_samples);
     m_wave2Vertices.resize(m_samples);
-}
 
-void DoubleLine::CalculateVertexCoordinates()
-{
+    ClipWaveformEdges(1.57f * m_mysteryWaveParam);
+
     float const separation = powf(m_waveY * 0.5f + 0.5f, 2.0f);
     for (int i = 0; i < m_samples; i++)
     {

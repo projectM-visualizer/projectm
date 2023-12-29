@@ -106,14 +106,26 @@ add_library(MilkdropPreset OBJECT
         Waveforms/Line.hpp
         Waveforms/LineBase.cpp
         Waveforms/LineBase.hpp
+        Waveforms/Milkdrop2077Wave11.cpp
+        Waveforms/Milkdrop2077Wave11.hpp
+        Waveforms/Milkdrop2077Wave9.cpp
+        Waveforms/Milkdrop2077Wave9.hpp
+        Waveforms/Milkdrop2077WaveFlower.cpp
+        Waveforms/Milkdrop2077WaveFlower.hpp
+        Waveforms/Milkdrop2077WaveLasso.cpp
+        Waveforms/Milkdrop2077WaveLasso.hpp
+        Waveforms/Milkdrop2077WaveSkewed.cpp
+        Waveforms/Milkdrop2077WaveSkewed.hpp
+        Waveforms/Milkdrop2077WaveStar.cpp
+        Waveforms/Milkdrop2077WaveStar.hpp
+        Waveforms/Milkdrop2077WaveX.cpp
+        Waveforms/Milkdrop2077WaveX.hpp
         Waveforms/SpectrumLine.cpp
         Waveforms/SpectrumLine.hpp
         Waveforms/WaveformMath.cpp
         Waveforms/WaveformMath.hpp
         Waveforms/XYOscillationSpiral.cpp
         Waveforms/XYOscillationSpiral.hpp
-        Waveforms/CenteredSpiro.cpp
-        Waveforms/CenteredSpiro.hpp
         )
 
 target_include_directories(MilkdropPreset

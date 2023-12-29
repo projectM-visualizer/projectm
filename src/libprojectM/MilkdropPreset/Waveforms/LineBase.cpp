@@ -6,11 +6,8 @@ namespace libprojectM {
 namespace MilkdropPreset {
 namespace Waveforms {
 
-void LineBase::GenerateVertices(const PresetState& presetState, const PerFrameContext& presetPerFrameContext)
+void LineBase::ClipWaveformEdges(const float angle)
 {
-    ResizeVertexLists(presetState);
-
-    const float angle = 1.57f * m_mysteryWaveParam; // from -PI/2 to PI/2
     m_distanceX = cosf(angle);
     m_distanceY = sinf(angle);
 
@@ -85,8 +82,6 @@ void LineBase::GenerateVertices(const PresetState& presetState, const PerFrameCo
     const float angle2 = atan2f(m_distanceY, m_distanceX);
     m_perpetualDX = cosf(angle2 + 1.57f);
     m_perpetualDY = sinf(angle2 + 1.57f);
-
-    CalculateVertexCoordinates();
 }
 
 } // namespace Waveforms
