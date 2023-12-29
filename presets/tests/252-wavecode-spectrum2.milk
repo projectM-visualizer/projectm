@@ -1,0 +1,60 @@
+[preset00]
+per_frame_1000=// spectrum vs pcm
+
+fDecay=0
+warp=0.000000
+wave_a=0
+
+// spectrum=0
+wavecode_0_enabled=1
+wavecode_0_bspectrum=0
+wavecode_0_scaling=0.1
+wavecode_0_r=0.000000
+wavecode_0_g=1.000000
+wavecode_0_b=1.000000
+wavecode_0_a=1.000000
+wavecode_0_x=0.5
+wavecode_0_y=0.75
+wave_0_per_point1=x=sample;
+wave_0_per_point2=y=y+value1;
+
+
+// spectrum=1
+wavecode_1_enabled=1
+wavecode_1_samples=512
+wavecode_1_sep=256
+wavecode_1_bSpectrum=1
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=1
+wavecode_1_bAdditive=1
+wavecode_1_scaling=1.00000
+wavecode_1_smoothing=0.80000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=1.000
+wavecode_1_a=1.000
+wave_1_per_point1=sw = (1-sw)*below(sample,1);
+wave_1_per_point2=
+wave_1_per_point3=osa = sample*above(sample,0);
+wave_1_per_point4=
+wave_1_per_point5=//mod = pow((value1-value2)*2,2)*sign(value1-value2)*.5;
+wave_1_per_point6=
+wave_1_per_point7=mod = value2-value1;
+wave_1_per_point8=mod = mod*sw;
+wave_1_per_point9=
+wave_1_per_point10=y = if(sw,osa,sample);
+wave_1_per_point11=y = (1-sample*1.6)*.4+.42;
+wave_1_per_point12=x = 0 + mod*.5+.5;
+wave_1_per_point13=
+wave_1_per_point14=//osa = sample;
+wave_1_per_point15=
+wave_1_per_point16=mo = 3.7 + mod*6 + q1;
+wave_1_per_point17=
+wave_1_per_point18=r = .5 + sin(mo)*.5;
+wave_1_per_point19=g = .5 + sin(mo + 1.0472)*.5;
+wave_1_per_point20=b = .5 + sin(mo + 2.0944)*.5;
+wave_1_per_point21=
+wave_1_per_point22=a = 1 - abs(mod)*12;
+wave_1_per_point23=a = 1-sw;
+wave_1_per_point24=a = max(0,min(a,1));
+
