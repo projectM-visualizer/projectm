@@ -69,9 +69,9 @@ TEST(projectMPlaylistAPI, ItemsAll)
 {
     PlaylistCWrapperMock mockPlaylist;
 
-    std::vector<ProjectM::Playlist::Item> items{
-        ProjectM::Playlist::Item("/some/file"),
-        ProjectM::Playlist::Item("/another/file")};
+    std::vector<libprojectM::Playlist::Item> items{
+        libprojectM::Playlist::Item("/some/file"),
+        libprojectM::Playlist::Item("/another/file")};
 
     EXPECT_CALL(mockPlaylist, Items())
         .Times(1)
@@ -94,13 +94,13 @@ TEST(projectMPlaylistAPI, ItemsPartial)
 {
     PlaylistCWrapperMock mockPlaylist;
 
-    std::vector<ProjectM::Playlist::Item> items{
-        ProjectM::Playlist::Item("/some/file"),
-        ProjectM::Playlist::Item("/another/file1"),
-        ProjectM::Playlist::Item("/another/file2"),
-        ProjectM::Playlist::Item("/another/file3"),
-        ProjectM::Playlist::Item("/another/file4"),
-        ProjectM::Playlist::Item("/another/file5")};
+    std::vector<libprojectM::Playlist::Item> items{
+        libprojectM::Playlist::Item("/some/file"),
+        libprojectM::Playlist::Item("/another/file1"),
+        libprojectM::Playlist::Item("/another/file2"),
+        libprojectM::Playlist::Item("/another/file3"),
+        libprojectM::Playlist::Item("/another/file4"),
+        libprojectM::Playlist::Item("/another/file5")};
 
     EXPECT_CALL(mockPlaylist, Items())
         .Times(1)
@@ -124,13 +124,13 @@ TEST(projectMPlaylistAPI, ItemsOutOfRange)
 {
     PlaylistCWrapperMock mockPlaylist;
 
-    std::vector<ProjectM::Playlist::Item> items{
-        ProjectM::Playlist::Item("/some/file"),
-        ProjectM::Playlist::Item("/another/file1"),
-        ProjectM::Playlist::Item("/another/file2"),
-        ProjectM::Playlist::Item("/another/file3"),
-        ProjectM::Playlist::Item("/another/file4"),
-        ProjectM::Playlist::Item("/another/file5")};
+    std::vector<libprojectM::Playlist::Item> items{
+        libprojectM::Playlist::Item("/some/file"),
+        libprojectM::Playlist::Item("/another/file1"),
+        libprojectM::Playlist::Item("/another/file2"),
+        libprojectM::Playlist::Item("/another/file3"),
+        libprojectM::Playlist::Item("/another/file4"),
+        libprojectM::Playlist::Item("/another/file5")};
 
     EXPECT_CALL(mockPlaylist, Items())
         .Times(1)
@@ -148,9 +148,9 @@ TEST(projectMPlaylistAPI, Item)
 {
     PlaylistCWrapperMock mockPlaylist;
 
-    std::vector<ProjectM::Playlist::Item> items{
-        ProjectM::Playlist::Item("/some/file"),
-        ProjectM::Playlist::Item("/another/file")};
+    std::vector<libprojectM::Playlist::Item> items{
+        libprojectM::Playlist::Item("/some/file"),
+        libprojectM::Playlist::Item("/another/file")};
 
     EXPECT_CALL(mockPlaylist, Empty())
         .Times(1)
@@ -174,9 +174,9 @@ TEST(projectMPlaylistAPI, ItemEmptyPlaylist)
 {
     PlaylistCWrapperMock mockPlaylist;
 
-    std::vector<ProjectM::Playlist::Item> items{
-        ProjectM::Playlist::Item("/some/file"),
-        ProjectM::Playlist::Item("/another/file")};
+    std::vector<libprojectM::Playlist::Item> items{
+        libprojectM::Playlist::Item("/some/file"),
+        libprojectM::Playlist::Item("/another/file")};
 
     EXPECT_CALL(mockPlaylist, Empty())
         .Times(1)
@@ -190,9 +190,9 @@ TEST(projectMPlaylistAPI, ItemIndexOutOfBounds)
 {
     PlaylistCWrapperMock mockPlaylist;
 
-    std::vector<ProjectM::Playlist::Item> items{
-        ProjectM::Playlist::Item("/some/file"),
-        ProjectM::Playlist::Item("/another/file")};
+    std::vector<libprojectM::Playlist::Item> items{
+        libprojectM::Playlist::Item("/some/file"),
+        libprojectM::Playlist::Item("/another/file")};
 
     EXPECT_CALL(mockPlaylist, Empty())
         .Times(1)
@@ -209,7 +209,7 @@ TEST(projectMPlaylistAPI, AddPath)
 {
     PlaylistCWrapperMock mockPlaylist;
 
-    EXPECT_CALL(mockPlaylist, AddPath("/some/path", ProjectM::Playlist::Playlist::InsertAtEnd, true, false))
+    EXPECT_CALL(mockPlaylist, AddPath("/some/path", libprojectM::Playlist::Playlist::InsertAtEnd, true, false))
         .Times(1)
         .WillOnce(Return(35));
 
@@ -233,7 +233,7 @@ TEST(projectMPlaylistAPI, AddPreset)
 {
     PlaylistCWrapperMock mockPlaylist;
 
-    EXPECT_CALL(mockPlaylist, AddItem("/some/file", ProjectM::Playlist::Playlist::InsertAtEnd, false))
+    EXPECT_CALL(mockPlaylist, AddItem("/some/file", libprojectM::Playlist::Playlist::InsertAtEnd, false))
         .Times(1)
         .WillOnce(Return(true));
 
@@ -262,10 +262,10 @@ TEST(projectMPlaylistAPI, AddPresets)
     const char thirdFile[]{"/another/file"};
     const char* presetList[]{firstFile, secondFile, thirdFile};
 
-    EXPECT_CALL(mockPlaylist, AddItem("/some/file", ProjectM::Playlist::Playlist::InsertAtEnd, false))
+    EXPECT_CALL(mockPlaylist, AddItem("/some/file", libprojectM::Playlist::Playlist::InsertAtEnd, false))
         .Times(1)
         .WillOnce(Return(true));
-    EXPECT_CALL(mockPlaylist, AddItem("/another/file", ProjectM::Playlist::Playlist::InsertAtEnd, false))
+    EXPECT_CALL(mockPlaylist, AddItem("/another/file", libprojectM::Playlist::Playlist::InsertAtEnd, false))
         .Times(2)
         .WillOnce(Return(true))
         .WillOnce(Return(false));
@@ -353,7 +353,7 @@ TEST(projectMPlaylistAPI, SetShuffle)
 
 TEST(projectMPlaylistAPI, Sort)
 {
-    using ProjectM::Playlist::Playlist;
+    using libprojectM::Playlist::Playlist;
 
     PlaylistCWrapperMock mockPlaylist;
 
@@ -422,7 +422,7 @@ TEST(projectMPlaylistAPI, GetPositionException)
 
     EXPECT_CALL(mockPlaylist, PresetIndex())
         .Times(1)
-        .WillOnce(Throw(ProjectM::Playlist::PlaylistEmptyException()));
+        .WillOnce(Throw(libprojectM::Playlist::PlaylistEmptyException()));
 
     EXPECT_EQ(projectm_playlist_get_position(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist)), 0);
 }
@@ -454,7 +454,7 @@ TEST(projectMPlaylistAPI, SetPositionException)
 
     EXPECT_CALL(mockPlaylist, SetPresetIndex(256))
         .Times(2)
-        .WillRepeatedly(Throw(ProjectM::Playlist::PlaylistEmptyException()));
+        .WillRepeatedly(Throw(libprojectM::Playlist::PlaylistEmptyException()));
 
     EXPECT_EQ(projectm_playlist_set_position(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 256, true), 0);
     EXPECT_EQ(projectm_playlist_set_position(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), 256, false), 0);
@@ -487,7 +487,7 @@ TEST(projectMPlaylistAPI, PlayNextException)
 
     EXPECT_CALL(mockPlaylist, NextPresetIndex())
         .Times(2)
-        .WillRepeatedly(Throw(ProjectM::Playlist::PlaylistEmptyException()));
+        .WillRepeatedly(Throw(libprojectM::Playlist::PlaylistEmptyException()));
 
     EXPECT_EQ(projectm_playlist_play_next(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), true), 0);
     EXPECT_EQ(projectm_playlist_play_next(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), false), 0);
@@ -520,7 +520,7 @@ TEST(projectMPlaylistAPI, PlayPreviousException)
 
     EXPECT_CALL(mockPlaylist, PreviousPresetIndex())
         .Times(2)
-        .WillRepeatedly(Throw(ProjectM::Playlist::PlaylistEmptyException()));
+        .WillRepeatedly(Throw(libprojectM::Playlist::PlaylistEmptyException()));
 
     EXPECT_EQ(projectm_playlist_play_previous(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), true), 0);
     EXPECT_EQ(projectm_playlist_play_previous(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), false), 0);
@@ -553,7 +553,7 @@ TEST(projectMPlaylistAPI, PlayLastException)
 
     EXPECT_CALL(mockPlaylist, LastPresetIndex())
         .Times(2)
-        .WillRepeatedly(Throw(ProjectM::Playlist::PlaylistEmptyException()));
+        .WillRepeatedly(Throw(libprojectM::Playlist::PlaylistEmptyException()));
 
     EXPECT_EQ(projectm_playlist_play_last(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), true), 0);
     EXPECT_EQ(projectm_playlist_play_last(reinterpret_cast<projectm_playlist_handle>(&mockPlaylist), false), 0);
@@ -595,7 +595,7 @@ TEST(projectMPlaylistAPI, SetPresetSwitchFailedCallback)
 TEST(projectMPlaylistAPI, SetFilter)
 {
     PlaylistCWrapperMock mockPlaylist;
-    ProjectM::Playlist::Filter filter;
+    libprojectM::Playlist::Filter filter;
 
     EXPECT_CALL(mockPlaylist, Filter())
         .Times(1)
@@ -619,7 +619,7 @@ TEST(projectMPlaylistAPI, SetFilter)
 TEST(projectMPlaylistAPI, GetFilter)
 {
     PlaylistCWrapperMock mockPlaylist;
-    ProjectM::Playlist::Filter filter;
+    libprojectM::Playlist::Filter filter;
 
     filter.SetList({"-/some/BadPreset.milk",
                     "+/another/AwesomePreset.milk",

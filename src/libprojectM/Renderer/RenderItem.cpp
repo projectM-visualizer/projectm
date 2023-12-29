@@ -1,5 +1,8 @@
 #include "RenderItem.hpp"
 
+namespace libprojectM {
+namespace Renderer {
+
 void RenderItem::Init()
 {
     glGenVertexArrays(1, &m_vaoID);
@@ -19,3 +22,6 @@ RenderItem::~RenderItem()
     glDeleteBuffers(1, &m_vboID);
     glDeleteVertexArrays(1, &m_vaoID);
 }
+
+} // namespace Renderer
+} // namespace libprojectM

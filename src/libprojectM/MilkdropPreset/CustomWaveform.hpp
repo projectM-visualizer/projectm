@@ -7,9 +7,12 @@
 
 #include <vector>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 class PresetFileParser;
 
-class CustomWaveform : public RenderItem
+class CustomWaveform : public Renderer::RenderItem
 {
 public:
 
@@ -104,3 +107,6 @@ private:
     friend class WaveformPerFrameContext;
     friend class WaveformPerPointContext;
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

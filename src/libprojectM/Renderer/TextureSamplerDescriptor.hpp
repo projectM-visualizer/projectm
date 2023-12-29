@@ -4,6 +4,9 @@
 #include "Sampler.hpp"
 #include "Shader.hpp"
 
+namespace libprojectM {
+namespace Renderer {
+
 class TextureManager;
 
 /**
@@ -101,3 +104,6 @@ private:
     std::string m_sizeName; //!< The name of the "texsize_" uniform as referenced in the shader.
     bool m_updateFailed{false}; //!< Set to true if the update try failed, e.g. texture could not be loaded.
 };
+
+} // namespace Renderer
+} // namespace libprojectM

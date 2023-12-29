@@ -2,9 +2,11 @@
 
 #include <gtest/gtest.h>
 
+using libprojectM::Playlist::Filter;
+
 TEST(projectMPlaylistFilter, List)
 {
-    ProjectM::Playlist::Filter filter;
+    Filter filter;
 
     filter.SetList({"-TestString.milk",
                     "+AnotherTestString*"});
@@ -19,7 +21,7 @@ TEST(projectMPlaylistFilter, List)
 
 TEST(projectMPlaylistFilter, ExactMatchExclude)
 {
-    ProjectM::Playlist::Filter filter;
+    Filter filter;
 
     filter.SetList({"-TestString.milk"});
 
@@ -30,7 +32,7 @@ TEST(projectMPlaylistFilter, ExactMatchExclude)
 
 TEST(projectMPlaylistFilter, ExactMatchExcludePath)
 {
-    ProjectM::Playlist::Filter filter;
+    Filter filter;
 
     filter.SetList({"-/path/to/TestString.milk"});
 
@@ -41,7 +43,7 @@ TEST(projectMPlaylistFilter, ExactMatchExcludePath)
 
 TEST(projectMPlaylistFilter, SingleCharacterExclude)
 {
-    ProjectM::Playlist::Filter filter;
+    Filter filter;
 
     filter.SetList({"-/path/to/TestStr?ng.milk"});
 
@@ -54,7 +56,7 @@ TEST(projectMPlaylistFilter, SingleCharacterExclude)
 
 TEST(projectMPlaylistFilter, MultiCharacterExclude)
 {
-    ProjectM::Playlist::Filter filter;
+    Filter filter;
 
     filter.SetList({"-/path/to/Test*.milk"});
 
@@ -68,7 +70,7 @@ TEST(projectMPlaylistFilter, MultiCharacterExclude)
 
 TEST(projectMPlaylistFilter, MultiCharacterExcludeExamples)
 {
-    ProjectM::Playlist::Filter filter;
+    Filter filter;
 
     filter.SetList({"-a"});
     EXPECT_FALSE(filter.Passes("a"));
@@ -96,7 +98,7 @@ TEST(projectMPlaylistFilter, MultiCharacterExcludeExamples)
 
 TEST(projectMPlaylistFilter, PathGlobExclude)
 {
-    ProjectM::Playlist::Filter filter;
+    Filter filter;
 
     filter.SetList({"-**/Test.milk"});
 
@@ -110,7 +112,7 @@ TEST(projectMPlaylistFilter, PathGlobExclude)
 
 TEST(projectMPlaylistFilter, PathGlobExcludeExamples)
 {
-    ProjectM::Playlist::Filter filter;
+    Filter filter;
 
     filter.SetList({"-**/a"});
     EXPECT_FALSE(filter.Passes("a"));
@@ -137,7 +139,7 @@ TEST(projectMPlaylistFilter, PathGlobExcludeExamples)
 
 TEST(projectMPlaylistFilter, LargeGlobs)
 {
-    ProjectM::Playlist::Filter filter;
+    Filter filter;
 
     filter.SetList({"-*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a*a"});
     EXPECT_FALSE(filter.Passes("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
@@ -151,7 +153,7 @@ TEST(projectMPlaylistFilter, LargeGlobs)
 
 TEST(projectMPlaylistFilter, MultipleFilters)
 {
-    ProjectM::Playlist::Filter filter;
+    Filter filter;
 
     filter.SetList({"-/path/to/Test*.milk",
                     "/path/to/another\\Test*.milk",
@@ -168,7 +170,7 @@ TEST(projectMPlaylistFilter, MultipleFilters)
 
 TEST(projectMPlaylistFilter, MatchEverything)
 {
-    ProjectM::Playlist::Filter filter;
+    Filter filter;
 
     filter.SetList({"-/**"});
 

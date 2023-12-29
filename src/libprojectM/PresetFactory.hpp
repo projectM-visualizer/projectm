@@ -4,6 +4,8 @@
 
 #include <memory>
 
+namespace libprojectM {
+
 class PresetFactory
 {
 
@@ -47,3 +49,5 @@ public:
      */
     virtual std::string supportedExtensions() const = 0;
 };
+
+} // namespace libprojectM

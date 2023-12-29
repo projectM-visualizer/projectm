@@ -8,6 +8,9 @@
 
 #include <projectm-eval.h>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 class PresetFileParser;
 
 /**
@@ -16,7 +19,7 @@ class PresetFileParser;
  * The class creates two sets of VBO/VAO as it's only known later (in the Draw() call) whether the shape is textured
  * or not.
  */
-class CustomShape : public RenderItem
+class CustomShape : public Renderer::RenderItem
 {
 public:
     CustomShape(PresetState& presetState);
@@ -98,3 +101,6 @@ private:
 
     friend class ShapePerFrameContext;
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

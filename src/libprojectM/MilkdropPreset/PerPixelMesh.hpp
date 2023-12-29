@@ -6,6 +6,9 @@
 #include <cstdint>
 #include <vector>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 class PresetState;
 class PerFrameContext;
 class PerPixelContext;
@@ -24,7 +27,7 @@ class MilkdropShader;
  *
  * The mesh size can be changed between frames, the class will reallocate the buffers if needed.
  */
-class PerPixelMesh : public RenderItem
+class PerPixelMesh : public Renderer::RenderItem
 {
 public:
     PerPixelMesh();
@@ -119,7 +122,10 @@ private:
     std::vector<int> m_listIndices; //!< List of vertex indices to render.
     VertexList m_drawVertices;      //!< Temp data buffer for the vertices to be drawn.
 
-    Shader m_perPixelMeshShader;                            //!< Special shader which calculates the per-pixel UV coordinates.
+    Renderer::Shader m_perPixelMeshShader;                            //!< Special shader which calculates the per-pixel UV coordinates.
     std::unique_ptr<MilkdropShader> m_warpShader;           //!< The warp shader. Either preset-defined or a default shader.
-    Sampler m_perPixelSampler{GL_CLAMP_TO_EDGE, GL_LINEAR}; //!< The main texture sampler.
+    Renderer::Sampler m_perPixelSampler{GL_CLAMP_TO_EDGE, GL_LINEAR}; //!< The main texture sampler.
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

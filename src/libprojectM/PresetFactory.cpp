@@ -4,6 +4,8 @@
 #include <iostream>
 #endif
 
+namespace libprojectM {
+
 const std::string PresetFactory::IDLE_PRESET_PROTOCOL("idle");
 
 std::string PresetFactory::Protocol(const std::string& url, std::string& path)
@@ -22,3 +24,5 @@ std::string PresetFactory::Protocol(const std::string& url, std::string& path)
 #endif
     return url.substr(0, pos);
 }
+
+} // namespace libprojectM

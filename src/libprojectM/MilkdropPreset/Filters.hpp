@@ -4,10 +4,13 @@
 
 #include <Renderer/RenderItem.hpp>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 /**
  * @brief Classic Milkdrop 1 postprocessing effects.
  */
-class Filters : public RenderItem
+class Filters : public Renderer::RenderItem
 {
 public:
     Filters() = delete;
@@ -48,3 +51,6 @@ private:
     int m_viewportWidth{}; //!< Last known viewport width
     int m_viewportHeight{}; //!< Last known viewport height
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

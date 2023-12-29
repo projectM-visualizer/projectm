@@ -8,6 +8,9 @@
 
 #include <memory>
 
+namespace libprojectM {
+namespace Renderer {
+
 /**
  * @brief Stores a single texture sampler.
  *
@@ -80,3 +83,6 @@ private:
     GLint m_wrapMode{0}; //!< The texture wrap mode.
     GLint m_filterMode{0}; //!< The texture filtering mode.
 };
+
+} // namespace Renderer
+} // namespace libprojectM

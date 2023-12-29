@@ -5,6 +5,9 @@
 #define GL_STENCIL_INDEX 0x1901
 #endif
 
+namespace libprojectM {
+namespace Renderer {
+
 TextureAttachment::TextureAttachment(AttachmentType attachment, int width, int height)
     : m_attachmentType(attachment)
 {
@@ -117,3 +120,6 @@ void TextureAttachment::ReplaceTexture(int width, int height)
 
     m_texture = std::make_shared<class Texture>("", textureId, GL_TEXTURE_2D, width, height, false);
 }
+
+} // namespace Renderer
+} // namespace libprojectM

@@ -44,10 +44,13 @@
 #include <memory>
 #include <string>
 
-class MilkdropPresetFactory;
+namespace libprojectM {
+namespace MilkdropPreset {
+
+class Factory;
 class PresetFileParser;
 
-class MilkdropPreset : public Preset
+class MilkdropPreset : public ::libprojectM::Preset
 {
 
 public:
@@ -69,7 +72,7 @@ public:
      * @brief Initializes the preset with rendering-related data.
      * @param renderContext The initial render context.
      */
-    void Initialize(const RenderContext& renderContext) override;
+    void Initialize(const Renderer::RenderContext& renderContext) override;
 
     /**
      * @brief Renders the preset.
@@ -77,11 +80,11 @@ public:
      * @param renderContext The current rendering context/information.
      */
     void RenderFrame(const libprojectM::Audio::FrameAudioData& audioData,
-                     const RenderContext& renderContext) override;
+                     const Renderer::RenderContext& renderContext) override;
 
-    auto OutputTexture() const -> std::shared_ptr<Texture> override;
+    auto OutputTexture() const -> std::shared_ptr<Renderer::Texture> override;
 
-    void DrawInitialImage(const std::shared_ptr<Texture>& image, const RenderContext& renderContext) override;
+    void DrawInitialImage(const std::shared_ptr<Renderer::Texture>& image, const Renderer::RenderContext& renderContext) override;
 
 private:
     void PerFrameUpdate();
@@ -104,10 +107,10 @@ private:
     std::string m_absoluteFilePath; //!< The absolute file path of the MilkdropPreset
     std::string m_absolutePath;     //!< The absolute path of the MilkdropPreset
 
-    Framebuffer m_framebuffer{2};                           //!< Preset rendering framebuffer with two surfaces (last frame and current frame).
-    int m_currentFrameBuffer{0};                            //!< Framebuffer ID of the current frame.
-    int m_previousFrameBuffer{1};                           //!< Framebuffer ID of the previous frame.
-    std::shared_ptr<TextureAttachment> m_motionVectorUVMap; //!< The UV map of the previous frame's warp mesh, used for motion vector reverse propagation.
+    Renderer::Framebuffer m_framebuffer{2};                           //!< Preset rendering framebuffer with two surfaces (last frame and current frame).
+    int m_currentFrameBuffer{0};                                      //!< Framebuffer ID of the current frame.
+    int m_previousFrameBuffer{1};                                     //!< Framebuffer ID of the previous frame.
+    std::shared_ptr<Renderer::TextureAttachment> m_motionVectorUVMap; //!< The UV map of the previous frame's warp mesh, used for motion vector reverse propagation.
 
     PresetState m_state;               //!< Preset state container.
     PerFrameContext m_perFrameContext; //!< Preset per-frame evaluation code context.
@@ -121,9 +124,12 @@ private:
     std::array<std::unique_ptr<CustomShape>, CustomShapeCount> m_customShapes;          //!< Custom shapes in this preset.
     DarkenCenter m_darkenCenter;                                                        //!< Center darkening effect.
     Border m_border;                                                                    //!< Inner/outer borders.
-    CopyTexture m_flipTexture;                                                          //!< Texture flip filter
+    Renderer::CopyTexture m_flipTexture;                                                //!< Texture flip filter
 
     FinalComposite m_finalComposite; //!< Final composite shader or filters.
 
     bool m_isFirstFrame{true}; //!< Controls drawing the motion vectors starting with the second frame.
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

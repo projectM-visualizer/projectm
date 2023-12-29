@@ -7,6 +7,8 @@
 #include <cstring>
 #include <sstream>
 
+namespace libprojectM {
+
 void projectMWrapper::PresetSwitchRequestedEvent(bool isHardCut) const
 {
     if (m_presetSwitchRequestedEventCallback)
@@ -25,9 +27,11 @@ void projectMWrapper::PresetSwitchFailedEvent(const std::string& presetFilename,
     }
 }
 
-projectMWrapper* handle_to_instance(projectm_handle instance)
+} // namespace libprojectM
+
+libprojectM::projectMWrapper* handle_to_instance(projectm_handle instance)
 {
-    return reinterpret_cast<projectMWrapper*>(instance);
+    return reinterpret_cast<libprojectM::projectMWrapper*>(instance);
 }
 
 char* projectm_alloc_string(unsigned int length)
@@ -61,7 +65,7 @@ projectm_handle projectm_create()
 {
     try
     {
-        auto projectMInstance = new projectMWrapper();
+        auto projectMInstance = new libprojectM::projectMWrapper();
         return reinterpret_cast<projectm_handle>(projectMInstance);
     }
     catch (...)

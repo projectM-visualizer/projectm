@@ -4,10 +4,13 @@
 
 #include "Renderer/RenderItem.hpp"
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 /**
  * @brief Darkens the screen center a bit on each frame.
  */
-class DarkenCenter : public RenderItem
+class DarkenCenter : public Renderer::RenderItem
 {
 public:
     DarkenCenter() = delete;
@@ -25,3 +28,6 @@ private:
     PresetState& m_presetState; //!< The global preset state.
     float m_aspectY{}; //!< Previous Y aspect ration.
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

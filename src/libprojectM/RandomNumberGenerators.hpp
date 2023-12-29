@@ -1,5 +1,5 @@
-#ifndef RANDOM_NUMBER_GENERATORS_HPP
-#define RANDOM_NUMBER_GENERATORS_HPP
+#pragma once
+
 #include <cmath>
 #include <vector>
 #include <cassert>
@@ -7,6 +7,7 @@
 
 #define WEIGHTED_RANDOM_DEBUG 0
 
+namespace libprojectM {
 namespace RandomNumberGenerators {
 
 inline double uniform()
@@ -117,5 +118,5 @@ inline std::size_t weightedRandom(const std::vector<int> & weights, unsigned int
 	return weights.size()-1;
 }
 
-}
-#endif
+} // namespace RandomNumberGenerators
+} // namespace libprojectM

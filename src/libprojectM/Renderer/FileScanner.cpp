@@ -6,16 +6,23 @@
 
 #include "FileScanner.hpp"
 
-/** Per-platform path separators and includes */
-#ifdef _WIN32
-char constexpr pathSeparator{'\\'};
-#else
-char constexpr pathSeparator{'/'};
+#include <algorithm>
+#include <cstring>
+
+#ifndef _WIN32
 #include <sys/stat.h>
 #include <sys/types.h>
 #endif
 
-#include <algorithm>
+/* Per-platform path separators */
+#ifndef _WIN32
+char constexpr pathSeparator{'\\'};
+#else
+char constexpr pathSeparator{'/'};
+#endif
+
+namespace libprojectM {
+namespace Renderer {
 
 FileScanner::FileScanner()
 {
@@ -107,14 +114,14 @@ void FileScanner::scanGeneric(ScanCallback cb, const char* currentDir)
     DIR* m_dir;
 
     // Allocate a new a stream given the current directory name
-    if ((m_dir = opendir(currentDir)) == NULL)
+    if ((m_dir = opendir(currentDir)) == nullptr)
     {
         return; // no files found in here
     }
 
     struct dirent* dir_entry;
 
-    while ((dir_entry = readdir(m_dir)) != NULL)
+    while ((dir_entry = readdir(m_dir)) != nullptr)
     {
         // Convert char * to friendly string
         std::string filename(dir_entry->d_name);
@@ -172,7 +179,7 @@ void FileScanner::scanGeneric(ScanCallback cb, const char* currentDir)
 // more optimized posix "fts" directory traversal
 int fts_compare(const FTSENT** one, const FTSENT** two)
 {
-    return (strcmp((*one)->fts_name, (*two)->fts_name));
+    return (std::strcmp((*one)->fts_name, (*two)->fts_name));
 }
 #endif
 
@@ -181,8 +188,8 @@ void FileScanner::scanPosix(ScanCallback cb)
 #if HAVE_FTS_H
 
     // efficient directory traversal
-    FTS* fileSystem = NULL;
-    FTSENT* node = NULL;
+    FTS* fileSystem = nullptr;
+    FTSENT* node = nullptr;
 
     if (_rootDirs.empty())
     {
@@ -197,11 +204,11 @@ void FileScanner::scanPosix(ScanCallback cb)
     {
         dirList[i] = (char*) _rootDirs[i].c_str();
     }
-    dirList[rootDirCount] = NULL;
+    dirList[rootDirCount] = nullptr;
 
     // initialize file hierarchy traversal
     fileSystem = fts_open(dirList, FTS_LOGICAL | FTS_NOCHDIR | FTS_NOSTAT, &fts_compare);
-    if (fileSystem == NULL)
+    if (fileSystem == nullptr)
     {
         std::string s;
         for (std::size_t i = 0; i < _rootDirs.size(); i++)
@@ -215,7 +222,7 @@ void FileScanner::scanPosix(ScanCallback cb)
     std::string path, name, nameMatched;
 
     // traverse dirList
-    while ((node = fts_read(fileSystem)) != NULL)
+    while ((node = fts_read(fileSystem)) != nullptr)
     {
         switch (node->fts_info)
         {
@@ -247,3 +254,6 @@ void FileScanner::scanPosix(ScanCallback cb)
 
 #endif
 }
+
+} // namespace Renderer
+} // namespace libprojectM

@@ -21,13 +21,16 @@
 
 #include "MilkdropPreset.hpp"
 
+#include "Factory.hpp"
 #include "MilkdropPresetExceptions.hpp"
-#include "MilkdropPresetFactory.hpp"
 #include "PresetFileParser.hpp"
 
 #ifdef MILKDROP_PRESET_DEBUG
 #include <iostream>
 #endif
+
+namespace libprojectM {
+namespace MilkdropPreset {
 
 MilkdropPreset::MilkdropPreset(const std::string& absoluteFilePath)
     : m_absoluteFilePath(absoluteFilePath)
@@ -52,7 +55,7 @@ MilkdropPreset::MilkdropPreset(std::istream& presetData)
     Load(presetData);
 }
 
-void MilkdropPreset::Initialize(const RenderContext& renderContext)
+void MilkdropPreset::Initialize(const Renderer::RenderContext& renderContext)
 {
     assert(renderContext.textureManager);
     m_state.renderContext = renderContext;
@@ -72,7 +75,7 @@ void MilkdropPreset::Initialize(const RenderContext& renderContext)
     m_finalComposite.CompileCompositeShader(m_state);
 }
 
-void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audioData, const RenderContext& renderContext)
+void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audioData, const Renderer::RenderContext& renderContext)
 {
     m_state.audioData = audioData;
     m_state.renderContext = renderContext;
@@ -166,13 +169,13 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     m_isFirstFrame = false;
 }
 
-auto MilkdropPreset::OutputTexture() const -> std::shared_ptr<Texture>
+auto MilkdropPreset::OutputTexture() const -> std::shared_ptr<Renderer::Texture>
 {
     // the composited image is always stored in the "current" framebuffer after a frame is rendered.
     return m_framebuffer.GetColorAttachmentTexture(m_currentFrameBuffer, 0);
 }
 
-void MilkdropPreset::DrawInitialImage(const std::shared_ptr<Texture>& image, const RenderContext& renderContext)
+void MilkdropPreset::DrawInitialImage(const std::shared_ptr<Renderer::Texture>& image, const Renderer::RenderContext& renderContext)
 {
     m_framebuffer.SetSize(renderContext.viewportSizeX, renderContext.viewportSizeY);
 
@@ -237,11 +240,11 @@ void MilkdropPreset::Load(std::istream& stream)
 void MilkdropPreset::InitializePreset(PresetFileParser& parsedFile)
 {
     // Create the offscreen rendering surfaces.
-    m_motionVectorUVMap = std::make_shared<TextureAttachment>(GL_RG16F, GL_RG, GL_FLOAT, 0, 0);
+    m_motionVectorUVMap = std::make_shared<Renderer::TextureAttachment>(GL_RG16F, GL_RG, GL_FLOAT, 0, 0);
     m_framebuffer.CreateColorAttachment(0, 0); // Main image 1
     m_framebuffer.CreateColorAttachment(1, 0); // Main image 2
 
-    Framebuffer::Unbind();
+    Renderer::Framebuffer::Unbind();
 
     // Load global init variables into the state
     m_state.Initialize(parsedFile);
@@ -310,3 +313,6 @@ auto MilkdropPreset::ParseFilename(const std::string& filename) -> std::string
 
     return filename.substr(start + 1, filename.length());
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

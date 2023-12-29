@@ -3,6 +3,9 @@
 #include <chrono>
 #include <random>
 
+namespace libprojectM {
+namespace Renderer {
+
 MilkdropNoise::MilkdropNoise()
 {
     generate2D(256, 1, &noise_lq);
@@ -266,3 +269,6 @@ uint32_t MilkdropNoise::dwCubicInterpolate(uint32_t y0, uint32_t y1, uint32_t y2
     }
     return ret;
 }
+
+} // namespace Renderer
+} // namespace libprojectM

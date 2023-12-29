@@ -1,5 +1,8 @@
 #include "Sampler.hpp"
 
+namespace libprojectM {
+namespace Renderer {
+
 Sampler::Sampler(const GLint wrapMode, const GLint filterMode)
     : m_wrapMode(wrapMode)
     , m_filterMode(filterMode)
@@ -62,3 +65,6 @@ void Sampler::FilterMode(GLint filterMode)
     glSamplerParameteri(m_samplerId, GL_TEXTURE_MIN_FILTER, filterMode);
     glSamplerParameteri(m_samplerId, GL_TEXTURE_MAG_FILTER, filterMode);
 }
+
+} // namespace Renderer
+} // namespace libprojectM

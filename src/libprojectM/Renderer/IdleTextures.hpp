@@ -1,3 +1,7 @@
+#pragma once
+
+namespace libprojectM {
+namespace Renderer {
 
 /* begin binary data: */
 const int M_bytes = 27965;
@@ -5983,3 +5987,5 @@ const unsigned char headphones_data[] = /* 22402 */
 ,0x58,0x46,0x49,0x4C,0x45,0x2E,0x00};
 /* end binary data. size = 22402 bytes */
 
+} // namespace Renderer
+} // namespace libprojectM

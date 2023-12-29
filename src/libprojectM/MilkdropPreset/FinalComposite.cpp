@@ -4,6 +4,9 @@
 
 #include <cstddef>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 static std::string const defaultCompositeShader = "shader_body\n{\nret = tex2D(sampler_main, uv).xyz;\n}";
 
 FinalComposite::FinalComposite()
@@ -41,7 +44,7 @@ void FinalComposite::LoadCompositeShader(const PresetState& presetState)
                 std::cerr << "[Composite Shader] Loaded composite shader code." << std::endl;
 #endif
             }
-            catch (ShaderException& ex)
+            catch (Renderer::ShaderException& ex)
             {
 #ifdef MILKDROP_PRESET_DEBUG
                 std::cerr << "[Composite Shader] Error loading composite warp shader code:" << ex.message() << std::endl;
@@ -85,7 +88,7 @@ void FinalComposite::CompileCompositeShader(PresetState& presetState)
             std::cerr << "[Composite Shader] Successfully compiled composite shader code." << std::endl;
 #endif
         }
-        catch (ShaderException& ex)
+        catch (Renderer::ShaderException& ex)
         {
 #ifdef MILKDROP_PRESET_DEBUG
             std::cerr << "[Composite Shader] Error compiling composite warp shader code:" << ex.message() << std::endl;
@@ -128,7 +131,7 @@ void FinalComposite::Draw(const PresetState& presetState, const PerFrameContext&
     }
 
     glBindVertexArray(0);
-    Shader::Unbind();
+    Renderer::Shader::Unbind();
 }
 
 auto FinalComposite::HasCompositeShader() const -> bool
@@ -375,3 +378,6 @@ void FinalComposite::ApplyHueShaderColors(const PresetState& presetState)
         }
     }
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

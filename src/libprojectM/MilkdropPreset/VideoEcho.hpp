@@ -7,10 +7,13 @@
 
 #include <Renderer/RenderItem.hpp>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 /**
  * @brief Renders a video "echo" (ghost image) effect and gamma adjustments.
  */
-class VideoEcho: public RenderItem
+class VideoEcho: public Renderer::RenderItem
 {
 public:
 	VideoEcho() = delete;
@@ -29,5 +32,8 @@ private:
 
     std::array<std::array<float, 3>, 4> m_shade; // !< Random, changing color values for the four corners
     std::array<TexturedPoint, 4> m_vertices; //!< The video echo/gamma adj mesh
-    Sampler m_sampler{GL_CLAMP_TO_EDGE, GL_LINEAR};
+    Renderer::Sampler m_sampler{GL_CLAMP_TO_EDGE, GL_LINEAR};
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

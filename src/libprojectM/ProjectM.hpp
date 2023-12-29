@@ -47,29 +47,25 @@
 
 #endif
 
+namespace libprojectM {
+
 class BackgroundWorkerSync;
 
-namespace libprojectM {
 namespace Audio {
 class BeatDetect;
-}
-} // namespace libprojectM
+} // namespace Audio
 
-class Renderer;
-
-class TextureManager;
-
-class TransitionShaderManager;
-
+namespace Renderer {
 class CopyTexture;
+class PresetTransition;
+class Renderer;
+class TextureManager;
+class TransitionShaderManager;
+} // namespace Renderer
 
 class Preset;
-
-class PresetTransition;
-
-class TimeKeeper;
-
 class PresetFactoryManager;
+class TimeKeeper;
 
 class PROJECTM_EXPORT ProjectM
 {
@@ -196,7 +192,7 @@ public:
     /// Returns true if the active preset is locked
     auto PresetLocked() const -> bool;
 
-    auto PCM() -> libprojectM::Audio::PCM&;
+    auto PCM() -> Audio::PCM&;
 
     auto WindowWidth() -> int;
 
@@ -216,7 +212,7 @@ private:
 
     void LoadIdlePreset();
 
-    auto GetRenderContext() -> RenderContext;
+    auto GetRenderContext() -> Renderer::RenderContext;
 
 #if PROJECTM_USE_THREADS
 
@@ -250,14 +246,14 @@ private:
 
     std::unique_ptr<PresetFactoryManager> m_presetFactoryManager; //!< Provides access to all available preset factories.
 
-    libprojectM::Audio::PCM m_audioStorage;                             //!< Audio data buffer and analyzer instance.
-    std::unique_ptr<TextureManager> m_textureManager;                   //!< The texture manager.
-    std::unique_ptr<TransitionShaderManager> m_transitionShaderManager; //!< The transition shader manager.
-    std::unique_ptr<CopyTexture> m_textureCopier;                       //!< Class that copies textures 1:1 to another texture or framebuffer.
-    std::unique_ptr<Preset> m_activePreset;                             //!< Currently loaded preset.
-    std::unique_ptr<Preset> m_transitioningPreset;                      //!< Destination preset when smooth preset switching.
-    std::unique_ptr<PresetTransition> m_transition;                     //!< Transition effect used for blending.
-    std::unique_ptr<TimeKeeper> m_timeKeeper;                           //!< Keeps the different timers used to render and switch presets.
+    Audio::PCM m_audioStorage;                                                    //!< Audio data buffer and analyzer instance.
+    std::unique_ptr<Renderer::TextureManager> m_textureManager;                   //!< The texture manager.
+    std::unique_ptr<Renderer::TransitionShaderManager> m_transitionShaderManager; //!< The transition shader manager.
+    std::unique_ptr<Renderer::CopyTexture> m_textureCopier;                       //!< Class that copies textures 1:1 to another texture or framebuffer.
+    std::unique_ptr<Preset> m_activePreset;                                       //!< Currently loaded preset.
+    std::unique_ptr<Preset> m_transitioningPreset;                                //!< Destination preset when smooth preset switching.
+    std::unique_ptr<Renderer::PresetTransition> m_transition;                     //!< Transition effect used for blending.
+    std::unique_ptr<TimeKeeper> m_timeKeeper;                                     //!< Keeps the different timers used to render and switch presets.
 
 #if PROJECTM_USE_THREADS
     mutable std::recursive_mutex m_presetSwitchMutex;   //!< Mutex for locking preset switching while rendering and vice versa.
@@ -265,3 +261,5 @@ private:
     std::unique_ptr<BackgroundWorkerSync> m_workerSync; //!< Background work synchronizer.
 #endif
 };
+
+} // namespace libprojectM

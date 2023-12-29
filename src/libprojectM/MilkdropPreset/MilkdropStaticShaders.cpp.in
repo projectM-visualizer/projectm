@@ -13,7 +13,7 @@ namespace MilkdropPreset {
 MilkdropStaticShaders::MilkdropStaticShaders(bool useGLES)
     : m_useGLES(useGLES)
 {
-    m_GLSLVersion = Shader::GetShaderLanguageVersion();
+    m_GLSLVersion = Renderer::Shader::GetShaderLanguageVersion();
 
     if (m_GLSLVersion.major == 0)
     {

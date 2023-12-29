@@ -6,6 +6,8 @@
 #include <utility>
 #include <vector>
 
+namespace libprojectM {
+
 /// A simple exception class to strongly type all preset factory related issues
 class PresetFactoryException : public std::exception
 {
@@ -86,3 +88,5 @@ private:
     mutable std::vector<PresetFactory*> m_factoryList;
     void ClearFactories();
 };
+
+} // namespace libprojectM

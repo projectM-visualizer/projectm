@@ -9,6 +9,9 @@
 #define REG_VAR(var) \
     var = projectm_eval_context_register_variable(perPixelCodeContext, #var);
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 PerPixelContext::PerPixelContext(projectm_eval_mem_buffer gmegabuf, PRJM_EVAL_F (*globalRegisters)[100])
     : perPixelCodeContext(projectm_eval_context_create(gmegabuf, globalRegisters))
 {
@@ -124,3 +127,6 @@ void PerPixelContext::ExecutePerPixelCode()
         projectm_eval_code_execute(perPixelCodeHandle);
     }
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

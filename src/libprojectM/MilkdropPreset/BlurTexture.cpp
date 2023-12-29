@@ -7,8 +7,11 @@
 
 #include <array>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 BlurTexture::BlurTexture()
-    : m_blurSampler(std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR))
+    : m_blurSampler(std::make_shared<Renderer::Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR))
 {
     auto staticShaders = libprojectM::MilkdropPreset::MilkdropStaticShaders::Get();
 
@@ -38,7 +41,7 @@ BlurTexture::BlurTexture()
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, nullptr); // Position at index 0 and 1
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, nullptr);                                    // Position at index 0 and 1
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, reinterpret_cast<void*>(sizeof(float) * 2)); // Texture coord at index 2 and 3
 
     glBindVertexArray(0);
@@ -53,7 +56,7 @@ BlurTexture::BlurTexture()
             textureName = "blur" + std::to_string(i / 2 + 1);
         }
 
-        m_blurTextures[i] = std::make_shared<Texture>(textureName, 0, GL_TEXTURE_2D, 0, 0, false);
+        m_blurTextures[i] = std::make_shared<Renderer::Texture>(textureName, 0, GL_TEXTURE_2D, 0, 0, false);
     }
 }
 
@@ -68,9 +71,9 @@ void BlurTexture::SetRequiredBlurLevel(BlurTexture::BlurLevel level)
     m_blurLevel = std::max(level, m_blurLevel);
 }
 
-auto BlurTexture::GetDescriptorsForBlurLevel(BlurTexture::BlurLevel blurLevel) const -> std::vector<TextureSamplerDescriptor>
+auto BlurTexture::GetDescriptorsForBlurLevel(BlurTexture::BlurLevel blurLevel) const -> std::vector<Renderer::TextureSamplerDescriptor>
 {
-    std::vector<TextureSamplerDescriptor> descriptors;
+    std::vector<Renderer::TextureSamplerDescriptor> descriptors;
 
     if (blurLevel == BlurLevel::Blur3)
     {
@@ -91,7 +94,7 @@ auto BlurTexture::GetDescriptorsForBlurLevel(BlurTexture::BlurLevel blurLevel) c
     return descriptors;
 }
 
-void BlurTexture::Update(const Texture& sourceTexture, const PerFrameContext& perFrameContext)
+void BlurTexture::Update(const Renderer::Texture& sourceTexture, const PerFrameContext& perFrameContext)
 {
     if (m_blurLevel == BlurLevel::None)
     {
@@ -150,7 +153,7 @@ void BlurTexture::Update(const Texture& sourceTexture, const PerFrameContext& pe
         }
 
         // set pixel shader
-        Shader* blurShader;
+        Renderer::Shader* blurShader;
         if ((pass % 2) == 0)
         {
             blurShader = &m_blur1Shader;
@@ -255,10 +258,10 @@ void BlurTexture::Update(const Texture& sourceTexture, const PerFrameContext& pe
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, origDrawFramebuffer);
     glViewport(0, 0, sourceTexture.Width(), sourceTexture.Height());
 
-    Shader::Unbind();
+    Renderer::Shader::Unbind();
 }
 
-void BlurTexture::Bind(GLint& unit, Shader& shader) const
+void BlurTexture::Bind(GLint& unit, Renderer::Shader& shader) const
 {
     for (size_t i = 0; i < static_cast<size_t>(m_blurLevel) * 2; i++)
     {
@@ -309,7 +312,7 @@ void BlurTexture::GetSafeBlurMinMaxValues(const PerFrameContext& perFrameContext
     }
 }
 
-void BlurTexture::AllocateTextures(const Texture& sourceTexture)
+void BlurTexture::AllocateTextures(const Renderer::Texture& sourceTexture)
 {
     int width = sourceTexture.Width();
     int height = sourceTexture.Height();
@@ -354,9 +357,12 @@ void BlurTexture::AllocateTextures(const Texture& sourceTexture)
         }
 
         // This will automatically replace any old texture.
-        m_blurTextures[i] = std::make_shared<Texture>(textureName, width2, height2, false);
+        m_blurTextures[i] = std::make_shared<Renderer::Texture>(textureName, width2, height2, false);
     }
 
     m_sourceTextureWidth = sourceTexture.Width();
     m_sourceTextureHeight = sourceTexture.Height();
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

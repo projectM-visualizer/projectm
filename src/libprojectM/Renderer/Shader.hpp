@@ -15,6 +15,9 @@
 #include <map>
 #include <string>
 
+namespace libprojectM {
+namespace Renderer {
+
 /**
  * @brief Shader compilation exception.
  */
@@ -188,3 +191,6 @@ private:
 
     GLuint m_shaderProgram{}; //!< The program ID.
 };
+
+} // namespace Renderer
+} // namespace libprojectM

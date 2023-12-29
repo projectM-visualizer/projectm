@@ -11,12 +11,14 @@
 //
 #include "PresetFactoryManager.hpp"
 
-#include <MilkdropPreset/MilkdropPresetFactory.hpp>
+#include <MilkdropPreset/Factory.hpp>
 
 #include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <sstream>
+
+namespace libprojectM {
 
 PresetFactoryManager::~PresetFactoryManager()
 {
@@ -39,7 +41,7 @@ void PresetFactoryManager::initialize()
 {
     ClearFactories();
 
-    auto* milkdropFactory = new MilkdropPresetFactory();
+    auto* milkdropFactory = new MilkdropPreset::Factory();
     registerFactory(milkdropFactory->supportedExtensions(), milkdropFactory);
 }
 
@@ -148,3 +150,5 @@ auto PresetFactoryManager::ParseExtension(const std::string& filename) -> std::s
     std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
     return ext;
 }
+
+} // namespace libprojectM

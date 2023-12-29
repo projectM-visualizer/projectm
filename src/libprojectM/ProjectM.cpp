@@ -32,12 +32,11 @@
 #include "Renderer/TextureManager.hpp"
 #include "Renderer/TransitionShaderManager.hpp"
 
-
 #if PROJECTM_USE_THREADS
-
 #include "libprojectM/BackgroundWorker.hpp"
-
 #endif
+
+namespace libprojectM {
 
 ProjectM::ProjectM()
     : m_presetFactoryManager(std::make_unique<PresetFactoryManager>())
@@ -106,12 +105,12 @@ void ProjectM::LoadPresetData(std::istream& presetData, bool smoothTransition)
 void ProjectM::SetTexturePaths(std::vector<std::string> texturePaths)
 {
     m_textureSearchPaths = std::move(texturePaths);
-    m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths);
+    m_textureManager = std::make_unique<Renderer::TextureManager>(m_textureSearchPaths);
 }
 
 void ProjectM::ResetTextures()
 {
-    m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths);
+    m_textureManager = std::make_unique<Renderer::TextureManager>(m_textureSearchPaths);
 }
 
 void ProjectM::DumpDebugImageOnNextFrame(const std::string& outputFile)
@@ -248,11 +247,11 @@ void ProjectM::Initialize()
 
     /** Initialise per-pixel matrix calculations */
     /** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
-    m_textureManager = std::make_unique<TextureManager>(m_textureSearchPaths);
+    m_textureManager = std::make_unique<Renderer::TextureManager>(m_textureSearchPaths);
 
-    m_transitionShaderManager = std::make_unique<TransitionShaderManager>();
+    m_transitionShaderManager = std::make_unique<Renderer::TransitionShaderManager>();
 
-    m_textureCopier = std::make_unique<CopyTexture>();
+    m_textureCopier = std::make_unique<Renderer::CopyTexture>();
 
     m_presetFactoryManager->initialize();
 
@@ -319,7 +318,7 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
     {
         m_transitioningPreset = std::move(preset);
         m_timeKeeper->StartSmoothing();
-        m_transition = std::make_unique<PresetTransition>(m_transitionShaderManager->RandomTransition(), m_softCutDuration);
+        m_transition = std::make_unique<Renderer::PresetTransition>(m_transitionShaderManager->RandomTransition(), m_softCutDuration);
     }
 }
 
@@ -487,9 +486,9 @@ void ProjectM::TouchDestroyAll()
 {
 }
 
-auto ProjectM::GetRenderContext() -> RenderContext
+auto ProjectM::GetRenderContext() -> Renderer::RenderContext
 {
-    RenderContext ctx{};
+    Renderer::RenderContext ctx{};
     ctx.viewportSizeX = m_windowWidth;
     ctx.viewportSizeY = m_windowHeight;
     ctx.time = static_cast<float>(m_timeKeeper->GetRunningTime());
@@ -506,3 +505,5 @@ auto ProjectM::GetRenderContext() -> RenderContext
 
     return ctx;
 }
+
+} // namespace libprojectM

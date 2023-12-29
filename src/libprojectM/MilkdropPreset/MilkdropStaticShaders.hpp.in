@@ -63,9 +63,9 @@ private:
      */
     std::string AddVersionHeader(std::string shader_text);
 
-    bool m_useGLES{false}; //!< Whether or not to use GLES shaders.
-    Shader::GlslVersion m_GLSLVersion{}; //!< The queried GLSL version.
-    std::string m_versionHeader; //!< The version header to prepended by AddVersionHeader.
+    bool m_useGLES{false};                             //!< Whether or not to use GLES shaders.
+    Renderer::Shader::GlslVersion m_GLSLVersion{};     //!< The queried GLSL version.
+    std::string m_versionHeader;                       //!< The version header to prepended by AddVersionHeader.
     M4::GLSLGenerator::Version m_GLSLGeneratorVersion; //!< The GLSL generator version to pass to the hlslparser generator.
 };
 

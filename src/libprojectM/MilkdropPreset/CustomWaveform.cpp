@@ -12,6 +12,9 @@
 #include <algorithm>
 #include <cmath>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 static constexpr int CustomWaveformMaxSamples = std::max(libprojectM::Audio::WaveformSamples, libprojectM::Audio::SpectrumSamples);
 
 CustomWaveform::CustomWaveform(PresetState& presetState)
@@ -234,7 +237,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    Shader::Unbind();
+    Renderer::Shader::Unbind();
 
     glDisable(GL_BLEND);
 }
@@ -300,3 +303,6 @@ int CustomWaveform::SmoothWave(const CustomWaveform::ColoredPoint* inputVertices
 
     return outputIndex + 1;
 }
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

@@ -1,17 +1,9 @@
-//
-//  FileScanner.hpp
-//  libprojectM
-//
-//  Cross-platform directory traversal with filtering by extension
+#pragma once
 
-#ifndef FileScanner_hpp
-#define FileScanner_hpp
-
+#include <functional>
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <functional>
-#include <string.h>
 
 #if HAVE_FTS_H
 #include <fts.h>
@@ -23,6 +15,9 @@ extern "C"
 #else
 #include "dirent.h"
 #endif
+
+namespace libprojectM {
+namespace Renderer {
 
 typedef std::function<void(std::string &path, std::string &name)> ScanCallback;
 
@@ -45,4 +40,5 @@ private:
 	bool isValidFilename(std::string &filename);
 };
 
-#endif /* FileScanner_hpp */
+} // namespace Renderer
+} // namespace libprojectM

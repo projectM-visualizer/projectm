@@ -2,6 +2,9 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+namespace libprojectM {
+namespace Renderer {
+
 Shader::Shader()
     : m_shaderProgram(glCreateProgram())
 {
@@ -241,3 +244,6 @@ auto Shader::GetShaderLanguageVersion() -> Shader::GlslVersion
 
     return {versionMajor, versionMinor};
 }
+
+} // namespace Renderer
+} // namespace libprojectM

@@ -10,6 +10,9 @@
 #include <string>
 #include <vector>
 
+namespace libprojectM {
+namespace Renderer {
+
 /**
  * @brief Stores a texture in the GPU and manages a few properties and the samplers.
  *
@@ -129,3 +132,6 @@ private:
     GLenum m_format{};        //!< OpenGL color format, e.g. GL_RGBA
     GLenum m_type{};          //!< OpenGL component storage type, e.g. GL_UNSIGNED _BYTE
 };
+
+} // namespace Renderer
+} // namespace libprojectM

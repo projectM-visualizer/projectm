@@ -4,6 +4,9 @@
 
 #include <utility>
 
+namespace libprojectM {
+namespace Renderer {
+
 TextureSamplerDescriptor::TextureSamplerDescriptor(const std::shared_ptr<class Texture>& texture,
                                                    const std::shared_ptr<class Sampler>& sampler,
                                                    std::string samplerName,
@@ -142,3 +145,6 @@ void TextureSamplerDescriptor::TryUpdate(TextureManager& textureManager)
     m_texture = desc.m_texture;
     m_sampler = desc.m_sampler;
 }
+
+} // namespace Renderer
+} // namespace libprojectM

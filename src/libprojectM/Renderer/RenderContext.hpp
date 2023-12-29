@@ -6,6 +6,9 @@
 
 #include "projectM-opengl.h"
 
+namespace libprojectM {
+namespace Renderer {
+
 class TextureManager;
 
 /**
@@ -30,3 +33,6 @@ public:
 
     TextureManager* textureManager{nullptr}; //!< Holds all loaded textures for shader access.
 };
+
+} // namespace Renderer
+} // namespace libprojectM

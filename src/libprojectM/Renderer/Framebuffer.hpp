@@ -11,6 +11,9 @@
 #include <map>
 #include <vector>
 
+namespace libprojectM {
+namespace Renderer {
+
 /**
  * @brief A framebuffer class holding one or more framebuffer objects.
  *
@@ -238,3 +241,6 @@ private:
     int m_readFramebuffer{}; //!< Index of the framebuffer currently being read.
     int m_drawFramebuffer{}; //!< Index of the framebuffer currently being drawn to.
 };
+
+} // namespace Renderer
+} // namespace libprojectM

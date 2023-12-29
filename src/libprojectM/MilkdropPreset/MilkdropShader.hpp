@@ -14,6 +14,9 @@
 #include <array>
 #include <set>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 class PerFrameContext;
 class PresetState;
 
@@ -61,7 +64,7 @@ public:
      * @brief Returns the contained shader.
      * @return The shader program wrapper.
      */
-    auto Shader() -> class Shader&;
+    auto Shader() -> Renderer::Shader&;
 
 private:
     /**
@@ -95,8 +98,8 @@ private:
     std::string m_preprocessedCode;            //!< The preprocessed preset shader code.
 
     std::set<std::string> m_samplerNames;                                        //!< All sampler names referenced in the shader code.
-    std::vector<TextureSamplerDescriptor> m_mainTextureDescriptors;              //!< Descriptors for all main texture references.
-    std::vector<TextureSamplerDescriptor> m_textureSamplerDescriptors;           //!< Descriptors of all referenced samplers in the shader code.
+    std::vector<Renderer::TextureSamplerDescriptor> m_mainTextureDescriptors;              //!< Descriptors for all main texture references.
+    std::vector<Renderer::TextureSamplerDescriptor> m_textureSamplerDescriptors;           //!< Descriptors of all referenced samplers in the shader code.
     BlurTexture::BlurLevel m_maxBlurLevelRequired{BlurTexture::BlurLevel::None}; //!< Max blur level of main texture required by this shader.
 
     std::array<float, 4> m_randValues{};               //!< Random values which don't change every frame.
@@ -104,5 +107,8 @@ private:
     std::array<glm::vec3, 20> m_randRotationCenters{}; //!< Random rotation center vectors which don't change every frame.
     std::array<glm::vec3, 20> m_randRotationSpeeds{};  //!< Random rotation speeds which don't change every frame.
 
-    class Shader m_shader;
+    Renderer::Shader m_shader;
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

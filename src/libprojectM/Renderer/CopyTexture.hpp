@@ -4,6 +4,9 @@
 #include "Renderer/RenderItem.hpp"
 #include "Renderer/Shader.hpp"
 
+namespace libprojectM {
+namespace Renderer {
+
 /**
  * @class CopyTexture
  * @brief Copies the given input texture to an output texture or framebuffer.
@@ -72,3 +75,6 @@ private:
     int m_width{};  //!< Last known framebuffer/texture width
     int m_height{}; //!< Last known framebuffer/texture height
 };
+
+} // namespace Renderer
+} // namespace libprojectM

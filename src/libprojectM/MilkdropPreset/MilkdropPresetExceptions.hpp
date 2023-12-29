@@ -3,6 +3,9 @@
 #include <string>
 #include <exception>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
 /**
  * @brief Exception for preset loading errors.
  */
@@ -47,3 +50,6 @@ public:
 private:
     std::string m_message;
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

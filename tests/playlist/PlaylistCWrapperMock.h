@@ -4,7 +4,7 @@
 
 #include <gmock/gmock.h>
 
-class PlaylistCWrapperMock : public PlaylistCWrapper
+class PlaylistCWrapperMock : public libprojectM::Playlist::PlaylistCWrapper
 {
 public:
     PlaylistCWrapperMock()
@@ -17,7 +17,7 @@ public:
     MOCK_METHOD(uint32_t, Size, (), (const));
     MOCK_METHOD(bool, Empty, (), (const));
     MOCK_METHOD(void, Clear, ());
-    MOCK_METHOD(const std::vector<ProjectM::Playlist::Item>&, Items, (), (const));
+    MOCK_METHOD(const std::vector<libprojectM::Playlist::Item>&, Items, (), (const));
     MOCK_METHOD(bool, AddItem, (const std::string&, uint32_t, bool) );
     MOCK_METHOD(uint32_t, AddPath, (const std::string&, uint32_t, bool, bool) );
     MOCK_METHOD(bool, RemoveItem, (uint32_t));
@@ -35,6 +35,6 @@ public:
     MOCK_METHOD(void, RemoveLastHistoryEntry, ());
     MOCK_METHOD(void, SetPresetSwitchedCallback, (projectm_playlist_preset_switched_event, void*) );
     MOCK_METHOD(void, SetPresetSwitchFailedCallback, (projectm_playlist_preset_switch_failed_event, void*) );
-    MOCK_METHOD(class ProjectM::Playlist::Filter&, Filter, ());
+    MOCK_METHOD(class libprojectM::Playlist::Filter&, Filter, ());
     MOCK_METHOD(size_t, ApplyFilter, ());
 };

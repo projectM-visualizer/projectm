@@ -4,8 +4,12 @@
 
 #include "Renderer/RenderItem.hpp"
 
-class PresetState;
+#include <vector>
 
+namespace libprojectM {
+namespace MilkdropPreset {
+
+class PresetState;
 class PerFrameContext;
 
 class Waveform : public RenderItem
@@ -61,3 +65,6 @@ private:
     Point* m_wave1Vertices{nullptr};
     Point* m_wave2Vertices{nullptr};
 };
+
+} // namespace MilkdropPreset
+} // namespace libprojectM

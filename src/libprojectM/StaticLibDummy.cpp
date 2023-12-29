@@ -3,4 +3,8 @@
  * Linking this file will not add any code to the executables as the function is never referenced.
  */
 
+namespace libprojectM {
+
 void DummyFunction() {}
+
+} // namespace libprojectM
