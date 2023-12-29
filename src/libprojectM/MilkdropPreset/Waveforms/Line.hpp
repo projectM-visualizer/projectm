@@ -9,8 +9,7 @@ namespace Waveforms {
 class Line : public LineBase
 {
 protected:
-    void ResizeVertexLists(const PresetState& presetState) override;
-    void CalculateVertexCoordinates() override;
+    void GenerateVertices(const PresetState& presetState, const PerFrameContext& presetPerFrameContext) override;
 };
 
 } // namespace Waveforms

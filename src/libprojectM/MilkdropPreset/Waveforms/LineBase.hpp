@@ -9,18 +9,11 @@ namespace Waveforms {
 class LineBase : public WaveformMath
 {
 protected:
-    void GenerateVertices(const PresetState& presetState, const PerFrameContext& presetPerFrameContext) override;
-
     /**
-     * @brief Resizes the vertex list according to the waveform type.
-     * @param presetState The preset state holder.
+     * @brief Calculates the waveform x/y coordinates and distances and clips them to the screen.
+     * @param initialAngle
      */
-    virtual void ResizeVertexLists(const PresetState& presetState) = 0;
-
-    /**
-     * @brief Calculates the actual vertex positions depending on the actual waveform implementation.
-     */
-    virtual void CalculateVertexCoordinates() = 0;
+    void ClipWaveformEdges(float angle);
 
     int m_sampleOffset{}; //!< Waveform render sample offset. If less than 480, the center part of the waveform is rendered.
 

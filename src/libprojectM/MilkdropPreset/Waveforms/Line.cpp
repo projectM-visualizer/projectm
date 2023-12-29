@@ -6,7 +6,7 @@ namespace libprojectM {
 namespace MilkdropPreset {
 namespace Waveforms {
 
-void Line::ResizeVertexLists(const PresetState& presetState)
+void Line::GenerateVertices(const PresetState& presetState, const PerFrameContext& presetPerFrameContext)
 {
     m_samples = Audio::WaveformSamples / 2;
 
@@ -16,10 +16,9 @@ void Line::ResizeVertexLists(const PresetState& presetState)
     }
 
     m_wave1Vertices.resize(m_samples);
-}
 
-void Line::CalculateVertexCoordinates()
-{
+    ClipWaveformEdges(1.57f + m_mysteryWaveParam);
+
     for (int i = 0; i < m_samples; i++)
     {
         m_wave1Vertices[i].x = m_edgeX + m_distanceX * static_cast<float>(i) + m_perpetualDX * 0.25f * m_pcmDataL[i + m_sampleOffset];

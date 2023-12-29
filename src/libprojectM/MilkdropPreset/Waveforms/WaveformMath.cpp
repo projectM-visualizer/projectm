@@ -17,8 +17,6 @@ auto WaveformMath::GetVertices(const PresetState& presetState,
 
     using libprojectM::Audio::WaveformSamples;
 
-    constexpr size_t audioSamples{WaveformMaxPoints};
-
     // Get the correct audio sample type for the current waveform mode.
     if (IsSpectrumWave())
     {
