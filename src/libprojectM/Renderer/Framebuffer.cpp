@@ -120,7 +120,7 @@ auto Framebuffer::GetAttachment(int framebufferIndex, TextureAttachment::Attachm
     }
 
     const auto& framebufferAttachments = m_attachments.at(framebufferIndex);
-    GLenum textureType;
+    GLenum textureType{GL_COLOR_ATTACHMENT0};
 
     switch (type)
     {
@@ -157,7 +157,7 @@ void Framebuffer::SetAttachment(int framebufferIndex, int attachmentIndex, const
         return;
     }
 
-    GLenum textureType;
+    GLenum textureType{GL_COLOR_ATTACHMENT0};
 
     switch (attachment->Type())
     {

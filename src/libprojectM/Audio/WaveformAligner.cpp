@@ -96,7 +96,7 @@ void WaveformAligner::Align(WaveformBuffer& newWaveform)
             m_firstNonzeroWeights[octave] = sample;
 
             sample = compareSamples - 1;
-            while (m_aligmentWeights[octave][sample] == 0 && sample >= 0)
+            while (m_aligmentWeights[octave][sample] == 0 && compareSamples > 1)
             {
                 sample--;
             }
