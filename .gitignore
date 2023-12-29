@@ -54,6 +54,7 @@ to_sync/
 src/projectM-sdl/build/
 src/libprojectM/build/
 *.pkg
+./vcpkg_installed
 
 # CLion
 cmake-build-*
