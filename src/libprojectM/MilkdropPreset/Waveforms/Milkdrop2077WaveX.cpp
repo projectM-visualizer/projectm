@@ -19,7 +19,7 @@ void Milkdrop2077WaveX::GenerateVertices(const PresetState& presetState, const P
     m_wave1Vertices.resize(m_samples);
     m_wave2Vertices.resize(m_samples);
 
-    ClipWaveformEdges(-0.75f);
+    ClipWaveformEdges(-0.75f + m_mysteryWaveParam * 3.15f);
 
     for (int i = 0; i < m_samples; i++)
     {
@@ -27,7 +27,7 @@ void Milkdrop2077WaveX::GenerateVertices(const PresetState& presetState, const P
         m_wave1Vertices[i].y = m_edgeY + m_distanceY * static_cast<float>(i) + m_perpetualDY * 0.35f * m_pcmDataL[i + m_sampleOffset];
     }
 
-    ClipWaveformEdges(0.75f);
+    ClipWaveformEdges(0.75f + m_mysteryWaveParam * 3.15f);
 
     for (int i = 0; i < m_samples; i++)
     {
