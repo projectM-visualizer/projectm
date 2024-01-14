@@ -31,8 +31,8 @@ auto TransitionShaderManager::RandomTransition() -> std::shared_ptr<Shader>
 auto TransitionShaderManager::CompileTransitionShader(const std::string& shaderBodyCode) -> std::shared_ptr<Shader>
 {
 #if USE_GLES
-    // GLES also requires a precision specifier
-    constexpr char versionHeader[] = "#version 300 es\n\nprecision mediump float;\n";
+    // GLES also requires a precision specifier for variables and 3D samplers
+    constexpr char versionHeader[] = "#version 300 es\n\nprecision mediump float;\nprecision mediump sampler3D;\n";
 #else
     constexpr char versionHeader[] = "#version 330\n\n";
 #endif
