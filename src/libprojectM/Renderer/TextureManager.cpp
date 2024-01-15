@@ -61,7 +61,6 @@ auto TextureManager::GetSampler(const std::string& fullName) -> std::shared_ptr<
     return m_samplers.at({wrapMode, filterMode});
 }
 
-
 void TextureManager::Preload()
 {
     // Create samplers
@@ -80,9 +79,7 @@ void TextureManager::Preload()
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
 
-
-    auto newTex = std::make_shared<Texture>("idlem", tex, GL_TEXTURE_2D, width, height, false);
-    m_textures["idlem"] = newTex;
+    m_textures["idlem"] = std::make_shared<Texture>("idlem", tex, GL_TEXTURE_2D, width, height, false);;
 
     tex = SOIL_load_OGL_texture_from_memory(
         headphones_data,
@@ -91,63 +88,15 @@ void TextureManager::Preload()
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
 
-    newTex = std::make_shared<Texture>("idleheadphones", tex, GL_TEXTURE_2D, width, height, false);
-    m_textures["idleheadphones"] = newTex;
+    m_textures["idleheadphones"] = std::make_shared<Texture>("idleheadphones", tex, GL_TEXTURE_2D, width, height, false);;
 
-    auto noise = std::make_unique<MilkdropNoise>();
-
-#ifdef USE_GLES
-    // GLES only supports GL_RGB and GL_RGBA, so we always use the latter.
-    GLint preferredInternalFormat{GL_RGBA};
-#else
-    // Query preferred internal texture format. GLES 3 only supports GL_RENDERBUFFER here, no texture targets.
-    // That's why we use GL_BGRA as default, as this is the best general-use format according to Khronos.
-    GLint preferredInternalFormat{GL_BGRA};
-    glGetInternalformativ(GL_TEXTURE_2D, GL_RGBA8, GL_TEXTURE_IMAGE_FORMAT, sizeof(preferredInternalFormat), &preferredInternalFormat);
-#endif
-
-    GLuint noise_texture_lq_lite;
-    glGenTextures(1, &noise_texture_lq_lite);
-    glBindTexture(GL_TEXTURE_2D, noise_texture_lq_lite);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 32, 32, 0, preferredInternalFormat, GL_UNSIGNED_BYTE, noise->noise_lq_lite);
-    auto textureNoise_lq_lite = std::make_shared<Texture>("noise_lq_lite", noise_texture_lq_lite, GL_TEXTURE_2D, 32, 32, false);
-    m_textures["noise_lq_lite"] = textureNoise_lq_lite;
-
-    GLuint noise_texture_lq;
-    glGenTextures(1, &noise_texture_lq);
-    glBindTexture(GL_TEXTURE_2D, noise_texture_lq);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, preferredInternalFormat, GL_UNSIGNED_BYTE, noise->noise_lq);
-    auto textureNoise_lq = std::make_shared<Texture>("noise_lq", noise_texture_lq, GL_TEXTURE_2D, 256, 256, false);
-    m_textures["noise_lq"] = textureNoise_lq;
-
-    GLuint noise_texture_mq;
-    glGenTextures(1, &noise_texture_mq);
-    glBindTexture(GL_TEXTURE_2D, noise_texture_mq);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, preferredInternalFormat, GL_UNSIGNED_BYTE, noise->noise_mq);
-    auto textureNoise_mq = std::make_shared<Texture>("noise_mq", noise_texture_mq, GL_TEXTURE_2D, 256, 256, false);
-    m_textures["noise_mq"] = textureNoise_mq;
-
-    GLuint noise_texture_hq;
-    glGenTextures(1, &noise_texture_hq);
-    glBindTexture(GL_TEXTURE_2D, noise_texture_hq);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, preferredInternalFormat, GL_UNSIGNED_BYTE, noise->noise_hq);
-    auto textureNoise_hq = std::make_shared<Texture>("noise_hq", noise_texture_hq, GL_TEXTURE_2D, 256, 256, false);
-    m_textures["noise_hq"] = textureNoise_hq;
-
-    GLuint noise_texture_lq_vol;
-    glGenTextures(1, &noise_texture_lq_vol);
-    glBindTexture(GL_TEXTURE_3D, noise_texture_lq_vol);
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, 32, 32, 32, 0, preferredInternalFormat, GL_UNSIGNED_BYTE, noise->noise_lq_vol);
-    auto textureNoise_lq_vol = std::make_shared<Texture>("noisevol_lq", noise_texture_lq_vol, GL_TEXTURE_3D, 32, 32, false);
-    m_textures["noisevol_lq"] = textureNoise_lq_vol;
-
-    GLuint noise_texture_hq_vol;
-    glGenTextures(1, &noise_texture_hq_vol);
-    glBindTexture(GL_TEXTURE_3D, noise_texture_hq_vol);
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, 32, 32, 32, 0, preferredInternalFormat, GL_UNSIGNED_BYTE, noise->noise_hq_vol);
-
-    auto textureNoise_hq_vol = std::make_shared<Texture>("noisevol_hq", noise_texture_hq_vol, GL_TEXTURE_3D, 32, 32, false);
-    m_textures["noisevol_hq"] = textureNoise_hq_vol;
+    // Noise textures
+    m_textures["noise_lq_lite"] = MilkdropNoise::LowQualityLite();
+    m_textures["noise_lq"] = MilkdropNoise::LowQuality();
+    m_textures["noise_mq"] = MilkdropNoise::MediumQuality();
+    m_textures["noise_hq"] = MilkdropNoise::HighQuality();
+    m_textures["noisevol_lq"] = MilkdropNoise::LowQualityVolume();
+    m_textures["noisevol_hq"] = MilkdropNoise::HighQualityVolume();
 }
 
 void TextureManager::PurgeTextures()
