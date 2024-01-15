@@ -1,6 +1,9 @@
 #pragma once
 
+#include <Renderer/Texture.hpp>
+
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 namespace libprojectM {
@@ -24,25 +27,47 @@ namespace Renderer {
 class MilkdropNoise
 {
 public:
-    /**
-     * Constructor. Generates all noise textures.
-     */
-    MilkdropNoise();
+    MilkdropNoise() = delete;
 
     /**
-     * Destructor. Deletes the allocated noise textures.
+     * Low-quality (high frequency) 2D noise texture, 256x256 with zoom level 1
+     * @return A new noise texture ready for use in rendering.
      */
-    ~MilkdropNoise();
+    static auto LowQuality() -> std::shared_ptr<Texture>;
 
-    uint32_t* noise_lq{ nullptr }; //!< Low-quality (high frequency) 2D noise texture, 256x256 with zoom level 1
-    uint32_t* noise_lq_lite{ nullptr }; //!< Low-quality (high frequency) 2D noise texture, 32x32 with zoom level 1
-    uint32_t* noise_mq{ nullptr }; //!< Medium-quality (medium frequency) 2D noise texture, 256x256 with zoom level 4
-    uint32_t* noise_hq{ nullptr }; //!< High-quality (low frequency) 2D noise texture, 256x256 with zoom level 8
+    /**
+     * Low-quality (high frequency) 2D noise texture, 32x32 with zoom level 1
+     * @return A new noise texture ready for use in rendering.
+     */
+    static auto LowQualityLite() -> std::shared_ptr<Texture>;
 
-    uint32_t* noise_lq_vol{ nullptr }; //!< Low-quality (high frequency) 3D noise texture, 32x32 with zoom level 1
-    uint32_t* noise_hq_vol{ nullptr }; //!< High-quality (low frequency) 3D noise texture, 32x32 with zoom level 4
+    /**
+     * Medium-quality (medium frequency) 2D noise texture, 256x256 with zoom level 4
+     * @return A new noise texture ready for use in rendering.
+     */
+    static auto MediumQuality() -> std::shared_ptr<Texture>;
+
+    /**
+     * High-quality (low frequency) 2D noise texture, 256x256 with zoom level 8
+     * @return A new noise texture ready for use in rendering.
+     */
+    static auto HighQuality() -> std::shared_ptr<Texture>;
+
+    /**
+     * Low-quality (high frequency) 3D noise texture, 32x32 with zoom level 1
+     * @return A new noise texture ready for use in rendering.
+     */
+    static auto LowQualityVolume() -> std::shared_ptr<Texture>;
+
+    /**
+     * High-quality (low frequency) 3D noise texture, 32x32 with zoom level 4
+     * @return A new noise texture ready for use in rendering.
+     */
+    static auto HighQualityVolume() -> std::shared_ptr<Texture>;
 
 protected:
+
+    static auto GetPreferredInternalFormat() -> int;
 
     /**
      * @brief Milkdrop 2D noise algorithm
@@ -51,9 +76,9 @@ protected:
      *
      * @param size Texture size in pixels.
      * @param zoomFactor Zoom factor. Higher values give a more smoothed/interpolated look.
-     * @param textureData A pointer to the data structure that will receive the texture data. Must have size² elements.
+     * @return A vector with the texture data. Contains size² elements.
      */
-    static void generate2D(int size, int zoomFactor, uint32_t** textureData);
+    static auto generate2D(int size, int zoomFactor) -> std::vector<uint32_t>;
 
     /**
      * @brief Milkdrop §D noise algorithm
@@ -62,9 +87,9 @@ protected:
      *
      * @param size Texture size in pixels.
      * @param zoomFactor Zoom factor. Higher values give a more smoothed/interpolated look.
-     * @param textureData A pointer to the data structure that will receive the texture data. Must have size³ elements.
+     * @return A vector with the texture data. Contains size³ elements.
      */
-    static void generate3D(int size, int zoomFactor, uint32_t** textureData);
+    static auto generate3D(int size, int zoomFactor) -> std::vector<uint32_t>;
 
     static float fCubicInterpolate(float y0, float y1, float y2, float y3, float t);
 

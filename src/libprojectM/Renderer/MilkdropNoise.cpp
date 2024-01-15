@@ -1,42 +1,131 @@
 #include "MilkdropNoise.hpp"
 
+#include "projectM-opengl.h"
+
 #include <chrono>
 #include <random>
+
+// Missing in macOS SDK. Query will most certainly fail, but then use the default format.
+#ifndef GL_TEXTURE_IMAGE_FORMAT
+#define GL_TEXTURE_IMAGE_FORMAT 0x828F
+#endif
 
 namespace libprojectM {
 namespace Renderer {
 
-MilkdropNoise::MilkdropNoise()
+auto MilkdropNoise::LowQuality() -> std::shared_ptr<Texture>
 {
-    generate2D(256, 1, &noise_lq);
-    generate2D(32, 1, &noise_lq_lite);
-    generate2D(256, 4, &noise_mq);
-    generate2D(256, 8, &noise_hq);
+    GLuint texture{};
+    {
+        auto textureData = generate2D(256, 1);
 
-    generate3D(32, 1, &noise_lq_vol);
-    generate3D(32, 4, &noise_hq_vol);
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, textureData.data());
+    }
+    return std::make_shared<Texture>("noise_lq", texture, GL_TEXTURE_2D, 256, 256, false);
 }
 
-MilkdropNoise::~MilkdropNoise()
+auto MilkdropNoise::LowQualityLite() -> std::shared_ptr<Texture>
 {
-    delete[] noise_lq;
-    delete[] noise_lq_lite;
-    delete[] noise_mq;
-    delete[] noise_hq;
-    delete[] noise_lq_vol;
-    delete[] noise_hq_vol;
+    GLuint texture{};
+
+    {
+        auto textureData = generate2D(32, 1);
+
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 32, 32, 0, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, textureData.data());
+    }
+
+    return std::make_shared<Texture>("noise_lq_lite", texture, GL_TEXTURE_2D, 32, 32, false);
 }
 
-void MilkdropNoise::generate2D(int size, int zoomFactor, uint32_t** textureData)
+auto MilkdropNoise::MediumQuality() -> std::shared_ptr<Texture>
+{
+    GLuint texture{};
+
+    {
+        auto textureData = generate2D(256, 4);
+
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, textureData.data());
+    }
+    return std::make_shared<Texture>("noise_mq", texture, GL_TEXTURE_2D, 256, 256, false);
+}
+
+auto MilkdropNoise::HighQuality() -> std::shared_ptr<Texture>
+{
+    GLuint texture{};
+
+    {
+        auto textureData = generate2D(256, 8);
+
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, textureData.data());
+    }
+
+    return std::make_shared<Texture>("noise_hq", texture, GL_TEXTURE_2D, 256, 256, false);
+}
+
+auto MilkdropNoise::LowQualityVolume() -> std::shared_ptr<Texture>
+{
+    GLuint texture{};
+
+    {
+        auto textureData = generate3D(32, 1);
+
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_3D, texture);
+        glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, 32, 32, 32, 0, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, textureData.data());
+    }
+
+    return std::make_shared<Texture>("noisevol_lq", texture, GL_TEXTURE_3D, 32, 32, false);
+}
+
+auto MilkdropNoise::HighQualityVolume() -> std::shared_ptr<Texture>
+{
+    GLuint texture{};
+
+    {
+        auto textureData = generate3D(32, 4);
+
+        glGenTextures(1, &texture);
+        glBindTexture(GL_TEXTURE_3D, texture);
+        glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, 32, 32, 32, 0, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, textureData.data());
+    }
+
+    return std::make_shared<Texture>("noisevol_hq", texture, GL_TEXTURE_3D, 32, 32, false);
+}
+
+auto MilkdropNoise::GetPreferredInternalFormat() -> int
+{
+#ifndef USE_GLES
+    // Query preferred internal texture format. GLES 3 only supports GL_RENDERBUFFER here, no texture targets.
+    // That's why we use GL_BGRA as default, as this is the best general-use format according to Khronos.
+    GLint preferredInternalFormat{GL_BGRA};
+    glGetInternalformativ(GL_TEXTURE_2D, GL_RGBA8, GL_TEXTURE_IMAGE_FORMAT, sizeof(preferredInternalFormat), &preferredInternalFormat);
+#else
+    // GLES only supports GL_RGB and GL_RGBA, so we always use the latter.
+    GLint preferredInternalFormat{GL_RGBA};
+#endif
+
+    return preferredInternalFormat;
+}
+
+auto MilkdropNoise::generate2D(int size, int zoomFactor) -> std::vector<uint32_t>
 {
     uint32_t randomSeed = static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count());
     std::default_random_engine randomGenerator(randomSeed);
     std::uniform_int_distribution<int> randomDistribution(0, INT32_MAX);
 
-    *textureData = new uint32_t[size * size]();
+    std::vector<uint32_t> textureData;
+    textureData.resize(size * size);
 
     // write to the bits...
-    auto dst = *textureData;
+    auto dst = textureData.data();
     auto RANGE = (zoomFactor > 1) ? 216 : 256;
     for (auto y = 0; y < size; y++)
     {
@@ -62,7 +151,7 @@ void MilkdropNoise::generate2D(int size, int zoomFactor, uint32_t** textureData)
     // smoothing
     if (zoomFactor > 1)
     {
-        dst = *textureData;
+        dst = textureData.data();
 
         // first go ACROSS, blending cubically on X, but only on the main lines.
         for (auto y = 0; y < size; y += zoomFactor)
@@ -78,7 +167,7 @@ void MilkdropNoise::generate2D(int size, int zoomFactor, uint32_t** textureData)
                     auto y2 = dst[base_y + ((base_x + zoomFactor) % size)];
                     auto y3 = dst[base_y + ((base_x + zoomFactor * 2) % size)];
 
-                    auto t = static_cast<float>(x % zoomFactor) / static_cast<float>( zoomFactor);
+                    auto t = static_cast<float>(x % zoomFactor) / static_cast<float>(zoomFactor);
 
                     auto result = dwCubicInterpolate(y0, y1, y2, y3, t);
 
@@ -108,23 +197,26 @@ void MilkdropNoise::generate2D(int size, int zoomFactor, uint32_t** textureData)
                 }
             }
         }
-
     }
+
+    return textureData;
 }
 
-void MilkdropNoise::generate3D(int size, int zoomFactor, uint32_t** textureData)
+auto MilkdropNoise::generate3D(int size, int zoomFactor) -> std::vector<uint32_t>
 {
     uint32_t randomSeed = static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count());
     std::default_random_engine randomGenerator(randomSeed);
     std::uniform_int_distribution<int> randomDistribution(0, INT32_MAX);
 
-    *textureData = new uint32_t[size * size * size]();
+
+    std::vector<uint32_t> textureData;
+    textureData.resize(size * size * size);
 
     // write to the bits...
     int RANGE = (zoomFactor > 1) ? 216 : 256;
     for (auto z = 0; z < size; z++)
     {
-        auto dst = (*textureData) + z * size * size;
+        auto dst = (textureData.data()) + z * size * size;
         for (auto y = 0; y < size; y++)
         {
             for (auto x = 0; x < size; x++)
@@ -151,7 +243,7 @@ void MilkdropNoise::generate3D(int size, int zoomFactor, uint32_t** textureData)
     if (zoomFactor > 1)
     {
         // first go ACROSS, blending cubically on X, but only on the main lines.
-        auto dst = *textureData;
+        auto dst = textureData.data();
         for (auto z = 0; z < size; z += zoomFactor)
         {
             for (auto y = 0; y < size; y += zoomFactor)
@@ -228,8 +320,9 @@ void MilkdropNoise::generate3D(int size, int zoomFactor, uint32_t** textureData)
                 }
             }
         }
-
     }
+
+    return textureData;
 }
 
 float MilkdropNoise::fCubicInterpolate(float y0, float y1, float y2, float y3, float t)
@@ -254,8 +347,7 @@ uint32_t MilkdropNoise::dwCubicInterpolate(uint32_t y0, uint32_t y1, uint32_t y2
             static_cast<float>((y1 >> shift) & 0xFF) / 255.0f,
             static_cast<float>((y2 >> shift) & 0xFF) / 255.0f,
             static_cast<float>((y3 >> shift) & 0xFF) / 255.0f,
-            t
-        );
+            t);
         if (f < 0)
         {
             f = 0;
