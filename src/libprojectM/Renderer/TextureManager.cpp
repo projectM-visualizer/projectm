@@ -94,14 +94,14 @@ void TextureManager::Preload()
 
     auto noise = std::make_unique<MilkdropNoise>();
 
-#if !USE_GLES
+#ifdef USE_GLES
+    // GLES only supports GL_RGB and GL_RGBA, so we always use the latter.
+    GLint preferredInternalFormat{GL_RGBA};
+#else
     // Query preferred internal texture format. GLES 3 only supports GL_RENDERBUFFER here, no texture targets.
     // That's why we use GL_BGRA as default, as this is the best general-use format according to Khronos.
     GLint preferredInternalFormat{GL_BGRA};
     glGetInternalformativ(GL_TEXTURE_2D, GL_RGBA8, GL_TEXTURE_IMAGE_FORMAT, sizeof(preferredInternalFormat), &preferredInternalFormat);
-#else
-    // GLES only supports GL_RGB and GL_RGBA, so we always use the latter.
-    GLint preferredInternalFormat{GL_RGBA};
 #endif
 
     GLuint noise_texture_lq_lite;

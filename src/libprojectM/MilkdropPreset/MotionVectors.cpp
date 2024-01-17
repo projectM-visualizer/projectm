@@ -108,7 +108,7 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
     glLineWidth(1);
-#if USE_GLES == 0
+#ifndef USE_GLES
     glEnable(GL_LINE_SMOOTH);
 #endif
 
@@ -145,7 +145,7 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-#if USE_GLES == 0
+#ifndef USE_GLES
     glDisable(GL_LINE_SMOOTH);
 #endif
 

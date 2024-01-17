@@ -262,7 +262,7 @@ void CustomShape::Draw()
                              static_cast<float>(*m_perFrameContext.border_b),
                              static_cast<float>(*m_perFrameContext.border_a));
             glLineWidth(1);
-#if USE_GLES == 0
+#ifndef USE_GLES
             glEnable(GL_LINE_SMOOTH);
 #endif
 
@@ -315,7 +315,7 @@ void CustomShape::Draw()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-#if USE_GLES == 0
+#ifndef USE_GLES
     glDisable(GL_LINE_SMOOTH);
 #endif
     glDisable(GL_BLEND);
