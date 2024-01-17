@@ -46,4 +46,6 @@ else()
             PUBLIC
             Boost::filesystem
             )
+
+    set(ENABLE_BOOST_FILESYSTEM ON CACHE BOOL "Compiler does not support std::filesystem, reverting to boost::filesystem." FORCE)
 endif()
