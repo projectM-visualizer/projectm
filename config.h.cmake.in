@@ -64,7 +64,7 @@
 #cmakedefine STDC_HEADERS
 
 /* Define USE_GLES */
-#cmakedefine01 USE_GLES
+#cmakedefine USE_GLES
 
 /* Define PROJECTM_USE_THREADS */
 #cmakedefine01 PROJECTM_USE_THREADS

@@ -87,9 +87,9 @@ void seedRand() {
 }
 
 void initGL() {
-#if USE_GLES
-    // use GLES 2.0 (this may need adjusting)
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+#ifdef USE_GLES
+    // use GLES 3.0
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 #else
@@ -121,7 +121,7 @@ void initStereoscopicView(SDL_Window *win) {
 }
 
 void enableGLDebugOutput() {
-#if OGL_DEBUG && !USE_GLES
+#if OGL_DEBUG && !defined (USE_GLES)
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback(debugGL, NULL);

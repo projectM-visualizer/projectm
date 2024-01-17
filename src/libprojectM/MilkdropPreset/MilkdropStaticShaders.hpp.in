@@ -25,7 +25,7 @@ public:
     static std::shared_ptr<MilkdropStaticShaders> Get()
     {
         bool useGLES = false;
-#if USE_GLES
+#ifdef USE_GLES
         useGLES = true;
 #endif
 

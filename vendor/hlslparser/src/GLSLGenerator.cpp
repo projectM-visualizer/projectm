@@ -114,7 +114,7 @@ GLSLGenerator::GLSLGenerator() :
     m_tree                      = NULL;
     m_entryName                 = NULL;
     m_target                    = Target_VertexShader;
-#if USE_GLES
+#ifdef USE_GLES
     m_version                   = Version_300_ES;
 #else
     m_version                   = Version_330;

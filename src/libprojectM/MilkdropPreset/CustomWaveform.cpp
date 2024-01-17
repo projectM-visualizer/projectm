@@ -168,7 +168,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     std::vector<ColoredPoint> pointsSmoothed(sampleCount * 2);
     auto smoothedVertexCount = SmoothWave(pointsTransformed.data(), sampleCount, pointsSmoothed.data());
 
-#if USE_GLES == 0
+#ifndef USE_GLES
     glDisable(GL_LINE_SMOOTH);
 #endif
     glLineWidth(1);

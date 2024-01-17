@@ -45,7 +45,7 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
         }
     }
 
-#if USE_GLES == 0
+#ifndef USE_GLES
     glDisable(GL_LINE_SMOOTH);
 #endif
     glLineWidth(1);

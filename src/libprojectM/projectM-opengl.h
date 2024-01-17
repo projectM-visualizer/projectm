@@ -35,7 +35,7 @@
 #include "GL/glew.h"
 #include "GL/wglew.h"
 #else /* linux/unix/other */
-# if USE_GLES
+# ifdef USE_GLES
 #  include <GLES3/gl3.h>
 # else
 #  if !defined(GL_GLEXT_PROTOTYPES)
