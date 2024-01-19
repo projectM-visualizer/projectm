@@ -3467,7 +3467,7 @@ bool HLSLParser::ParsePreprocessorDefine()
         value.erase(0, 1);
     }
 
-    macro->value = value;
+    macro->value = m_tree->AddString(value.c_str());
 
     return true;
 }
@@ -3495,7 +3495,7 @@ bool HLSLParser::ApplyPreprocessor(const char* fileName, const char* buffer, siz
     while (index <  m_macros.GetSize())
     {
         HLSLMacro * macro = m_macros[index];
-        m_tokenizer = HLSLTokenizer(fileName, macro->value.c_str(), macro->value.length());
+        m_tokenizer = HLSLTokenizer(fileName, macro->value, strlen(macro->value));
         std::string valueProcessed;
 
         while (m_tokenizer.GetToken() != HLSLToken_EndOfStream)
@@ -3533,7 +3533,7 @@ bool HLSLParser::ApplyPreprocessor(const char* fileName, const char* buffer, siz
         {
             // Define value referenced another define, it was replaced
             // try again until there is no replacement
-            macro->value = valueProcessed;
+            macro->value = m_tree->AddString(valueProcessed.c_str());
 
         }
         else
@@ -3747,7 +3747,7 @@ bool HLSLParser::ProcessMacroArguments(HLSLMacro* macro, std::string & sourcePre
     unsigned index = 0;
     std::string arg;
     bool argFound = false;
-    while(index < macro->value.length())
+    while(index < strlen(macro->value))
     {
         if (macro->value[index] == '#' && !argFound)
         {
