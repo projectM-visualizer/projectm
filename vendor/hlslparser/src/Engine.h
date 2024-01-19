@@ -88,7 +88,14 @@ void DestroyRange(T * buffer, int new_size, int old_size) {
 template <typename T>
 class Array {
 public:
-    Array(Allocator * _allocator) : allocator(_allocator), buffer(NULL), size(0), capacity(0) {}
+    Array(Allocator * _allocator) : allocator(_allocator) {}
+
+    ~Array() {
+        if (allocator != nullptr)
+        {
+            allocator->Delete(buffer);
+        }
+    }
 
     void PushBack(const T & val) {
         ASSERT(&val < buffer || &val >= buffer+size);
@@ -148,6 +155,7 @@ private:
     // Change array capacity.
     void SetCapacity(int new_capacity) {
         ASSERT(new_capacity >= size);
+        ASSERT(allocator != nullptr);
 
         if (new_capacity == 0) {
             // free the buffer.
@@ -158,7 +166,14 @@ private:
         }
         else {
             // realloc the buffer
-            buffer = allocator->Realloc<T>(buffer, new_capacity);
+            auto* newBuffer = allocator->Realloc<T>(buffer, new_capacity);
+            if (!newBuffer)
+            {
+                free(buffer);
+                throw std::bad_alloc();
+            }
+
+            buffer = newBuffer;
         }
 
         capacity = new_capacity;
@@ -166,10 +181,10 @@ private:
 
 
 private:
-    Allocator * allocator; // @@ Do we really have to keep a pointer to this?
-    T * buffer;
-    int size;
-    int capacity;
+    Allocator * allocator{}; // @@ Do we really have to keep a pointer to this?
+    T * buffer{};
+    int size{};
+    int capacity{};
 };
 
 
