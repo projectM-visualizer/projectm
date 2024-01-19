@@ -577,18 +577,12 @@ struct HLSLArgument : public HLSLNode
 struct HLSLMacro : public HLSLStatement
 {
     static const HLSLNodeType s_type = HLSLNodeType_Macro;
-    HLSLMacro()
-    {
-        name            = NULL;
-        argument        = NULL;
-        numArguments    = 0;
-        macroAliased    = NULL;
-    }
-    const char*         name;
-    HLSLArgument*       argument;
-    unsigned int        numArguments;
-    std::string         value;
-    HLSLMacro*          macroAliased;
+
+    const char*         name{};
+    HLSLArgument*       argument{};
+    unsigned int        numArguments{};
+    const char*         value{};
+    HLSLMacro*          macroAliased{};
 };
 
 /** A expression which forms a complete statement. */
