@@ -31,6 +31,7 @@ target_include_directories(projectM_playlist_main
 target_link_libraries(projectM_playlist_main
         PRIVATE
         libprojectM::API
+        ${PROJECTM_FILESYSTEM_LIBRARY}
         )
 
 add_library(projectM_playlist
@@ -56,6 +57,7 @@ target_include_directories(projectM_playlist
 target_link_libraries(projectM_playlist
         PUBLIC
         libprojectM::projectM
+        ${PROJECTM_FILESYSTEM_LIBRARY}
         )
 
 if(BUILD_SHARED_LIBS)
@@ -88,9 +90,6 @@ generate_export_header(projectM_playlist
         BASE_NAME projectM_playlist
         EXPORT_FILE_NAME "${PROJECTM_PLAYLIST_EXPORT_HEADER}"
         )
-
-# Adds fallback support to boost if std::filesystem is unavailable.
-include(FilesystemSupport.cmake)
 
 add_library(libprojectM::playlist ALIAS projectM_playlist)
 

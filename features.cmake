@@ -79,6 +79,9 @@ set(_std_c_headers
 check_include_files("${_std_c_headers}" STDC_HEADERS LANGUAGE C)
 unset(_std_c_headers)
 
+# Adds fallback support to boost if std::filesystem is unavailable.
+include(FilesystemSupport)
+
 # Create global configuration header
 file(MAKE_DIRECTORY "${PROJECTM_BINARY_DIR}/include")
 configure_file(config.h.cmake.in "${PROJECTM_BINARY_DIR}/include/config.h")
