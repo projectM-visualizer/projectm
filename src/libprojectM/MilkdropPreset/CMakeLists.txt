@@ -163,10 +163,3 @@ endif()
 set_target_properties(MilkdropPreset PROPERTIES
         FOLDER libprojectM
         )
-
-if(ENABLE_LLVM)
-    target_link_libraries(MilkdropPreset
-            PUBLIC
-            LLVM::LLVM
-            )
-endif()
