@@ -37,7 +37,7 @@ jobs:
       - name: Install Packages
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgl1-mesa-dev mesa-common-dev libsdl2-dev libglm-dev llvm-dev ninja-build
+          sudo apt-get install -y libgl1-mesa-dev mesa-common-dev libsdl2-dev libglm-dev ninja-build
 
       - name: Build GoogleTest From Source
         run: |

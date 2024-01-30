@@ -70,7 +70,6 @@ cmake_dependent_option(ENABLE_INSTALL "Enable installing projectM libraries and 
 option(ENABLE_SYSTEM_GLM "Enable use of system-install GLM library" OFF)
 
 # Experimental/unsupported features
-cmake_dependent_option(ENABLE_LLVM "Enable experimental LLVM JIT support" OFF "NOT ENABLE_EMSCRIPTEN" OFF)
 option(ENABLE_CXX_INTERFACE "Enable exporting C++ symbols for ProjectM and PCM classes, not only the C API. Warning: This is not very portable." OFF)
 
 if(ENABLE_SYSTEM_GLM)
@@ -170,16 +169,6 @@ else()
         set(PROJECTM_USE_THREADS YES)
     endif()
 
-    if(ENABLE_LLVM)
-        find_package(LLVM REQUIRED)
-        if(LLVM_VERSION VERSION_LESS 10.0)
-            message(FATAL_ERROR "LLVM JIT support requires at least version 10.0, but only ${LLVM_VERSION} was found.")
-        endif()
-        set(HAVE_LLVM TRUE)
-    else()
-        unset(HAVE_LLVM)
-    endif()
-
 endif()
 
 if(ENABLE_CXX_INTERFACE)
@@ -234,10 +223,6 @@ if(ENABLE_SDL_UI)
 endif()
 message(STATUS "    OpenGL ES:               ${ENABLE_GLES}")
 message(STATUS "    Emscripten:              ${ENABLE_EMSCRIPTEN}")
-message(STATUS "    LLVM JIT:                ${ENABLE_LLVM}")
-if(ENABLE_LLVM)
-    message(STATUS "        LLVM version:        ${LLVM_VERSION}")
-endif()
 message(STATUS "    Use system GLM:          ${ENABLE_SYSTEM_GLM}")
 message(STATUS "    Link UI with shared lib: ${ENABLE_SHARED_LINKING}")
 message(STATUS "")

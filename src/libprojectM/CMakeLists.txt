@@ -87,13 +87,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
             )
 endif()
 
-if(ENABLE_LLVM)
-    target_link_libraries(projectM
-            PUBLIC
-            LLVM::LLVM
-            )
-endif()
-
 set_target_properties(projectM PROPERTIES
         VERSION "${PROJECTM_LIB_VERSION}"
         SOVERSION "${PROJECTM_SO_VERSION}"
@@ -203,15 +196,6 @@ if(ENABLE_INSTALL)
                 )
     endif()
 
-    if(ENABLE_LLVM)
-        install(FILES
-                "${PROJECTM_SOURCE_DIR}/cmake/gles/FindLLVM.cmake"
-                DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
-                COMPONENT Devel
-                )
-    endif()
-
-
     install(EXPORT libprojectMTargets
             FILE projectM4Targets.cmake
             NAMESPACE libprojectM::
@@ -222,10 +206,6 @@ if(ENABLE_INSTALL)
     # pkg-config export, only supported on UNIX systems.
     if(UNIX)
         include(GeneratePkgConfigFiles)
-
-        if(ENABLE_LLVM)
-            set(PKGCONFIG_LIBS "${PKGCONFIG_LIBS} -L${LLVM_LIB_DIR} ${LLVM_LIBRARIES}")
-        endif()
 
         set(PKGCONFIG_PACKAGE_NAME "${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}")
         set(PKGCONFIG_PACKAGE_DESCRIPTION "projectM Music Visualizer")
