@@ -210,7 +210,8 @@ dependencies using the project files, while CMake requires the libraries before 
 As stated above, using vcpkg is the easiest way to get the required dependencies. First,
 install [vcpkg from GitHub](https://github.com/microsoft/vcpkg) by following the official guide.
 
-We've included a vcpkg manifest file in the repository root, designed to automatically install dependencies when you create your solution.
+We've included a vcpkg manifest file in the repository root, designed to automatically install dependencies when you
+create your solution.
 
 #### Creating the Visual Studio solution
 
@@ -291,6 +292,15 @@ To build projectM using the Android SDK, please refer to the official NDK docs:
 > https://developer.android.com/ndk/guides/cmake
 
 It is highly recommended using the latest NDK and CMake >= 3.21 for building.
+
+### Using libprojectM with pkgconfig
+
+Some UNIX build systems cannot use CMake config packages, like GNU autotools. To use libprojectM with such build
+systems, projectM's build system also creates basic `.pc` files during the installation process.
+
+Note that the resulting pkgconfig files will not necessarily work in all circumstances, because they are much less
+flexible than CMake (or Meson). When using pkgconfig, some required libraries will probably nor be linked
+automatically (e.g. OpenGL libraries) and have to be added manually depending on the application needs.
 
 ## libprojectM
 
