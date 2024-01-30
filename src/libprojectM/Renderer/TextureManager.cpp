@@ -415,7 +415,7 @@ void TextureManager::ScanTextures()
         FileScanner fileScanner = FileScanner(m_textureSearchPaths, m_extensions);
 
         using namespace std::placeholders;
-        fileScanner.scan(std::bind(&TextureManager::AddTextureFile, this, _1, _2));
+        fileScanner.Scan(std::bind(&TextureManager::AddTextureFile, this, _1, _2));
         m_filesScanned = true;
     }
 }

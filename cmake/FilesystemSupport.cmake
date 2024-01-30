@@ -28,6 +28,7 @@ else()
     add_compile_definitions(
             FS_NAMESPACE=boost
             FS_INCLUDE=<boost/filesystem.hpp>
+            FS_USING_BOOST
             )
 
     set(PROJECTM_FILESYSTEM_LIBRARY Boost::filesystem)

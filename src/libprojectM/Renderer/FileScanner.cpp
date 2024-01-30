@@ -1,258 +1,81 @@
-//
-//  FileScanner.cpp
-//  libprojectM
-//
-//
-
 #include "FileScanner.hpp"
 
 #include <algorithm>
-#include <cstring>
+#include <cctype>
 
-#ifndef _WIN32
-#include <sys/stat.h>
-#include <sys/types.h>
-#endif
-
-/* Per-platform path separators */
-#ifndef _WIN32
-char constexpr pathSeparator{'\\'};
-#else
-char constexpr pathSeparator{'/'};
-#endif
+// Fall back to boost if compiler doesn't support C++17
+#include FS_INCLUDE
+using namespace FS_NAMESPACE::filesystem;
 
 namespace libprojectM {
 namespace Renderer {
-
-FileScanner::FileScanner()
-{
-}
 
 FileScanner::FileScanner(const std::vector<std::string>& rootDirs, std::vector<std::string>& extensions)
     : _rootDirs(rootDirs)
     , _extensions(extensions)
 {
-}
-
-void FileScanner::scan(ScanCallback cb)
-{
-#if HAVE_FTS_H
-    scanPosix(cb);
-#else
-    for (const auto& dir : _rootDirs)
-        scanGeneric(cb, dir.c_str());
-#endif
-}
-
-void FileScanner::handleDirectoryError(std::string dir)
-{
-#ifndef HAVE_FTS_H
-    std::cerr << "[PresetLoader] warning: errno unsupported on win32, etc platforms. fix me" << std::endl;
-#else
-
-    std::cerr << dir << " scan error: ";
-
-    switch (errno)
+    // Convert all extensions to lower-case.
+    for (auto& extension : _extensions)
     {
-        case ENOENT:
-            std::cerr << "ENOENT error. The path \"" << dir << "\" probably does not exist. \"man open\" for more info." << std::endl;
-            break;
-        case ENOMEM:
-            std::cerr << "out of memory!" << std::endl;
-            abort();
-        case ENOTDIR:
-            std::cerr << "directory specified is not a directory! Trying to continue..." << std::endl;
-            break;
-        case ENFILE:
-            std::cerr << "Your system has reached its open file limit. Trying to continue..." << std::endl;
-            break;
-        case EMFILE:
-            std::cerr << "too many files in use by projectM! Bailing!" << std::endl;
-            break;
-        case EACCES:
-            std::cerr << "permissions issue reading the specified preset directory." << std::endl;
-            break;
-        default:
-            break;
+        std::transform(extension.begin(), extension.end(), extension.begin(), [](unsigned char c) { return std::tolower(c); });
     }
-#endif
 }
 
-std::string FileScanner::extensionMatches(std::string& filename)
+void FileScanner::Scan(ScanCallback callback)
 {
-    // returns file name without extension
-    // TODO: optimize me
-
-    std::string lowerCaseFileName(filename);
-    std::transform(lowerCaseFileName.begin(), lowerCaseFileName.end(), lowerCaseFileName.begin(), tolower);
-
-    // Remove extension
-    for (auto ext : _extensions)
+    for (const auto& currentPath : _rootDirs)
     {
-        size_t found = lowerCaseFileName.find(ext);
-        if (found != std::string::npos)
+        try
         {
-            std::string name = filename;
-            name.replace(int(found), ext.size(), "");
-            return name;
-        }
-    }
+            path basePath(currentPath);
 
-    return {};
-}
-
-bool FileScanner::isValidFilename(std::string& filename)
-{
-    if (filename.find("__MACOSX") != std::string::npos)
-        return false;
-    return true;
-}
-
-// generic implementation using dirent
-void FileScanner::scanGeneric(ScanCallback cb, const char* currentDir)
-{
-    DIR* m_dir;
-
-    // Allocate a new a stream given the current directory name
-    if ((m_dir = opendir(currentDir)) == nullptr)
-    {
-        return; // no files found in here
-    }
-
-    struct dirent* dir_entry;
-
-    while ((dir_entry = readdir(m_dir)) != nullptr)
-    {
-        // Convert char * to friendly string
-        std::string filename(dir_entry->d_name);
-
-        // Some sanity checks
-        if (!isValidFilename(filename))
-            continue;
-        if (filename.length() == 0 || filename[0] == '.')
-            continue;
-
-        std::string fullPath = std::string(currentDir) + pathSeparator + filename;
-
-#ifndef _WIN32
-        // filesystems are free to return DT_UNKNOWN
-        if (dir_entry->d_type == DT_UNKNOWN)
-        {
-            struct stat stat_path;
-            if (stat(fullPath.c_str(), &stat_path) == 0)
+            if (!exists(basePath))
             {
-                /**/ if (S_ISDIR(stat_path.st_mode))
-                    dir_entry->d_type = DT_DIR;
-                else if (S_ISLNK(stat_path.st_mode))
-                    dir_entry->d_type = DT_LNK;
-                else if (S_ISREG(stat_path.st_mode))
-                    dir_entry->d_type = DT_REG;
+                continue;
+            }
+
+            // Resolve any symlinks first, so we can check the type.
+            while (is_symlink(basePath))
+            {
+                basePath = read_symlink(basePath);
+            }
+
+            // Skip regular files and other stuff
+            if (!is_directory(basePath))
+            {
+                continue;
+            }
+
+            for (const auto& entry : recursive_directory_iterator(basePath))
+            {
+                // Skip files without extensions and everything that's not a normal file.
+#ifdef FS_USING_BOOST
+                if (!entry.path().has_extension() || (entry.status().type() != file_type::symlink_file && entry.status().type() != file_type::regular_file))
+#else
+                if (!entry.path().has_extension() || (is_symlink(entry.status()) && is_regular_file(entry.status())))
+#endif
+                {
+                    continue;
+                }
+
+                // Match the lower-case extension of the file with the provided list of valid extensions.
+                auto extension = entry.path().extension().string();
+                std::transform(extension.begin(), extension.end(), extension.begin(), [](unsigned char c) { return std::tolower(c); });
+                if (std::find(_extensions.begin(), _extensions.end(), extension) != _extensions.end())
+                {
+                    callback(entry.path().string(), entry.path().stem().string());
+                }
             }
         }
-#endif
-
-        if (dir_entry->d_type == DT_DIR)
+        catch (filesystem_error&)
         {
-            // recurse into dir
-            scanGeneric(cb, fullPath.c_str());
-            continue;
+            // ToDo: Log error. We ignore it for now.
         }
-        else if (dir_entry->d_type != DT_REG && dir_entry->d_type != DT_LNK)
+        catch (std::exception&)
         {
-            // not regular file/link
-            continue;
-        }
-
-        auto nameMatched = extensionMatches(filename);
-        if (!nameMatched.empty())
-            cb(fullPath, nameMatched);
-    }
-
-    if (m_dir)
-    {
-        closedir(m_dir);
-        m_dir = 0;
-    }
-}
-
-#if HAVE_FTS_H
-// more optimized posix "fts" directory traversal
-int fts_compare(const FTSENT** one, const FTSENT** two)
-{
-    return (std::strcmp((*one)->fts_name, (*two)->fts_name));
-}
-#endif
-
-void FileScanner::scanPosix(ScanCallback cb)
-{
-#if HAVE_FTS_H
-
-    // efficient directory traversal
-    FTS* fileSystem = nullptr;
-    FTSENT* node = nullptr;
-
-    if (_rootDirs.empty())
-    {
-        return;
-    }
-
-    // list of directories to scan
-    auto rootDirCount = _rootDirs.size();
-
-    char** dirList = (char**) malloc(sizeof(char*) * (rootDirCount + 1));
-    for (unsigned long i = 0; i < rootDirCount; i++)
-    {
-        dirList[i] = (char*) _rootDirs[i].c_str();
-    }
-    dirList[rootDirCount] = nullptr;
-
-    // initialize file hierarchy traversal
-    fileSystem = fts_open(dirList, FTS_LOGICAL | FTS_NOCHDIR | FTS_NOSTAT, &fts_compare);
-    if (fileSystem == nullptr)
-    {
-        std::string s;
-        for (std::size_t i = 0; i < _rootDirs.size(); i++)
-            s += _rootDirs[i] + ' ';
-        handleDirectoryError(s);
-
-        free(dirList);
-        return;
-    }
-
-    std::string path, name, nameMatched;
-
-    // traverse dirList
-    while ((node = fts_read(fileSystem)) != nullptr)
-    {
-        switch (node->fts_info)
-        {
-            case FTS_F:
-            case FTS_SL:
-            case FTS_NSOK:
-                // found a file
-                path = std::string(node->fts_path);
-                name = std::string(node->fts_name);
-
-                if (!isValidFilename(path) || !isValidFilename(name))
-                {
-                    break;
-                }
-
-                // check extension
-                nameMatched = extensionMatches(name);
-                if (!nameMatched.empty())
-                {
-                    cb(path, nameMatched);
-                }
-                break;
-            default:
-                break;
+            // ToDo: Log error. We ignore it for now.
         }
     }
-    fts_close(fileSystem);
-    free(dirList);
-
-#endif
 }
 
 } // namespace Renderer
