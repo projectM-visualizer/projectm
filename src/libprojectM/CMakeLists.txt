@@ -206,6 +206,15 @@ if(ENABLE_INSTALL)
     if(UNIX)
         include(GeneratePkgConfigFiles)
 
+        if(ENABLE_BOOST_FILESYSTEM)
+            # Since there are many different CMake scripts out there to find Boost, e.g. Gentoo has its own Find module,
+            # it's very hard to extract the proper library names and paths from the Boost package targets and convert them
+            # into pkgconfig's expected format.
+            # We will just assume the build uses Boost from the default location (e.g. not a custom CMAKE_PREFIX_PATH) and
+            # the library name is correct.
+            set(PKGCONFIG_LIBS "${PKGCONFIG_LIBS} -l:boost_filesystem")
+        endif()
+
         set(PKGCONFIG_PACKAGE_NAME "${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}")
         set(PKGCONFIG_PACKAGE_DESCRIPTION "projectM Music Visualizer")
         set(PKGCONFIG_PACKAGE_REQUIREMENTS_ALL "opengl")
