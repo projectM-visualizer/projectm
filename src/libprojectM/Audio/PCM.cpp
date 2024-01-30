@@ -73,10 +73,10 @@ auto PCM::GetFrameAudioData() const -> FrameAudioData
 {
     FrameAudioData data{};
 
-    std::copy(m_waveformL.begin(), m_waveformL.end(), data.waveformLeft.begin());
-    std::copy(m_waveformR.begin(), m_waveformR.end(), data.waveformRight.begin());
-    std::copy(m_spectrumL.begin(), m_spectrumL.end(), data.spectrumLeft.begin());
-    std::copy(m_spectrumR.begin(), m_spectrumR.end(), data.spectrumRight.begin());
+    std::copy(m_waveformL.begin(), m_waveformL.begin() + WaveformSamples, data.waveformLeft.begin());
+    std::copy(m_waveformR.begin(), m_waveformR.begin() + WaveformSamples, data.waveformRight.begin());
+    std::copy(m_spectrumL.begin(), m_spectrumL.begin() + SpectrumSamples, data.spectrumLeft.begin());
+    std::copy(m_spectrumR.begin(), m_spectrumR.begin() + SpectrumSamples, data.spectrumRight.begin());
 
     data.bass = m_bass.CurrentRelative();
     data.mid = m_middles.CurrentRelative();
