@@ -3,8 +3,8 @@
 #include <algorithm>
 
 // Fall back to boost if compiler doesn't support C++17
-#include FS_INCLUDE
-using namespace FS_NAMESPACE::filesystem;
+#include PROJECTM_FILESYSTEM_INCLUDE
+using namespace PROJECTM_FILESYSTEM_NAMESPACE::filesystem;
 
 namespace libprojectM {
 namespace Playlist {
