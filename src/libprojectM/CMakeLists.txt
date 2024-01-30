@@ -94,13 +94,6 @@ if(ENABLE_LLVM)
             )
 endif()
 
-if(ENABLE_OPENMP)
-    target_link_libraries(projectM
-            PUBLIC
-            OpenMP::OpenMP_CXX
-            )
-endif()
-
 set_target_properties(projectM PROPERTIES
         VERSION "${PROJECTM_LIB_VERSION}"
         SOVERSION "${PROJECTM_SO_VERSION}"
@@ -232,13 +225,6 @@ if(ENABLE_INSTALL)
 
         if(ENABLE_LLVM)
             set(PKGCONFIG_LIBS "${PKGCONFIG_LIBS} -L${LLVM_LIB_DIR} ${LLVM_LIBRARIES}")
-        endif()
-
-        if(ENABLE_OPENMP)
-            set(PKGCONFIG_FLAGS "${PKGCONFIG_FLAGS} ${OpenMP_CXX_FLAGS}")
-            foreach(_library ${OpenMP_CXX_LIBRARIES})
-                set(PKGCONFIG_LIBS "${PKGCONFIG_LIBS} -l${_library}")
-            endforeach()
         endif()
 
         set(PKGCONFIG_PACKAGE_NAME "${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}")
