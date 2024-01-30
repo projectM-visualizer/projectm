@@ -71,20 +71,12 @@ target_include_directories(Renderer
 
 target_link_libraries(Renderer
         PRIVATE
-        omptl
         libprojectM::API # For export header
         PUBLIC
         GLM::GLM
         hlslparser
         SOIL2
         )
-
-if(ENABLE_OPENMP)
-    target_link_libraries(Renderer
-            PUBLIC
-            OpenMP::OpenMP_CXX
-            )
-endif()
 
 set_target_properties(Renderer PROPERTIES
         FOLDER libprojectM

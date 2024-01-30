@@ -16,9 +16,6 @@ if("@ENABLE_LLVM@") # ENABLE_LLVM
     list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
     find_dependency(LLVM)
 endif()
-if("@ENABLE_OPENMP@") # ENABLE_OPENMP
-    find_dependency(OpenMP)
-endif()
 if("@ENABLE_THREADING@") # ENABLE_THREADING
      find_dependency(Threads)
 endif()
