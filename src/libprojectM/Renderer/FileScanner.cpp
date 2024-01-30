@@ -4,8 +4,8 @@
 #include <cctype>
 
 // Fall back to boost if compiler doesn't support C++17
-#include FS_INCLUDE
-using namespace FS_NAMESPACE::filesystem;
+#include PROJECTM_FILESYSTEM_INCLUDE
+using namespace PROJECTM_FILESYSTEM_NAMESPACE::filesystem;
 
 namespace libprojectM {
 namespace Renderer {
@@ -49,7 +49,7 @@ void FileScanner::Scan(ScanCallback callback)
             for (const auto& entry : recursive_directory_iterator(basePath))
             {
                 // Skip files without extensions and everything that's not a normal file.
-#ifdef FS_USING_BOOST
+#ifdef PROJECTM_FILESYSTEM_USE_BOOST
                 if (!entry.path().has_extension() || (entry.status().type() != file_type::symlink_file && entry.status().type() != file_type::regular_file))
 #else
                 if (!entry.path().has_extension() || (is_symlink(entry.status()) && is_regular_file(entry.status())))

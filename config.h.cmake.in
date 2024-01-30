@@ -1,68 +1,5 @@
 #pragma once
 
-/* Define to 1 if you have the `aligned_alloc' function. */
-#cmakedefine01 HAVE_ALIGNED_ALLOC
-
-/* Define to 1 if you have the <dlfcn.h> header file. */
-#cmakedefine01 HAVE_DLFCN_H
-
-/* Define to 1 if you have the <fts.h> header file. */
-#cmakedefine01 HAVE_FTS_H
-
-/* Defined if a valid OpenGL implementation is found. */
-#cmakedefine01 HAVE_GL
-
-/* Define to 1 if you have the <GLES/gl.h> header file. */
-#cmakedefine01 HAVE_GLES_GL_H
-
-/* Define to 1 if you have the <GL/gl.h> header file. */
-#cmakedefine01 HAVE_GL_GL_H
-
-/* Define to 1 if you have the <inttypes.h> header file. */
-#cmakedefine01 HAVE_INTTYPES_H
-
-/* Define HAVE_LLVM */
-#cmakedefine01 HAVE_LLVM
-
-/* Define to 1 if you have the <memory.h> header file. */
-#cmakedefine01 HAVE_MEMORY_H
-
-/* Define to 1 if you have the <OpenGL/gl.h> header file. */
-#cmakedefine01 HAVE_OPENGL_GL_H
-
-/* Define to 1 if you have the `posix_memalign' function. */
-#cmakedefine01 HAVE_POSIX_MEMALIGN
-
-/* Have PTHREAD_PRIO_INHERIT. */
-#cmakedefine01 HAVE_PTHREAD_PRIO_INHERIT
-
-/* Define to 1 if you have the <stdint.h> header file. */
-#cmakedefine HAVE_STDINT_H
-
-/* Define to 1 if you have the <stdlib.h> header file. */
-#cmakedefine HAVE_STDLIB_H
-
-/* Define to 1 if you have the <strings.h> header file. */
-#cmakedefine HAVE_STRINGS_H
-
-/* Define to 1 if you have the <string.h> header file. */
-#cmakedefine HAVE_STRING_H
-
-/* Define to 1 if you have the <sys/stat.h> header file. */
-#cmakedefine HAVE_SYS_STAT_H
-
-/* Define to 1 if you have the <sys/types.h> header file. */
-#cmakedefine HAVE_SYS_TYPES_H
-
-/* Define to 1 if you have the <unistd.h> header file. */
-#cmakedefine HAVE_UNISTD_H
-
-/* Define to 1 if you have the <windows.h> header file. */
-#cmakedefine HAVE_WINDOWS_H
-
-/* Define to 1 if you have the ANSI C header files. */
-#cmakedefine STDC_HEADERS
-
 /* Define USE_GLES */
 #cmakedefine USE_GLES
 
@@ -70,4 +7,9 @@
 #cmakedefine01 PROJECTM_USE_THREADS
 
 /* Version number of package */
-#define VERSION "@PROJECT_VERSION@"
+#define VERSION "@libprojectM_VERSION@"
+
+/* Boost or std filesystem API support */
+#cmakedefine PROJECTM_FILESYSTEM_USE_BOOST
+#define PROJECTM_FILESYSTEM_NAMESPACE @PROJECTM_FILESYSTEM_NAMESPACE@
+#define PROJECTM_FILESYSTEM_INCLUDE @PROJECTM_FILESYSTEM_INCLUDE@
