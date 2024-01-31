@@ -7,7 +7,7 @@ namespace MilkdropPreset {
 namespace Waveforms {
 
 
-void Milkdrop2077Wave11::GenerateVertices(const PresetState& presetState, const PerFrameContext& presetPerFrameContext)
+void Milkdrop2077Wave11::GenerateVertices(const PresetState& presetState, const PerFrameContext&)
 {
     m_samples = Audio::WaveformSamples / 2;
 

@@ -6,7 +6,7 @@ namespace libprojectM {
 namespace MilkdropPreset {
 namespace Waveforms {
 
-void Line::GenerateVertices(const PresetState& presetState, const PerFrameContext& presetPerFrameContext)
+void Line::GenerateVertices(const PresetState& presetState, const PerFrameContext&)
 {
     m_samples = Audio::WaveformSamples / 2;
 

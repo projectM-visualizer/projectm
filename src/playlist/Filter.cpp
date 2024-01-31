@@ -124,6 +124,7 @@ auto Filter::ApplyExpression(const std::string& filename, const std::string& fil
 
                 currentFilenameChar++;
                 currentFilterChar++;
+                continue;
 
             default:
                 if (*currentFilterChar != *currentFilenameChar &&

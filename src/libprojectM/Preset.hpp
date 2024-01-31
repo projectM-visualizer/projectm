@@ -44,7 +44,7 @@ public:
      * @param renderContext The current render context data.
      */
     virtual void DrawInitialImage(const std::shared_ptr<Renderer::Texture>& image,
-                                  const Renderer::RenderContext& renderContext) {};
+                                  const Renderer::RenderContext& renderContext) = 0;
 
     inline void SetFilename(const std::string& filename)
     {

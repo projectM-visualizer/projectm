@@ -34,9 +34,9 @@ public:
 
     int PresetFrameB();
 
-    int PresetTimeA();
+    double PresetTimeA();
 
-    int PresetTimeB();
+    double PresetTimeB();
 
     double sampledPresetDuration();
 

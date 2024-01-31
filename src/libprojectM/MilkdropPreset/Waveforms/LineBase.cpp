@@ -23,7 +23,7 @@ void LineBase::ClipWaveformEdges(const float angle)
     {
         for (int j = 0; j < 4; j++)
         {
-            float t;
+            float t{0.0};
             bool clip{false};
 
             switch (j)

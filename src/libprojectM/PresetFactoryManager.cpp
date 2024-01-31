@@ -77,7 +77,7 @@ std::unique_ptr<Preset> PresetFactoryManager::CreatePresetFromFile(const std::st
 
         return factory(extension).LoadPresetFromFile(filename);
     }
-    catch (const PresetFactoryException& e)
+    catch (const PresetFactoryException&)
     {
         throw;
     }
@@ -97,7 +97,7 @@ std::unique_ptr<Preset> PresetFactoryManager::CreatePresetFromStream(const std::
     {
         return factory(extension).LoadPresetFromStream(data);
     }
-    catch (const PresetFactoryException& e)
+    catch (const PresetFactoryException&)
     {
         throw;
     }

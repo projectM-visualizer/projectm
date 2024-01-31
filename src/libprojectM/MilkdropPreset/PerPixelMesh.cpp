@@ -69,6 +69,8 @@ void PerPixelMesh::LoadWarpShader(const PresetState& presetState)
             {
 #ifdef MILKDROP_PRESET_DEBUG
                 std::cerr << "[Warp Shader] Error loading warp shader code:" << ex.message() << std::endl;
+#else
+                (void)ex; // silence unused parameter warning
 #endif
                 m_warpShader.reset();
             }
@@ -91,6 +93,8 @@ void PerPixelMesh::CompileWarpShader(PresetState& presetState)
         {
 #ifdef MILKDROP_PRESET_DEBUG
             std::cerr << "[Warp Shader] Error compiling warp shader code:" << ex.message() << std::endl;
+#else
+            (void)ex; // silence unused parameter warning
 #endif
             m_warpShader.reset();
         }
@@ -353,7 +357,7 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
     glBindVertexArray(m_vaoID);
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
-    int trianglesPerBatch = m_drawVertices.size() / 3 - 4;
+    int trianglesPerBatch = static_cast<int>(m_drawVertices.size() / 3 - 4);
     int triangleCount = m_gridSizeX * m_gridSizeY * 2; // Two triangles per quad/grid cell.
     int sourceIndex = 0;
 

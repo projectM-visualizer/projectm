@@ -564,9 +564,9 @@ TEST(projectMPlaylistAPI, SetPresetSwitchedCallback)
 {
     PlaylistCWrapperMock mockPlaylist;
 
-    projectm_playlist_preset_switched_event dummyCallback = [](bool is_hard_cut,
-                                                               uint32_t index,
-                                                               void* user_data) {};
+    projectm_playlist_preset_switched_event dummyCallback = [](bool,
+                                                               uint32_t,
+                                                               void*) {};
     void* dummyData{reinterpret_cast<void*>(2973246)};
 
     EXPECT_CALL(mockPlaylist, SetPresetSwitchedCallback(dummyCallback, dummyData))
@@ -580,9 +580,9 @@ TEST(projectMPlaylistAPI, SetPresetSwitchFailedCallback)
 {
     PlaylistCWrapperMock mockPlaylist;
 
-    projectm_playlist_preset_switch_failed_event dummyCallback = [](const char* preset_filename,
-                                                                    const char* message,
-                                                                    void* user_data) {};
+    projectm_playlist_preset_switch_failed_event dummyCallback = [](const char*,
+                                                                    const char*,
+                                                                    void*) {};
     void* dummyData{reinterpret_cast<void*>(348564)};
 
     EXPECT_CALL(mockPlaylist, SetPresetSwitchFailedCallback(dummyCallback, dummyData))

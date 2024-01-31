@@ -4,7 +4,7 @@ namespace libprojectM {
 namespace MilkdropPreset {
 namespace Waveforms {
 
-void CenteredSpiro::GenerateVertices(const PresetState& presetState, const PerFrameContext& presetPerFrameContext)
+void CenteredSpiro::GenerateVertices(const PresetState&, const PerFrameContext&)
 {
     // Alpha calculation is handled in MaximizeColors().
     m_samples = Audio::WaveformSamples;

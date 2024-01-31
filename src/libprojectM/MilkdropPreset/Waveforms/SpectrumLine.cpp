@@ -11,7 +11,7 @@ bool SpectrumLine::IsSpectrumWave()
     return true;
 }
 
-void SpectrumLine::GenerateVertices(const PresetState& presetState, const PerFrameContext& presetPerFrameContext)
+void SpectrumLine::GenerateVertices(const PresetState&, const PerFrameContext&)
 {
     m_samples = 256;
     m_wave1Vertices.resize(m_samples);

@@ -45,7 +45,7 @@ void PCM::Add(uint8_t const* const samples, uint32_t channels, size_t const coun
 }
 void PCM::Add(int16_t const* const samples, uint32_t channels, size_t const count)
 {
-    AddToBuffer<0, 32768>(samples, channels, count);
+    AddToBuffer<32768, 0>(samples, channels, count);
 }
 
 void PCM::UpdateFrameAudioData(double secondsSinceLastFrame, uint32_t frame)

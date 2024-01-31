@@ -14,7 +14,7 @@ bool Milkdrop2077WaveStar::IsLoop()
 }
 
 void Milkdrop2077WaveStar::GenerateVertices(const PresetState& presetState,
-                                            const PerFrameContext& presetPerFrameContext)
+                                            const PerFrameContext&)
 {
     m_samples = Audio::WaveformSamples / 2;
 

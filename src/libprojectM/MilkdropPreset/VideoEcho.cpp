@@ -158,7 +158,7 @@ void VideoEcho::DrawVideoEcho()
         }
 
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(sizeof(TexturedPoint) * m_vertices.size()), m_vertices.data(), GL_DYNAMIC_DRAW);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, m_vertices.size());
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, static_cast<GLsizei>(m_vertices.size()));
 
         if (pass == 0)
         {

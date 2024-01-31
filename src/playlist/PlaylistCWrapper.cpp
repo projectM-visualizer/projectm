@@ -111,7 +111,7 @@ void PlaylistCWrapper::SetPresetSwitchFailedCallback(projectm_playlist_preset_sw
 }
 
 
-void PlaylistCWrapper::PlayPresetIndex(size_t index, bool hardCut, bool resetFailureCount)
+void PlaylistCWrapper::PlayPresetIndex(uint32_t index, bool hardCut, bool resetFailureCount)
 {
     if (resetFailureCount)
     {

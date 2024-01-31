@@ -49,6 +49,8 @@ void FinalComposite::LoadCompositeShader(const PresetState& presetState)
 #ifdef MILKDROP_PRESET_DEBUG
                 std::cerr << "[Composite Shader] Error loading composite warp shader code:" << ex.message() << std::endl;
                 std::cerr << "[Composite Shader] Using fallback shader." << std::endl;
+#else
+                (void)ex; // silence unused parameter warning
 #endif
                 // Fall back to default shader
                 m_compositeShader = std::make_unique<MilkdropShader>(MilkdropShader::ShaderType::CompositeShader);
@@ -93,6 +95,8 @@ void FinalComposite::CompileCompositeShader(PresetState& presetState)
 #ifdef MILKDROP_PRESET_DEBUG
             std::cerr << "[Composite Shader] Error compiling composite warp shader code:" << ex.message() << std::endl;
             std::cerr << "[Composite Shader] Using fallback shader." << std::endl;
+#else
+                (void)ex; // silence unused parameter warning
 #endif
             // Fall back to default shader
             m_compositeShader = std::make_unique<MilkdropShader>(MilkdropShader::ShaderType::CompositeShader);

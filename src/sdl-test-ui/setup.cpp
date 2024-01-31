@@ -205,8 +205,8 @@ projectMSDL *setupSDLApp() {
         ConfigFile config(configFilePath);
         auto* projectMHandle = app->projectM();
 
-        projectm_set_mesh_size(projectMHandle, config.read<size_t>("Mesh X", 32), config.read<size_t>("Mesh Y", 24));
-        SDL_SetWindowSize(win, config.read<size_t>("Window Width", 1024), config.read<size_t>("Window Height", 768));
+        projectm_set_mesh_size(projectMHandle, config.read<uint32_t>("Mesh X", 32), config.read<uint32_t>("Mesh Y", 24));
+        SDL_SetWindowSize(win, config.read<uint32_t>("Window Width", 1024), config.read<uint32_t>("Window Height", 768));
         projectm_set_soft_cut_duration(projectMHandle, config.read<double>("Smooth Preset Duration", config.read<int>("Smooth Transition Duration", 3)));
         projectm_set_preset_duration(projectMHandle, config.read<double>("Preset Duration", 30));
         projectm_set_easter_egg(projectMHandle, config.read<float>("Easter Egg Parameter", 0.0));
@@ -217,7 +217,7 @@ projectMSDL *setupSDLApp() {
         projectm_set_aspect_correction(projectMHandle, config.read<bool>("Aspect Correction", true));
         projectm_set_fps(projectMHandle, config.read<int32_t>("FPS", 60));
 
-        app->setFps(config.read<size_t>("FPS", 60));
+        app->setFps(config.read<uint32_t>("FPS", 60));
     }
 
     // center window and full desktop screen

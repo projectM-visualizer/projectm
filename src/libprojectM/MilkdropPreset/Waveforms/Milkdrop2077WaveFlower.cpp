@@ -14,7 +14,7 @@ bool Milkdrop2077WaveFlower::IsLoop()
 }
 
 void Milkdrop2077WaveFlower::GenerateVertices(const PresetState& presetState,
-                                              const PerFrameContext& presetPerFrameContext)
+                                              const PerFrameContext&)
 {
     m_samples = Audio::WaveformSamples / 2;
 

@@ -27,7 +27,7 @@ public:
      */
     virtual void Connect(projectm_handle projectMInstance);
 
-    virtual void PlayPresetIndex(size_t index, bool hardCut, bool resetFailureCount);
+    virtual void PlayPresetIndex(uint32_t index, bool hardCut, bool resetFailureCount);
 
     /**
      * @brief Callback executed by projectM if a preset switch should be done.

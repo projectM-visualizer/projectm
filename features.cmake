@@ -15,6 +15,8 @@ add_compile_definitions(
 
 if(NOT MSVC)
     enable_cflags_if_supported(
+            -Wpedantic
+            -Wextra
             -Wall
             -Wchar-subscripts
             -Wformat-security
