@@ -29,7 +29,7 @@ MilkdropNoise::~MilkdropNoise()
 
 void MilkdropNoise::generate2D(int size, int zoomFactor, uint32_t** textureData)
 {
-    auto randomSeed = std::chrono::system_clock::now().time_since_epoch().count();
+    uint32_t randomSeed = static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count());
     std::default_random_engine randomGenerator(randomSeed);
     std::uniform_int_distribution<int> randomDistribution(0, INT32_MAX);
 
@@ -114,7 +114,7 @@ void MilkdropNoise::generate2D(int size, int zoomFactor, uint32_t** textureData)
 
 void MilkdropNoise::generate3D(int size, int zoomFactor, uint32_t** textureData)
 {
-    auto randomSeed = std::chrono::system_clock::now().time_since_epoch().count();
+    uint32_t randomSeed = static_cast<uint32_t>(std::chrono::system_clock::now().time_since_epoch().count());
     std::default_random_engine randomGenerator(randomSeed);
     std::uniform_int_distribution<int> randomDistribution(0, INT32_MAX);
 

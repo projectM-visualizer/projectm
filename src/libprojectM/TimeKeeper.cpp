@@ -95,12 +95,12 @@ int TimeKeeper::PresetFrameA()
     return m_presetFrameA;
 }
 
-int TimeKeeper::PresetTimeB()
+double TimeKeeper::PresetTimeB()
 {
     return m_presetTimeB;
 }
 
-int TimeKeeper::PresetTimeA()
+double TimeKeeper::PresetTimeA()
 {
     return m_presetTimeA;
 }

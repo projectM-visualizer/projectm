@@ -110,7 +110,7 @@ public:
      */
     void LoadPresetData(std::istream& presetData, bool smoothTransition);
 
-    void ResetOpenGL(size_t width, size_t height);
+    void SetWindowSize(uint32_t width, uint32_t height);
 
     /**
      * @brief Sets the texture paths used to find images for presets.
@@ -174,9 +174,9 @@ public:
 
     void SetEasterEgg(float value);
 
-    void MeshSize(size_t& meshResolutionX, size_t& meshResolutionY) const;
+    void MeshSize(uint32_t& meshResolutionX, uint32_t& meshResolutionY) const;
 
-    void SetMeshSize(size_t meshResolutionX, size_t meshResolutionY);
+    void SetMeshSize(uint32_t meshResolutionX, uint32_t meshResolutionY);
 
     void Touch(float touchX, float touchY, int pressure, int touchType);
 
@@ -198,13 +198,6 @@ public:
 
     auto WindowHeight() -> int;
 
-    /**
-     * @brief Dumps a debug image to the working dir when the next frame is rendered.
-     *
-     * The main texture is dumped after render pass 1, e.g. before shaders are applied.
-     */
-    void DumpDebugImageOnNextFrame(const std::string& outputFile);
-
 private:
     void Initialize();
 
@@ -221,11 +214,11 @@ private:
 #endif
 
 
-    size_t m_meshX{32};              //!< Per-point mesh horizontal resolution.
-    size_t m_meshY{24};              //!< Per-point mesh vertical resolution.
-    size_t m_targetFps{35};          //!< Target frames per second.
-    int m_windowWidth{0};            //!< EvaluateFrameData window width. If 0, nothing is rendered.
-    int m_windowHeight{0};           //!< EvaluateFrameData window height. If 0, nothing is rendered.
+    uint32_t m_meshX{32};              //!< Per-point mesh horizontal resolution.
+    uint32_t m_meshY{24};              //!< Per-point mesh vertical resolution.
+    uint32_t m_targetFps{35};          //!< Target frames per second.
+    uint32_t m_windowWidth{0};            //!< EvaluateFrameData window width. If 0, nothing is rendered.
+    uint32_t m_windowHeight{0};           //!< EvaluateFrameData window height. If 0, nothing is rendered.
     double m_presetDuration{30.0};   //!< Preset duration in seconds.
     double m_softCutDuration{3.0};   //!< Soft cut transition time.
     double m_hardCutDuration{20.0};  //!< Time after which a hard cut can happen at the earliest.

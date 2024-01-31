@@ -55,7 +55,7 @@ ProjectM::~ProjectM()
 #endif
 }
 
-void ProjectM::PresetSwitchRequestedEvent(bool isHardCut) const
+void ProjectM::PresetSwitchRequestedEvent(bool) const
 {
 }
 
@@ -111,10 +111,6 @@ void ProjectM::SetTexturePaths(std::vector<std::string> texturePaths)
 void ProjectM::ResetTextures()
 {
     m_textureManager = std::make_unique<Renderer::TextureManager>(m_textureSearchPaths);
-}
-
-void ProjectM::DumpDebugImageOnNextFrame(const std::string& outputFile)
-{
 }
 
 #if PROJECTM_USE_THREADS
@@ -274,8 +270,7 @@ void ProjectM::LoadIdlePreset()
     assert(m_activePreset);
 }
 
-/** Resets OpenGL state */
-void ProjectM::ResetOpenGL(size_t width, size_t height)
+void ProjectM::SetWindowSize(uint32_t width, uint32_t height)
 {
     /** Stash the new dimensions */
     m_windowWidth = width;
@@ -438,13 +433,13 @@ void ProjectM::SetEasterEgg(float value)
     m_timeKeeper->ChangeEasterEgg(value);
 }
 
-void ProjectM::MeshSize(size_t& meshResolutionX, size_t& meshResolutionY) const
+void ProjectM::MeshSize(uint32_t& meshResolutionX, uint32_t& meshResolutionY) const
 {
     meshResolutionX = m_meshX;
     meshResolutionY = m_meshY;
 }
 
-void ProjectM::SetMeshSize(size_t meshResolutionX, size_t meshResolutionY)
+void ProjectM::SetMeshSize(uint32_t meshResolutionX, uint32_t meshResolutionY)
 {
     m_meshX = meshResolutionX;
     m_meshY = meshResolutionY;
@@ -461,8 +456,8 @@ void ProjectM::SetMeshSize(size_t meshResolutionX, size_t meshResolutionY)
     }
 
     // Constrain per-pixel mesh size to sensible limits
-    m_meshX = std::max(static_cast<size_t>(8), std::min(static_cast<size_t>(400), m_meshX));
-    m_meshY = std::max(static_cast<size_t>(8), std::min(static_cast<size_t>(400), m_meshY));
+    m_meshX = std::max(8u, std::min(400u, m_meshX));
+    m_meshY = std::max(8u, std::min(400u, m_meshY));
 }
 
 auto ProjectM::PCM() -> libprojectM::Audio::PCM&
@@ -470,20 +465,24 @@ auto ProjectM::PCM() -> libprojectM::Audio::PCM&
     return m_audioStorage;
 }
 
-void ProjectM::Touch(float touchX, float touchY, int pressure, int touchType)
+void ProjectM::Touch(float, float, int, int)
 {
+    // UNIMPLEMENTED
 }
 
-void ProjectM::TouchDrag(float touchX, float touchY, int pressure)
+void ProjectM::TouchDrag(float, float, int)
 {
+    // UNIMPLEMENTED
 }
 
-void ProjectM::TouchDestroy(float touchX, float touchY)
+void ProjectM::TouchDestroy(float, float)
 {
+    // UNIMPLEMENTED
 }
 
 void ProjectM::TouchDestroyAll()
 {
+    // UNIMPLEMENTED
 }
 
 auto ProjectM::GetRenderContext() -> Renderer::RenderContext

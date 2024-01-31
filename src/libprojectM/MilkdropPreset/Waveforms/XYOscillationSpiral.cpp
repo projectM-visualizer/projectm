@@ -17,7 +17,7 @@ auto XYOscillationSpiral::UsesNormalizedMysteryParam() -> bool
 }
 
 void XYOscillationSpiral::GenerateVertices(const PresetState& presetState,
-                                           const PerFrameContext& presetPerFrameContext)
+                                           const PerFrameContext&)
 {
     m_samples = Audio::WaveformSamples / 2;
 

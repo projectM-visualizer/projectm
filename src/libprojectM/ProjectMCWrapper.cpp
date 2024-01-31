@@ -48,7 +48,7 @@ char* projectm_alloc_string(unsigned int length)
 
 char* projectm_alloc_string_from_std_string(const std::string& str)
 {
-    auto pointer = projectm_alloc_string(str.length() + 1);
+    auto pointer = projectm_alloc_string(static_cast<uint32_t>(str.length() + 1));
     if (pointer)
     {
         memcpy(pointer, str.c_str(), str.length());
@@ -152,7 +152,7 @@ void projectm_get_version_components(int* major, int* minor, int* patch)
 char* projectm_get_version_string()
 {
     auto versionLength = strlen(PROJECTM_VERSION_STRING);
-    auto buffer = projectm_alloc_string(versionLength + 1);
+    auto buffer = projectm_alloc_string(static_cast<uint32_t>(versionLength + 1));
     strncpy(buffer, PROJECTM_VERSION_STRING, versionLength + 1);
     return buffer;
 }
@@ -160,7 +160,7 @@ char* projectm_get_version_string()
 char* projectm_get_vcs_version_string()
 {
     auto versionLength = strlen(PROJECTM_VERSION_VCS);
-    auto buffer = projectm_alloc_string(versionLength + 1);
+    auto buffer = projectm_alloc_string(static_cast<uint32_t>(versionLength + 1));
     strncpy(buffer, PROJECTM_VERSION_VCS, versionLength + 1);
     return buffer;
 }
@@ -245,14 +245,17 @@ void projectm_set_preset_duration(projectm_handle instance, double seconds)
 
 void projectm_get_mesh_size(projectm_handle instance, size_t* width, size_t* height)
 {
+    uint32_t w, h;
     auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->MeshSize(*width, *height);
+    projectMInstance->MeshSize(w, h);
+    *width = static_cast<size_t>(w);
+    *height = static_cast<size_t>(h);
 }
 
 void projectm_set_mesh_size(projectm_handle instance, size_t width, size_t height)
 {
     auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->SetMeshSize(width, height);
+    projectMInstance->SetMeshSize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
 }
 
 int32_t projectm_get_fps(projectm_handle instance)
@@ -330,14 +333,14 @@ void projectm_set_preset_locked(projectm_handle instance, bool lock)
 void projectm_get_window_size(projectm_handle instance, size_t* width, size_t* height)
 {
     auto projectMInstance = handle_to_instance(instance);
-    *width = projectMInstance->WindowWidth();
-    *height = projectMInstance->WindowHeight();
+    *width = static_cast<size_t>(projectMInstance->WindowWidth());
+    *height = static_cast<size_t>(projectMInstance->WindowHeight());
 }
 
 void projectm_set_window_size(projectm_handle instance, size_t width, size_t height)
 {
     auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->ResetOpenGL(width, height);
+    projectMInstance->SetWindowSize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
 }
 
 unsigned int projectm_pcm_get_max_samples()
@@ -368,15 +371,7 @@ auto projectm_pcm_add_uint8(projectm_handle instance, const uint8_t* samples, un
     PcmAdd(instance, samples, count, channels);
 }
 
-auto projectm_write_debug_image_on_next_frame(projectm_handle instance, const char* output_file) -> void
+auto projectm_write_debug_image_on_next_frame(projectm_handle, const char*) -> void
 {
-    auto* projectMInstance = handle_to_instance(instance);
-
-    std::string outputFile;
-    if (output_file)
-    {
-        outputFile = output_file;
-    }
-
-    projectMInstance->DumpDebugImageOnNextFrame(outputFile);
+    // UNIMPLEMENTED
 }

@@ -296,7 +296,7 @@ void MilkdropShader::LoadVariables(const PresetState& presetState, const PerFram
     for (int i = 0; i < QVarCount; i += 4)
     {
         std::string varName = "_q";
-        varName.push_back('a' + i / 4);
+        varName.push_back(static_cast<char>('a' + i / 4));
         m_shader.SetUniformFloat4(varName.c_str(), {presetState.frameQVariables[i],
                                                     presetState.frameQVariables[i + 1],
                                                     presetState.frameQVariables[i + 2],

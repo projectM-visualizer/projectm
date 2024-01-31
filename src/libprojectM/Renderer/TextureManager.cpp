@@ -29,7 +29,7 @@ TextureManager::TextureManager(const std::vector<std::string>& textureSearchPath
     Preload();
 }
 
-void TextureManager::SetCurrentPresetPath(const std::string& path)
+void TextureManager::SetCurrentPresetPath(const std::string&)
 {
 }
 

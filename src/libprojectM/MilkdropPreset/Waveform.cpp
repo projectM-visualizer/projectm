@@ -119,7 +119,7 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
             }
 
             glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * smoothedWave.size(), smoothedWave.data(), GL_DYNAMIC_DRAW);
-            glDrawArrays(drawType, 0, smoothedWave.size());
+            glDrawArrays(drawType, 0, static_cast<GLsizei>(smoothedWave.size()));
         }
     }
 

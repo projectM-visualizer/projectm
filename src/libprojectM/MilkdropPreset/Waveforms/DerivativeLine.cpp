@@ -13,7 +13,7 @@ bool DerivativeLine::UsesNormalizedMysteryParam()
     return true;
 }
 
-void DerivativeLine::GenerateVertices(const PresetState& presetState, const PerFrameContext& presetPerFrameContext)
+void DerivativeLine::GenerateVertices(const PresetState& presetState, const PerFrameContext&)
 {
     m_samples = Audio::WaveformSamples;
 

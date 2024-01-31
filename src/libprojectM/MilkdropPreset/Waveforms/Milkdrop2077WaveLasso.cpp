@@ -9,7 +9,7 @@ namespace MilkdropPreset {
 namespace Waveforms {
 
 void Milkdrop2077WaveLasso::GenerateVertices(const PresetState& presetState,
-                                             const PerFrameContext& presetPerFrameContext)
+                                             const PerFrameContext&)
 {
     m_samples = Audio::WaveformSamples / 2;
 

@@ -19,7 +19,7 @@ auto Circle::UsesNormalizedMysteryParam() -> bool
 }
 
 void Circle::GenerateVertices(const PresetState& presetState,
-                              const PerFrameContext& presetPerFrameContext)
+                              const PerFrameContext&)
 {
     m_samples = Audio::WaveformSamples / 2;
 

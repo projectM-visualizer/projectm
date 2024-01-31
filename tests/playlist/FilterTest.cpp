@@ -54,6 +54,19 @@ TEST(projectMPlaylistFilter, SingleCharacterExclude)
 }
 
 
+TEST(projectMPlaylistFilter, SingleCharacterExcludeMultipleTimes)
+{
+    Filter filter;
+
+    filter.SetList({"-/path/to/T??tS???ng.milk"});
+
+    EXPECT_FALSE(filter.Passes("/path/to/TestString.milk"));
+    EXPECT_FALSE(filter.Passes("/path/to/TestStrung.milk"));
+    EXPECT_TRUE(filter.Passes("/path/to/TestStr/ng.milk"));
+    EXPECT_TRUE(filter.Passes("/path/to/Teststring.milk"));
+}
+
+
 TEST(projectMPlaylistFilter, MultiCharacterExclude)
 {
     Filter filter;

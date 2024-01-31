@@ -177,7 +177,7 @@ public:
      * @throws PlaylistEmptyException Thrown if the playlist is currently empty.
      * @return The index of the next playlist item to be played.
      */
-    virtual auto NextPresetIndex() -> size_t;
+    virtual auto NextPresetIndex() -> uint32_t;
 
     /**
      * @brief Returns the previous preset index in the playlist.
@@ -188,7 +188,7 @@ public:
      * @throws PlaylistEmptyException Thrown if the playlist is currently empty.
      * @return The index of the previous playlist item.
      */
-    virtual auto PreviousPresetIndex() -> size_t;
+    virtual auto PreviousPresetIndex() -> uint32_t;
 
     /**
      * @brief Returns the last preset index that has been played.
@@ -199,14 +199,14 @@ public:
      * @throws PlaylistEmptyException Thrown if the playlist is currently empty.
      * @return The index of the last (or previous) playlist item.
      */
-    virtual auto LastPresetIndex() -> size_t;
+    virtual auto LastPresetIndex() -> uint32_t;
 
     /**
      * @brief Returns the current playlist/preset index without changing the position.
      * @throws PlaylistEmptyException Thrown if the playlist is currently empty.
      * @return The current preset index being played.
      */
-    virtual auto PresetIndex() const -> size_t;
+    virtual auto PresetIndex() const -> uint32_t;
 
     /**
      * @brief Sets the playlist/preset index to the given value and returns the new index.
@@ -218,7 +218,7 @@ public:
      * @param presetIndex The new preset index to switch to.
      * @return The newly set preset index, either presetIndex or 0 if out of bounds.
      */
-    virtual auto SetPresetIndex(size_t presetIndex) -> size_t;
+    virtual auto SetPresetIndex(uint32_t presetIndex) -> uint32_t;
 
     /**
      * @brief Removes the newest entry in the playback history.
@@ -239,7 +239,7 @@ public:
      *
      * @return The number of filtered (removed) items.
      */
-    virtual auto ApplyFilter() -> size_t;
+    virtual auto ApplyFilter() -> uint32_t;
 
 private:
     /**
@@ -250,8 +250,8 @@ private:
     std::vector<Item> m_items;         //!< All items in the current playlist.
     class Filter m_filter;             //!< Item filter.
     bool m_shuffle{false};             //!< True if shuffle mode is enabled, false to play presets in order.
-    size_t m_currentPosition{0};       //!< Current playlist position.
-    std::list<size_t> m_presetHistory; //!< The playback history.
+    uint32_t m_currentPosition{0};       //!< Current playlist position.
+    std::list<uint32_t> m_presetHistory; //!< The playback history.
 
     std::default_random_engine m_randomGenerator;
 };

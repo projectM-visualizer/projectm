@@ -200,10 +200,11 @@ else()
     set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 endif()
 
+add_subdirectory(vendor)
+
 include(features.cmake)
 
 add_subdirectory(presets)
-add_subdirectory(vendor)
 add_subdirectory(src)
 
 if(BUILD_TESTING)

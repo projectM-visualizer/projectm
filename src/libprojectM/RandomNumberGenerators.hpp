@@ -10,35 +10,34 @@
 namespace libprojectM {
 namespace RandomNumberGenerators {
 
-inline double uniform()
 /* Uniform random number generator x(n+1)= a*x(n) mod c
 				with a = pow(7,5) and c = pow(2,31)-1.
 				Copyright (c) Tao Pang 1997. */
+inline double uniform()
+{
+	const int ia=16807,ic=2147483647,iq=127773,ir=2836;
+	int il,ih,it;
+	double rc;
+	static int iseed = rand();
+	ih = iseed/iq;
+	il = iseed%iq;
+	it = ia*il-ir*ih;
+	if (it > 0)
 	{
-		const int ia=16807,ic=2147483647,iq=127773,ir=2836;
-		int il,ih,it;
-		double rc;
-		static int iseed = rand();
-		ih = iseed/iq;
-		il = iseed%iq;
-		it = ia*il-ir*ih;
-		if (it > 0)
-		{
-			iseed = it;
-		}
-		else
-		{
-			iseed = ic+it;
-		}
-		rc = ic;
-		return iseed/rc;
+		iseed = it;
 	}
+	else
+	{
+		iseed = ic+it;
+	}
+	rc = ic;
+	return iseed/rc;
+}
 
 inline double gaussian(double mean, double sigma)
 {
-
     double x1, x2, w, y1;
- 
+
 	do {
 		x1 = 2.0 * uniform() - 1.0;
 		x2 = 2.0 * uniform() - 1.0;
@@ -53,31 +52,27 @@ inline double gaussian(double mean, double sigma)
 	return ret;
 }
 
-inline std::size_t uniformInteger(std::size_t upperBound=1) {
-
-	
+inline uint32_t uniformInteger(uint32_t upperBound=1)
+{
 	/// @bug there was a man entry about how this leads to a lousy uniform
 	/// @bug distribution in practice. should probably review
 	assert(upperBound > 0);
-	return ((rand()) % ((int)upperBound));
+	return (rand() % upperBound);
 }
-
-	
-	
 
 /// Randomizes from probabilistically weighted distribution. Thus,
 /// sum of passed in weights should be 1.0
-inline std::size_t weightedRandomNormalized(std::vector<float> weights) {
-
-        // Choose a random bounded mass between 0 and 1
-	float cutoff = ((float)(rand())) / (float)RAND_MAX;
+inline uint32_t weightedRandomNormalized(std::vector<float> weights)
+{
+    // Choose a random bounded mass between 0 and 1
+	float cutoff = (float)rand() / (float)RAND_MAX;
 
 	//std::cout << "cutoff : " << cutoff << std::endl;
 
-    // Sum up mass, stopping when cutoff is reached. This is the typical
-    // weighted sampling algorithm.
+	// Sum up mass, stopping when cutoff is reached. This is the typical
+	// weighted sampling algorithm.
 	float mass = 0;
-	for (std::size_t i = 0; i< weights.size() ; i++) {
+	for (uint32_t i = 0; i < weights.size() ; i++) {
 		mass += weights[i];
 		//std::cout << "mass: " << mass << std::endl;
 		if (mass >= cutoff)
@@ -85,37 +80,36 @@ inline std::size_t weightedRandomNormalized(std::vector<float> weights) {
 	}
 
     // Just in case something slips through the cracks
-	return weights.size()-1;
+	return static_cast<uint32_t>(weights.size()-1);
 }
 
-inline std::size_t weightedRandom(const std::vector<int> & weights, unsigned int weightTotalHint = 0) {
-	
-
-	if (weightTotalHint == 0)	{		
-		for (std::size_t i = 0; i < weights.size();i++) 
+inline uint32_t weightedRandom(const std::vector<int> & weights, unsigned int weightTotalHint = 0)
+{
+	if (weightTotalHint == 0) {
+		for (uint32_t i = 0; i < weights.size();i++)
 			weightTotalHint += weights[i];
 	}
-	
-	const int sampledSum = uniformInteger(weightTotalHint);
-	int sum = 0;
-	if (WEIGHTED_RANDOM_DEBUG) std::cout << "[RNG::weightedRandom()] weightTotal = " << weightTotalHint <<
-			 std::endl; 
 
-	for (std::size_t i = 0; i < weights.size();i++) {
-		if (WEIGHTED_RANDOM_DEBUG) 
+	const uint32_t sampledSum = uniformInteger(weightTotalHint);
+	uint32_t sum = 0;
+	if (WEIGHTED_RANDOM_DEBUG) std::cout << "[RNG::weightedRandom()] weightTotal = " << weightTotalHint <<
+			 std::endl;
+
+	for (uint32_t i = 0; i < weights.size();i++) {
+		if (WEIGHTED_RANDOM_DEBUG)
 		std::cout << "[RNG::weightedRandom()] weight[" << i << "] = " << weights[i] <<
-			 std::endl; 
+			 std::endl;
 
 		sum += weights[i];
 		if (sampledSum <= sum) {
-			if (WEIGHTED_RANDOM_DEBUG) 
+			if (WEIGHTED_RANDOM_DEBUG)
 			std::cout << "[RNG::weightedRandom()] sampled index " << i << "(" <<
 			 "running sum = " << sum << ", sampled sum = " << sampledSum << std::endl;
 			return i;
 		}
 	}
 
-	return weights.size()-1;
+	return static_cast<uint32_t>(weights.size()-1);
 }
 
 } // namespace RandomNumberGenerators

@@ -85,7 +85,7 @@ void PresetState::Initialize(PresetFileParser& parsedFile)
     mvR = parsedFile.GetFloat("mv_r", mvR);
     mvG = parsedFile.GetFloat("mv_g", mvG);
     mvB = parsedFile.GetFloat("mv_b", mvB);
-    mvA = parsedFile.GetBool("bMotionVectorsOn", false) ? 1.0 : 0.0; // for backwards compatibility
+    mvA = parsedFile.GetBool("bMotionVectorsOn", false) ? 1.0f : 0.0f; // for backwards compatibility
     mvA = parsedFile.GetFloat("mv_a", mvA);
 
     // Motion:
