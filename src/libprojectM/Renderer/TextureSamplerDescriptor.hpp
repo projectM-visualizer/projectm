@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Texture.hpp"
-#include "Sampler.hpp"
-#include "Shader.hpp"
+#include "Renderer/Shader.hpp"
 
 namespace libprojectM {
 namespace Renderer {

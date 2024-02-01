@@ -6,8 +6,6 @@
 
 namespace libprojectM {
 
-const std::string PresetFactory::IDLE_PRESET_PROTOCOL("idle");
-
 std::string PresetFactory::Protocol(const std::string& url, std::string& path)
 {
     auto pos = url.find("://");

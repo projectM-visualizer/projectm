@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include "Texture.hpp"
+#include "Renderer/Texture.hpp"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>

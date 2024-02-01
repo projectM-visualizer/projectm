@@ -17,8 +17,6 @@
 
 #include <projectm-eval.h>
 
-#include <glm/gtc/matrix_transform.hpp>
-
 #include <string>
 
 namespace libprojectM {

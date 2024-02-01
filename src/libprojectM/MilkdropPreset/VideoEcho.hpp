@@ -3,7 +3,7 @@
 #include "PerFrameContext.hpp"
 #include "PresetState.hpp"
 
-#include "projectM-opengl.h"
+#include <projectM-opengl.h>
 
 #include <Renderer/RenderItem.hpp>
 

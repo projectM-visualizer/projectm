@@ -4,7 +4,7 @@
 #include "PresetState.hpp"
 #include "ShapePerFrameContext.hpp"
 
-#include "Renderer/RenderItem.hpp"
+#include <Renderer/RenderItem.hpp>
 
 #include <projectm-eval.h>
 

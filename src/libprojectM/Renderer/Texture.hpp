@@ -6,9 +6,7 @@
 
 #include "Renderer/Sampler.hpp"
 
-#include <memory>
 #include <string>
-#include <vector>
 
 namespace libprojectM {
 namespace Renderer {

@@ -1,5 +1,7 @@
 #include "IdlePreset.hpp"
+
 #include "MilkdropPreset.hpp"
+
 #include <sstream>
 #include <string>
 

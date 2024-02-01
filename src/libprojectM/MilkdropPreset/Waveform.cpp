@@ -5,9 +5,9 @@
 
 #include "Waveforms/Factory.hpp"
 
-#include "projectM-opengl.h"
+#include <projectM-opengl.h>
 
-#include "Audio/AudioConstants.hpp"
+#include <Audio/AudioConstants.hpp>
 
 #include <algorithm>
 #include <cmath>

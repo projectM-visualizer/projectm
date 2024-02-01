@@ -4,9 +4,7 @@
 */
 #pragma once
 
-#include "TextureAttachment.hpp"
-
-#include "projectM-opengl.h"
+#include "Renderer/TextureAttachment.hpp"
 
 #include <map>
 #include <vector>

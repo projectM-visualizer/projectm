@@ -1,6 +1,6 @@
 #include "MotionVectors.hpp"
 
-#include <MilkdropStaticShaders.hpp>
+#include "MilkdropStaticShaders.hpp"
 
 #include <Renderer/TextureManager.hpp>
 

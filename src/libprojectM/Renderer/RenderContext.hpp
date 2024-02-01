@@ -4,8 +4,6 @@
 */
 #pragma once
 
-#include "projectM-opengl.h"
-
 namespace libprojectM {
 namespace Renderer {
 

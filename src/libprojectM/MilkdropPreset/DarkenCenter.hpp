@@ -2,7 +2,7 @@
 
 #include "PresetState.hpp"
 
-#include "Renderer/RenderItem.hpp"
+#include <Renderer/RenderItem.hpp>
 
 namespace libprojectM {
 namespace MilkdropPreset {

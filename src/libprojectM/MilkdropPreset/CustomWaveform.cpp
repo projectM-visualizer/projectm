@@ -2,13 +2,7 @@
 
 #include "PerFrameContext.hpp"
 #include "PresetFileParser.hpp"
-#include "projectM-opengl.h"
 
-#include <glm/gtc/type_ptr.hpp>
-
-#ifdef _WIN32
-#include <functional>
-#endif /** _WIN32 */
 #include <algorithm>
 #include <cmath>
 

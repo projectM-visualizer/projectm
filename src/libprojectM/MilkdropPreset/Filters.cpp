@@ -1,7 +1,5 @@
 #include "Filters.hpp"
 
-#include "projectM-opengl.h"
-
 namespace libprojectM {
 namespace MilkdropPreset {
 

@@ -4,6 +4,10 @@
 
 #include <cstddef>
 
+#ifdef MILKDROP_PRESET_DEBUG
+#include <iostream>
+#endif
+
 namespace libprojectM {
 namespace MilkdropPreset {
 

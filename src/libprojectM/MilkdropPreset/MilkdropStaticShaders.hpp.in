@@ -1,8 +1,8 @@
 #pragma once
 
-#include "GLSLGenerator.h"
+#include <GLSLGenerator.h>
 
-#include "Renderer/Shader.hpp"
+#include <Renderer/Shader.hpp>
 
 #include <memory>
 

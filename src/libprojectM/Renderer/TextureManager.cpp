@@ -1,18 +1,20 @@
 #include "TextureManager.hpp"
 
+#include "FileScanner.hpp"
 #include "IdleTextures.hpp"
-
 #include "MilkdropNoise.hpp"
-
-#include "SOIL2/SOIL2.h"
-
 #include "Texture.hpp"
-#include "projectM-opengl.h"
+
+#include <SOIL2/SOIL2.h>
 
 #include <algorithm>
 #include <memory>
 #include <random>
 #include <vector>
+
+#ifdef DEBUG
+#include <iostream>
+#endif
 
 // Missing in macOS SDK. Query will most certainly fail, but then use the default format.
 #ifndef GL_TEXTURE_IMAGE_FORMAT

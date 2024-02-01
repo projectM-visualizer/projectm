@@ -137,7 +137,7 @@ if(ENABLE_INSTALL)
     else()
         # Set PROJECTM_STATIC_EXPORT for C++ implementations to use project default visibility
         # and no dllimport/dllexport.
-        set_source_files_properties(ProjectM.cpp Audio/PCM.cpp Audio/FrameAudioData.cpp PROPERTIES
+        set_source_files_properties(ProjectM.cpp Audio/PCM.cpp PROPERTIES
                 COMPILE_DEFINITIONS PROJECTM_STATIC_DEFINE
                 )
         target_compile_definitions(projectM
