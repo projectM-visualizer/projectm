@@ -12,9 +12,6 @@ if(NOT "@ENABLE_EMSCRIPTEN@") # ENABLE_EMSCRIPTEN
         find_dependency(OpenGL)
     endif()
 endif()
-if("@ENABLE_THREADING@") # ENABLE_THREADING
-     find_dependency(Threads)
-endif()
 if("@ENABLE_BOOST_FILESYSTEM@") # ENABLE_BOOST_FILESYSTEM
     find_dependency(Boost COMPONENTS Filesystem)
 endif()

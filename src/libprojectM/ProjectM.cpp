@@ -32,27 +32,17 @@
 #include "Renderer/TextureManager.hpp"
 #include "Renderer/TransitionShaderManager.hpp"
 
-#if PROJECTM_USE_THREADS
-#include "libprojectM/BackgroundWorker.hpp"
-#endif
-
 namespace libprojectM {
 
 ProjectM::ProjectM()
     : m_presetFactoryManager(std::make_unique<PresetFactoryManager>())
-#if PROJECTM_USE_THREADS
-    , m_workerSync(std::make_unique<BackgroundWorkerSync>())
-#endif
 {
     Initialize();
 }
 
 ProjectM::~ProjectM()
 {
-#if PROJECTM_USE_THREADS
-    m_workerSync->FinishUp();
-    m_workerThread.join();
-#endif
+    // Can't use "=default" in the header due to unique_ptr requiring the actual type declarations.
 }
 
 void ProjectM::PresetSwitchRequestedEvent(bool) const
@@ -113,22 +103,6 @@ void ProjectM::ResetTextures()
     m_textureManager = std::make_unique<Renderer::TextureManager>(m_textureSearchPaths);
 }
 
-#if PROJECTM_USE_THREADS
-
-void ProjectM::ThreadWorker()
-{
-    while (true)
-    {
-        if (!m_workerSync->WaitForWork())
-        {
-            return;
-        }
-        m_workerSync->FinishedWork();
-    }
-}
-
-#endif
-
 void ProjectM::RenderFrame()
 {
     // Don't render if window area is zero.
@@ -136,10 +110,6 @@ void ProjectM::RenderFrame()
     {
         return;
     }
-
-#if PROJECTM_USE_THREADS
-    std::lock_guard<std::recursive_mutex> guard(m_presetSwitchMutex);
-#endif
 
     // Update FPS and other timer values.
     m_timeKeeper->UpdateTimers();
@@ -181,12 +151,6 @@ void ProjectM::RenderFrame()
 
     if (m_timeKeeper->IsSmoothing() && m_transitioningPreset != nullptr)
     {
-#if PROJECTM_USE_THREADS
-        m_workerSync->WakeUpBackgroundTask();
-        // FIXME: Instead of waiting after a single render pass, check every frame if it's done.
-        m_workerSync->WaitForBackgroundTaskToFinish();
-#endif
-
         // ToDo: check if new preset is loaded.
 
         if (m_timeKeeper->SmoothRatio() >= 1.0)
@@ -255,11 +219,6 @@ void ProjectM::Initialize()
     srand(time(nullptr));
 
     LoadIdlePreset();
-
-#if PROJECTM_USE_THREADS
-    m_workerSync->Reset();
-    m_workerThread = std::thread(&ProjectM::ThreadWorker, this);
-#endif
 
     m_timeKeeper->StartPreset();
 }
