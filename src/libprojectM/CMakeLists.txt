@@ -21,7 +21,6 @@ add_library(projectM_main OBJECT
         ProjectM.hpp
         ProjectMCWrapper.cpp
         ProjectMCWrapper.hpp
-        RandomNumberGenerators.hpp
         TimeKeeper.cpp
         TimeKeeper.hpp
         projectM-opengl.h
