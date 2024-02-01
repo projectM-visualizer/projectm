@@ -1,11 +1,7 @@
 #pragma once
 
-#include "Renderer/FileScanner.hpp"
 #include "Renderer/TextureSamplerDescriptor.hpp"
 
-#include "projectM-opengl.h"
-
-#include <iostream>
 #include <map>
 #include <string>
 #include <vector>

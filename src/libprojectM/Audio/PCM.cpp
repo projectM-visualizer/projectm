@@ -1,7 +1,5 @@
 #include "PCM.hpp"
 
-#include <cassert>
-
 namespace libprojectM {
 namespace Audio {
 

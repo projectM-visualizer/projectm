@@ -1,7 +1,5 @@
 #include "VideoEcho.hpp"
 
-#include <glm/gtc/type_ptr.hpp>
-
 namespace libprojectM {
 namespace MilkdropPreset {
 

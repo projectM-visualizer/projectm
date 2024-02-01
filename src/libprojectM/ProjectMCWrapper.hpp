@@ -23,7 +23,7 @@
 
 #include "ProjectM.hpp"
 
-#include "projectM-4/projectM.h"
+#include <projectM-4/projectM.h>
 
 namespace libprojectM {
 

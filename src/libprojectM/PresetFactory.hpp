@@ -10,8 +10,6 @@ class PresetFactory
 {
 
 public:
-    static const std::string IDLE_PRESET_PROTOCOL; //!< The string "idle"
-
     PresetFactory() = default;
 
     virtual ~PresetFactory() = default;

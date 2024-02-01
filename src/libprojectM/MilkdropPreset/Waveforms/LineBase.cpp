@@ -1,5 +1,7 @@
 #include "LineBase.hpp"
 
+#include <Audio/AudioConstants.hpp>
+
 #include <cmath>
 
 namespace libprojectM {

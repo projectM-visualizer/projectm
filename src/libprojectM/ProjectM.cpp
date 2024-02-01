@@ -25,12 +25,12 @@
 #include "PresetFactoryManager.hpp"
 #include "TimeKeeper.hpp"
 
-#include "Audio/PCM.hpp" //Sound data handler (buffering, FFT, etc.)
+#include <Audio/PCM.hpp>
 
-#include "Renderer/CopyTexture.hpp"
-#include "Renderer/PresetTransition.hpp"
-#include "Renderer/TextureManager.hpp"
-#include "Renderer/TransitionShaderManager.hpp"
+#include <Renderer/CopyTexture.hpp>
+#include <Renderer/PresetTransition.hpp>
+#include <Renderer/TextureManager.hpp>
+#include <Renderer/TransitionShaderManager.hpp>
 
 namespace libprojectM {
 

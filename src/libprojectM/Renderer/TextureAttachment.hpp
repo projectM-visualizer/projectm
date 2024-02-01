@@ -4,9 +4,7 @@
  */
 #pragma once
 
-#include "Texture.hpp"
-
-#include "projectM-opengl.h"
+#include "Renderer/Texture.hpp"
 
 #include <memory>
 

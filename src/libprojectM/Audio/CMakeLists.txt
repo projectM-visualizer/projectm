@@ -3,7 +3,6 @@ add_library(Audio OBJECT
         AudioConstants.hpp
         MilkdropFFT.cpp
         MilkdropFFT.hpp
-        FrameAudioData.cpp
         FrameAudioData.hpp
         PCM.cpp
         PCM.hpp

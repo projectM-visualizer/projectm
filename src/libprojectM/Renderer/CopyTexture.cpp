@@ -3,7 +3,6 @@
 #include <array>
 #include <iostream>
 
-
 namespace libprojectM {
 namespace Renderer {
 

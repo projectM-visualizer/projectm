@@ -8,8 +8,9 @@
 #pragma once
 
 #include "BlurTexture.hpp"
-#include "Renderer/Shader.hpp"
-#include "Renderer/TextureManager.hpp"
+
+#include <Renderer/Shader.hpp>
+#include <Renderer/TextureManager.hpp>
 
 #include <array>
 #include <set>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RenderContext.hpp"
+#include <projectM-opengl.h>
 
 namespace libprojectM {
 namespace Renderer {

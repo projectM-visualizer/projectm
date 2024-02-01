@@ -1,5 +1,7 @@
 #include "CenteredSpiro.hpp"
 
+#include <Audio/AudioConstants.hpp>
+
 namespace libprojectM {
 namespace MilkdropPreset {
 namespace Waveforms {

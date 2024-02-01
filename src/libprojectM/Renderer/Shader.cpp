@@ -2,6 +2,8 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+#include <vector>
+
 namespace libprojectM {
 namespace Renderer {
 

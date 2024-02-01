@@ -1,10 +1,11 @@
 #pragma once
 
-#include "Audio/FrameAudioData.hpp"
+#include <Audio/FrameAudioData.hpp>
 
-#include "Renderer/RenderContext.hpp"
-#include "Renderer/Texture.hpp"
+#include <Renderer/RenderContext.hpp>
+#include <Renderer/Texture.hpp>
 
+#include <memory>
 #include <string>
 
 namespace libprojectM {
@@ -51,7 +52,7 @@ public:
         m_filename = filename;
     }
 
-    inline const std::string& Filename() const
+    inline auto Filename() const -> const std::string&
     {
         return m_filename;
     }

@@ -1,14 +1,3 @@
-//
-// C++ Implementation: PresetFactoryManager
-//
-// Description:
-//
-//
-// Author: Carmelo Piccione <carmelo.piccione@gmail.com>, (C) 2008
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
 #include "PresetFactoryManager.hpp"
 
 #include <MilkdropPreset/Factory.hpp>

@@ -1,14 +1,17 @@
 #include "PerPixelMesh.hpp"
 
 #include "MilkdropShader.hpp"
+#include "MilkdropStaticShaders.hpp"
 #include "PerFrameContext.hpp"
 #include "PerPixelContext.hpp"
 #include "PresetState.hpp"
 
-#include <MilkdropStaticShaders.hpp>
-
 #include <algorithm>
 #include <cmath>
+
+#ifdef MILKDROP_PRESET_DEBUG
+#include <iostream>
+#endif
 
 namespace libprojectM {
 namespace MilkdropPreset {

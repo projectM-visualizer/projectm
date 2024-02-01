@@ -1,15 +1,3 @@
-//
-// C++ Implementation: MilkdropPresetFactory
-//
-// Description:
-//
-//
-// Author: Carmelo Piccione <carmelo.piccione@gmail.com>, (C) 2008
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
-//
 #include "Factory.hpp"
 
 #include "IdlePreset.hpp"
@@ -22,7 +10,7 @@ std::unique_ptr<::libprojectM::Preset> Factory::LoadPresetFromFile(const std::st
 {
     std::string path;
     auto protocol = PresetFactory::Protocol(filename, path);
-    if (protocol == PresetFactory::IDLE_PRESET_PROTOCOL)
+    if (protocol == "idle")
     {
         return IdlePresets::allocate();
     }

@@ -2,9 +2,7 @@
 
 #include "PresetFileParser.hpp"
 
-#include "Renderer/TextureManager.hpp"
-
-#include <glm/gtc/type_ptr.hpp>
+#include <Renderer/TextureManager.hpp>
 
 #include <vector>
 

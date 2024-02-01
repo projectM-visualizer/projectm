@@ -1,8 +1,8 @@
 #pragma once
 
-#include "RenderItem.hpp"
-#include "Shader.hpp"
-#include "TextureSamplerDescriptor.hpp"
+#include "Renderer/RenderItem.hpp"
+#include "Renderer/Shader.hpp"
+#include "Renderer/TextureSamplerDescriptor.hpp"
 
 #include <Preset.hpp>
 

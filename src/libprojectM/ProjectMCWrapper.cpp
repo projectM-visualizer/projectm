@@ -1,8 +1,8 @@
 #include "ProjectMCWrapper.hpp"
 
-#include "projectM-4/projectM.h"
+#include <projectM-4/projectM.h>
 
-#include "Audio/AudioConstants.hpp"
+#include <Audio/AudioConstants.hpp>
 
 #include <cstring>
 #include <sstream>
