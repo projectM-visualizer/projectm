@@ -86,6 +86,11 @@ if(NOT BUILD_SHARED_LIBS AND CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(CMAKE_STATIC_LIBRARY_PREFIX lib)
 endif()
 
+if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
+    # Silence OpenGL API deprecation warnings on macOS.
+    add_compile_definitions(GL_SILENCE_DEPRECATION)
+endif()
+
 if(ENABLE_EMSCRIPTEN)
     message(STATUS "${CMAKE_C_COMPILER} on ${CMAKE_SYSTEM_NAME}")
     check_symbol_exists(__EMSCRIPTEN__ "" HAVE_EMSCRIPTEN)
