@@ -64,7 +64,6 @@ cmake_dependent_option(BUILD_SHARED_LIBS "Build and install libprojectM as a sha
 option(ENABLE_PLAYLIST "Enable building the playlist management library" ON)
 cmake_dependent_option(ENABLE_SDL_UI "Build the SDL2-based developer test UI" OFF "NOT ENABLE_EMSCRIPTEN" OFF)
 cmake_dependent_option(ENABLE_GLES "Enable OpenGL ES support" OFF "NOT ENABLE_EMSCRIPTEN AND NOT CMAKE_SYSTEM_NAME STREQUAL Android" ON)
-cmake_dependent_option(ENABLE_THREADING "Enable multithreading support." ON "NOT ENABLE_EMSCRIPTEN" OFF)
 option(ENABLE_BOOST_FILESYSTEM "Force the use of boost::filesystem, even if the compiler supports C++17." OFF)
 cmake_dependent_option(ENABLE_INSTALL "Enable installing projectM libraries and headers." OFF "NOT PROJECT_IS_TOP_LEVEL" ON)
 option(ENABLE_SYSTEM_GLM "Enable use of system-install GLM library" OFF)
@@ -118,13 +117,6 @@ if(ENABLE_EMSCRIPTEN)
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
             )
 
-    if(ENABLE_THREADING)
-        message(AUTHOR_WARNING "Threading on emscripten is deemed stable, but may have issues. Use with care.\n"
-                "See https://emscripten.org/docs/porting/pthreads.html for more information.")
-        add_compile_options(-pthread)
-        add_link_options(-pthread)
-    endif()
-
     set(USE_GLES ON)
 else()
     if(ENABLE_SDL_UI)
@@ -168,12 +160,6 @@ else()
             endif()
         endif()
     endif()
-
-    if(ENABLE_THREADING)
-        find_package(Threads REQUIRED)
-        set(PROJECTM_USE_THREADS YES)
-    endif()
-
 endif()
 
 if(ENABLE_CXX_INTERFACE)
@@ -216,7 +202,6 @@ message(STATUS "Features:")
 message(STATUS "==============================================")
 message(STATUS "")
 message(STATUS "    Build shared libraries:  ${BUILD_SHARED_LIBS}")
-message(STATUS "    Threading:               ${ENABLE_THREADING}")
 if(ENABLE_BOOST_FILESYSTEM)
     message(STATUS "    Filesystem support:      Boost")
     message(STATUS "        Boost version:       ${Boost_VERSION}")

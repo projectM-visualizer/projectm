@@ -40,20 +40,7 @@
 #include <string>
 #include <vector>
 
-#if PROJECTM_USE_THREADS
-
-#include <mutex>
-#include <thread>
-
-#endif
-
 namespace libprojectM {
-
-class BackgroundWorkerSync;
-
-namespace Audio {
-class BeatDetect;
-} // namespace Audio
 
 namespace Renderer {
 class CopyTexture;
@@ -207,13 +194,6 @@ private:
 
     auto GetRenderContext() -> Renderer::RenderContext;
 
-#if PROJECTM_USE_THREADS
-
-    void ThreadWorker();
-
-#endif
-
-
     uint32_t m_meshX{32};              //!< Per-point mesh horizontal resolution.
     uint32_t m_meshY{24};              //!< Per-point mesh vertical resolution.
     uint32_t m_targetFps{35};          //!< Target frames per second.
@@ -247,12 +227,6 @@ private:
     std::unique_ptr<Preset> m_transitioningPreset;                                //!< Destination preset when smooth preset switching.
     std::unique_ptr<Renderer::PresetTransition> m_transition;                     //!< Transition effect used for blending.
     std::unique_ptr<TimeKeeper> m_timeKeeper;                                     //!< Keeps the different timers used to render and switch presets.
-
-#if PROJECTM_USE_THREADS
-    mutable std::recursive_mutex m_presetSwitchMutex;   //!< Mutex for locking preset switching while rendering and vice versa.
-    std::thread m_workerThread;                         //!< Background worker for preloading presets.
-    std::unique_ptr<BackgroundWorkerSync> m_workerSync; //!< Background work synchronizer.
-#endif
 };
 
 } // namespace libprojectM

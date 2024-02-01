@@ -128,13 +128,6 @@ if(ENABLE_INSTALL)
             )
 
     if(ENABLE_CXX_INTERFACE)
-        if(ENABLE_THREADING)
-            target_compile_definitions(projectM
-                    INTERFACE
-                    PROJECTM_USE_THREADS
-                    )
-        endif()
-
         install(FILES
                 Audio/PCM.hpp
                 ProjectM.hpp
