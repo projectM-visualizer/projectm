@@ -1,0 +1,21 @@
+{
+  "name": "libprojectm",
+  "version": "4.0.0",
+  "homepage": "https://github.com/projectM-visualizer/projectm",
+  "description": "Cross-platform Music Visualization Library. Open-source and Milkdrop-compatible.",
+  "license": "LGPL-2.1",
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    },
+    "glew",
+    "gtest",
+    "sdl2"
+  ],
+  "default-features": []
+}
