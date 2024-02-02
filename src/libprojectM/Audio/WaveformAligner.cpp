@@ -141,10 +141,11 @@ int WaveformAligner::CalculateOffset(std::vector<WaveformBuffer> &newWaveformMip
         {
             float errorSum{};
 
-            // perform the cross-correlation
+            // Perform the cross-correlation. Note that we shift the new waveform but not the old
+            // one because we're looking for the offset between them that produces the lowest error.
             for (uint32_t i = m_firstNonzeroWeights[octave]; i <= m_lastNonzeroWeights[octave]; i++)
             {
-                errorSum += std::abs((newWaveformMips[octave][i + sample] - m_oldWaveformMips[octave][i + sample]) * m_aligmentWeights[octave][i]);
+                errorSum += std::abs((newWaveformMips[octave][i + sample] - m_oldWaveformMips[octave][i]) * m_aligmentWeights[octave][i]);
             }
 
             if (lowestErrorOffset == -1 || errorSum < lowestErrorAmount)
@@ -211,10 +212,6 @@ void WaveformAligner::Align(WaveformBuffer& newWaveform)
 
     int alignOffset = CalculateOffset(newWaveformMips);
 
-    // Store mip levels for the next frame.
-    m_oldWaveformMips.clear();
-    std::copy(newWaveformMips.begin(), newWaveformMips.end(), std::back_inserter(m_oldWaveformMips));
-
     // Finally, apply the results by scooting the aligned samples so that they start at index 0.
     // This is the second place where we limit negative offsets.
     if (alignOffset > 0)
@@ -224,6 +221,10 @@ void WaveformAligner::Align(WaveformBuffer& newWaveform)
         // Set remaining samples to zero.
         std::fill_n(newWaveform.begin() + WaveformSamples, AudioBufferSamples - WaveformSamples, 0.0f);
     }
+
+    // Store mip levels for the next frame. Note that we need to recalculate the mips for the *shifted*
+    // waveform, so we can't reuse the previous mips.
+    ResampleOctaves(m_oldWaveformMips, newWaveform);
 }
 
 
