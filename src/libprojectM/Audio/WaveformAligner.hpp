@@ -8,6 +8,7 @@
 #include "AudioConstants.hpp"
 
 #include <cstddef>
+#include <cstdint>
 #include <vector>
 
 namespace libprojectM {
@@ -38,13 +39,13 @@ private:
 
     std::vector<std::array<float, AudioBufferSamples>> m_aligmentWeights; //!< Sample weights per octave.
 
-    size_t m_octaves{};                        //!< Number of mip-levels/octaves.
-    std::vector<size_t> m_octaveSamples;       //!< Samples per octave.
-    std::vector<size_t> m_octaveSampleSpacing; //!< Space between samples per octave.
+    uint32_t m_octaves{};                        //!< Number of mip-levels/octaves.
+    std::vector<uint32_t> m_octaveSamples;       //!< Samples per octave.
+    std::vector<uint32_t> m_octaveSampleSpacing; //!< Space between samples per octave.
 
     std::vector<WaveformBuffer> m_oldWaveformMips; //!< Mip levels of the previous frame's waveform.
-    std::vector<size_t> m_firstNonzeroWeights;     //!< First non-zero weight sample index for each octave.
-    std::vector<size_t> m_lastNonzeroWeights;      //!< Last non-zero weight sample index for each octave.
+    std::vector<uint32_t> m_firstNonzeroWeights;     //!< First non-zero weight sample index for each octave.
+    std::vector<uint32_t> m_lastNonzeroWeights;      //!< Last non-zero weight sample index for each octave.
 };
 
 } // namespace Audio
