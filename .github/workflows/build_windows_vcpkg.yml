@@ -1,0 +1,43 @@
+name: Windows (x64) (VCPKG)
+
+on:
+  push:
+      branches: 
+        - "*"
+      tags:
+        - "*"
+    
+  pull_request:
+      branches: 
+        - "*"
+
+jobs:
+  build-shared:
+    name: Shared Library
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set GIT_REF
+        run: echo "${{ github.sha }}" >> ${{ github.workspace }}/package/vcpkg/GIT_REF
+
+      - name: Install
+        run: |
+          cd ..
+          vcpkg install libprojectm:x64-windows --overlay-ports="${{ github.workspace }}/package/vcpkg"
+
+  build-static:
+    name: Static Library
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set GIT_REF
+        run: echo "${{ github.sha }}" >> ${{ github.workspace }}/package/vcpkg/GIT_REF
+
+      - name: Install
+        run: |
+          cd ..
+          vcpkg install libprojectm:x64-windows-static --overlay-ports="${{ github.workspace }}/package/vcpkg"

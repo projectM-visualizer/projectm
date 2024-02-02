@@ -1,9 +1,15 @@
 find_program(GIT git)
 
-# GitHub repository information
+# GitHub repository
 set(GIT_URL "https://github.com/projectM-visualizer/projectm.git")
-# set(GIT_REF "v${VERSION}")
-set(GIT_REF "0beb7a2d09866c6c60445742993e6523c1a40047")
+
+if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/GIT_REF)
+  file(READ ${CMAKE_CURRENT_LIST_DIR}/GIT_REF GIT_REF)
+  string(STRIP ${GIT_REF} GIT_REF)
+else()
+  # set(GIT_REF "v${VERSION}")
+  set(GIT_REF "master")
+endif()
 
 # Set variables for the port
 set(PORT_NAME "libprojectM")
@@ -14,15 +20,21 @@ if(NOT EXISTS "${SOURCE_PATH}")
     file(MAKE_DIRECTORY "${SOURCE_PATH}")
 endif()
 
-# Pull source from GitHub with submodules
-if(NOT EXISTS "${SOURCE_PATH}/.git")
+if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/GIT_REF)
+  set(GIT_CLONE_COMMAND ${GIT} clone --recurse-submodules ${GIT_URL} ${SOURCE_PATH})
+else()
+  set(GIT_CLONE_COMMAND ${GIT} clone --depth 1 --branch master --recurse-submodules ${GIT_URL} ${SOURCE_PATH})
+endif()
 
-	message(STATUS "Fetching source from ${GIT_URL} with ref ${GIT_REF}")
-	vcpkg_execute_required_process(
-	  COMMAND ${GIT} clone --depth 1 --branch master --recurse-submodules ${GIT_URL} ${SOURCE_PATH}
-	  WORKING_DIRECTORY ${SOURCE_PATH}
-	  LOGNAME "clone-dbg"
-	)
+# Pull source from GitHub with submodules
+if(EXISTS "${SOURCE_PATH}" AND NOT EXISTS "${SOURCE_PATH}/.git")
+
+	  message(STATUS "Fetching source from ${GIT_URL} with ref ${GIT_REF}")
+    vcpkg_execute_required_process(
+      COMMAND ${GIT_CLONE_COMMAND}
+      WORKING_DIRECTORY ${SOURCE_PATH}
+      LOGNAME "clone-dbg"
+	  )
 
     vcpkg_execute_required_process(
       COMMAND ${GIT} checkout ${GIT_REF}
