@@ -17,7 +17,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
 
@@ -39,7 +39,7 @@ jobs:
           cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target INSTALL
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
             name: projectm-windows-shared-latest
             path: install/*
@@ -49,7 +49,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
 
@@ -71,7 +71,7 @@ jobs:
           cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target INSTALL
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: projectm-windows-static-latest
           path: install/*
