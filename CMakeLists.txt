@@ -48,6 +48,12 @@ set(PROJECTM_BIN_DIR "${CMAKE_INSTALL_BINDIR}" CACHE STRING "Executable installa
 set(PROJECTM_LIB_DIR "${CMAKE_INSTALL_LIBDIR}" CACHE STRING "Library installation directory, relative to the install prefix.")
 set(PROJECTM_INCLUDE_DIR "${CMAKE_INSTALL_INCLUDEDIR}" CACHE STRING "Header installation directory, relative to the install prefix.")
 
+if(CMAKE_SYSTEM_NAME STREQUAL Windows)
+    set(PROJECTM_RUNTIME_DIR "${PROJECTM_BIN_DIR}")
+else()
+    set(PROJECTM_RUNTIME_DIR "${PROJECTM_LIB_DIR}")
+endif()
+
 # Dummy file for merged static libs.
 set(PROJECTM_DUMMY_SOURCE_FILE "${PROJECTM_BINARY_DIR}/dummy.cpp")
 file(TOUCH "${PROJECTM_DUMMY_SOURCE_FILE}")
