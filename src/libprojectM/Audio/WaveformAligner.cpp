@@ -31,20 +31,10 @@ WaveformAligner::WaveformAligner()
     }
 }
 
-void WaveformAligner::Align(WaveformBuffer& newWaveform)
+void WaveformAligner::ResampleOctaves(std::vector<WaveformBuffer> &dstWaveformMips, WaveformBuffer& newWaveform)
 {
-    if (m_octaves < 4)
-    {
-        // The original code does not align if there isn't enough margin for
-        // alignment but has no explanation for why the limit is 2**4 samples.
-        return;
-    }
-
-    int alignOffset{};
-
-    std::vector<WaveformBuffer> newWaveformMips(m_octaves, WaveformBuffer());
     // Octave 0 is a direct copy of the new waveform
-    std::copy(newWaveform.begin(), newWaveform.end(), newWaveformMips[0].begin());
+    std::copy(newWaveform.begin(), newWaveform.end(), dstWaveformMips[0].begin());
 
     // Calculate mip levels
     // This downsamples the previous octave's waveform by a factor of 2
@@ -52,83 +42,90 @@ void WaveformAligner::Align(WaveformBuffer& newWaveform)
     {
         for (uint32_t sample = 0; sample < m_octaveSamples[octave]; sample++)
         {
-            newWaveformMips[octave][sample] = 0.5f * (newWaveformMips[octave - 1][sample * 2] + newWaveformMips[octave - 1][sample * 2 + 1]);
+            dstWaveformMips[octave][sample] = 0.5f * (dstWaveformMips[octave - 1][sample * 2] + dstWaveformMips[octave - 1][sample * 2 + 1]);
         }
     }
+}
 
-    if (!m_alignWaveReady)
+void WaveformAligner::GenerateWeights()
+{
+    // The below is performed only on the first fill.
+    for (uint32_t octave = 0; octave < m_octaves; octave++)
     {
-        // The below is performed only on the first fill.
-        m_alignWaveReady = true;
-        for (uint32_t octave = 0; octave < m_octaves; octave++)
+        // For example:
+        //  m_octaveSampleSpacing[octave] == 4
+        //  m_octaveSamples[octave] == 36
+        //  (so we test 32 samples, w/4 offsets)
+        uint32_t const compareSamples = m_octaveSamples[octave] - m_octaveSampleSpacing[octave];
+
+        for (uint32_t sample = 0; sample < compareSamples; sample++)
         {
-            // For example:
-            //  m_octaveSampleSpacing[octave] == 4
-            //  m_octaveSamples[octave] == 36
-            //  (so we test 32 samples, w/4 offsets)
-            uint32_t const compareSamples = m_octaveSamples[octave] - m_octaveSampleSpacing[octave];
+            // Take a reference to the alignment weights and set them with the computation
+            // below.
+            auto& weightRef = m_aligmentWeights[octave][sample];
 
-            for (uint32_t sample = 0; sample < compareSamples; sample++)
+            // Start with pyramid-shaped PDF, from 0..1..0
+            if (sample < compareSamples / 2)
             {
-                // Take a reference to the alignment weights and set them with the computation
-                // below.
-                auto& weightRef = m_aligmentWeights[octave][sample];
-
-                // Start with pyramid-shaped PDF, from 0..1..0
-                if (sample < compareSamples / 2)
-                {
-                    weightRef = static_cast<float>(sample * 2) / static_cast<float>(compareSamples);
-                }
-                else
-                {
-                    weightRef = static_cast<float>((compareSamples - 1 - sample) * 2) / static_cast<float>(compareSamples);
-                }
-
-                /*
-                 * TWEAK how much the center matters, vs. the edges:
-                 *
-                 * weight[i] = 5.0*((2*i/compareSamples) - 0.8) + 0.8
-                 * Solving for weight[i] == 0 we get:\
-                 *
-                 * 2*i/compareSamples = -0.8/5 + 0.8
-                 * i = 0.32*compareSamples
-                 *
-                 * The weight distribution is symmetric so the falling side gives:
-                 *
-                 * i = 0.68*compareSamples
-                 */
-                weightRef = (weightRef - 0.8f) * 5.0f + 0.8f;
-
-                // Clamp
-                // Needed because the TWEAK above results in weights from -3.2 to 1.8
-                if (weightRef > 1.0f)
-                {
-                    weightRef = 1.0f;
-                }
-                if (weightRef < 0.0f)
-                {
-                    weightRef = 0.0f;
-                }
+                weightRef = static_cast<float>(sample * 2) / static_cast<float>(compareSamples);
+            }
+            else
+            {
+                weightRef = static_cast<float>((compareSamples - 1 - sample) * 2) / static_cast<float>(compareSamples);
             }
 
-            uint32_t sample{};
-            // The code below also is only needed because of the TWEAK above, which zeroes
-            // a total of 64% of the weights.
-            while (m_aligmentWeights[octave][sample] == 0 && sample < compareSamples)
-            {
-                sample++;
-            }
-            m_firstNonzeroWeights[octave] = sample;
+            /*
+             * TWEAK how much the center matters, vs. the edges:
+             *
+             * weight[i] = 5.0*((2*i/compareSamples) - 0.8) + 0.8
+             * Solving for weight[i] == 0 we get:\
+             *
+             * 2*i/compareSamples = -0.8/5 + 0.8
+             * i = 0.32*compareSamples
+             *
+             * The weight distribution is symmetric so the falling side gives:
+             *
+             * i = 0.68*compareSamples
+             */
+            weightRef = (weightRef - 0.8f) * 5.0f + 0.8f;
 
-            sample = compareSamples - 1;
-            while (m_aligmentWeights[octave][sample] == 0 && compareSamples > 1)
+            // Clamp
+            // Needed because the TWEAK above results in weights from -3.2 to 1.8
+            if (weightRef > 1.0f)
             {
-                sample--;
+                weightRef = 1.0f;
             }
-            m_lastNonzeroWeights[octave] = sample;
+            if (weightRef < 0.0f)
+            {
+                weightRef = 0.0f;
+            }
         }
-    }
 
+        uint32_t sample{};
+        // The code below also is only needed because of the TWEAK above, which zeroes
+        // a total of 64% of the weights.
+        while (m_aligmentWeights[octave][sample] == 0 && sample < compareSamples)
+        {
+            sample++;
+        }
+        m_firstNonzeroWeights[octave] = sample;
+
+        sample = compareSamples - 1;
+        while (m_aligmentWeights[octave][sample] == 0 && compareSamples > 1)
+        {
+            sample--;
+        }
+        m_lastNonzeroWeights[octave] = sample;
+    }
+}
+
+int WaveformAligner::CalculateOffset(std::vector<WaveformBuffer> &newWaveformMips)
+{
+    /*
+     * Note that we use signed variables here because we need to check for negatives even
+     * if we clamp to only positive values and 0.
+     */
+    int alignOffset{};
     int offsetStart{};
     int offsetEnd{static_cast<int>(m_octaveSampleSpacing[m_octaves - 1])};
 
@@ -188,6 +185,31 @@ void WaveformAligner::Align(WaveformBuffer& newWaveform)
             alignOffset = lowestErrorOffset;
         }
     }
+
+    return alignOffset;
+}
+
+void WaveformAligner::Align(WaveformBuffer& newWaveform)
+{
+    if (m_octaves < 4)
+    {
+        // The original code does not align if there isn't enough margin for
+        // alignment but has no explanation for why the limit is 2**4 samples.
+        return;
+    }
+
+
+    std::vector<WaveformBuffer> newWaveformMips(m_octaves, WaveformBuffer());
+    ResampleOctaves(newWaveformMips, newWaveform);
+
+    if (!m_alignWaveReady)
+    {
+        GenerateWeights();
+        // Mark that weights have been calculated.
+        m_alignWaveReady = true;
+    }
+
+    int alignOffset = CalculateOffset(newWaveformMips);
 
     // Store mip levels for the next frame.
     m_oldWaveformMips.clear();

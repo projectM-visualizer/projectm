@@ -34,7 +34,11 @@ public:
      */
     void Align(WaveformBuffer& newWaveform);
 
-private:
+protected:
+    void GenerateWeights();
+    int CalculateOffset(std::vector<WaveformBuffer> &newWaveformMips);
+    void ResampleOctaves(std::vector<WaveformBuffer> &dstWaveformMips, WaveformBuffer& newWaveform);
+
     bool m_alignWaveReady{false}; //!< Alignment needs special treatment for the first buffer fill.
 
     std::vector<std::array<float, AudioBufferSamples>> m_aligmentWeights; //!< Sample weights per octave.
