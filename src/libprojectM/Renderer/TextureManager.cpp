@@ -214,7 +214,7 @@ void TextureManager::PurgeTextures()
 #endif
 }
 
-TextureSamplerDescriptor TextureManager::TryLoadingTexture(const std::string& name)
+auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSamplerDescriptor
 {
     TextureSamplerDescriptor texDesc;
     GLint wrapMode{0};
@@ -230,7 +230,7 @@ TextureSamplerDescriptor TextureManager::TryLoadingTexture(const std::string& na
 
     for (const auto& file : m_scannedTextureFiles)
     {
-        if (file.lowerCaseBaseName != lowerCaseFileName)
+        if (file.lowerCaseBaseName != unqualifiedName)
         {
             continue;
         }
@@ -254,7 +254,7 @@ TextureSamplerDescriptor TextureManager::TryLoadingTexture(const std::string& na
     return {m_placeholderTexture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
 }
 
-TextureSamplerDescriptor TextureManager::LoadTexture(const std::string& fileName, const std::string& name)
+auto TextureManager::LoadTexture(const std::string& fileName, const std::string& name) -> TextureSamplerDescriptor
 {
     GLint wrapMode;
     GLint filterMode;
