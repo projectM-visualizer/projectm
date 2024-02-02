@@ -8,8 +8,8 @@ namespace Audio {
 
 WaveformAligner::WaveformAligner()
 {
-    static const size_t maxOctaves{10};
-    static const size_t numOctaves{static_cast<size_t>(std::floor(std::log(AudioBufferSamples - WaveformSamples) / std::log(2.0f)))};
+    static const uint32_t maxOctaves{10};
+    static const uint32_t numOctaves{static_cast<uint32_t>(std::floor(std::log(AudioBufferSamples - WaveformSamples) / std::log(2.0f)))};
     m_octaves = numOctaves > maxOctaves ? maxOctaves : numOctaves;
 
     m_aligmentWeights.resize(m_octaves);
@@ -21,7 +21,7 @@ WaveformAligner::WaveformAligner()
 
     m_octaveSamples[0] = AudioBufferSamples;
     m_octaveSampleSpacing[0] = AudioBufferSamples - WaveformSamples;
-    for (size_t octave = 1; octave < m_octaves; octave++)
+    for (uint32_t octave = 1; octave < m_octaves; octave++)
     {
         m_octaveSamples[octave] = m_octaveSamples[octave - 1] / 2;
         m_octaveSampleSpacing[octave] = m_octaveSampleSpacing[octave - 1] / 2;
@@ -41,9 +41,9 @@ void WaveformAligner::Align(WaveformBuffer& newWaveform)
     std::copy(newWaveform.begin(), newWaveform.end(), newWaveformMips[0].begin());
 
     // Calculate mip levels
-    for (size_t octave = 1; octave < m_octaves; octave++)
+    for (uint32_t octave = 1; octave < m_octaves; octave++)
     {
-        for (size_t sample = 0; sample < m_octaveSamples[octave]; sample++)
+        for (uint32_t sample = 0; sample < m_octaveSamples[octave]; sample++)
         {
             newWaveformMips[octave][sample] = 0.5f * (newWaveformMips[octave - 1][sample * 2] + newWaveformMips[octave - 1][sample * 2 + 1]);
         }
@@ -52,15 +52,15 @@ void WaveformAligner::Align(WaveformBuffer& newWaveform)
     if (!m_alignWaveReady)
     {
         m_alignWaveReady = true;
-        for (size_t octave = 0; octave < m_octaves; octave++)
+        for (uint32_t octave = 0; octave < m_octaves; octave++)
         {
             // For example:
             //  m_octaveSampleSpacing[octave] == 4
             //  m_octaveSamples[octave] == 36
             //  (so we test 32 samples, w/4 offsets)
-            size_t const compareSamples = m_octaveSamples[octave] - m_octaveSampleSpacing[octave];
+            uint32_t const compareSamples = m_octaveSamples[octave] - m_octaveSampleSpacing[octave];
 
-            for (size_t sample = 0; sample < compareSamples; sample++)
+            for (uint32_t sample = 0; sample < compareSamples; sample++)
             {
                 auto& tempVal = m_aligmentWeights[octave][sample];
 
@@ -88,7 +88,7 @@ void WaveformAligner::Align(WaveformBuffer& newWaveform)
                 }
             }
 
-            size_t sample{};
+            uint32_t sample{};
             while (m_aligmentWeights[octave][sample] == 0 && sample < compareSamples)
             {
                 sample++;
@@ -108,6 +108,7 @@ void WaveformAligner::Align(WaveformBuffer& newWaveform)
     int sample2{static_cast<int>(m_octaveSampleSpacing[m_octaves - 1])};
 
     // Find best match for alignment
+    // Note that we need a signed iterator here because the termination condition is octave < 0
     for (int octave = static_cast<int>(m_octaves) - 1; octave >= 0; octave--)
     {
         int lowestErrorOffset{-1};
@@ -117,7 +118,7 @@ void WaveformAligner::Align(WaveformBuffer& newWaveform)
         {
             float errorSum{};
 
-            for (size_t i = m_firstNonzeroWeights[octave]; i <= m_lastNonzeroWeights[octave]; i++)
+            for (uint32_t i = m_firstNonzeroWeights[octave]; i <= m_lastNonzeroWeights[octave]; i++)
             {
                 errorSum += std::abs((newWaveformMips[octave][i + sample] - m_oldWaveformMips[octave][i + sample]) * m_aligmentWeights[octave][i]);
             }
@@ -162,7 +163,7 @@ void WaveformAligner::Align(WaveformBuffer& newWaveform)
     // Finally, apply the results by scooting the aligned samples so that they start at index 0.
     if (alignOffset > 0)
     {
-        for (size_t sample = 0; sample < WaveformSamples; sample++)
+        for (uint32_t sample = 0; sample < WaveformSamples; sample++)
         {
             newWaveform[sample] = newWaveform[sample + alignOffset];
         }
