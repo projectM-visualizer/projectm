@@ -1,14 +1,21 @@
 find_program(GIT git)
 
-# GitHub repository
-set(GIT_URL "https://github.com/projectM-visualizer/projectm.git")
+# Set GIT_REPO to the contents of GIT_REPO file or to default
+if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/GIT_REPO)
+  file(READ ${CMAKE_CURRENT_LIST_DIR}/GIT_REPO GIT_REPO)
+  string(STRIP ${GIT_REPO} GIT_REPO)
 
+  set(GIT_URL "https://github.com/${GIT_REPO}.git")
+else()
+  set(GIT_URL "https://github.com/projectM-visualizer/projectm.git")
+endif()
+
+# Set GIT_REF to the contents of GIT_REF file, or to VERSION
 if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/GIT_REF)
   file(READ ${CMAKE_CURRENT_LIST_DIR}/GIT_REF GIT_REF)
   string(STRIP ${GIT_REF} GIT_REF)
 else()
-  # set(GIT_REF "v${VERSION}")
-  set(GIT_REF "master")
+  set(GIT_REF "v${VERSION}")
 endif()
 
 # Set variables for the port

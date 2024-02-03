@@ -16,11 +16,23 @@ jobs:
     name: Shared Library
     runs-on: windows-latest
 
+    env:
+      EVENT_CONTEXT: ${{ toJson(github.event) }}
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set GIT_REF
-        run: echo "${{ github.sha }}" >> ${{ github.workspace }}/package/vcpkg/GIT_REF
+      - name: Set GIT_REF (PR)
+        run: |
+          echo "${{ github.event.pull_request.head.repo.full_name }}" >> ${{ github.workspace }}/package/vcpkg/GIT_REPO
+          echo "${{ github.event.pull_request.head.sha }}" >> ${{ github.workspace }}/package/vcpkg/GIT_REF
+        if: github.event_name == 'pull_request'
+
+      - name: Set GIT_REF (Non-PR)
+        run: |
+          echo "${{ github.event.repository.full_name }}" >> ${{ github.workspace }}/package/vcpkg/GIT_REPO
+          echo "${{ github.sha }}" >> ${{ github.workspace }}/package/vcpkg/GIT_REF
+        if: github.event_name != 'pull_request'
 
       - name: Install
         run: |
@@ -34,8 +46,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set GIT_REF
-        run: echo "${{ github.sha }}" >> ${{ github.workspace }}/package/vcpkg/GIT_REF
+      - name: Set GIT_REF (PR)
+        run: |
+          echo "${{ github.event.pull_request.head.repo.full_name }}" >> ${{ github.workspace }}/package/vcpkg/GIT_REPO
+          echo "${{ github.event.pull_request.head.sha }}" >> ${{ github.workspace }}/package/vcpkg/GIT_REF
+        if: github.event_name == 'pull_request'
+
+      - name: Set GIT_REF (Non-PR)
+        run: |
+          echo "${{ github.event.repository.full_name }}" >> ${{ github.workspace }}/package/vcpkg/GIT_REPO
+          echo "${{ github.sha }}" >> ${{ github.workspace }}/package/vcpkg/GIT_REF
+        if: github.event_name != 'pull_request'
 
       - name: Install
         run: |
