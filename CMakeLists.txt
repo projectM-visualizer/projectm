@@ -73,6 +73,7 @@ cmake_dependent_option(ENABLE_GLES "Enable OpenGL ES support" OFF "NOT ENABLE_EM
 option(ENABLE_BOOST_FILESYSTEM "Force the use of boost::filesystem, even if the compiler supports C++17." OFF)
 cmake_dependent_option(ENABLE_INSTALL "Enable installing projectM libraries and headers." OFF "NOT PROJECT_IS_TOP_LEVEL" ON)
 option(ENABLE_SYSTEM_GLM "Enable use of system-install GLM library" OFF)
+option(BUILD_DOCS "Build documentation" OFF)
 
 # Experimental/unsupported features
 option(ENABLE_CXX_INTERFACE "Enable exporting C++ symbols for ProjectM and PCM classes, not only the C API. Warning: This is not very portable." OFF)
@@ -178,6 +179,24 @@ else()
     set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 endif()
 
+if(BUILD_DOCS)
+    find_package(Doxygen REQUIRED)
+    find_package(Sphinx REQUIRED breathe)
+    set(DOXYGEN_GENERATE_HTML NO)
+    set(DOXYGEN_GENERATE_XML YES)
+
+    doxygen_add_docs(
+        projectm_doxygen
+        src
+        COMMENT "Generate HTML documentation")
+
+    sphinx_add_docs(
+        projectm_sphinx
+        BREATHE_PROJECTS projectm_doxygen
+        BUILDER html
+        SOURCE_DIRECTORY docs)
+endif()
+
 add_subdirectory(vendor)
 
 include(features.cmake)
@@ -230,6 +249,7 @@ message(STATUS "    libprojectM:             (always built)")
 message(STATUS "    Playlist library:        ${ENABLE_PLAYLIST}")
 message(STATUS "    SDL2 Test UI:            ${ENABLE_SDL_UI}")
 message(STATUS "    Tests:                   ${BUILD_TESTING}")
+message(STATUS "    Documentation:           ${BUILD_DOCS}")
 message(STATUS "")
 
 if(ENABLE_CXX_INTERFACE)
