@@ -31,7 +31,7 @@ WaveformAligner::WaveformAligner()
     }
 }
 
-void WaveformAligner::ResampleOctaves(std::vector<WaveformBuffer> &dstWaveformMips, WaveformBuffer& newWaveform)
+void WaveformAligner::ResampleOctaves(std::vector<WaveformBuffer>& dstWaveformMips, WaveformBuffer& newWaveform)
 {
     // Octave 0 is a direct copy of the new waveform
     std::copy(newWaveform.begin(), newWaveform.end(), dstWaveformMips[0].begin());
@@ -119,7 +119,7 @@ void WaveformAligner::GenerateWeights()
     }
 }
 
-int WaveformAligner::CalculateOffset(std::vector<WaveformBuffer> &newWaveformMips)
+int WaveformAligner::CalculateOffset(std::vector<WaveformBuffer>& newWaveformMips)
 {
     /*
      * Note that we use signed variables here because we need to check for negatives even
