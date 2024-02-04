@@ -181,7 +181,7 @@ endif()
 
 if(BUILD_DOCS)
     find_package(Doxygen REQUIRED)
-    find_package(Sphinx REQUIRED breathe)
+    find_package(Sphinx REQUIRED breathe exhale)
     set(DOXYGEN_GENERATE_HTML NO)
     set(DOXYGEN_GENERATE_XML YES)
 
