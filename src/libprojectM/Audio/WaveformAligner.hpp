@@ -36,8 +36,8 @@ public:
 
 protected:
     void GenerateWeights();
-    int CalculateOffset(std::vector<WaveformBuffer> &newWaveformMips);
-    void ResampleOctaves(std::vector<WaveformBuffer> &dstWaveformMips, WaveformBuffer& newWaveform);
+    int CalculateOffset(std::vector<WaveformBuffer>& newWaveformMips);
+    void ResampleOctaves(std::vector<WaveformBuffer>& dstWaveformMips, WaveformBuffer& newWaveform);
 
     bool m_alignWaveReady{false}; //!< Alignment needs special treatment for the first buffer fill.
 
@@ -48,8 +48,8 @@ protected:
     std::vector<uint32_t> m_octaveSampleSpacing; //!< Space between samples per octave.
 
     std::vector<WaveformBuffer> m_oldWaveformMips; //!< Mip levels of the previous frame's waveform.
-    std::vector<uint32_t> m_firstNonzeroWeights;     //!< First non-zero weight sample index for each octave.
-    std::vector<uint32_t> m_lastNonzeroWeights;      //!< Last non-zero weight sample index for each octave.
+    std::vector<uint32_t> m_firstNonzeroWeights;   //!< First non-zero weight sample index for each octave.
+    std::vector<uint32_t> m_lastNonzeroWeights;    //!< Last non-zero weight sample index for each octave.
 };
 
 } // namespace Audio
