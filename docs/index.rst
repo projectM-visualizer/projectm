@@ -5,7 +5,7 @@
    building
    emscripten
    llvm
-   api_ref
+   api/library_root
 
 |Windows Build Status| |Linux Build Status| |macOS Build Status|
 |Emscripten Build Status| |Android Build Status|
