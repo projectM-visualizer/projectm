@@ -68,10 +68,10 @@ void WaveformPerFrameContext::RegisterBuiltinVariables()
 
 void WaveformPerFrameContext::LoadStateVariables(PresetState& state, const PerFrameContext& presetPerFrameContext, CustomWaveform& waveform)
 {
-    *time = static_cast<double>(state.presetTime);
-    *frame = static_cast<double>(state.frame);
-    *fps = static_cast<double>(state.fps);
-    *progress = static_cast<double>(state.progress);
+    *time = static_cast<double>(state.renderContext.time);
+    *frame = static_cast<double>(state.renderContext.frame);
+    *fps = static_cast<double>(state.renderContext.fps);
+    *progress = static_cast<double>(state.renderContext.progress);
     *bass = static_cast<double>(state.audioData.bass);
     *mid = static_cast<double>(state.audioData.mid);
     *treb = static_cast<double>(state.audioData.treb);
