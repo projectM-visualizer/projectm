@@ -55,40 +55,27 @@ void ProjectM::PresetSwitchFailedEvent(const std::string&, const std::string&) c
 
 void ProjectM::LoadPresetFile(const std::string& presetFilename, bool smoothTransition)
 {
-    // If already in a transition, force immediate completion.
-    if (m_transitioningPreset != nullptr)
-    {
-        m_activePreset = std::move(m_transitioningPreset);
-    }
-
     try
     {
         m_textureManager->PurgeTextures();
         StartPresetTransition(m_presetFactoryManager->CreatePresetFromFile(presetFilename), !smoothTransition);
     }
-    catch (const PresetFactoryException& ex)
+    catch (const std::exception& ex)
     {
-        PresetSwitchFailedEvent(presetFilename, ex.message());
+        PresetSwitchFailedEvent(presetFilename, ex.what());
     }
 }
 
 void ProjectM::LoadPresetData(std::istream& presetData, bool smoothTransition)
 {
-    // If already in a transition, force immediate completion.
-    if (m_transitioningPreset != nullptr)
-    {
-        m_activePreset = std::move(m_transitioningPreset);
-    }
-
     try
     {
         m_textureManager->PurgeTextures();
         StartPresetTransition(m_presetFactoryManager->CreatePresetFromStream(".milk", presetData), !smoothTransition);
     }
-    catch (const PresetFactoryException& ex)
+    catch (const std::exception& ex)
     {
-        m_activePreset.reset();
-        PresetSwitchFailedEvent("", ex.message());
+        PresetSwitchFailedEvent("", ex.what());
     }
 }
 
@@ -245,18 +232,14 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
         return;
     }
 
-    try
-    {
-        preset->Initialize(GetRenderContext());
-    }
-    catch (std::exception& ex)
-    {
-        PresetSwitchFailedEvent(preset->Filename(), ex.what());
-    }
+    preset->Initialize(GetRenderContext());
 
-    // ToDo: Continue only if preset is fully loaded.
-
-    m_transition.reset();
+    // If already in a transition, force immediate completion.
+    if (m_transitioningPreset != nullptr)
+    {
+        m_activePreset = std::move(m_transitioningPreset);
+        m_transition.reset();
+    }
 
     if (m_activePreset)
     {
