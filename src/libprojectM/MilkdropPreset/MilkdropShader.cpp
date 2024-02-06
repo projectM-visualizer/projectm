@@ -183,9 +183,9 @@ void MilkdropShader::LoadVariables(const PresetState& presetState, const PerFram
                                       0.0,
                                       0.0});
     m_shader.SetUniformFloat4("_c2", {timeSincePresetStartWrapped,
-                                      presetState.fps,
-                                      presetState.frame,
-                                      presetState.progress});
+                                      presetState.renderContext.fps,
+                                      presetState.renderContext.frame,
+                                      presetState.renderContext.progress});
     m_shader.SetUniformFloat4("_c3", {presetState.audioData.bass / 100,
                                       presetState.audioData.mid / 100,
                                       presetState.audioData.treb / 100,

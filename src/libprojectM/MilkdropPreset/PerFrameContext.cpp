@@ -173,7 +173,7 @@ void PerFrameContext::LoadStateVariables(PresetState& state)
     {
         *q_vars[q] = q_values_after_init_code[q];
     }
-    *progress = static_cast<PRJM_EVAL_F>(state.progress);
+    *progress = static_cast<PRJM_EVAL_F>(state.renderContext.progress);
     *decay = static_cast<PRJM_EVAL_F>(state.decay);
     *wave_a = static_cast<PRJM_EVAL_F>(state.waveAlpha);
     *wave_r = static_cast<PRJM_EVAL_F>(state.waveR);

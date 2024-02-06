@@ -120,11 +120,6 @@ public:
     BlendableFloat blur3Max{1.0f};
     BlendableFloat blur1EdgeDarken{0.25f};
 
-    double presetTime{0.0};
-    double fps{60.0};
-    int frame{0};
-    double progress{0.0};
-
     int presetVersion{100};        //!< Value of MILKDROP_PRESET_VERSION in preset files.
     int warpShaderVersion{2};      //!< PSVERSION or PSVERSION_WARP.
     int compositeShaderVersion{2}; //!< PSVERSION or PSVERSION_COMP.
