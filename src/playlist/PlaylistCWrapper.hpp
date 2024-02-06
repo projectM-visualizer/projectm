@@ -4,8 +4,7 @@
 
 #include "Playlist.hpp"
 
-#include <string>
-#include <vector>
+#include <cstdint>
 
 namespace libprojectM {
 namespace Playlist {
@@ -13,6 +12,16 @@ namespace Playlist {
 class PlaylistCWrapper : public Playlist
 {
 public:
+    /**
+     * Last navigational direction used to switch a preset.
+     */
+    enum class NavigationDirection : uint8_t
+    {
+        Previous, //!< Previous item in the playlist
+        Next,     //!< Next item in the playlist
+        Last      //!< Previous item in the playback history
+    };
+
     PlaylistCWrapper() = delete;
 
     /**
@@ -73,6 +82,19 @@ public:
     virtual void SetPresetSwitchFailedCallback(projectm_playlist_preset_switch_failed_event callback,
                                                void* userData);
 
+    /**
+     * @brief Sets the last navigation direction used to switch a preset.
+     * This is used when retrying on a failed preset load, keeping the same direction/logic as in the original switch.
+     * @param direction The direction.
+     */
+    void SetLastNavigationDirection(NavigationDirection direction);
+
+    /**
+     * @brief Returns the last navigation direction used to switch a preset.
+     * @returns The last switch direction.
+     */
+    auto GetLastNavigationDirection() const -> NavigationDirection;
+
 private:
     projectm_handle m_projectMInstance{nullptr}; //!< The projectM instance handle this instance is connected to.
 
@@ -86,6 +108,8 @@ private:
 
     projectm_playlist_preset_switch_failed_event m_presetSwitchFailedEventCallback{nullptr}; //!< Preset switch failed callback pointer set by the application.
     void* m_presetSwitchFailedEventUserData{nullptr};                                        //!< Context data pointer set by the application.
+
+    NavigationDirection m_lastNavigationDirection{NavigationDirection::Next}; //!< Last direction used to switch a preset.
 };
 
 } // namespace Playlist

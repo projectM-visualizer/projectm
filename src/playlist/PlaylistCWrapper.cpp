@@ -62,26 +62,45 @@ void PlaylistCWrapper::OnPresetSwitchFailed(const char* presetFilename, const ch
     }
 
     auto* playlist = reinterpret_cast<PlaylistCWrapper*>(userData);
+    auto lastDirection = playlist->GetLastNavigationDirection();
 
-    // ToDo: Add different retry behavior for set/next/previous/last calls.
-
-    // Don't go back to a broken preset.
-    playlist->RemoveLastHistoryEntry();
+    if (lastDirection != NavigationDirection::Last)
+    {
+        // Don't let the user go back to a broken preset.
+        playlist->RemoveLastHistoryEntry();
+    }
 
     // Preset switch may fail due to broken presets, retry a few times before giving up.
-    if (playlist->m_presetSwitchFailedCount < playlist->m_presetSwitchRetryCount)
-    {
-        playlist->m_presetSwitchFailedCount++;
-        playlist->PlayPresetIndex(playlist->NextPresetIndex(), playlist->m_hardCutRequested, false);
-    }
-    else
+    if (playlist->m_presetSwitchFailedCount >= playlist->m_presetSwitchRetryCount)
     {
         if (playlist->m_presetSwitchFailedEventCallback != nullptr)
         {
             playlist->m_presetSwitchFailedEventCallback(presetFilename, message,
                                                         playlist->m_presetSwitchFailedEventUserData);
         }
+
+        return;
     }
+
+    playlist->m_presetSwitchFailedCount++;
+
+    uint32_t playlistIndex{};
+    switch (lastDirection)
+    {
+        case NavigationDirection::Previous:
+            playlistIndex = playlist->PreviousPresetIndex();
+            break;
+
+        case NavigationDirection::Next:
+            playlistIndex = playlist->NextPresetIndex();
+            break;
+
+        case NavigationDirection::Last:
+            playlistIndex = playlist->LastPresetIndex();
+            break;
+    }
+
+    playlist->PlayPresetIndex(playlistIndex, playlist->m_hardCutRequested, false);
 }
 
 
@@ -134,6 +153,18 @@ void PlaylistCWrapper::PlayPresetIndex(uint32_t index, bool hardCut, bool resetF
     {
         m_presetSwitchedEventCallback(hardCut, index, m_presetSwitchedEventUserData);
     }
+}
+
+
+void PlaylistCWrapper::SetLastNavigationDirection(PlaylistCWrapper::NavigationDirection direction)
+{
+    m_lastNavigationDirection = direction;
+}
+
+
+auto PlaylistCWrapper::GetLastNavigationDirection() const -> PlaylistCWrapper::NavigationDirection
+{
+    return m_lastNavigationDirection;
 }
 
 } // namespace Playlist
@@ -459,6 +490,7 @@ auto projectm_playlist_set_position(projectm_playlist_handle instance, uint32_t 
                                     bool hard_cut) -> uint32_t
 {
     auto* playlist = playlist_handle_to_instance(instance);
+    playlist->SetLastNavigationDirection(libprojectM::Playlist::PlaylistCWrapper::NavigationDirection::Next);
     try
     {
         auto newIndex = playlist->SetPresetIndex(new_position);
@@ -475,6 +507,7 @@ auto projectm_playlist_set_position(projectm_playlist_handle instance, uint32_t 
 uint32_t projectm_playlist_play_next(projectm_playlist_handle instance, bool hard_cut)
 {
     auto* playlist = playlist_handle_to_instance(instance);
+    playlist->SetLastNavigationDirection(libprojectM::Playlist::PlaylistCWrapper::NavigationDirection::Next);
     try
     {
         auto newIndex = playlist->NextPresetIndex();
@@ -491,6 +524,7 @@ uint32_t projectm_playlist_play_next(projectm_playlist_handle instance, bool har
 uint32_t projectm_playlist_play_previous(projectm_playlist_handle instance, bool hard_cut)
 {
     auto* playlist = playlist_handle_to_instance(instance);
+    playlist->SetLastNavigationDirection(libprojectM::Playlist::PlaylistCWrapper::NavigationDirection::Previous);
     try
     {
         auto newIndex = playlist->PreviousPresetIndex();
@@ -507,6 +541,8 @@ uint32_t projectm_playlist_play_previous(projectm_playlist_handle instance, bool
 uint32_t projectm_playlist_play_last(projectm_playlist_handle instance, bool hard_cut)
 {
     auto* playlist = playlist_handle_to_instance(instance);
+
+    playlist->SetLastNavigationDirection(libprojectM::Playlist::PlaylistCWrapper::NavigationDirection::Last);
     try
     {
         auto newIndex = playlist->LastPresetIndex();
