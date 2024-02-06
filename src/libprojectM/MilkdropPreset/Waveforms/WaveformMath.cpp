@@ -13,7 +13,8 @@ namespace Waveforms {
 auto WaveformMath::GetVertices(const PresetState& presetState,
                                const PerFrameContext& presetPerFrameContext) -> std::array<VertexList, 2>
 {
-    static_assert(libprojectM::Audio::WaveformSamples <= WaveformMaxPoints, "WaveformMaxPoints is larger than WaveformSamples");
+    static_assert(WaveformMaxPoints >= libprojectM::Audio::SpectrumSamples, "WaveformMaxPoints is smaller than SpectrumSamples");
+    static_assert(WaveformMaxPoints >= libprojectM::Audio::WaveformSamples, "WaveformMaxPoints is smaller than WaveformSamples");
 
     using libprojectM::Audio::WaveformSamples;
 
@@ -21,21 +22,21 @@ auto WaveformMath::GetVertices(const PresetState& presetState,
     if (IsSpectrumWave())
     {
         std::copy(begin(presetState.audioData.spectrumLeft),
-                  begin(presetState.audioData.spectrumLeft) + WaveformMaxPoints,
+                  begin(presetState.audioData.spectrumLeft) + Audio::SpectrumSamples,
                   begin(m_pcmDataL));
 
         std::copy(begin(presetState.audioData.spectrumRight),
-                  begin(presetState.audioData.spectrumRight) + WaveformMaxPoints,
+                  begin(presetState.audioData.spectrumRight) + Audio::SpectrumSamples,
                   begin(m_pcmDataR));
     }
     else
     {
         std::copy(begin(presetState.audioData.waveformLeft),
-                  begin(presetState.audioData.waveformLeft) + WaveformMaxPoints,
+                  begin(presetState.audioData.waveformLeft) + Audio::WaveformSamples,
                   begin(m_pcmDataL));
 
         std::copy(begin(presetState.audioData.waveformRight),
-                  begin(presetState.audioData.waveformRight) + WaveformMaxPoints,
+                  begin(presetState.audioData.waveformRight) + Audio::WaveformSamples,
                   begin(m_pcmDataR));
     }
 
