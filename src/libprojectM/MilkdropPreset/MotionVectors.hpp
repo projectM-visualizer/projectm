@@ -29,7 +29,7 @@ public:
     void InitVertexAttrib();
 
     /**
-     * Redners the motion vectors.
+     * Renders the motion vectors.
      * @param presetPerFrameContext The per-frame context variables.
      * @param motionTexture The u/v "motion" texture written by the warp shader.
      */
