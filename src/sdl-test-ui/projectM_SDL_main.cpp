@@ -26,7 +26,7 @@
  *
  *	RobertPancoast77@gmail.com :
  * experimental Stereoscopic SBS driver functionality
- * WASAPI looback implementation
+ * WASAPI loopback implementation
  *
  *
  */

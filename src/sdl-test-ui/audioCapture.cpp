@@ -16,7 +16,7 @@ int projectMSDL::initAudioInput() {
     want.callback = projectMSDL::audioInputCallbackF32;
     want.userdata = this;
 
-    // index -1 means "system deafult", which is used if we pass deviceName == NULL
+    // index -1 means "system default", which is used if we pass deviceName == NULL
     const char *deviceName = _selectedAudioDevice == -1 ? NULL : SDL_GetAudioDeviceName(_selectedAudioDevice, true);
     _audioDeviceId = SDL_OpenAudioDevice(deviceName, true, &want, &have, 0);
 

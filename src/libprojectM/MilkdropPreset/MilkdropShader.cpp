@@ -344,7 +344,7 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
     found = program.find("sampler_state");
     while (found != std::string::npos)
     {
-        // Now go backwards and find the assigment
+        // Now go backwards and find the assignment
         found = program.rfind('=', found);
         auto startPos = found;
 
@@ -614,7 +614,7 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
                             MilkdropStaticShaders::Get()->GetGlslGeneratorVersion(),
                             "PS"))
     {
-        throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: GLSL generating failes.\nSource:\n" + sourcePreprocessed);
+        throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: GLSL generating fails.\nSource:\n" + sourcePreprocessed);
     }
 
     // Now we have GLSL source for the preset shader program (hopefully it's valid!)

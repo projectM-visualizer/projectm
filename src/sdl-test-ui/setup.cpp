@@ -135,7 +135,7 @@ projectMSDL *setupSDLApp() {
         
     if (!initLoopback())
 		{
-			SDL_Log("Failed to initialize audio loopback devide.");
+			SDL_Log("Failed to initialize audio loopback device.");
 			exit(1);
 		}
 

@@ -68,7 +68,7 @@ PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_get_retry_count(projectm_pla
  * repeating the playlist as if shuffle was disabled. It has no effect if the playlist is empty.
  *
  * This method ignores the shuffle setting and will always jump to the requested index, given it is
- * withing playlist bounds.
+ * within playlist bounds.
  *
  * @param instance The playlist manager instance.
  * @param new_position The new position to jump to.
