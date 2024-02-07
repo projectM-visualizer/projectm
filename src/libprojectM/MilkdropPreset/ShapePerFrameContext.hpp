@@ -29,7 +29,7 @@ public:
      * @brief Loads the current state values into the expression evaluator variables.
      * @param state The preset state container.
      * @param shape The shape this context belongs to.
-     * @param inst The current shape isntance.
+     * @param inst The current shape instance.
      */
     void LoadStateVariables(const PresetState& state,
                             CustomShape& shape,
