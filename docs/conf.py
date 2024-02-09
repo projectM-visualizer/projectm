@@ -75,6 +75,9 @@ primary_domain = 'cpp'
 # Tell sphinx what the pygments highlight language should be.
 highlight_language = 'cpp'
 
+# Tell sphinx about the export attributes we use:
+cpp_id_attributes = ["PROJECTM_EXPORT", "PROJECTM_PLAYLIST_EXPORT"]
+
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
