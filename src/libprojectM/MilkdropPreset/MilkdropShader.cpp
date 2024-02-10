@@ -614,7 +614,7 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
                             MilkdropStaticShaders::Get()->GetGlslGeneratorVersion(),
                             "PS"))
     {
-        throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: GLSL generating fails.\nSource:\n" + sourcePreprocessed);
+        throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: GLSL generating failed.\nSource:\n" + sourcePreprocessed);
     }
 
     // Now we have GLSL source for the preset shader program (hopefully it's valid!)
