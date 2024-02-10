@@ -184,6 +184,11 @@ if(BUILD_DOCS)
     find_package(Sphinx REQUIRED breathe exhale)
     set(DOXYGEN_GENERATE_HTML NO)
     set(DOXYGEN_GENERATE_XML YES)
+    # All doxygen comments are in header files. Processing cpp files
+    # produces duplicate C++ function definitions in doxygen, resulting
+    # in various problems.
+    # See https://github.com/breathe-doc/breathe/issues/772
+    set(DOXYGEN_EXCLUDE_PATTERNS "*.cpp")
 
     doxygen_add_docs(
         projectm_doxygen
