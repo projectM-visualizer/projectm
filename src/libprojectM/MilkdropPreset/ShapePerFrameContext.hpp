@@ -8,6 +8,10 @@ namespace MilkdropPreset {
 class PerFrameContext;
 class CustomShape;
 
+/**
+ * @class ShapePerFrameContext
+ * @brief Contains the per-frame execution context and code for shapes. 
+ **/
 class ShapePerFrameContext
 {
 public:
@@ -60,42 +64,42 @@ public:
     projectm_eval_code* perFrameCodeHandle{nullptr};     //!< The compiled per-frame code handle.
 
     // Expression variable pointers.
-    double* time{};
-    double* fps{};
-    double* frame{};
-    double* progress{};
-    double* q_vars[QVarCount]{};
-    double* t_vars[TVarCount]{};
-    double* bass{};
-    double* mid{};
-    double* treb{};
-    double* bass_att{};
-    double* mid_att{};
-    double* treb_att{};
-    double* r{};
-    double* g{};
-    double* b{};
-    double* a{};
-    double* r2{};
-    double* g2{};
-    double* b2{};
-    double* a2{};
-    double* border_r{};
-    double* border_g{};
-    double* border_b{};
-    double* border_a{};
-    double* x{};
-    double* y{};
-    double* rad{};
-    double* ang{};
-    double* sides{};
-    double* textured{};
-    double* additive{};
-    double* thick{};
-    double* num_inst{};
-    double* instance{};
-    double* tex_zoom{};
-    double* tex_ang{};
+    PRJM_EVAL_F* time{};
+    PRJM_EVAL_F* fps{};
+    PRJM_EVAL_F* frame{};
+    PRJM_EVAL_F* progress{};
+    PRJM_EVAL_F* q_vars[QVarCount]{};
+    PRJM_EVAL_F* t_vars[TVarCount]{};
+    PRJM_EVAL_F* bass{};
+    PRJM_EVAL_F* mid{};
+    PRJM_EVAL_F* treb{};
+    PRJM_EVAL_F* bass_att{};
+    PRJM_EVAL_F* mid_att{};
+    PRJM_EVAL_F* treb_att{};
+    PRJM_EVAL_F* r{};
+    PRJM_EVAL_F* g{};
+    PRJM_EVAL_F* b{};
+    PRJM_EVAL_F* a{};
+    PRJM_EVAL_F* r2{};
+    PRJM_EVAL_F* g2{};
+    PRJM_EVAL_F* b2{};
+    PRJM_EVAL_F* a2{};
+    PRJM_EVAL_F* border_r{};
+    PRJM_EVAL_F* border_g{};
+    PRJM_EVAL_F* border_b{};
+    PRJM_EVAL_F* border_a{};
+    PRJM_EVAL_F* x{};
+    PRJM_EVAL_F* y{};
+    PRJM_EVAL_F* rad{};
+    PRJM_EVAL_F* ang{};
+    PRJM_EVAL_F* sides{};
+    PRJM_EVAL_F* textured{};
+    PRJM_EVAL_F* additive{};
+    PRJM_EVAL_F* thick{};
+    PRJM_EVAL_F* num_inst{};
+    PRJM_EVAL_F* instance{};
+    PRJM_EVAL_F* tex_zoom{};
+    PRJM_EVAL_F* tex_ang{};
 };
 
 } // namespace MilkdropPreset
