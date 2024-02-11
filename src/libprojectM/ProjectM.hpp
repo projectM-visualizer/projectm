@@ -196,7 +196,7 @@ private:
     float m_hardCutSensitivity{2.0}; //!< Loudness sensitivity value for hard cuts.
     float m_beatSensitivity{1.0};    //!< General beat sensitivity modifier for presets.
     bool m_aspectCorrection{true};   //!< If true, corrects aspect ratio for non-rectangular windows.
-    float m_easterEgg{0.0};          //!< Random preset duration modifier. See TimeKeeper class.
+    float m_easterEgg{1.0};          //!< Random preset duration modifier. See TimeKeeper class.
     float m_previousFrameVolume{};   //!< Volume in previous frame, used for hard cuts.
 
     std::vector<std::string> m_textureSearchPaths; ///!< List of paths to search for texture files

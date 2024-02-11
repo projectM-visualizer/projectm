@@ -225,7 +225,7 @@ PROJECTM_EXPORT bool projectm_get_aspect_correction(projectm_handle instance);
  * <p>See function sampledPresetDuration() of the TimeKeeper class on how it is used.</p>
  *
  * @param instance The projectM instance handle.
- * @param value The new "easter egg" value.
+ * @param value The new "easter egg" value. Must be greater than zero, otherwise a default sigma value of 1.0 will be used.
  */
 PROJECTM_EXPORT void projectm_set_easter_egg(projectm_handle instance, float value);
 
