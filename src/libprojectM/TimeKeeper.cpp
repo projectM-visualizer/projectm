@@ -1,6 +1,7 @@
 #include "TimeKeeper.hpp"
 
 #include <algorithm>
+#include <random>
 
 namespace libprojectM {
 
@@ -105,7 +106,12 @@ double TimeKeeper::PresetTimeA()
 
 double TimeKeeper::sampledPresetDuration()
 {
-    std::normal_distribution<double> gaussianDistribution{m_presetDuration, m_easterEgg};
+    if (m_easterEgg < 0.001)
+    {
+        return m_presetDuration;
+    }
+
+    std::normal_distribution<double> gaussianDistribution(m_presetDuration, m_easterEgg);
     return std::max<double>(1.0, gaussianDistribution(m_randomGenerator));
 }
 
