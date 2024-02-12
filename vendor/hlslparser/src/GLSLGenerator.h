@@ -151,13 +151,15 @@ private:
     char                m_tex2DgradFunction[64];
     char                m_tex3DlodFunction[64];
     char                m_texCUBEbiasFunction[64];
-	char                m_texCUBElodFunction[ 64 ];
+    char                m_texCUBElodFunction[64];
     char                m_scalarSwizzle2Function[64];
     char                m_scalarSwizzle3Function[64];
     char                m_scalarSwizzle4Function[64];
     char                m_sinCosFunction[64];
-	char                m_bvecTernary[ 64 ];
-	char                m_modfFunction[64];
+    char                m_bvecTernary[64];
+    char                m_modfFunction[64];
+    char                m_acosFunction[64];
+    char                m_asinFunction[64];
 
     bool                m_error;
 
