@@ -611,6 +611,7 @@ const Intrinsic _intrinsic[] =
         INTRINSIC_FLOAT1_FUNCTION( "exp2" ),
         INTRINSIC_FLOAT1_FUNCTION( "log" ),
         INTRINSIC_FLOAT1_FUNCTION( "log2" ),
+        INTRINSIC_FLOAT1_FUNCTION( "log10" ),
         
         INTRINSIC_FLOAT1_FUNCTION( "ddx" ),
         INTRINSIC_FLOAT1_FUNCTION( "ddy" ),

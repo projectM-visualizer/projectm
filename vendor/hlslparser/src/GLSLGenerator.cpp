@@ -132,13 +132,15 @@ GLSLGenerator::GLSLGenerator() :
     m_tex2DbiasFunction[0]      = 0;
     m_tex3DlodFunction[0]       = 0;
     m_texCUBEbiasFunction[0]    = 0;
-	m_texCUBElodFunction[ 0 ] 	= 0;
+    m_texCUBElodFunction[0]     = 0;
     m_scalarSwizzle2Function[0] = 0;
     m_scalarSwizzle3Function[0] = 0;
     m_scalarSwizzle4Function[0] = 0;
     m_sinCosFunction[0]         = 0;
-	m_bvecTernary[ 0 ]			= 0;
+    m_bvecTernary[0]            = 0;
     m_modfFunction[0]           = 0;
+    m_acosFunction[0]           = 0;
+    m_asinFunction[0]           = 0;
     m_outputPosition            = false;
     m_outputTargets             = 0;
 }
@@ -166,6 +168,8 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
     ChooseUniqueName("texCUBEbias", m_texCUBEbiasFunction, sizeof(m_texCUBEbiasFunction));
 	ChooseUniqueName( "texCUBElod", m_texCUBElodFunction, sizeof( m_texCUBElodFunction ) );
 	ChooseUniqueName( "modf", m_modfFunction, sizeof( m_modfFunction ) );
+	ChooseUniqueName( "acos", m_acosFunction, sizeof( m_acosFunction ) );
+	ChooseUniqueName( "asin", m_asinFunction, sizeof( m_asinFunction ) );
 
     for (int i = 0; i < s_numReservedWords; ++i)
     {
@@ -389,6 +393,31 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
         } else {
             m_writer.WriteLine(0, "float %s(float x, out float ip) { return modf(x, ip); }", m_modfFunction);
         }
+    }
+    if (m_tree->NeedsFunction("acos"))
+    {
+        /* The shader model 3 implementation of acos and asin extends beyond the [-1,1]
+         * range. We need to mimic the behavior of the function outside of this defined
+         * domain. To do this, we bail out to a separate function that piecewise-defines
+         * a polynomial that qualitatively matches what we see under DX9. The DX9
+         * implementation itself is unknown, so this is only a rough match.
+         * 
+         * We also implement this as a separate function because we need to evaluate the
+         * argument multiple times. If the argument expression involves side-effects
+         * (such as post-increment or -decrement) the result would not be what we expect
+         * if we evaluated this equation as a macro in OutputExpression.
+         */
+        m_writer.WriteLine(0, "float %s(float x) { if (abs(x) > 1.0) { return 0.39269908169872415*(4-sign(x)*(abs(x) - 3.0)*(abs(x) - 3.0)); } else { return acos(x); } }", m_acosFunction);
+        m_writer.WriteLine(0, "vec2 %s(vec2 x) { vec2 ret; ret.x = %s(x.x); ret.y = %s(x.y); return ret; }", m_acosFunction, m_acosFunction, m_acosFunction);
+        m_writer.WriteLine(0, "vec3 %s(vec3 x) { vec3 ret; ret.x = %s(x.x); ret.y = %s(x.y); ret.z = %s(x.z); return ret; }", m_acosFunction, m_acosFunction, m_acosFunction, m_acosFunction);
+        m_writer.WriteLine(0, "vec4 %s(vec4 x) { vec4 ret; ret.x = %s(x.x); ret.y = %s(x.y); ret.z = %s(x.z); ret.w = %s(x.w); return ret; }", m_acosFunction, m_acosFunction, m_acosFunction, m_acosFunction, m_acosFunction);
+    }
+    if (m_tree->NeedsFunction("asin"))
+    {
+        m_writer.WriteLine(0, "float %s(float x) { if (abs(x) > 1.0) { return 0.39269908169872415*sign(x)*(abs(x) - 3.0)*(abs(x) - 3.0); } else { return asin(x); } }", m_asinFunction);
+        m_writer.WriteLine(0, "vec2 %s(vec2 x) { vec2 ret; ret.x = %s(x.x); ret.y = %s(x.y); return ret; }", m_asinFunction, m_asinFunction, m_asinFunction);
+        m_writer.WriteLine(0, "vec3 %s(vec3 x) { vec3 ret; ret.x = %s(x.x); ret.y = %s(x.y); ret.z = %s(x.z); return ret; }", m_asinFunction, m_asinFunction, m_asinFunction, m_asinFunction);
+        m_writer.WriteLine(0, "vec4 %s(vec4 x) { vec4 ret; ret.x = %s(x.x); ret.y = %s(x.y); ret.z = %s(x.z); ret.w = %s(x.w); return ret; }", m_asinFunction, m_asinFunction, m_asinFunction, m_asinFunction, m_asinFunction);
     }
 
     m_writer.WriteLine(0, "vec2  %s(float x) { return  vec2(x, x); }", m_scalarSwizzle2Function);
@@ -916,9 +945,45 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
                 Error("rsqrt expects 1 argument");
                 return;
             }
-            m_writer.Write("inversesqrt(");
+            /* The documentation says that these functions return NaN for negative
+             * arguments. However, testing with DX9 shader model 3 shows that they
+             * most definitely do take the absolute value of the argument and do
+             * NOT return NaN.
+             * See https://github.com/projectM-visualizer/projectm/issues/724
+             */
+            m_writer.Write("inversesqrt(abs(");
             OutputExpression(argument[0]);
-            m_writer.Write(")");
+            m_writer.Write("))");
+            handled = true;
+        }
+        else if (String_Equal(functionName, "sqrt") ||
+            String_Equal(functionName, "log") ||
+            String_Equal(functionName, "log2"))
+        {
+            HLSLExpression* argument[1];
+            if (GetFunctionArguments(functionCall, argument, 1) != 1)
+            {
+                Error("%s expects 1 argument", functionName);
+                return;
+            }
+            /* See rsqrt above */
+            m_writer.Write("%s(abs(", functionName);
+            OutputExpression(argument[0]);
+            m_writer.Write("))");
+            handled = true;
+        }
+        else if (String_Equal(functionName, "log10"))
+        {
+            HLSLExpression* argument[1];
+            if (GetFunctionArguments(functionCall, argument, 1) != 1)
+            {
+                Error("%s expects 1 argument", functionName);
+                return;
+            }
+            /* See rsqrt above regarding abs(). */
+            m_writer.Write("(log(abs(");
+            OutputExpression(argument[0]);
+            m_writer.Write("))/log(10.0))");
             handled = true;
         }
 
@@ -1029,6 +1094,14 @@ void GLSLGenerator::OutputIdentifier(const char* name)
     else if (String_Equal(name, "modf"))
     {
         name = m_modfFunction;
+    }
+    else if (String_Equal(name, "acos"))
+    {
+        name = m_acosFunction;
+    }
+    else if (String_Equal(name, "asin"))
+    {
+        name = m_asinFunction;
     }
     else 
     {
