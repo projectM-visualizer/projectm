@@ -15,6 +15,9 @@ void Border::InitVertexAttrib()
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
     glDisableVertexAttribArray(1);
+
+    std::array<Point, 4> vertices{};
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * 4, vertices.data(), GL_STREAM_DRAW);
 }
 
 void Border::Draw(const PerFrameContext& presetPerFrameContext)
@@ -59,7 +62,7 @@ void Border::Draw(const PerFrameContext& presetPerFrameContext)
 
             for (int rot = 0; rot < 4; rot++)
             {
-                glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * 4, vertices.data(), GL_DYNAMIC_DRAW);
+                glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Point) * 4, vertices.data());
                 glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
                 // Rotate 90 degrees
