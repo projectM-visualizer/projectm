@@ -30,6 +30,10 @@ void Waveform::InitVertexAttrib()
     glDisableVertexAttribArray(1);
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+    std::vector<Point> vertexData;
+    vertexData.resize(std::max(libprojectM::Audio::SpectrumSamples, libprojectM::Audio::WaveformSamples) * 2 + 2);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
 }
 
 void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
@@ -118,7 +122,7 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
                     break;
             }
 
-            glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * smoothedWave.size(), smoothedWave.data(), GL_DYNAMIC_DRAW);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Point) * smoothedWave.size(), smoothedWave.data());
             glDrawArrays(drawType, 0, static_cast<GLsizei>(smoothedWave.size()));
         }
     }

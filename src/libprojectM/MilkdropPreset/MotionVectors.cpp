@@ -137,7 +137,15 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
             }
 
             // Draw a row of lines.
-            glBufferData(GL_ARRAY_BUFFER, sizeof(MotionVectorVertex) * vertex, lineVertices.data(), GL_DYNAMIC_DRAW);
+            if (m_lastVertexCount >= vertex)
+            {
+                glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(MotionVectorVertex) * vertex, lineVertices.data());
+            }
+            else
+            {
+                glBufferData(GL_ARRAY_BUFFER, sizeof(MotionVectorVertex) * vertex, lineVertices.data(), GL_STREAM_DRAW);
+                m_lastVertexCount = vertex;
+            }
             glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(vertex));
         }
     }

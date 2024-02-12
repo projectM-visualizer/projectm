@@ -13,6 +13,9 @@ CustomShape::CustomShape(PresetState& presetState)
     : m_presetState(presetState)
     , m_perFrameContext(presetState.globalMemory, &presetState.globalRegisters)
 {
+    std::vector<TexturedPoint> vertexData;
+    vertexData.resize(102);
+
     glGenVertexArrays(1, &m_vaoIdTextured);
     glGenBuffers(1, &m_vboIdTextured);
 
@@ -30,6 +33,8 @@ CustomShape::CustomShape(PresetState& presetState)
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r))); // Color
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, u))); // Texture coordinate
 
+    glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
+
     glBindVertexArray(m_vaoIdUntextured);
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIdUntextured);
 
@@ -38,6 +43,8 @@ CustomShape::CustomShape(PresetState& presetState)
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x))); // Position
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r))); // Color
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
 
     RenderItem::Init();
 
@@ -58,6 +65,10 @@ void CustomShape::InitVertexAttrib()
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr); // points
     glDisableVertexAttribArray(1);
+
+    std::vector<Point> vertexData;
+    vertexData.resize(100);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
 }
 
 void CustomShape::Initialize(PresetFileParser& parsedFile, int index)
@@ -217,7 +228,7 @@ void CustomShape::Draw()
 
             glBindBuffer(GL_ARRAY_BUFFER, m_vboIdTextured);
 
-            glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * (sides + 2), vertexData.data(), GL_DYNAMIC_DRAW);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(TexturedPoint) * (sides + 2), vertexData.data());
 
             glBindVertexArray(m_vaoIdTextured);
             glDrawArrays(GL_TRIANGLE_FAN, 0, sides + 2);
@@ -231,7 +242,7 @@ void CustomShape::Draw()
             // Untextured (creates a color gradient: center=r/g/b/a to border=r2/b2/g2/a2)
             glBindBuffer(GL_ARRAY_BUFFER, m_vboIdUntextured);
 
-            glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * (sides + 2), vertexData.data(), GL_DYNAMIC_DRAW);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(TexturedPoint) * (sides + 2), vertexData.data());
 
             m_presetState.untexturedShader.Bind();
             m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
@@ -304,7 +315,7 @@ void CustomShape::Draw()
                         break;
                 }
 
-                glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(sizeof(Point) * sides), points.data(), GL_DYNAMIC_DRAW);
+                glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizei>(sizeof(Point) * sides), points.data());
                 glDrawArrays(GL_LINE_LOOP, 0, sides);
             }
         }
