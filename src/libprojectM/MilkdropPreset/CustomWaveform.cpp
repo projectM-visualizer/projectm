@@ -30,6 +30,10 @@ void CustomWaveform::InitVertexAttrib()
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(ColoredPoint), nullptr);                                    // points
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(ColoredPoint), reinterpret_cast<void*>(sizeof(float) * 2)); // colors
+
+    std::vector<ColoredPoint> vertexData;
+    vertexData.resize(std::max(libprojectM::Audio::SpectrumSamples, libprojectM::Audio::WaveformSamples) * 2 + 2);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
 }
 
 void CustomWaveform::Initialize(PresetFileParser& parsedFile, int index)
@@ -224,7 +228,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
                 break;
         }
 
-        glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * smoothedVertexCount, pointsSmoothed.data(), GL_DYNAMIC_DRAW);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(ColoredPoint) * smoothedVertexCount, pointsSmoothed.data());
         glDrawArrays(drawType, 0, smoothedVertexCount);
     }
 
