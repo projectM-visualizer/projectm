@@ -16,6 +16,8 @@
 namespace libprojectM {
 namespace MilkdropPreset {
 
+static constexpr uint32_t VerticesPerDrawCall = 1024 * 3;
+
 PerPixelMesh::PerPixelMesh()
     : RenderItem()
 {
@@ -28,6 +30,8 @@ PerPixelMesh::PerPixelMesh()
 
 void PerPixelMesh::InitVertexAttrib()
 {
+    m_drawVertices.resize(VerticesPerDrawCall); // Fixed size, may scale it later depending on GPU caps.
+
     glGenVertexArrays(1, &m_vaoID);
     glGenBuffers(1, &m_vboID);
 
@@ -48,6 +52,9 @@ void PerPixelMesh::InitVertexAttrib()
     glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, centerX)));   // Center coord
     glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, distanceX))); // Distance
     glVertexAttribPointer(5, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, stretchX)));  // Stretch
+
+    // Pre-allocate vertex buffer
+    glBufferData(GL_ARRAY_BUFFER, sizeof(MeshVertex) * m_drawVertices.size(), m_drawVertices.data(), GL_STREAM_DRAW);
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -137,7 +144,6 @@ void PerPixelMesh::InitializeMesh(const PresetState& presetState)
         // Grid size has changed, reallocate vertex buffers
         m_vertices.resize((m_gridSizeX + 1) * (m_gridSizeY + 1));
         m_listIndices.resize(m_gridSizeX * m_gridSizeY * 6);
-        m_drawVertices.resize(1024 * 3); // Fixed size, may scale it later depending on GPU caps.
     }
     else if (m_viewportWidth == presetState.renderContext.viewportSizeX &&
              m_viewportHeight == presetState.renderContext.viewportSizeY)
@@ -381,7 +387,7 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
 
         if (trianglesQueued > 0)
         {
-            glBufferData(GL_ARRAY_BUFFER, sizeof(MeshVertex) * trianglesQueued * 3, m_drawVertices.data(), GL_DYNAMIC_DRAW);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(MeshVertex) * trianglesQueued * 3, m_drawVertices.data());
             glDrawArrays(GL_TRIANGLES, 0, trianglesQueued * 3);
         }
     }

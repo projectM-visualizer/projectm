@@ -32,6 +32,10 @@ void FinalComposite::InitVertexAttrib()
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, r)));      // Colors
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, u)));      // Textures
     glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, radius))); // Radius/Angle
+
+    // Pre-allocate vertex and index buffers
+    glBufferData(GL_ARRAY_BUFFER, sizeof(MeshVertex) * vertexCount, m_vertices.data(), GL_STREAM_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * m_indices.size(), m_indices.data(), GL_STREAM_DRAW);
 }
 
 void FinalComposite::LoadCompositeShader(const PresetState& presetState)
@@ -121,7 +125,7 @@ void FinalComposite::Draw(const PresetState& presetState, const PerFrameContext&
         glDisable(GL_BLEND);
         glBindVertexArray(m_vaoID);
         glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(MeshVertex) * vertexCount, m_vertices.data(), GL_DYNAMIC_DRAW);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(MeshVertex) * vertexCount, m_vertices.data());
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         m_compositeShader->LoadVariables(presetState, perFrameContext);
@@ -303,7 +307,7 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
     // Store indices.
     // ToDo: Probably don't need to store m_indices
     glBindVertexArray(m_vaoID);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * m_indices.size(), m_indices.data(), GL_STATIC_DRAW);
+    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(int) * m_indices.size(), m_indices.data());
     glBindVertexArray(0);
 }
 
