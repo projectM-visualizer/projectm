@@ -612,7 +612,7 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
     // Then generate GLSL from the resulting parser tree
     if (!generator.Generate(&tree, M4::GLSLGenerator::Target_FragmentShader,
                             MilkdropStaticShaders::Get()->GetGlslGeneratorVersion(),
-                            "PS"))
+                            "PS", M4::GLSLGenerator::Options(M4::GLSLGenerator::Flag_AlternateNanPropagation)))
     {
         throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: GLSL generating failed.\nSource:\n" + sourcePreprocessed);
     }
