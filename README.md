@@ -6,7 +6,7 @@
 
 ![Discord Shield](https://discordapp.com/api/guilds/737206408482914387/widget.png?style=shield) [Chat with us on Discord](https://discord.gg/mMrxAqaa3W)
 
-![Logo](https://github.com/projectM-visualizer/projectm/raw/master/web/logo.png)
+![Logo](https://github.com/projectM-visualizer/projectm/raw/master/docs/web/logo.png)
 
 ## projectM - The most advanced open-source music visualizer
 
@@ -119,13 +119,13 @@ presets [here](https://mischa.lol/projectM/presets_community.zip) (123MB zipped)
 
 ### Also Featured In
 
-[![Kodi](web/kodi.png) Kodi (formerly XBMC)](https://kodi.tv/)
+[![Kodi](docs/web/kodi.png) Kodi (formerly XBMC)](https://kodi.tv/)
 
-[![Helix](web/helix.jpg) Helix](https://web.archive.org/web/20180628174410/http://ghostfiregames.com/helixhome.html)
+[![Helix](docs/web/helix.jpg) Helix](https://web.archive.org/web/20180628174410/http://ghostfiregames.com/helixhome.html)
 
-[![Silverjuke](web/silverjuke.png) Silverjuke (FOSS Jukebox)](https://www.silverjuke.net)
+[![Silverjuke](docs/web/silverjuke.png) Silverjuke (FOSS Jukebox)](https://www.silverjuke.net)
 
-[![VLC Media Player](web/vlc.png) VLC Media Player (AKA VideoLAN Client)](https://www.videolan.org/vlc/)
+[![VLC Media Player](docs/web/vlc.png) VLC Media Player (AKA VideoLAN Client)](https://www.videolan.org/vlc/)
 
 Reminder: These are all third-party integrations of libprojectM and not developed or supported by the projectM
 development team. Please report bugs in those applications to their respective developers.
@@ -134,21 +134,21 @@ development team. Please report bugs in those applications to their respective d
 
 ## Screenshots
 
-![Screenshot](web/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.31.20%20AM.png)
+![Screenshot](docs/web/projectM_screenshots/Screen%20Shot%202014-08-25%20at%2012.31.20%20AM.png)
 
-![Screenshot](web/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.33.50%20AM.png)
+![Screenshot](docs/web/projectM_screenshots/Screen%20Shot%202014-08-25%20at%2012.33.50%20AM.png)
 
-![Screenshot](web/projectM%20screenshots/Screen%20Shot%202014-07-18%20at%202.14.41%20PM.png)
+![Screenshot](docs/web/projectM_screenshots/Screen%20Shot%202014-07-18%20at%202.14.41%20PM.png)
 
-![Screenshot](web/projectM%20screenshots/Screen%20Shot%202014-07-18%20at%202.13.53%20PM.png)
+![Screenshot](docs/web/projectM_screenshots/Screen%20Shot%202014-07-18%20at%202.13.53%20PM.png)
 
-![Screenshot](web/projectM%20screenshots/Screen%20Shot%202014-07-18%20at%202.15.36%20PM.png)
+![Screenshot](docs/web/projectM_screenshots/Screen%20Shot%202014-07-18%20at%202.15.36%20PM.png)
 
-![Screenshot](web/projectM%20screenshots/Screen%20Shot%202014-08-16%20at%204.49.32%20PM.png)
+![Screenshot](docs/web/projectM_screenshots/Screen%20Shot%202014-08-16%20at%204.49.32%20PM.png)
 
-![Screenshot](web/projectM%20screenshots/Screen%20Shot%202014-08-16%20at%204.50.37%20PM.png)
+![Screenshot](docs/web/projectM_screenshots/Screen%20Shot%202014-08-16%20at%204.50.37%20PM.png)
 
-![Screenshot](web/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.31.07%20AM.png)
+![Screenshot](docs/web/projectM_screenshots/Screen%20Shot%202014-08-25%20at%2012.31.07%20AM.png)
 
 ---
 
