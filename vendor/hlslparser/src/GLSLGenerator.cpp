@@ -141,6 +141,7 @@ GLSLGenerator::GLSLGenerator() :
     m_modfFunction[0]           = 0;
     m_acosFunction[0]           = 0;
     m_asinFunction[0]           = 0;
+    m_altMultFunction[0]        = 0;
     m_outputPosition            = false;
     m_outputTargets             = 0;
 }
@@ -170,6 +171,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
 	ChooseUniqueName( "modf", m_modfFunction, sizeof( m_modfFunction ) );
 	ChooseUniqueName( "acos", m_acosFunction, sizeof( m_acosFunction ) );
 	ChooseUniqueName( "asin", m_asinFunction, sizeof( m_asinFunction ) );
+	ChooseUniqueName( "mult", m_altMultFunction, sizeof( m_altMultFunction ) );
 
     for (int i = 0; i < s_numReservedWords; ++i)
     {
@@ -420,6 +422,14 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
         m_writer.WriteLine(0, "vec2 %s(vec2 x) { vec2 ret; ret.x = %s(x.x); ret.y = %s(x.y); return ret; }", m_asinFunction, m_asinFunction, m_asinFunction);
         m_writer.WriteLine(0, "vec3 %s(vec3 x) { vec3 ret; ret.x = %s(x.x); ret.y = %s(x.y); ret.z = %s(x.z); return ret; }", m_asinFunction, m_asinFunction, m_asinFunction, m_asinFunction);
         m_writer.WriteLine(0, "vec4 %s(vec4 x) { vec4 ret; ret.x = %s(x.x); ret.y = %s(x.y); ret.z = %s(x.z); ret.w = %s(x.w); return ret; }", m_asinFunction, m_asinFunction, m_asinFunction, m_asinFunction, m_asinFunction);
+    }
+
+    if (m_options.flags & Flag_AlternateNanPropagation) {
+        /* Implement alternate functions that propagate NaNs like shader model 3 and DX9. */
+        m_writer.WriteLine(0, "float %s(float x, float y) { if (x == 0.0 || y == 0.0) { return 0.0; } else { return (x * y); } }", m_altMultFunction);
+        m_writer.WriteLine(0, "vec2 %s(vec2 x, vec2 y) { return vec2(%s(x.x, y.x), %s(x.y, y.y)); }", m_altMultFunction, m_altMultFunction, m_altMultFunction);
+        m_writer.WriteLine(0, "vec3 %s(vec3 x, vec3 y) { return vec3(%s(x.x, y.x), %s(x.y, y.y), %s(x.z, y.z)); }", m_altMultFunction, m_altMultFunction, m_altMultFunction, m_altMultFunction);
+        m_writer.WriteLine(0, "vec4 %s(vec4 x, vec4 y) { return vec4(%s(x.x, y.x), %s(x.y, y.y), %s(x.z, y.z), %s(x.w, y.w)); }", m_altMultFunction, m_altMultFunction, m_altMultFunction, m_altMultFunction, m_altMultFunction);
     }
 
     m_writer.WriteLine(0, "vec2  %s(float x) { return  vec2(x, x); }", m_scalarSwizzle2Function);
@@ -735,11 +745,26 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
                 OutputExpression(binaryExpression->expression2, dstType2);
                 m_writer.Write(")))");
             } else {
-			    m_writer.Write("(");
-			    OutputExpression(binaryExpression->expression1, dstType1);
-			    m_writer.Write("%s", op);
-			    OutputExpression(binaryExpression->expression2, dstType2);
-			    m_writer.Write(")");
+                bool handled = false;
+                if (m_options.flags & Flag_AlternateNanPropagation) {
+                    if (binaryExpression->binaryOp == HLSLBinaryOp_Mul) {
+                        // Punt to function that does not follow IEEE 754 NaN propagation rules
+                        m_writer.Write("%s(", m_altMultFunction);
+                        OutputExpression(binaryExpression->expression1, dstType1);
+                        m_writer.Write(",", op);
+                        OutputExpression(binaryExpression->expression2, dstType2);
+                        m_writer.Write(")");
+                        handled = true;
+                    }
+                }
+
+                if (!handled) {
+                    m_writer.Write("(");
+                    OutputExpression(binaryExpression->expression1, dstType1);
+                    m_writer.Write("%s", op);
+                    OutputExpression(binaryExpression->expression2, dstType2);
+                    m_writer.Write(")");
+                }
             }
 		}
     }

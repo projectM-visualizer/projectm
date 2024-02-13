@@ -620,8 +620,8 @@ const Intrinsic _intrinsic[] =
         INTRINSIC_FLOAT2_FUNCTION( "step" ),
         INTRINSIC_FLOAT2_FUNCTION( "reflect" ),
 
-		INTRINSIC_FLOAT1_FUNCTION("isnan"),
-		INTRINSIC_FLOAT1_FUNCTION("isinf"),
+		Intrinsic("isnan",    HLSLBaseType_Bool, HLSLBaseType_Float),
+		Intrinsic("isinf",    HLSLBaseType_Bool, HLSLBaseType_Float),
 
 		Intrinsic("asuint",    HLSLBaseType_Uint, HLSLBaseType_Float),
 

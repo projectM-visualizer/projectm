@@ -43,6 +43,7 @@ public:
         Flag_EmulateConstantBuffer = 1 << 1,
         Flag_PackMatrixRowMajor = 1 << 2,
         Flag_LowerMatrixMultiplication = 1 << 3,
+        Flag_AlternateNanPropagation = 1 << 4,
     };
 
     struct Options
@@ -53,6 +54,12 @@ public:
         Options()
         {
             flags = 0;
+            constantBufferPrefix = "";
+        }
+
+        Options(unsigned int _flags)
+        {
+            flags = _flags;
             constantBufferPrefix = "";
         }
     };
@@ -160,6 +167,7 @@ private:
     char                m_modfFunction[64];
     char                m_acosFunction[64];
     char                m_asinFunction[64];
+    char                m_altMultFunction[64];
 
     bool                m_error;
 
