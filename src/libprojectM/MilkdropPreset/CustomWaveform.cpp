@@ -157,10 +157,10 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
         pointsTransformed[sample].x = static_cast<float>((*m_perPointContext.x * 2.0 - 1.0) * m_presetState.renderContext.invAspectX);
         pointsTransformed[sample].y = static_cast<float>((*m_perPointContext.y * -2.0 + 1.0) * m_presetState.renderContext.invAspectY);
 
-        pointsTransformed[sample].r = static_cast<float>(*m_perPointContext.r);
-        pointsTransformed[sample].g = static_cast<float>(*m_perPointContext.g);
-        pointsTransformed[sample].b = static_cast<float>(*m_perPointContext.b);
-        pointsTransformed[sample].a = static_cast<float>(*m_perPointContext.a);
+        pointsTransformed[sample].r = Renderer::color_modulo(*m_perPointContext.r);
+        pointsTransformed[sample].g = Renderer::color_modulo(*m_perPointContext.g);
+        pointsTransformed[sample].b = Renderer::color_modulo(*m_perPointContext.b);
+        pointsTransformed[sample].a = Renderer::color_modulo(*m_perPointContext.a);
     }
 
     std::vector<ColoredPoint> pointsSmoothed(sampleCount * 2);

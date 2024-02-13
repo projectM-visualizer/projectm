@@ -3,6 +3,7 @@
 #include "PresetFileParser.hpp"
 
 #include <Renderer/TextureManager.hpp>
+#include <Renderer/RenderItem.hpp>
 
 #include <vector>
 
@@ -155,15 +156,21 @@ void CustomShape::Draw()
         vertexData[0].u = 0.5f;
         vertexData[0].v = 0.5f;
 
-        vertexData[0].r = static_cast<float>(*m_perFrameContext.r);
-        vertexData[0].g = static_cast<float>(*m_perFrameContext.g);
-        vertexData[0].b = static_cast<float>(*m_perFrameContext.b);
-        vertexData[0].a = static_cast<float>(*m_perFrameContext.a);
+        // x = f*255.0 & 0xFF = (f*255.0) % 256
+        // f' = x/255.0 = f % (256/255)
+        // 1.0 -> 255 (0xFF)
+        // 2.0 -> 254 (0xFE)
+        // -1.0 -> 0x01
 
-        vertexData[1].r = static_cast<float>(*m_perFrameContext.r2);
-        vertexData[1].g = static_cast<float>(*m_perFrameContext.g2);
-        vertexData[1].b = static_cast<float>(*m_perFrameContext.b2);
-        vertexData[1].a = static_cast<float>(*m_perFrameContext.a2);
+        vertexData[0].r = Renderer::color_modulo(*m_perFrameContext.r);
+        vertexData[0].g = Renderer::color_modulo(*m_perFrameContext.g);
+        vertexData[0].b = Renderer::color_modulo(*m_perFrameContext.b);
+        vertexData[0].a = Renderer::color_modulo(*m_perFrameContext.a);
+
+        vertexData[1].r = Renderer::color_modulo(*m_perFrameContext.r2);
+        vertexData[1].g = Renderer::color_modulo(*m_perFrameContext.g2);
+        vertexData[1].b = Renderer::color_modulo(*m_perFrameContext.b2);
+        vertexData[1].a = Renderer::color_modulo(*m_perFrameContext.a2);
 
         for (int i = 1; i < sides + 1; i++)
         {
