@@ -986,6 +986,25 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
             m_writer.Write("))/log(10.0))");
             handled = true;
         }
+        else if (String_Equal(functionName, "pow"))
+        {
+            HLSLExpression* argument[2];
+            if (GetFunctionArguments(functionCall, argument, 2) != 2)
+            {
+                Error("%s expects 2 arguments", functionName);
+                return;
+            }
+            /* See rsqrt above regarding abs(). Note that this behaves
+             * as expected on some drivers but not others, so we add
+             * the abs() call for compatibility across drivers.
+             */
+            m_writer.Write("pow(abs(");
+            OutputExpression(argument[0]);
+            m_writer.Write("),");
+            OutputExpression(argument[1]);
+            m_writer.Write(")");
+            handled = true;
+        }
 
         if (!handled)
         {
