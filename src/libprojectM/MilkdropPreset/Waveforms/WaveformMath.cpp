@@ -40,11 +40,23 @@ auto WaveformMath::GetVertices(const PresetState& presetState,
                   begin(m_pcmDataR));
     }
 
-    // Scale waveform data to [-1, 1] range
-    for (size_t i = 0; i < m_pcmDataL.size(); ++i)
+    // Scale and smooth waveform data
+    float scale = presetState.waveScale / 128.0f;
+    // The first sample gets scaled directly because it is not mixed with other samples.
+    m_pcmDataL[0] *= scale;
+    m_pcmDataR[0] *= scale;
+    /* If s[i] is output sample i and p[i] is input sample i, then:
+     * s[0] = waveScale*p[i];
+     * s[i] = waveScale*(1-waveSmoothing)*p[i] + waveSmoothing*s[i-1]
+     * Note that this is an IIR filter with alpha = waveSmoothing.
+     */
+    float mix2 = presetState.waveSmoothing; // amount of previous sample to add to this sample
+    float mix1 = scale * (1.0f - mix2); // amount to scale this sample
+    // Scale and mix samples after the first one.
+    for (size_t i = 1; i < m_pcmDataL.size(); ++i)
     {
-        m_pcmDataL.at(i) /= 128.0f;
-        m_pcmDataR.at(i) /= 128.0f;
+        m_pcmDataL[i] = m_pcmDataL[i]*mix1 + m_pcmDataL[i-1]*mix2;
+        m_pcmDataR[i] = m_pcmDataR[i]*mix1 + m_pcmDataR[i-1]*mix2;
     }
 
     // Aspect multipliers
