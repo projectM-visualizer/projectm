@@ -40,9 +40,11 @@ public:
      * @brief Returns a random texture descriptor, optionally using a prefix (after the `randXX_` name).
      * Will use the default texture loading logic by calling GetTexture() if a texture was selected.
      * @param randomName The filename prefix to filter. If empty, all available textures are matches. Case-insensitive.
-     * @return A texture descriptor with the random texture and a default sampler, or an empty sampler if no texture could be matched.
+     * @param type The type of texture to load.
+     * @return A texture descriptor with the random texture of specified type and a default sampler,
+     *  or an empty sampler if no texture could be matched.
      */
-    auto GetRandomTexture(const std::string& randomName) -> TextureSamplerDescriptor;
+    auto GetRandomTexture(const std::string& randomName, GLenum type = GL_TEXTURE_2D) -> TextureSamplerDescriptor;
 
     /**
      * @brief Returns a sampler for the given name.

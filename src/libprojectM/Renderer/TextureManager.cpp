@@ -238,7 +238,7 @@ auto TextureManager::LoadTexture(const std::string& fileName, const std::string&
     return {newTexture, sampler, name, unqualifiedName};
 }
 
-auto TextureManager::GetRandomTexture(const std::string& randomName) -> TextureSamplerDescriptor
+auto TextureManager::GetRandomTexture(const std::string& randomName, GLenum type) -> TextureSamplerDescriptor
 {
     std::string selectedFilename;
 
@@ -250,8 +250,11 @@ auto TextureManager::GetRandomTexture(const std::string& randomName) -> TextureS
     std::string lowerCaseName(randomName);
     std::transform(lowerCaseName.begin(), lowerCaseName.end(), lowerCaseName.begin(), tolower);
 
-    if (m_scannedTextureFiles.empty())
+    if (m_textures.empty())
     {
+#ifdef DEBUG
+        std::cerr << "[TextureManager] Can't create " << randomName << " with no scanned textures" << std::endl;
+#endif
         return {};
     }
 
@@ -261,33 +264,28 @@ auto TextureManager::GetRandomTexture(const std::string& randomName) -> TextureS
         prefix = lowerCaseName.substr(7);
     }
 
-    if (prefix.empty())
+    std::vector<std::string> filteredTextures;
+    auto prefixLength = prefix.length();
+    for (auto it = m_textures.begin(); it != m_textures.end(); it++)
     {
-        // Just pick a random index.
-        std::uniform_int_distribution<size_t> distribution(0, m_scannedTextureFiles.size() - 1);
-        selectedFilename = m_scannedTextureFiles.at(distribution(rndEngine)).lowerCaseBaseName;
+        // Filter texture names based on the prefix and the type
+        if ((it->first.compare(0, prefixLength, prefix) == 0) &&
+                (it->second->Type() == type))
+            filteredTextures.emplace_back(it->first);
     }
-    else
+
+    if (!filteredTextures.empty())
     {
-
-        std::vector<ScannedFile> filteredFiles;
-        auto prefixLength = prefix.length();
-        std::copy_if(m_scannedTextureFiles.begin(), m_scannedTextureFiles.end(),
-                     std::back_inserter(filteredFiles),
-                     [&prefix, prefixLength](const ScannedFile& file) {
-                         return file.lowerCaseBaseName.substr(0, prefixLength) == prefix;
-                     });
-
-        if (!filteredFiles.empty())
-        {
-            std::uniform_int_distribution<size_t> distribution(0, filteredFiles.size() - 1);
-            selectedFilename = filteredFiles.at(distribution(rndEngine)).lowerCaseBaseName;
-        }
+        std::uniform_int_distribution<size_t> distribution(0, filteredTextures.size() - 1);
+        selectedFilename = filteredTextures.at(distribution(rndEngine));
     }
 
     // If a prefix was set and no file matched, filename can be empty.
     if (selectedFilename.empty())
     {
+#ifdef DEBUG
+        std::cerr << "[TextureManager] Random texture " << lowerCaseName << " has no filename" << std::endl;
+#endif
         return {};
     }
 
