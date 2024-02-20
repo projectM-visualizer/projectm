@@ -256,7 +256,9 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
     // Output the special function used to access rows in a matrix.
     m_writer.WriteLine(0, "vec2 %s(mat2 m, int i) { return vec2( m[0][i], m[1][i] ); }", m_matrixRowFunction);
     m_writer.WriteLine(0, "vec3 %s(mat3 m, int i) { return vec3( m[0][i], m[1][i], m[2][i] ); }", m_matrixRowFunction);
+    m_writer.WriteLine(0, "vec3 %s(mat3x4 m, int i) { return vec3( m[0][i], m[1][i], m[2][i] ); }", m_matrixRowFunction);
     m_writer.WriteLine(0, "vec4 %s(mat4 m, int i) { return vec4( m[0][i], m[1][i], m[2][i], m[3][i] ); }", m_matrixRowFunction);
+    m_writer.WriteLine(0, "vec4 %s(mat4x3 m, int i) { return vec4( m[0][i], m[1][i], m[2][i], m[3][i] ); }", m_matrixRowFunction);
 
     // Output the special function used to do matrix cast for OpenGL 2.0
     if (m_versionLegacy)
