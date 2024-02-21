@@ -971,12 +971,6 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
         }
         else if (String_Equal(functionName, "rsqrt"))
         {
-            HLSLExpression* argument[1];
-            if (GetFunctionArguments(functionCall, argument, 1) != 1)
-            {
-                Error("rsqrt expects 1 argument");
-                return;
-            }
             /* The documentation says that these functions return NaN for negative
              * arguments. However, testing with DX9 shader model 3 shows that they
              * most definitely do take the absolute value of the argument and do
@@ -984,7 +978,7 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
              * See https://github.com/projectM-visualizer/projectm/issues/724
              */
             m_writer.Write("inversesqrt(abs(");
-            OutputExpression(argument[0]);
+            OutputExpressionList(functionCall->argument, functionCall->function->argument);
             m_writer.Write("))");
             handled = true;
         }
@@ -992,29 +986,17 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
             String_Equal(functionName, "log") ||
             String_Equal(functionName, "log2"))
         {
-            HLSLExpression* argument[1];
-            if (GetFunctionArguments(functionCall, argument, 1) != 1)
-            {
-                Error("%s expects 1 argument", functionName);
-                return;
-            }
             /* See rsqrt above */
             m_writer.Write("%s(abs(", functionName);
-            OutputExpression(argument[0]);
+            OutputExpressionList(functionCall->argument, functionCall->function->argument);
             m_writer.Write("))");
             handled = true;
         }
         else if (String_Equal(functionName, "log10"))
         {
-            HLSLExpression* argument[1];
-            if (GetFunctionArguments(functionCall, argument, 1) != 1)
-            {
-                Error("%s expects 1 argument", functionName);
-                return;
-            }
             /* See rsqrt above regarding abs(). */
             m_writer.Write("(log(abs(");
-            OutputExpression(argument[0]);
+            OutputExpressionList(functionCall->argument, functionCall->function->argument);
             m_writer.Write("))/log(10.0))");
             handled = true;
         }
@@ -1031,9 +1013,9 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
              * the abs() call for compatibility across drivers.
              */
             m_writer.Write("pow(abs(");
-            OutputExpression(argument[0]);
+            OutputExpression(argument[0], &functionCall->function->returnType);
             m_writer.Write("),");
-            OutputExpression(argument[1]);
+            OutputExpression(argument[1], &functionCall->function->returnType);
             m_writer.Write(")");
             handled = true;
         }
