@@ -109,9 +109,6 @@ if(ENABLE_EMSCRIPTEN)
     # Note: The "SHELL:" syntax is required to pass each argument as-is, but without quotes and CMake's de-duplication.
     add_compile_options(
             "SHELL:-s USE_SDL=2"
-            "SHELL:-s MIN_WEBGL_VERSION=2"
-            "SHELL:-s MAX_WEBGL_VERSION=2"
-            "SHELL:-s ALLOW_MEMORY_GROWTH=1"
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
             )
 
@@ -120,6 +117,7 @@ if(ENABLE_EMSCRIPTEN)
             "SHELL:-s MIN_WEBGL_VERSION=2"
             "SHELL:-s MAX_WEBGL_VERSION=2"
             "SHELL:-s FULL_ES2=1"
+            "SHELL:-s FULL_ES3=1"
             "SHELL:-s ALLOW_MEMORY_GROWTH=1"
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
             )
