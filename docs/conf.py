@@ -22,10 +22,10 @@ copyright = '2024, libprojectM committers'
 author = 'libprojectM committers'
 
 # The short X.Y version
-version = '4.0.0'
+version = '4.1.0'
 
 # The full version, including alpha/beta/rc tags
-release = '4.0.0'
+release = '4.1.0'
 
 
 # -- General configuration ---------------------------------------------------
