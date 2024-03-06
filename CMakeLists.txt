@@ -81,11 +81,6 @@ option(ENABLE_CXX_INTERFACE "Enable exporting C++ symbols for ProjectM and PCM c
 
 if(ENABLE_SYSTEM_GLM)
     find_package(GLM REQUIRED)
-else()
-    add_library(GLM::GLM INTERFACE IMPORTED)
-    set_target_properties(GLM::GLM PROPERTIES
-            INTERFACE_INCLUDE_DIRECTORIES "${PROJECTM_SOURCE_DIR}/vendor"
-            )
 endif()
 
 if(NOT BUILD_SHARED_LIBS AND CMAKE_SYSTEM_NAME STREQUAL "Windows")
