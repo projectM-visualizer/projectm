@@ -224,6 +224,7 @@ If you maintain packages of libprojectM, we are happy to work with you! Please n
 - The "canonical" application for actually viewing the visualizations is
   now [projectM-SDL](https://github.com/projectM-visualizer/frontend-sdl2), based on libSDL2 because it supports audio
   input and is completely cross-platform.
+- If you like Rust, there is a [SDL3 rust frontend](https://github.com/projectM-visualizer/frontend-sdl-rust) in the works looking for contributors.
 - This is an open source project! If you don't like something, feel free to contribute improvements!
 - Yes, you are looking at the official version. This is not a fork.
 
