@@ -43,7 +43,7 @@ void FinalComposite::LoadCompositeShader(const PresetState& presetState)
     if (presetState.compositeShaderVersion > 0)
     {
         m_compositeShader = std::make_unique<MilkdropShader>(MilkdropShader::ShaderType::CompositeShader);
-        if (!presetState.warpShader.empty())
+        if (!presetState.compositeShader.empty())
         {
             try
             {
