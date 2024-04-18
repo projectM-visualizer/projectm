@@ -54,7 +54,7 @@ TEST(PresetFileParser, EmptyValue)
     EXPECT_EQ(values.at("empty_value"), "");
 }
 
-TEST(PresetFileParser, EmptyKey)
+TEST(PresetFileParser, ValueWithSpaceDelimiter)
 {
     PresetFileParser parser;
     ASSERT_TRUE(parser.Read(std::string(fileParserTestDataPath) + "parser-simple.milk"));
@@ -66,7 +66,7 @@ TEST(PresetFileParser, EmptyKey)
     EXPECT_EQ(values.at("value_with_space"), "123");
 }
 
-TEST(PresetFileParser, ValueWithSpaceDelimiter)
+TEST(PresetFileParser, EmptyKey)
 {
     PresetFileParser parser;
     ASSERT_TRUE(parser.Read(std::string(fileParserTestDataPath) + "parser-simple.milk"));
