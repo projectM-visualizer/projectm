@@ -61,7 +61,6 @@ TEST(PresetFileParser, ValueWithSpaceDelimiter)
 
     const auto& values = parser.PresetValues();
 
-    // Lines with empty key should be ignored
     ASSERT_TRUE(values.find("value_with_space") != values.end());
     EXPECT_EQ(values.at("value_with_space"), "123");
 }
