@@ -1,0 +1,106 @@
+name: Bug Report (projectM Users)
+description: File a report for a use-related issue with projectM, e.g. application crashes, rendering and audio recording problems.
+title: "[APP BUG] "
+labels: ["triage","bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        You have encountered an issue with a projectM frontend or a plug-in for a third-party application? We're glad to see you reporting that to us! To understand your problem in detail, please fill out this form to the best of your knowledge so we can narrow down and fix it as fast as possible.
+        
+        If you want to report an issue regarding projectM _development_, e.g. building any project, integrating it into another project or having API issues, please go back and use the developer bug form instead. We ask a few different questions there.
+        
+        ### Bugs regarding the projectM Android App
+        Note that **we will not accept bug reports for the Android apps** in the Google Play Store. These apps are not being developed by the projectM team. Please report issues directly to the app author via the contact information provided in the Play Store.
+  - type: checkboxes
+    id: reporter_ack
+    attributes:
+      label: "Please confirm the following points:"
+      options:
+        - label: This report is NOT about the Android apps in the Play Store
+          required: true
+        - label: I have [searched the project page](https://github.com/search?q=org%3AprojectM-visualizer+type%3Aissue+&type=issues) to check if the issue was already reported
+          required: true
+  - type: markdown
+    attributes:
+      value: |
+        Now, tell us more about where and with which version you encountered the issue. We will take care about moving the report to the correct repository during triage.
+  - type: dropdown
+    id: project
+    attributes:
+      label: Affected Application
+      description: In which application did you encounter an issue?
+      options:
+        - I don't know / Other (please elaborate below)
+        - projectM Standalone SDL2 Frontend (includes the Steam app)
+        - projectM Standalone Qt Frontend (projectm-pulseaudio)
+        - Windows Store App
+        - Apple Music Plug-in for macOS
+        - Third-Party Integration (Kodi, VLC, etc. - please specify below)
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Affected Version
+      description: Please provide the affected version of the application/plug-in, if you know. You can provide other relevant versions in the description at the end.
+      placeholder: e.g. 4.1.1
+    validations:
+      required: false
+  - type: dropdown
+    id: operating_system
+    attributes:
+      label: Operating System
+      description: If your issue _only_ affects a specific operating system, please select it below. If in doubt, leave it as-is.
+      options:
+        - Windows
+        - macOS
+        - Linux (Desktop)
+        - Linux (Embedded, e.g. Raspberry Pi)
+        - Web Browser
+        - Other, all or not relevant
+      default: 5
+    validations:
+      required: true
+  - type: textarea
+    id: project_specifics
+    attributes:
+      label: Additional Application Details
+      description: If you have additional information that helps us identify the affected application and version, please tell us here in more detail. You can also upload screenshots with helpful information in this text field.
+      placeholder: "Describe where you downloaded the application or upload a screenshot of the about dialog"
+    validations:
+      required: false
+  - type: dropdown
+    id: defect_kind
+    attributes:
+      label: Type of Defect
+      description: Please select which kind of issue you've encountered.
+      options:
+        - Crash (unexpected closing, OS crash dialog)
+        - Graphical issue (rendering glitches, black screen, heavy flickering)
+        - Low FPS (or continuously high CPU/GPU usage)
+        - Audio issue (no audio recording, delayed reaction)
+        - Other
+      default: 0
+    validations:
+      required: true
+  - type: textarea
+    id: log_output
+    attributes:
+      label: Log Output
+      description: Paste any log output here. If a log is very large, e.g. more than 50 lines, please upload it as a file attachment in the description field below.
+      render: shell
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: |
+        Tip: For the new projectM SDL2 frontend, you can find the log file `projectMSDL.log` at `%APPDATA%\projectM\` on Windows, `~/.config/projectM/` on Linux and `~/Library/Preferences/projectM/` on macOS.
+  - type: textarea
+    id: issue_text
+    attributes:
+      label: Describe the Issue
+      description: Please describe the problem in detail. Most importantly, include any information that helps us to reproduce and narrow down the issue. You can also upload additional log files or screenshots.
+      placeholder: "Steps to reproduce, detailed information about the issue, example presets and other relevant information"
+    validations:
+      required: true
