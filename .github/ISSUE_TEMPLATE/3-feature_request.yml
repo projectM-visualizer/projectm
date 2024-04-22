@@ -1,0 +1,72 @@
+name: Feature Request
+description: If you're missing an important feature in any projectM app or library, or have a great idea we should implement, use this form.
+title: "[FEATURE] "
+labels: ["triage","enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Feature requests regarding the projectM Android App
+        Note that **we cannot change anything in the Android apps** in the Google Play Store. These apps are proprietary/closed-source and not being developed by the projectM team. Please request features directly from the app author via the contact information provided in the Play Store.
+  - type: checkboxes
+    id: reporter_ack
+    attributes:
+      label: "Please confirm the following points:"
+      options:
+        - label: This feature request is NOT for the Android apps in the Play Store
+          required: true
+        - label: I have [searched the project page](https://github.com/search?q=org%3AprojectM-visualizer+type%3Aissue+&type=issues) to check if a similar request was already made
+          required: true
+  - type: markdown
+    attributes:
+      value: |
+        Please tell us for which application or project you want to suggest a feature. We will take care about moving the request to the correct repository during triage.
+  - type: dropdown
+    id: project
+    attributes:
+      label: Application or Project
+      description: For which application or project are you suggesting a new feature or enhancement?
+      options:
+        - I don't know / Multiple / Other (please elaborate below)
+        - projectM Standalone SDL2 Frontend (includes the Steam app)
+        - projectM Standalone Qt Frontend (projectm-pulseaudio)
+        - Windows Store App
+        - Apple Music Plug-in for macOS
+        - Third-Party Integration (Kodi, VLC, etc. - please specify below)
+        - libprojectM (including the playlist library)
+        - projectM Expression Evaluation Library
+    validations:
+      required: true
+  - type: textarea
+    id: related_problem
+    attributes:
+      label: Is Your Enhancement Related to a Problem?
+      description: If your suggestion is based on a problem you have with an existing application, e.g. frustrating behavior, please describe it here.
+      placeholder: "Missing hotkeys, strange window behavior, ..."
+    validations:
+      required: false
+  - type: textarea
+    id: suggested_solution
+    attributes:
+      label: Your Suggested Enhancement
+      description: |
+        Please tell us what feature, enhancement or solution you have in mind. Describe it as clear and concise as possible.
+        
+        The more information you give, the easier it is for us to understand and implement it.
+    validations:
+      required: true
+  - type: textarea
+    id: alt_solution
+    attributes:
+      label: Alternative Solutions
+      description: If you have any alternative solutions to the above suggestion, e.g. if it's too complex or not technically feasible, please tell us below.
+    validations:
+      required: false
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: Any other context you'd like to add, including screenshots of similar features from other applications.
+      placeholder: "I've seen this in application XY / It works in Milkdrop / Attached a screenshot with an example..."
+    validations:
+      required: false

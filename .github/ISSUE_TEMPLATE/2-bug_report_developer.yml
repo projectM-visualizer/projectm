@@ -1,0 +1,148 @@
+name: Bug Report (Development)
+description: File a report for a development-related issue with projectM, e.g. build failures, API/integration issues, bugs or questions regarding projectM's code.
+title: "[DEV BUG] "
+labels: ["triage","bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue with projectM! To understand your problem in detail, please fill out this form, so we can narrow down and help you solve the issue as fast as possible.
+        
+        If you want to report an issue encountered while _running a projectM application or plug-in_, e.g. crashes, rendering glitches etc., please go back and use the user bug form instead. We ask a few different questions there.
+        
+        ### Bugs regarding the projectM Android App
+        Note that **we will not accept bug reports for the Android apps** in the Google Play Store. These apps are not being developed by the projectM team. Please report issues directly to the app author via the contact information provided in the Play Store.
+  - type: checkboxes
+    id: reporter_ack
+    attributes:
+      label: "Please confirm the following points:"
+      options:
+        - label: This report is NOT about the Android apps in the Play Store
+          required: true
+        - label: I have [searched the project page](https://github.com/search?q=org%3AprojectM-visualizer+type%3Aissue+&type=issues) to check if the issue was already reported
+          required: true
+  - type: markdown
+    attributes:
+      value: |
+        Now, tell us more about where and with which version you encountered the issue. This is either the library you want to integrate in your app or the project you're trying to build.
+  - type: dropdown
+    id: project
+    attributes:
+      label: Affected Project
+      description: Which project is affected by the issue?
+      options:
+        - libprojectM (including the playlist library)
+        - projectM Expression Evaluation Library
+        - projectM Standalone SDL2 Frontend (includes the Steam app)
+        - projectM Standalone Qt Frontend (projectm-pulseaudio)
+        - Windows Store App
+        - Apple Music Plug-in for macOS
+        - Third-Party Integration (Kodi, VLC, etc. - please specify below)
+        - I don't know / Other (please elaborate below)
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Affected Version
+      description: |
+        Please provide the affected version, Git tag or specific Git hash of the project in question.
+        
+        Add other relevant versions, e.g. of dependencies and build tools, in the "additional details" field below.
+      placeholder: e.g. 4.1.1 or 3f885d
+    validations:
+      required: false
+  - type: dropdown
+    id: operating_system
+    attributes:
+      label: Operating Systems and Architectures
+      description: Please select all affected operating systems and architectures below. If in doubt, use the first option. **Multiple choices are possible.**
+      options:
+        - Don't know, other or not relevant
+        - All
+        - Windows (x32)
+        - Windows (x64)
+        - Windows (ARM64)
+        - macOS (x86_64)
+        - macOS (aarch64)
+        - Linux (x86)
+        - Linux (x86_64)
+        - Linux (aarch64)
+        - Android (arm64-v8a)
+        - Android (armeabi-v7a)
+        - Android (x86)
+        - Android (x86_64)
+        - iOS / tvOS
+        - BSD
+        - Emscripten
+        - WebAssembly (other compiler)
+      multiple: true
+    validations:
+      required: true
+  - type: dropdown
+    id: build_tools
+    attributes:
+      label: Build Tools
+      description: Please select the tools you've used when encountering the issue, if appropriate. Please provide additional version information and tools not listed here in the text field below. **Multiple choices are possible.**
+      options:
+        - "Compiler: Microsoft Windows SDK"
+        - "Compiler: GNU GCC"
+        - "Compiler: GNU GCC (MinGW)"
+        - "Compiler: Clang"
+        - "Compiler: Clang (Android NDK)"
+        - "Compiler: AppleClang (Xcode)"
+        - "Build Tool: MSBuild"
+        - "Build Tool: GNU Make"
+        - "Build Tool: Ninja Build"
+        - "Build Tool: xcodebuild"
+        - "Build Tool: CMake"
+        - "Dependency Manager: vcpkg"
+        - "Dependency Manager: Homebrew"
+        - "Dependency Manager: pkgconfig"
+      multiple: true
+    validations:
+      required: false
+  - type: textarea
+    id: project_specifics
+    attributes:
+      label: Additional Project, OS and Toolset Details
+      description: Please provide all additional information that helps us to reproduce the issue. This includes specific tool and dependency versions.
+      placeholder: "Using Visual Studio 2022, Linux distribution and version, building on a Raspberry Pi, ..."
+    validations:
+      required: false
+  - type: dropdown
+    id: defect_kind
+    attributes:
+      label: Type of Defect
+      description: Please select which kind of issue you want to report.
+      options:
+        - Build failure (compiler/linker or toolset error)
+        - Test failure (existing unit/integration tests fail)
+        - CMake/CPack issue (configuration, build, install or packaging)
+        - Specific bug in projectM code (please link the code in question)
+        - API problem (API function not working or failing unexpectedly)
+        - Crash (unhandled exceptions, segmentation faults)
+        - Graphical issue (rendering glitches, no or broken rendering result)
+        - Low FPS (or continuously high CPU/GPU usage)
+        - Audio issue (passing audio data not working)
+        - Missing or outdated documentation
+        - Other
+      default: 0
+    validations:
+      required: true
+  - type: textarea
+    id: log_output
+    attributes:
+      label: Log Output
+      description: Paste any _relevant_ build/log output here, e.g. compiler errors or debugger output plus required lines for context. If a log is very large (more than 50 lines), please upload it as a file attachment in the description field below.
+      render: shell
+    validations:
+      required: false
+  - type: textarea
+    id: issue_text
+    attributes:
+      label: Describe the Issue
+      description: Please describe the problem in detail. Most importantly, include any information that helps us to reproduce and narrow down the issue. You can also upload additional log files or screenshots.
+      placeholder: "Steps to reproduce, detailed information about the issue, example presets and other relevant information"
+    validations:
+      required: true

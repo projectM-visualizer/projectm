@@ -1,0 +1,40 @@
+name: General Question / Other Request
+description: If you don't want to report a bug or request a feature, use this form to ask about anything else.
+title: "[REQUEST] "
+labels: ["triage","question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Requests regarding the projectM Android App
+        Note that **we cannot answer questions regarding the Android apps** in the Google Play Store. These apps are not being developed by the projectM team. Please contact the app author directly via the information provided in the Play Store.
+  - type: checkboxes
+    id: reporter_ack
+    attributes:
+      label: "Please confirm the following points:"
+      options:
+        - label: This question is NOT about the Android apps in the Play Store
+          required: true
+        - label: I have [searched the project page](https://github.com/search?q=org%3AprojectM-visualizer+type%3Aissue+&type=issues) to check if the question was already asked elsewhere
+          required: true
+  - type: dropdown
+    id: topic
+    attributes:
+      label: Topic
+      description: What is the general topic of your question or request?
+      options:
+        - General Request
+        - Development and Contributing
+        - Applications and Plug-Ins, Third-Party Software
+        - Third-Party Application Interfaces and Remote Control
+        - Milkdrop Presets
+        - Documentation and/or the projectM Wiki
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Request
+      description: Tell us what your request is about. The more details you provide, the easier it is for us to answer your question and find a solution.
+    validations:
+      required: true
