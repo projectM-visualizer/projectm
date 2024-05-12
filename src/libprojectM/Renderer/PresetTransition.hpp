@@ -3,6 +3,7 @@
 #include "Renderer/RenderItem.hpp"
 #include "Renderer/Shader.hpp"
 #include "Renderer/TextureSamplerDescriptor.hpp"
+#include <Renderer/Debug.hpp>
 
 #include <Preset.hpp>
 

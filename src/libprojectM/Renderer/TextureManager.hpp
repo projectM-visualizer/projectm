@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Renderer/Debug.hpp"
 #include "Renderer/TextureSamplerDescriptor.hpp"
 
 #include <map>

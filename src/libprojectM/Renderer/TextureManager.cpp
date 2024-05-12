@@ -1,5 +1,6 @@
 #include "TextureManager.hpp"
 
+#include "Debug.hpp"
 #include "FileScanner.hpp"
 #include "IdleTextures.hpp"
 #include "MilkdropNoise.hpp"
@@ -79,7 +80,8 @@ void TextureManager::Preload()
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
 
-    m_textures["idlem"] = std::make_shared<Texture>("idlem", tex, GL_TEXTURE_2D, width, height, false);;
+    m_textures["idlem"] = std::make_shared<Texture>("idlem", tex, GL_TEXTURE_2D, width, height, false);
+    ;
 
     tex = SOIL_load_OGL_texture_from_memory(
         headphones_data,
@@ -87,8 +89,10 @@ void TextureManager::Preload()
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
+    CHECK_GL_ERROR;
 
-    m_textures["idleheadphones"] = std::make_shared<Texture>("idleheadphones", tex, GL_TEXTURE_2D, width, height, false);;
+    m_textures["idleheadphones"] = std::make_shared<Texture>("idleheadphones", tex, GL_TEXTURE_2D, width, height, false);
+    ;
 
     // Noise textures
     m_textures["noise_lq_lite"] = MilkdropNoise::LowQualityLite();
@@ -224,6 +228,7 @@ auto TextureManager::LoadTexture(const std::string& fileName, const std::string&
         SOIL_LOAD_RGBA,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
+    CHECK_GL_ERROR;
 
     if (tex == 0)
     {

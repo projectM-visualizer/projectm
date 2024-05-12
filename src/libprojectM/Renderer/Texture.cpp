@@ -54,8 +54,11 @@ Texture::~Texture()
 
 void Texture::Bind(GLint slot, const Sampler::Ptr& sampler) const
 {
+    std::cout << "Texture::Bind" << std::endl;
     glActiveTexture(GL_TEXTURE0 + slot);
+    CHECK_GL_ERROR;
     glBindTexture(m_target, m_textureId);
+    CHECK_GL_ERROR;
 
     if (sampler)
     {

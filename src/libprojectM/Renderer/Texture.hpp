@@ -4,8 +4,10 @@
 */
 #pragma once
 
+#include "Renderer/Debug.hpp"
 #include "Renderer/Sampler.hpp"
 
+#include <iostream>
 #include <string>
 
 namespace libprojectM {
