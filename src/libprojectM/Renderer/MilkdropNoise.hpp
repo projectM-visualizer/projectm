@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Renderer/Debug.hpp>
 #include <Renderer/Texture.hpp>
 
 #include <cstdint>
@@ -66,7 +67,6 @@ public:
     static auto HighQualityVolume() -> std::shared_ptr<Texture>;
 
 protected:
-
     static auto GetPreferredInternalFormat() -> int;
 
     /**

@@ -1,5 +1,6 @@
 #include "MilkdropNoise.hpp"
 
+#include "Debug.hpp"
 #include "projectM-opengl.h"
 
 #include <chrono>
@@ -22,6 +23,7 @@ auto MilkdropNoise::LowQuality() -> std::shared_ptr<Texture>
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, textureData.data());
+        CHECK_GL_ERROR;
     }
     return std::make_shared<Texture>("noise_lq", texture, GL_TEXTURE_2D, 256, 256, false);
 }
@@ -36,6 +38,7 @@ auto MilkdropNoise::LowQualityLite() -> std::shared_ptr<Texture>
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 32, 32, 0, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, textureData.data());
+        CHECK_GL_ERROR;
     }
 
     return std::make_shared<Texture>("noise_lq_lite", texture, GL_TEXTURE_2D, 32, 32, false);
@@ -51,6 +54,7 @@ auto MilkdropNoise::MediumQuality() -> std::shared_ptr<Texture>
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, textureData.data());
+        CHECK_GL_ERROR;
     }
     return std::make_shared<Texture>("noise_mq", texture, GL_TEXTURE_2D, 256, 256, false);
 }
@@ -65,6 +69,7 @@ auto MilkdropNoise::HighQuality() -> std::shared_ptr<Texture>
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, textureData.data());
+        CHECK_GL_ERROR;
     }
 
     return std::make_shared<Texture>("noise_hq", texture, GL_TEXTURE_2D, 256, 256, false);
@@ -80,6 +85,7 @@ auto MilkdropNoise::LowQualityVolume() -> std::shared_ptr<Texture>
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_3D, texture);
         glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, 32, 32, 32, 0, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, textureData.data());
+        CHECK_GL_ERROR;
     }
 
     return std::make_shared<Texture>("noisevol_lq", texture, GL_TEXTURE_3D, 32, 32, false);
@@ -95,6 +101,7 @@ auto MilkdropNoise::HighQualityVolume() -> std::shared_ptr<Texture>
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_3D, texture);
         glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA8, 32, 32, 32, 0, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, textureData.data());
+        CHECK_GL_ERROR;
     }
 
     return std::make_shared<Texture>("noisevol_hq", texture, GL_TEXTURE_3D, 32, 32, false);
@@ -106,7 +113,9 @@ auto MilkdropNoise::GetPreferredInternalFormat() -> int
     // Query preferred internal texture format. GLES 3 only supports GL_RENDERBUFFER here, no texture targets.
     // That's why we use GL_BGRA as default, as this is the best general-use format according to Khronos.
     GLint preferredInternalFormat{GL_BGRA};
+    CHECK_GL_ERROR;
     glGetInternalformativ(GL_TEXTURE_2D, GL_RGBA8, GL_TEXTURE_IMAGE_FORMAT, sizeof(preferredInternalFormat), &preferredInternalFormat);
+    CHECK_GL_ERROR;
 #else
     // GLES only supports GL_RGB and GL_RGBA, so we always use the latter.
     GLint preferredInternalFormat{GL_RGBA};

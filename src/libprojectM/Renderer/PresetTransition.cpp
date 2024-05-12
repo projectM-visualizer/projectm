@@ -1,5 +1,6 @@
 #include "PresetTransition.hpp"
 
+#include "Debug.hpp"
 #include "TextureManager.hpp"
 
 #include <array>
@@ -19,6 +20,7 @@ PresetTransition::PresetTransition(const std::shared_ptr<Shader>& transitionShad
     m_staticRandomValues = {rand32(), rand32(), rand32(), rand32()};
 
     RenderItem::Init();
+    CHECK_GL_ERROR;
 }
 
 void PresetTransition::InitVertexAttrib()
@@ -31,6 +33,7 @@ void PresetTransition::InitVertexAttrib()
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Point), reinterpret_cast<void*>(offsetof(Point, x))); // Position
     glBufferData(GL_ARRAY_BUFFER, sizeof(points), points.data(), GL_STATIC_DRAW);
+    CHECK_GL_ERROR;
 }
 
 auto PresetTransition::IsDone() const -> bool
@@ -69,6 +72,7 @@ void PresetTransition::Draw(const Preset& oldPreset,
     }
 
     m_transitionShader->Bind();
+    CHECK_GL_ERROR;
 
     // Numerical parameters
     m_transitionShader->SetUniformFloat3("iResolution", {static_cast<float>(context.viewportSizeX),
@@ -103,6 +107,7 @@ void PresetTransition::Draw(const Preset& oldPreset,
     oldPreset.OutputTexture()->Bind(0, m_presetSampler);
     m_transitionShader->SetUniformInt("iChannel1", 1);
     newPreset.OutputTexture()->Bind(1, m_presetSampler);
+    CHECK_GL_ERROR;
 
     int textureUnit = 2;
     std::vector<TextureSamplerDescriptor> noiseDescriptors(m_noiseTextureNames.size());
@@ -117,10 +122,12 @@ void PresetTransition::Draw(const Preset& oldPreset,
     glBindVertexArray(m_vaoID);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glBindVertexArray(0);
+    CHECK_GL_ERROR;
 
     // Clean up
     oldPreset.OutputTexture()->Unbind(0);
     newPreset.OutputTexture()->Unbind(1);
+    CHECK_GL_ERROR;
 
     for (int i = 2; i < textureUnit; i++)
     {
@@ -128,6 +135,7 @@ void PresetTransition::Draw(const Preset& oldPreset,
     }
 
     Shader::Unbind();
+    CHECK_GL_ERROR;
 
     // Update last frame time.
     m_lastFrameTime = std::chrono::system_clock::now();
