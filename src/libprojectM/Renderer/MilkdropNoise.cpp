@@ -5,11 +5,6 @@
 #include <chrono>
 #include <random>
 
-// Missing in macOS SDK. Query will most certainly fail, but then use the default format.
-#ifndef GL_TEXTURE_IMAGE_FORMAT
-#define GL_TEXTURE_IMAGE_FORMAT 0x828F
-#endif
-
 namespace libprojectM {
 namespace Renderer {
 
@@ -103,16 +98,12 @@ auto MilkdropNoise::HighQualityVolume() -> std::shared_ptr<Texture>
 auto MilkdropNoise::GetPreferredInternalFormat() -> int
 {
 #ifndef USE_GLES
-    // Query preferred internal texture format. GLES 3 only supports GL_RENDERBUFFER here, no texture targets.
-    // That's why we use GL_BGRA as default, as this is the best general-use format according to Khronos.
-    GLint preferredInternalFormat{GL_BGRA};
-    glGetInternalformativ(GL_TEXTURE_2D, GL_RGBA8, GL_TEXTURE_IMAGE_FORMAT, sizeof(preferredInternalFormat), &preferredInternalFormat);
+    // We use GL_BGRA, as this is the best general-use format according to Khronos.
+    return GL_BGRA;
 #else
     // GLES only supports GL_RGB and GL_RGBA, so we always use the latter.
-    GLint preferredInternalFormat{GL_RGBA};
+    return GL_RGBA;
 #endif
-
-    return preferredInternalFormat;
 }
 
 auto MilkdropNoise::generate2D(int size, int zoomFactor) -> std::vector<uint32_t>
