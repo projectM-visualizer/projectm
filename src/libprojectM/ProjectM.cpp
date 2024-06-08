@@ -90,7 +90,7 @@ void ProjectM::ResetTextures()
     m_textureManager = std::make_unique<Renderer::TextureManager>(m_textureSearchPaths);
 }
 
-void ProjectM::RenderFrame()
+void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
 {
     // Don't render if window area is zero.
     if (m_windowWidth == 0 || m_windowHeight == 0)
@@ -166,8 +166,7 @@ void ProjectM::RenderFrame()
     // ToDo: Call the to-be-implemented render method in Renderer
     m_activePreset->RenderFrame(audioData, renderContext);
 
-    // ToDo: Allow external apps to provide a custom target framebuffer.
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(targetFramebufferObject));
 
     if (m_transition != nullptr && m_transitioningPreset != nullptr)
     {
