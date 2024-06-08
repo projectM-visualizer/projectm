@@ -34,12 +34,17 @@ extern "C" {
 /**
  * @brief Renders a single frame.
  *
- * @note Separate two-pass frame rendering is currently not supported by the C API as it is rarely used
- *       and also depends on the loaded preset.
- *
  * @param instance The projectM instance handle.
  */
 PROJECTM_EXPORT void projectm_opengl_render_frame(projectm_handle instance);
+
+/**
+ * @brief Renders a single frame into a user-defined framebuffer object.
+ *
+ * @param instance The projectM instance handle.
+ * @param framebuffer_object_id The OpenGL FBO ID to render to.
+ */
+PROJECTM_EXPORT void projectm_opengl_render_frame_fbo(projectm_handle instance, uint32_t framebuffer_object_id);
 
 #ifdef __cplusplus
 } // extern "C"
