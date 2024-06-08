@@ -101,7 +101,7 @@ public:
 
     void ResetTextures();
 
-    void RenderFrame();
+    void RenderFrame(uint32_t targetFramebufferObject = 0);
 
     void SetBeatSensitivity(float sensitivity);
 
