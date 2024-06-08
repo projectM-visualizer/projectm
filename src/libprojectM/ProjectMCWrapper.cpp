@@ -6,6 +6,8 @@
 
 #include <cstring>
 #include <sstream>
+#include <projectM-4/render_opengl.h>
+
 
 namespace libprojectM {
 
@@ -169,6 +171,12 @@ void projectm_opengl_render_frame(projectm_handle instance)
 {
     auto projectMInstance = handle_to_instance(instance);
     projectMInstance->RenderFrame();
+}
+
+void projectm_opengl_render_frame_fbo(projectm_handle instance, uint32_t framebuffer_object_id)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->RenderFrame(framebuffer_object_id);
 }
 
 void projectm_set_beat_sensitivity(projectm_handle instance, float sensitivity)
