@@ -281,6 +281,16 @@ auto ProjectM::PresetLocked() const -> bool
     return m_presetLocked;
 }
 
+void ProjectM::SetFrameTime(double secondsSinceStart)
+{
+    m_timeKeeper->SetFrameTime(secondsSinceStart);
+}
+
+double ProjectM::GetFrameTime()
+{
+    return m_timeKeeper->GetFrameTime();
+}
+
 void ProjectM::SetBeatSensitivity(float sensitivity)
 {
     m_beatSensitivity = std::min(std::max(0.0f, sensitivity), 2.0f);
