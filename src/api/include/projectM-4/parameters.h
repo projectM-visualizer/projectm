@@ -46,6 +46,38 @@ PROJECTM_EXPORT void projectm_set_texture_search_paths(projectm_handle instance,
                                                        size_t count);
 
 /**
+ * @brief Sets a user-specified frame time in fractional seconds.
+ *
+ * Setting this to any value equal to or larger than zero will make projectM use this time value for
+ * animations instead of the system clock. Any value less than zero will use the system time instead,
+ * which is the default behavior.
+ *
+ * This method can be used to render visualizations at non-realtime frame rates, e.g. encoding a video
+ * as fast as projectM can render frames.
+ *
+ * While switching back and forth between system and user time values is possible, it will cause
+ * visual artifacts in the rendering as the time value will make large jumps between frames. Thus,
+ * it is recommended to stay with one type of timing value.
+ *
+ * If using this feature, it is further recommended to set the time to 0.0 on the first frame.
+ *
+ * @param instance The projectM instance handle.
+ * @param seconds_since_first_frame Any value >= 0 to use user-specified timestamps, values < 0 will use the system clock.
+ */
+PROJECTM_EXPORT void projectm_set_frame_time(projectm_handle instance, double seconds_since_first_frame);
+
+/**
+ * @brief Returns the fractional seconds time value used rendering the last frame.
+ * @note This will not return the value set with projectm_set_frame_time, but the actual time
+ *       used to render the last frame. If a user-specified frame time was set, this value is
+ *       returned. Otherwise, the frame time measured via the system clock will be returned.
+ * @param instance The projectM instance handle.
+ * @return Time elapsed since projectM was started, or the value of the user-specified time value used
+ *         to render the last frame.
+ */
+PROJECTM_EXPORT double projectm_get_last_frame_time(projectm_handle instance);
+
+/**
  * @brief Sets the beat sensitivity.
  *
  * The beat sensitivity to be used.

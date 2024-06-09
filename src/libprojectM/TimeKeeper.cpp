@@ -14,11 +14,26 @@ TimeKeeper::TimeKeeper(double presetDuration, double smoothDuration, double hard
     UpdateTimers();
 }
 
+void TimeKeeper::SetFrameTime(double secondsSinceStart)
+{
+    m_userSpecifiedTime = secondsSinceStart;
+}
+
+double TimeKeeper::GetFrameTime() const
+{
+    return m_currentTime;
+}
+
 void TimeKeeper::UpdateTimers()
 {
-    auto currentTime = std::chrono::high_resolution_clock::now();
+    double currentFrameTime{m_userSpecifiedTime};
 
-    double currentFrameTime = std::chrono::duration<double>(currentTime - m_startTime).count();
+    if (m_userSpecifiedTime < 0.0)
+    {
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        currentFrameTime = std::chrono::duration<double>(currentTime - m_startTime).count();
+    }
+
     m_secondsSinceLastFrame = currentFrameTime - m_currentTime;
     m_currentTime = currentFrameTime;
     m_presetFrameA++;
