@@ -150,7 +150,7 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
 
     if (m_transition != nullptr && m_transitioningPreset != nullptr)
     {
-        if (m_transition->IsDone())
+        if (m_transition->IsDone(m_timeKeeper->GetFrameTime()))
         {
             m_activePreset = std::move(m_transitioningPreset);
             m_transitioningPreset.reset();
@@ -170,7 +170,7 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
 
     if (m_transition != nullptr && m_transitioningPreset != nullptr)
     {
-        m_transition->Draw(*m_activePreset, *m_transitioningPreset, renderContext, audioData);
+        m_transition->Draw(*m_activePreset, *m_transitioningPreset, renderContext, audioData, m_timeKeeper->GetFrameTime());
     }
     else
     {
@@ -254,7 +254,7 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
     {
         m_transitioningPreset = std::move(preset);
         m_timeKeeper->StartSmoothing();
-        m_transition = std::make_unique<Renderer::PresetTransition>(m_transitionShaderManager->RandomTransition(), m_softCutDuration);
+        m_transition = std::make_unique<Renderer::PresetTransition>(m_transitionShaderManager->RandomTransition(), m_softCutDuration, m_timeKeeper->GetFrameTime());
     }
 }
 
