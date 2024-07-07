@@ -243,6 +243,9 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
     if (m_activePreset)
     {
         auto outputTexture = m_activePreset->OutputTexture();
+
+        // Check if the output texture is valid by testing if the OpenGL texturing target enum has been initialized.
+        // In case of the initial preset transition, it is 0.
         if (outputTexture->Type() != 0) {
             preset->DrawInitialImage(outputTexture, GetRenderContext());
         }
