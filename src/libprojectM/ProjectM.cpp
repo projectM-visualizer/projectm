@@ -242,7 +242,10 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
 
     if (m_activePreset)
     {
-        preset->DrawInitialImage(m_activePreset->OutputTexture(), GetRenderContext());
+        auto outputTexture = m_activePreset->OutputTexture();
+        if (outputTexture->Type() != 0) {
+            preset->DrawInitialImage(outputTexture, GetRenderContext());
+        }
     }
 
     if (hardCut)
