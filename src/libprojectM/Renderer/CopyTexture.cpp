@@ -111,7 +111,10 @@ void CopyTexture::Draw(const std::shared_ptr<class Texture>& originalTexture, bo
 void CopyTexture::Draw(const std::shared_ptr<class Texture>& originalTexture, const std::shared_ptr<class Texture>& targetTexture,
                        bool flipVertical, bool flipHorizontal)
 {
-    if (originalTexture == nullptr || originalTexture == targetTexture)
+    if (originalTexture == nullptr ||
+        originalTexture->Empty() ||
+        (targetTexture != nullptr && targetTexture->Empty()) ||
+        originalTexture == targetTexture)
     {
         return;
     }
@@ -157,7 +160,10 @@ void CopyTexture::Draw(const std::shared_ptr<class Texture>& originalTexture, co
 void CopyTexture::Draw(const std::shared_ptr<class Texture>& originalTexture, Framebuffer& framebuffer, int framebufferIndex,
                        bool flipVertical, bool flipHorizontal)
 {
-    if (originalTexture == nullptr || framebuffer.GetColorAttachmentTexture(framebufferIndex, 0) == nullptr)
+    if (originalTexture == nullptr
+        || originalTexture->Empty()
+        || framebuffer.GetColorAttachmentTexture(framebufferIndex, 0) == nullptr
+        || framebuffer.GetColorAttachmentTexture(framebufferIndex, 0)->Empty())
     {
         return;
     }

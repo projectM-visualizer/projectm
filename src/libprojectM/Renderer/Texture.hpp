@@ -115,8 +115,17 @@ public:
      */
     auto IsUserTexture() const -> bool;
 
+    /**
+     * @brief Returns true if the texture is empty/unallocated.
+     * @return true if the texture is not yet allocated (e.g. the ID 0), false if the object contains a valid texture.
+     */
+    auto Empty() const -> bool;
+
 private:
-    void CreateEmptyTexture();
+    /**
+     * @brief Creates a new, blank texture with the given size.
+     */
+    void CreateNewTexture();
 
     GLuint m_textureId{0};    //!< The OpenGL texture name/ID.
     GLenum m_target{GL_NONE}; //!< The OpenGL texture target, e.g. GL_TEXTURE_2D.

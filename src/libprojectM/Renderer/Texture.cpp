@@ -15,7 +15,7 @@ Texture::Texture(std::string name, const int width, const int height, const bool
     , m_format(GL_RGB)
     , m_type(GL_UNSIGNED_BYTE)
 {
-    CreateEmptyTexture();
+    CreateNewTexture();
 }
 
 Texture::Texture(std::string name, int width, int height,
@@ -29,7 +29,7 @@ Texture::Texture(std::string name, int width, int height,
     , m_format(format)
     , m_type(type)
 {
-    CreateEmptyTexture();
+    CreateNewTexture();
 }
 
 Texture::Texture(std::string name, const GLuint texID, const GLenum target,
@@ -99,7 +99,12 @@ auto Texture::IsUserTexture() const -> bool
     return m_isUserTexture;
 }
 
-void Texture::CreateEmptyTexture()
+auto Texture::Empty() const -> bool
+{
+    return m_textureId == 0;
+}
+
+void Texture::CreateNewTexture()
 {
     glGenTextures(1, &m_textureId);
     glBindTexture(m_target, m_textureId);
