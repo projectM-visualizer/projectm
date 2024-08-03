@@ -16,8 +16,8 @@ precision mediump float;
 layout(location = 0) in vec2 vertex_position;
 layout(location = 1) in vec2 rad_ang;
 layout(location = 2) in vec4 transforms;
-layout(location = 3) in vec2 center;
-layout(location = 4) in vec2 distance;
+layout(location = 3) in vec2 warp_center;
+layout(location = 4) in vec2 warp_distance;
 layout(location = 5) in vec2 stretch;
 
 uniform mat4 vertex_transformation;
@@ -47,8 +47,8 @@ void main() {
                             pos.y * 0.5 + 0.5 + texelOffset.y);
 
     // Stretch on X, Y
-    u = (u - center.x) / stretch.x + center.x;
-    v = (v - center.y) / stretch.y + center.y;
+    u = (u - warp_center.x) / stretch.x + warp_center.x;
+    v = (v - warp_center.y) / stretch.y + warp_center.y;
 
     // Warping
     u += warp * 0.0035 * sin(warpTime * 0.333 + warpScaleInverse * (pos.x * warpFactors.x - pos.y * warpFactors.w));
@@ -57,17 +57,17 @@ void main() {
     v += warp * 0.0035 * sin(warpTime * 0.825 + warpScaleInverse * (pos.x * warpFactors.x + pos.y * warpFactors.w));
 
     // Rotation
-    float u2 = u - center.x;
-    float v2 = v - center.y;
+    float u2 = u - warp_center.x;
+    float v2 = v - warp_center.y;
 
     float cosRotation = cos(rot);
     float sinRotation = sin(rot);
-    u = u2 * cosRotation - v2 * sinRotation + center.x;
-    v = u2 * sinRotation + v2 * cosRotation + center.y;
+    u = u2 * cosRotation - v2 * sinRotation + warp_center.x;
+    v = u2 * sinRotation + v2 * cosRotation + warp_center.y;
 
     // Translation
-    u -= distance.x;
-    v -= distance.y;
+    u -= warp_distance.x;
+    v -= warp_distance.y;
 
     // Undo aspect ratio fix
     u = (u - 0.5) * invAspectX + 0.5;
