@@ -1,8 +1,49 @@
 {
-  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "projectm",
+  "version": "4.1.2",
+  "description": "projectM is an open-source project that reimplements the esteemed Winamp Milkdrop by Geiss in a more modern, cross-platform reusable library.",
+  "homepage": "https://github.com/projectM-visualizer/projectm",
+  "license": "LGPL-2.1-only",
   "dependencies": [
-    "glew",
-    "gtest",
-    "sdl2"
-  ]
+    {
+      "name": "glew",
+      "platform": "windows"
+    }
+  ],
+  "default-features": [
+    "external-glm",
+    "external-evallib"
+  ],
+  "features": {
+    "external-glm": {
+      "description": "Use external GLM headers instead of the built-in ones",
+      "dependencies": [
+        "glm"
+      ]
+    },
+    "external-evallib": {
+      "description": "Use external projectm-eval library instead of the Git submodule",
+      "dependencies": [
+        "projectm-eval"
+      ]
+    },
+    "gui": {
+      "description": "Build a simple, SDL2-based development test UI",
+      "dependencies": [
+        "sdl2"
+      ]
+    },
+    "boost-filesystem": {
+      "description": "Force using boost::filesystem instead of std::filesystem",
+      "dependencies": [
+        "boost-filesystem"
+      ]
+    },
+    "test": {
+      "description": "Build unit tests",
+      "dependencies": [
+        "gtest"
+      ]
+    }
+  }
 }
