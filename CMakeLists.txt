@@ -18,7 +18,34 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+# General build options
+option(ENABLE_SYSTEM_GLM "Enable use of system-install GLM library" OFF)
+option(ENABLE_SYSTEM_PROJECTM_EVAL "Enable use of a system-installed/external projectM-eval library" ON)
 option(ENABLE_DEBUG_POSTFIX "Add \"d\" (by default) after library names for debug builds." ON)
+option(ENABLE_PLAYLIST "Enable building the playlist management library" ON)
+option(ENABLE_BOOST_FILESYSTEM "Force the use of boost::filesystem, even if the compiler supports C++17." OFF)
+option(ENABLE_SDL_UI "Build the SDL2-based developer test UI. Ignored when building with Emscripten or for Android." OFF)
+
+option(BUILD_TESTING "Build the libprojectM test suite" OFF)
+option(BUILD_DOCS "Build documentation" OFF)
+
+# Enable vcpkg manifest features according to the build options set
+if(ENABLE_SYSTEM_GLM)
+    list(APPEND VCPKG_MANIFEST_FEATURES external-glm)
+endif()
+if(ENABLE_SYSTEM_PROJECTM_EVAL)
+    list(APPEND VCPKG_MANIFEST_FEATURES external-evallib)
+endif()
+if(ENABLE_BOOST_FILESYSTEM)
+    list(APPEND VCPKG_MANIFEST_FEATURES boost-filesystem)
+endif()
+if(ENABLE_SDL_UI)
+    list(APPEND VCPKG_MANIFEST_FEATURES gui)
+endif()
+if(BUILD_TESTING)
+    list(APPEND VCPKG_MANIFEST_FEATURES test)
+endif()
+
 if(ENABLE_DEBUG_POSTFIX)
     set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Output file debug postfix. Default is \"d\".")
 endif()
@@ -65,17 +92,10 @@ else()
     set(ENABLE_EMSCRIPTEN OFF CACHE BOOL "Build for web with emscripten. Requires emscripten toolset for building." FORCE)
 endif()
 
-# Feature options, including dependencies.
-option(BUILD_TESTING "Build the libprojectM test suite" OFF)
+# Compiler-/system-dependent options, including dependencies.
 cmake_dependent_option(BUILD_SHARED_LIBS "Build and install libprojectM as a shared libraries. If OFF, builds as static libraries." ON "NOT ENABLE_EMSCRIPTEN" OFF)
-option(ENABLE_PLAYLIST "Enable building the playlist management library" ON)
-cmake_dependent_option(ENABLE_SDL_UI "Build the SDL2-based developer test UI" OFF "NOT ENABLE_EMSCRIPTEN" OFF)
 cmake_dependent_option(ENABLE_GLES "Enable OpenGL ES support" OFF "NOT ENABLE_EMSCRIPTEN AND NOT CMAKE_SYSTEM_NAME STREQUAL Android" ON)
-option(ENABLE_BOOST_FILESYSTEM "Force the use of boost::filesystem, even if the compiler supports C++17." OFF)
 cmake_dependent_option(ENABLE_INSTALL "Enable installing projectM libraries and headers." OFF "NOT PROJECT_IS_TOP_LEVEL" ON)
-option(ENABLE_SYSTEM_GLM "Enable use of system-install GLM library" OFF)
-option(ENABLE_SYSTEM_PROJECTM_EVAL "Enable use of a system-installed/external projectM-eval library" ON)
-option(BUILD_DOCS "Build documentation" OFF)
 
 # Experimental/unsupported features
 option(ENABLE_CXX_INTERFACE "Enable exporting C++ symbols for ProjectM and PCM classes, not only the C API. Warning: This is not very portable." OFF)
