@@ -23,6 +23,35 @@ extern "C" {
 }
 
 int init() {
+
+EM_ASM({
+FS.mkdir('/presets');
+FS.mkdir('/textures');
+
+
+function getShader(pth,fname){
+const ff=new XMLHttpRequest();
+ff.open('GET',pth,true);
+ff.responseType='arraybuffer';
+document.querySelector('#stat').innerHTML='Downloading Shader';
+document.querySelector('#stat').style.backgroundColor='yellow';
+ff.addEventListener("load",function(){
+let sarrayBuffer=ff.response;
+if(sarrayBuffer){
+let sfil=new Uint8ClampedArray(sarrayBuffer);
+FS.writeFile('/presets/'+fname,sfil);
+document.querySelector('#stat').innerHTML='Downloaded Shader';
+document.querySelector('#stat').style.backgroundColor='blue';
+}
+});
+ff.send(null);
+}
+
+var pth=document.querySelector('#milkPath').innerHTML;
+getShader(pth,'/presets/preset.milk');
+
+});
+
     if (pm) return 0;
 
     // initialize WebGL context attributes
