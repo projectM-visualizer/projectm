@@ -1,3 +1,4 @@
+#include <emscripten.h>
 #include <emscripten/bind.h>
 #include <emscripten/html5.h>
 #include <projectM-4/projectM.h>
