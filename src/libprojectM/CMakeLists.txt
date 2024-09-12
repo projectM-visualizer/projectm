@@ -17,6 +17,8 @@ add_library(projectM_main OBJECT
         PresetFactory.hpp
         PresetFactoryManager.cpp
         PresetFactoryManager.hpp
+        PresetFileParser.cpp
+        PresetFileParser.hpp
         ProjectM.cpp
         ProjectM.hpp
         ProjectMCWrapper.cpp

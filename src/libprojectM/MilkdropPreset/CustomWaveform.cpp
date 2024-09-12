@@ -36,7 +36,7 @@ void CustomWaveform::InitVertexAttrib()
     glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
 }
 
-void CustomWaveform::Initialize(PresetFileParser& parsedFile, int index)
+void CustomWaveform::Initialize(::libprojectM::PresetFileParser& parsedFile, int index)
 {
     std::string const wavecodePrefix = "wavecode_" + std::to_string(index) + "_";
     std::string const wavePrefix = "wave_" + std::to_string(index) + "_";
