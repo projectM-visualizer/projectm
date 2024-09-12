@@ -7,6 +7,7 @@ add_executable(projectM-unittest
         $<TARGET_OBJECTS:Audio>
         $<TARGET_OBJECTS:MilkdropPreset>
         $<TARGET_OBJECTS:Renderer>
+        $<TARGET_OBJECTS:UserSprites>
         $<TARGET_OBJECTS:hlslparser>
         $<TARGET_OBJECTS:SOIL2>
         $<TARGET_OBJECTS:projectM_main>
