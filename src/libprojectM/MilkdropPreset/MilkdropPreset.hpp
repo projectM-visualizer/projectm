@@ -87,6 +87,8 @@ public:
 
     void DrawInitialImage(const std::shared_ptr<Renderer::Texture>& image, const Renderer::RenderContext& renderContext) override;
 
+    void BindFramebuffer() override;
+
 private:
     void PerFrameUpdate();
 

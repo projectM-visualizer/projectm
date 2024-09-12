@@ -181,6 +181,14 @@ void MilkdropPreset::DrawInitialImage(const std::shared_ptr<Renderer::Texture>& 
     m_flipTexture.Draw(image, m_framebuffer, m_previousFrameBuffer);
 }
 
+void MilkdropPreset::BindFramebuffer()
+{
+    if (m_framebuffer.Width() > 0 && m_framebuffer.Height() > 0)
+    {
+        m_framebuffer.BindDraw(m_previousFrameBuffer);
+    }
+}
+
 void MilkdropPreset::PerFrameUpdate()
 {
     m_perFrameContext.LoadStateVariables(m_state);
@@ -311,6 +319,7 @@ auto MilkdropPreset::ParseFilename(const std::string& filename) -> std::string
 
     return filename.substr(start + 1, filename.length());
 }
+
 
 } // namespace MilkdropPreset
 } // namespace libprojectM
