@@ -117,6 +117,14 @@ protected:
     void ParseLine(const std::string& line);
 
 private:
+    /**
+     * @brief Converts the string to lower-case.
+     * Only letters A-Z are converted to a-z by default.
+     * @param str The original string.
+     * @return The lower-case string.
+     */
+    static auto ToLower(std::string str) -> std::string;
+
     ValueMap m_presetValues; //!< Map with preset keys and their value.
 };
 
