@@ -20,9 +20,11 @@
 #include <string>
 
 namespace libprojectM {
-namespace MilkdropPreset {
 
 class PresetFileParser;
+
+namespace MilkdropPreset {
+
 
 using BlendableFloat = float; //!< Currently a placeholder to mark blendable values.
 
@@ -43,7 +45,7 @@ public:
      * @brief Loads the initial values and code from the preset file.
      * @param parsedFile The file parser with the preset data.
      */
-    void Initialize(PresetFileParser& parsedFile);
+    void Initialize(::libprojectM::PresetFileParser& parsedFile);
 
     /**
      * @brief Loads or compiles the generic shaders.

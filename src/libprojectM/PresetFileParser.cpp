@@ -2,12 +2,10 @@
 
 #include <algorithm>
 #include <fstream>
-#include <functional>
 #include <sstream>
 #include <vector>
 
 namespace libprojectM {
-namespace MilkdropPreset {
 
 auto PresetFileParser::Read(const std::string& presetFile) -> bool
 {
@@ -178,5 +176,4 @@ void PresetFileParser::ParseLine(const std::string& line)
     }
 }
 
-} // namespace MilkdropPreset
 } // namespace libprojectM

@@ -45,10 +45,11 @@
 #include <string>
 
 namespace libprojectM {
+class PresetFileParser;
+
 namespace MilkdropPreset {
 
 class Factory;
-class PresetFileParser;
 
 class MilkdropPreset : public ::libprojectM::Preset
 {
@@ -93,7 +94,7 @@ private:
 
     void Load(std::istream& stream);
 
-    void InitializePreset(PresetFileParser& parsedFile);
+    void InitializePreset(::libprojectM::PresetFileParser& parsedFile);
 
     void CompileCodeAndRunInitExpressions();
 

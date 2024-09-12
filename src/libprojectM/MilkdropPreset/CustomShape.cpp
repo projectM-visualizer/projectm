@@ -72,7 +72,7 @@ void CustomShape::InitVertexAttrib()
     glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
 }
 
-void CustomShape::Initialize(PresetFileParser& parsedFile, int index)
+void CustomShape::Initialize(::libprojectM::PresetFileParser& parsedFile, int index)
 {
     std::string const shapecodePrefix = "shapecode_" + std::to_string(index) + "_";
 

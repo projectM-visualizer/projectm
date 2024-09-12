@@ -33,7 +33,7 @@ PresetState::~PresetState()
     projectm_eval_memory_buffer_destroy(globalMemory);
 }
 
-void PresetState::Initialize(PresetFileParser& parsedFile)
+void PresetState::Initialize(::libprojectM::PresetFileParser& parsedFile)
 {
 
     // General:
