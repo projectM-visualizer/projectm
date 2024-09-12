@@ -2,6 +2,7 @@
 
 #include "TextureManager.hpp"
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstddef>
@@ -38,6 +39,11 @@ auto PresetTransition::IsDone(double currentFrameTime) const -> bool
 {
     const auto secondsSinceStart = currentFrameTime - m_transitionStartTime;
     return m_durationSeconds <= 0.0 || secondsSinceStart >= m_durationSeconds;
+}
+
+auto PresetTransition::Progress(double currentFrameTime) const -> double
+{
+    return std::min(std::max((currentFrameTime - m_transitionStartTime) / m_durationSeconds, 0.0), 1.0);
 }
 
 void PresetTransition::Draw(const Preset& oldPreset,
