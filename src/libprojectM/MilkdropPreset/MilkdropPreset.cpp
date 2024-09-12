@@ -145,8 +145,6 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     }
     m_border.Draw(m_perFrameContext);
 
-    // Todo: Song title anim would go here
-
     // y-flip the image for final compositing again
     m_flipTexture.Draw(m_framebuffer.GetColorAttachmentTexture(m_currentFrameBuffer, 0), nullptr, true, false);
     m_state.mainTexture = m_flipTexture.Texture();
@@ -156,8 +154,6 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     m_framebuffer.BindDraw(m_previousFrameBuffer);
 
     m_finalComposite.Draw(m_state, m_perFrameContext);
-
-    // ToDo: Draw user sprites (can have evaluated code)
 
     if (!m_finalComposite.HasCompositeShader())
     {
