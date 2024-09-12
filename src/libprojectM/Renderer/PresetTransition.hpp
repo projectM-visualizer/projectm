@@ -41,6 +41,13 @@ public:
     auto IsDone(double currentFrameTime) const -> bool;
 
     /**
+     * @brief Returns the current linear blending progress according to the given frame time.
+     * @param currentFrameTime The time in seconds since start of the current frame.
+     * @return The linear blending progress from 0.0 to 1.0.
+     */
+    auto Progress(double currentFrameTime) const -> double;
+
+    /**
      * @brief Updates the transition variables and renders the shader quad to the current FBO.
      * @param oldPreset A reference to the old (fading out) preset.
      * @param newPreset A reference to the new (fading in) preset.

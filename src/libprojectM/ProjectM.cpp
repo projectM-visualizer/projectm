@@ -456,6 +456,15 @@ auto ProjectM::GetRenderContext() -> Renderer::RenderContext
     ctx.textureManager = m_textureManager.get();
     ctx.shaderCache = m_shaderCache.get();
 
+    if (m_transition)
+    {
+        ctx.blendProgress = m_transition->Progress(ctx.time);
+    }
+    else
+    {
+        ctx.blendProgress = 0.0;
+    }
+
     return ctx;
 }
 
