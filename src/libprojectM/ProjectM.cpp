@@ -30,6 +30,7 @@
 #include <Renderer/CopyTexture.hpp>
 #include <Renderer/PresetTransition.hpp>
 #include <Renderer/TextureManager.hpp>
+#include <Renderer/ShaderCache.hpp>
 #include <Renderer/TransitionShaderManager.hpp>
 
 namespace libprojectM {
@@ -194,6 +195,7 @@ void ProjectM::Initialize()
     /** Initialise per-pixel matrix calculations */
     /** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
     m_textureManager = std::make_unique<Renderer::TextureManager>(m_textureSearchPaths);
+    m_shaderCache = std::make_unique<Renderer::ShaderCache>();
 
     m_transitionShaderManager = std::make_unique<Renderer::TransitionShaderManager>();
 
@@ -452,6 +454,7 @@ auto ProjectM::GetRenderContext() -> Renderer::RenderContext
     ctx.perPixelMeshX = static_cast<int>(m_meshX);
     ctx.perPixelMeshY = static_cast<int>(m_meshY);
     ctx.textureManager = m_textureManager.get();
+    ctx.shaderCache = m_shaderCache.get();
 
     return ctx;
 }
