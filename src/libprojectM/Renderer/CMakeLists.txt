@@ -49,6 +49,8 @@ add_library(Renderer OBJECT
         Sampler.hpp
         Shader.cpp
         Shader.hpp
+        ShaderCache.cpp
+        ShaderCache.hpp
         Texture.cpp
         Texture.hpp
         TextureAttachment.cpp

@@ -7,6 +7,7 @@
 namespace libprojectM {
 namespace Renderer {
 
+class ShaderCache;
 class TextureManager;
 
 /**
@@ -30,6 +31,7 @@ public:
     int perPixelMeshY{48}; //!< Per-pixel/per-vertex mesh Y resolution.
 
     TextureManager* textureManager{nullptr}; //!< Holds all loaded textures for shader access.
+    ShaderCache* shaderCache{nullptr}; //!< The shader chace of this projectM instance.
 };
 
 } // namespace Renderer
