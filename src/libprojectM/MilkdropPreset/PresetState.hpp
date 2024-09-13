@@ -45,6 +45,12 @@ public:
      */
     void Initialize(PresetFileParser& parsedFile);
 
+    /**
+     * @brief Loads or compiles the generic shaders.
+     * Call after setting renderContext.
+     */
+    void LoadShaders();
+
     BlendableFloat gammaAdj{2.0f};
     BlendableFloat videoEchoZoom{2.0f};
     BlendableFloat videoEchoAlpha{0.0f};
@@ -147,8 +153,8 @@ public:
     std::string warpShader;      //!< Warp shader code.
     std::string compositeShader; //!< Composite shader code.
 
-    Renderer::Shader untexturedShader; //!< Shader used to draw untextured primitives, e.g. waveforms.
-    Renderer::Shader texturedShader;   //!< Shader used to draw textured primitives, e.g. textured shapes and the warp mesh.
+    std::weak_ptr<Renderer::Shader> untexturedShader; //!< Shader used to draw untextured primitives, e.g. waveforms.
+    std::weak_ptr<Renderer::Shader> texturedShader;   //!< Shader used to draw textured primitives, e.g. textured shapes and the warp mesh.
 
     std::weak_ptr<Renderer::Texture> mainTexture; //!< A weak reference to the main texture in the preset framebuffer.
     BlurTexture blurTexture;                      //!< The blur textures used in this preset. Contents depend on the shader code using GetBlurX().

@@ -54,8 +54,9 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
 #endif
     glLineWidth(1);
 
-    m_presetState.untexturedShader.Bind();
-    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+    auto shader = m_presetState.untexturedShader.lock();
+    shader->Bind();
+    shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
 
     glBindVertexArray(m_vaoID);
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID);

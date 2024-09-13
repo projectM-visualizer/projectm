@@ -68,9 +68,10 @@ void VideoEcho::Draw()
         m_vertices[i].a = 1.0f;
     }
 
-    m_presetState.texturedShader.Bind();
-    m_presetState.texturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
-    m_presetState.texturedShader.SetUniformInt("texture_sampler", 0);
+    auto shader = m_presetState.texturedShader.lock();
+    shader->Bind();
+    shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+    shader->SetUniformInt("texture_sampler", 0);
 
     auto mainTexture = m_presetState.mainTexture.lock();
     if (mainTexture)
