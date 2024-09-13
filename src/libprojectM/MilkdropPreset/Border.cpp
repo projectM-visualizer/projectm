@@ -33,8 +33,9 @@ void Border::Draw(const PerFrameContext& presetPerFrameContext)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    m_presetState.untexturedShader.Bind();
-    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+    auto shader = m_presetState.untexturedShader.lock();
+    shader->Bind();
+    shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
 
     std::array<Point, 4> vertices{};
     for (int border = 0; border < 2; border++)
