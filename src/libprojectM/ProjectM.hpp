@@ -37,6 +37,7 @@ class CopyTexture;
 class PresetTransition;
 class Renderer;
 class TextureManager;
+class ShaderCache;
 class TransitionShaderManager;
 } // namespace Renderer
 
@@ -200,11 +201,11 @@ private:
 
     auto GetRenderContext() -> Renderer::RenderContext;
 
-    uint32_t m_meshX{32};              //!< Per-point mesh horizontal resolution.
-    uint32_t m_meshY{24};              //!< Per-point mesh vertical resolution.
-    uint32_t m_targetFps{35};          //!< Target frames per second.
-    uint32_t m_windowWidth{0};            //!< EvaluateFrameData window width. If 0, nothing is rendered.
-    uint32_t m_windowHeight{0};           //!< EvaluateFrameData window height. If 0, nothing is rendered.
+    uint32_t m_meshX{32};            //!< Per-point mesh horizontal resolution.
+    uint32_t m_meshY{24};            //!< Per-point mesh vertical resolution.
+    uint32_t m_targetFps{35};        //!< Target frames per second.
+    uint32_t m_windowWidth{0};       //!< EvaluateFrameData window width. If 0, nothing is rendered.
+    uint32_t m_windowHeight{0};      //!< EvaluateFrameData window height. If 0, nothing is rendered.
     double m_presetDuration{30.0};   //!< Preset duration in seconds.
     double m_softCutDuration{3.0};   //!< Soft cut transition time.
     double m_hardCutDuration{20.0};  //!< Time after which a hard cut can happen at the earliest.
@@ -227,6 +228,7 @@ private:
 
     Audio::PCM m_audioStorage;                                                    //!< Audio data buffer and analyzer instance.
     std::unique_ptr<Renderer::TextureManager> m_textureManager;                   //!< The texture manager.
+    std::unique_ptr<Renderer::ShaderCache> m_shaderCache;                         //!< The global shader cache.
     std::unique_ptr<Renderer::TransitionShaderManager> m_transitionShaderManager; //!< The transition shader manager.
     std::unique_ptr<Renderer::CopyTexture> m_textureCopier;                       //!< Class that copies textures 1:1 to another texture or framebuffer.
     std::unique_ptr<Preset> m_activePreset;                                       //!< Currently loaded preset.
