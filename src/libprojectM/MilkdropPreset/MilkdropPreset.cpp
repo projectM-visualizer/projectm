@@ -59,6 +59,8 @@ void MilkdropPreset::Initialize(const Renderer::RenderContext& renderContext)
 {
     assert(renderContext.textureManager);
     m_state.renderContext = renderContext;
+    m_state.blurTexture.Initialize(renderContext);
+    m_state.LoadShaders();
 
     // Initialize variables and code now we have a proper render state.
     CompileCodeAndRunInitExpressions();

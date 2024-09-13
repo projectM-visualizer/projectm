@@ -192,9 +192,10 @@ void CustomShape::Draw()
 
         if (static_cast<int>(*m_perFrameContext.textured) != 0)
         {
-            m_presetState.texturedShader.Bind();
-            m_presetState.texturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
-            m_presetState.texturedShader.SetUniformInt("texture_sampler", 0);
+            auto shader = m_presetState.texturedShader.lock();
+            shader->Bind();
+            shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+            shader->SetUniformInt("texture_sampler", 0);
 
             // Textured shape, either main texture or texture from "image" key
             auto textureAspectY = m_presetState.renderContext.aspectY;
@@ -208,7 +209,7 @@ void CustomShape::Draw()
                 auto desc = m_presetState.renderContext.textureManager->GetTexture(m_image);
                 if (!desc.Empty())
                 {
-                    desc.Bind(0, m_presetState.texturedShader);
+                    desc.Bind(0, *shader);
                     textureAspectY = 1.0f;
                 }
                 else
@@ -251,8 +252,9 @@ void CustomShape::Draw()
 
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(TexturedPoint) * (sides + 2), vertexData.data());
 
-            m_presetState.untexturedShader.Bind();
-            m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+            auto shader = m_presetState.untexturedShader.lock();
+            shader->Bind();
+            shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
 
             glBindVertexArray(m_vaoIdUntextured);
             glDrawArrays(GL_TRIANGLE_FAN, 0, sides + 2);
@@ -269,8 +271,9 @@ void CustomShape::Draw()
                 points[i].y = vertexData[i + 1].y;
             }
 
-            m_presetState.untexturedShader.Bind();
-            m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+            auto shader = m_presetState.untexturedShader.lock();
+            shader->Bind();
+            shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
 
             glVertexAttrib4f(1,
                              static_cast<float>(*m_perFrameContext.border_r),
