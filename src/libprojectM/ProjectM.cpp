@@ -98,6 +98,10 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
         return;
     }
 
+    // Save the viewport.
+    GLint aiViewport[4];
+    glGetIntegerv(GL_VIEWPORT, aiViewport);
+
     // Update FPS and other timer values.
     m_timeKeeper->UpdateTimers();
 
@@ -167,6 +171,13 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
     m_activePreset->RenderFrame(audioData, renderContext);
 
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(targetFramebufferObject));
+
+    // Restore the viewport.
+    glViewport(aiViewport[0], aiViewport[1], (GLsizei)aiViewport[2], (GLsizei)aiViewport[3]);
+
+    // Update viewport information for PresetTransition.
+    renderContext.viewportSizeX = aiViewport[2];
+    renderContext.viewportSizeY = aiViewport[3];
 
     if (m_transition != nullptr && m_transitioningPreset != nullptr)
     {
