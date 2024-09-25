@@ -3,6 +3,7 @@
 #include "Renderer/Framebuffer.hpp"
 #include "Renderer/RenderItem.hpp"
 #include "Renderer/Shader.hpp"
+#include "Renderer/RenderContext.hpp"
 
 namespace libprojectM {
 namespace Renderer {
@@ -19,6 +20,11 @@ public:
     CopyTexture();
 
     void InitVertexAttrib() override;
+
+    /**
+     * Set e.g. nearest or linear texture filtering.
+     */
+    void UpdateTextureFilter(RenderContextTextureFilter textureFilter);
 
     /**
      * @brief Copies the original texture into the currently bound framebuffer.

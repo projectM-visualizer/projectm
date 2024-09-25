@@ -89,6 +89,10 @@ public:
 
     void SetWindowSize(uint32_t width, uint32_t height);
 
+    void GetTargetOptions(uint32_t* targetX, uint32_t* targetY, uint32_t* targetWidth, uint32_t* targetHeight, Renderer::RenderContextTextureFilter* targetTextureFilter);
+
+    void SetTargetOptions(uint32_t targetX, uint32_t targetY, uint32_t targetWidth, uint32_t targetHeight, Renderer::RenderContextTextureFilter targetTextureFilter);
+
     /**
      * @brief Sets the texture paths used to find images for presets.
      *
@@ -214,6 +218,13 @@ private:
     bool m_aspectCorrection{true};   //!< If true, corrects aspect ratio for non-rectangular windows.
     float m_easterEgg{1.0};          //!< Random preset duration modifier. See TimeKeeper class.
     float m_previousFrameVolume{};   //!< Volume in previous frame, used for hard cuts.
+
+    bool m_targetOptionsEnabled{false}; //!< If true, use the target options.
+    uint32_t m_targetX{0};                   //!< Target framebuffer viewport x.
+    uint32_t m_targetY{0};                   //!< Target framebuffer viewport y.
+    uint32_t m_targetWidth{0};               //!< Target framebuffer viewport width.
+    uint32_t m_targetHeight{0};              //!< Target framebuffer viewport height.
+    Renderer::RenderContextTextureFilter m_targetTextureFilter{Renderer::RenderContextTextureFilter::Nearest}; //!< Target texture filtering when drawing to framebuffer.
 
     std::vector<std::string> m_textureSearchPaths; ///!< List of paths to search for texture files
 

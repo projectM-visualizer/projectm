@@ -98,10 +98,6 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
         return;
     }
 
-    // Save the viewport.
-    GLint aiViewport[4];
-    glGetIntegerv(GL_VIEWPORT, aiViewport);
-
     // Update FPS and other timer values.
     m_timeKeeper->UpdateTimers();
 
@@ -172,12 +168,8 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
 
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(targetFramebufferObject));
 
-    // Restore the viewport.
-    glViewport(aiViewport[0], aiViewport[1], (GLsizei)aiViewport[2], (GLsizei)aiViewport[3]);
-
-    // Update viewport information for PresetTransition.
-    renderContext.viewportSizeX = aiViewport[2];
-    renderContext.viewportSizeY = aiViewport[3];
+    // Set the viewport for the target framebuffer.
+    glViewport(renderContext.targetX, renderContext.targetY, renderContext.targetWidth, renderContext.targetHeight);
 
     if (m_transition != nullptr && m_transitioningPreset != nullptr)
     {
@@ -185,6 +177,7 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
     }
     else
     {
+        m_textureCopier->UpdateTextureFilter(renderContext.targetTextureFilter);
         m_textureCopier->Draw(m_activePreset->OutputTexture(), false, false);
     }
 
@@ -231,6 +224,25 @@ void ProjectM::SetWindowSize(uint32_t width, uint32_t height)
     /** Stash the new dimensions */
     m_windowWidth = width;
     m_windowHeight = height;
+}
+
+void ProjectM::GetTargetOptions(uint32_t* targetX, uint32_t* targetY, uint32_t* targetWidth, uint32_t* targetHeight, Renderer::RenderContextTextureFilter* targetTextureFilter)
+{
+    *targetX = m_targetX;
+    *targetY = m_targetY;
+    *targetWidth = m_targetWidth;
+    *targetHeight = m_targetHeight;
+    *targetTextureFilter = m_targetTextureFilter;
+}
+
+void ProjectM::SetTargetOptions(uint32_t targetX, uint32_t targetY, uint32_t targetWidth, uint32_t targetHeight, Renderer::RenderContextTextureFilter targetTextureFilter)
+{
+    m_targetOptionsEnabled = targetWidth != 0 && targetHeight != 0;
+    m_targetX = targetX;
+    m_targetY = targetY;
+    m_targetWidth = targetWidth;
+    m_targetHeight = targetHeight;
+    m_targetTextureFilter = targetTextureFilter;
 }
 
 void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hardCut)
@@ -449,6 +461,21 @@ void ProjectM::TouchDestroyAll()
 
 auto ProjectM::GetRenderContext() -> Renderer::RenderContext
 {
+    uint32_t targetX = 0;
+    uint32_t targetY = 0;
+    uint32_t targetWidth = m_windowWidth;
+    uint32_t targetHeight = m_windowHeight;
+    Renderer::RenderContextTextureFilter targetTextureFilter = Renderer::RenderContextTextureFilter::Nearest;
+    if (m_targetOptionsEnabled) {
+        targetX = m_targetX;
+        targetY = m_targetY;
+        targetWidth = m_targetWidth;
+        targetHeight = m_targetHeight;
+        targetTextureFilter = m_targetTextureFilter;
+    }
+    const float aspectX = (targetHeight > targetWidth) ? static_cast<float>(targetWidth) / static_cast<float>(targetHeight) : 1.0f;
+    const float aspectY = (targetWidth > targetHeight) ? static_cast<float>(targetHeight) / static_cast<float>(targetWidth) : 1.0f;
+
     Renderer::RenderContext ctx{};
     ctx.viewportSizeX = m_windowWidth;
     ctx.viewportSizeY = m_windowHeight;
@@ -456,13 +483,18 @@ auto ProjectM::GetRenderContext() -> Renderer::RenderContext
     ctx.progress = static_cast<float>(m_timeKeeper->PresetProgressA());
     ctx.fps = static_cast<float>(m_targetFps);
     ctx.frame = m_frameCount;
-    ctx.aspectX = (m_windowHeight > m_windowWidth) ? static_cast<float>(m_windowWidth) / static_cast<float>(m_windowHeight) : 1.0f;
-    ctx.aspectY = (m_windowWidth > m_windowHeight) ? static_cast<float>(m_windowHeight) / static_cast<float>(m_windowWidth) : 1.0f;
-    ctx.invAspectX = 1.0f / ctx.aspectX;
-    ctx.invAspectY = 1.0f / ctx.aspectY;
+    ctx.aspectX = aspectX;
+    ctx.aspectY = aspectY;
+    ctx.invAspectX = 1.0f / aspectX;
+    ctx.invAspectY = 1.0f / aspectY;
     ctx.perPixelMeshX = static_cast<int>(m_meshX);
     ctx.perPixelMeshY = static_cast<int>(m_meshY);
     ctx.textureManager = m_textureManager.get();
+    ctx.targetX = targetX;
+    ctx.targetY = targetY;
+    ctx.targetWidth = targetWidth;
+    ctx.targetHeight = targetHeight;
+    ctx.targetTextureFilter = targetTextureFilter;
 
     return ctx;
 }

@@ -74,6 +74,15 @@ typedef enum
     PROJECTM_TOUCH_TYPE_DOUBLE_LINE      //!< Draws a double-line waveform.
 } projectm_touch_type;
 
+/**
+ * Texture filter when rendering to the target framebuffer.
+ */
+typedef enum
+{
+    PROJECTM_TEXTURE_FILTER_NEAREST = 0, //!< Nearest texture filtering (pixelated outcome).
+    PROJECTM_TEXTURE_FILTER_LINEAR = 1  //!< Linear texture filtering (smoother outcome).
+} projectm_texture_filter;
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

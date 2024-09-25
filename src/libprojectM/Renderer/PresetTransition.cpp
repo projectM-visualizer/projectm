@@ -71,8 +71,8 @@ void PresetTransition::Draw(const Preset& oldPreset,
     m_transitionShader->Bind();
 
     // Numerical parameters
-    m_transitionShader->SetUniformFloat3("iResolution", {static_cast<float>(context.viewportSizeX),
-                                                         static_cast<float>(context.viewportSizeY),
+    m_transitionShader->SetUniformFloat3("iResolution", {static_cast<float>(context.targetWidth),
+                                                         static_cast<float>(context.targetHeight),
                                                          0.0f});
 
     m_transitionShader->SetUniformFloat4("durationParams", {linearProgress,

@@ -9,6 +9,12 @@ namespace Renderer {
 
 class TextureManager;
 
+enum class RenderContextTextureFilter
+{
+    Nearest = 0,
+    Linear = 1,
+};
+
 /**
  * @brief Holds all global data of the current rendering context, which can change from frame to frame.
  */
@@ -28,6 +34,12 @@ public:
 
     int perPixelMeshX{64}; //!< Per-pixel/per-vertex mesh X resolution.
     int perPixelMeshY{48}; //!< Per-pixel/per-vertex mesh Y resolution.
+
+    int targetX{0};        //!< Target framebuffer viewport x.
+    int targetY{0};        //!< Target framebuffer viewport y.
+    int targetWidth{0};    //!< Target framebuffer viewport width.
+    int targetHeight{0};   //!< Target framebuffer viewport height.
+    RenderContextTextureFilter targetTextureFilter{RenderContextTextureFilter::Nearest}; //!< Target texture filtering when drawing to framebuffer.
 
     TextureManager* textureManager{nullptr}; //!< Holds all loaded textures for shader access.
 };

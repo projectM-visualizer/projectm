@@ -197,6 +197,12 @@ auto CopyTexture::Texture() -> std::shared_ptr<class Texture>
     return m_framebuffer.GetColorAttachmentTexture(0, 0);
 }
 
+void CopyTexture::UpdateTextureFilter(RenderContextTextureFilter textureFilter)
+{
+    const GLint filterMode = textureFilter == RenderContextTextureFilter::Linear ? GL_LINEAR : GL_NEAREST;
+    m_sampler.FilterMode(filterMode);
+}
+
 void CopyTexture::UpdateTextureSize(int width, int height)
 {
     if (m_width == width &&

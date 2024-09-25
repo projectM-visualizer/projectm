@@ -1,4 +1,5 @@
 #include "ProjectMCWrapper.hpp"
+#include "Renderer/RenderContext.hpp"
 
 #include <projectM-4/projectM.h>
 
@@ -362,6 +363,18 @@ void projectm_set_window_size(projectm_handle instance, size_t width, size_t hei
 {
     auto projectMInstance = handle_to_instance(instance);
     projectMInstance->SetWindowSize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+}
+
+void projectm_get_target_options(projectm_handle instance, uint32_t* targetX, uint32_t* targetY, uint32_t* targetWidth, uint32_t* targetHeight, projectm_texture_filter* targetTextureFilter)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->GetTargetOptions(targetX, targetY, targetWidth, targetHeight, reinterpret_cast<libprojectM::Renderer::RenderContextTextureFilter*>(targetTextureFilter));
+}
+
+void projectm_set_target_options(projectm_handle instance, uint32_t targetX, uint32_t targetY, uint32_t targetWidth, uint32_t targetHeight, projectm_texture_filter targetTextureFilter)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->SetTargetOptions(targetX, targetY, targetWidth, targetHeight, static_cast<libprojectM::Renderer::RenderContextTextureFilter>(targetTextureFilter));
 }
 
 unsigned int projectm_pcm_get_max_samples()
