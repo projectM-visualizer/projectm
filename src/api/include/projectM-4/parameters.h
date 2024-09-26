@@ -305,32 +305,6 @@ PROJECTM_EXPORT void projectm_set_window_size(projectm_handle instance, size_t w
  */
 PROJECTM_EXPORT void projectm_get_window_size(projectm_handle instance, size_t* width, size_t* height);
 
-/**
- * @brief Sets the viewport of the target framebuffer and the texture filter used to draw in the target framebuffer.
- *
- * Setting a width and a height of zero uses default logic.
- * Calling this function is cheap, i.e. no resources are recreated.
- *
- * @param instance The projectM instance handle.
- * @param targetX New viewport x in pixels.
- * @param targetY New viewport y in pixels.
- * @param targetWidth New viewport width in pixels.
- * @param targetHeight New viewport height in pixels.
- * @param targetTextureFilter New texture filter, nearest or linear.
- */
-PROJECTM_EXPORT void projectm_set_target_options(projectm_handle instance, uint32_t targetX, uint32_t targetY, uint32_t targetWidth, uint32_t targetHeight, projectm_texture_filter targetTextureFilter);
-
-/**
- * @brief Returns the current target framebuffer viewport in pixels and the current texture filter.
- * @param instance The projectM instance handle.
- * @param targetX Valid pointer to a uint32_t variable that will receive the viewport x value.
- * @param targetY Valid pointer to a uint32_t variable that will receive the viewport y value.
- * @param targetWidth Valid pointer to a uint32_t variable that will receive the viewport width value.
- * @param targetHeight Valid pointer to a uint32_t variable that will receive the viewport height value.
- * @param targetTextureFilter Valid pointer to a projectm_texture_filter variable that will receive the texture filter value.
- */
-PROJECTM_EXPORT void projectm_get_target_options(projectm_handle instance, uint32_t* targetX, uint32_t* targetY, uint32_t* targetWidth, uint32_t* targetHeight, projectm_texture_filter* targetTextureFilter);
-
 #ifdef __cplusplus
 } // extern "C"
 #endif
