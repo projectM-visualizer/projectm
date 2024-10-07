@@ -4,6 +4,7 @@
 #include "IdleTextures.hpp"
 #include "MilkdropNoise.hpp"
 #include "Texture.hpp"
+#include "Utils.hpp"
 
 #include <SOIL2/SOIL2.h>
 
@@ -165,7 +166,6 @@ void TextureManager::PurgeTextures()
 
 auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSamplerDescriptor
 {
-    TextureSamplerDescriptor texDesc;
     GLint wrapMode{0};
     GLint filterMode{0};
     std::string unqualifiedName;
@@ -174,24 +174,22 @@ auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSample
 
     ScanTextures();
 
-    std::string lowerCaseFileName(name);
-    std::transform(lowerCaseFileName.begin(), lowerCaseFileName.end(), lowerCaseFileName.begin(), tolower);
-
+    std::string lowerCaseUnqualifiedName = Utils::ToLower(unqualifiedName);
     for (const auto& file : m_scannedTextureFiles)
     {
-        if (file.lowerCaseBaseName != unqualifiedName)
+        if (file.lowerCaseBaseName != lowerCaseUnqualifiedName)
         {
             continue;
         }
 
-        texDesc = LoadTexture(file.filePath, name);
+        auto texture = LoadTexture(file);
 
-        if (!texDesc.Empty())
+        if (texture)
         {
 #ifdef DEBUG
             std::cerr << "Loaded texture " << unqualifiedName << std::endl;
 #endif
-            return texDesc;
+            return {texture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};;
         }
     }
 
@@ -203,24 +201,20 @@ auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSample
     return {m_placeholderTexture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
 }
 
-auto TextureManager::LoadTexture(const std::string& fileName, const std::string& name) -> TextureSamplerDescriptor
+auto TextureManager::LoadTexture(const ScannedFile& file) -> std::shared_ptr<Texture>
 {
-    GLint wrapMode;
-    GLint filterMode;
     std::string unqualifiedName;
 
-    ExtractTextureSettings(name, wrapMode, filterMode, unqualifiedName);
-    auto sampler = m_samplers.at({wrapMode, filterMode});
-    if (m_textures.find(name) != m_textures.end())
+    if (m_textures.find(file.lowerCaseBaseName) != m_textures.end())
     {
-        return {m_textures.at(name), sampler, name, unqualifiedName};
+        return m_textures.at(file.lowerCaseBaseName);
     }
 
     int width{};
     int height{};
 
     unsigned int const tex = SOIL_load_OGL_texture(
-        fileName.c_str(),
+        file.filePath.c_str(),
         SOIL_LOAD_RGBA,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
@@ -232,10 +226,10 @@ auto TextureManager::LoadTexture(const std::string& fileName, const std::string&
 
     uint32_t memoryBytes = width * height * 4; // RGBA, unsigned byte color channels.
     auto newTexture = std::make_shared<Texture>(unqualifiedName, tex, GL_TEXTURE_2D, width, height, true);
-    m_textures[name] = newTexture;
-    m_textureStats.insert({name, {memoryBytes}});
+    m_textures[file.lowerCaseBaseName] = newTexture;
+    m_textureStats.insert({file.lowerCaseBaseName, {memoryBytes}});
 
-    return {newTexture, sampler, name, unqualifiedName};
+    return newTexture;
 }
 
 auto TextureManager::GetRandomTexture(const std::string& randomName) -> TextureSamplerDescriptor
@@ -247,8 +241,7 @@ auto TextureManager::GetRandomTexture(const std::string& randomName) -> TextureS
 
     ScanTextures();
 
-    std::string lowerCaseName(randomName);
-    std::transform(lowerCaseName.begin(), lowerCaseName.end(), lowerCaseName.begin(), tolower);
+    std::string lowerCaseName = Utils::ToLower(randomName);
 
     if (m_scannedTextureFiles.empty())
     {
@@ -300,8 +293,7 @@ auto TextureManager::GetRandomTexture(const std::string& randomName) -> TextureS
 
 void TextureManager::AddTextureFile(const std::string& fileName, const std::string& baseName)
 {
-    std::string lowerCaseBaseName(baseName);
-    std::transform(lowerCaseBaseName.begin(), lowerCaseBaseName.end(), lowerCaseBaseName.begin(), tolower);
+    std::string lowerCaseBaseName = Utils::ToLower(baseName);
 
     ScannedFile file;
     file.filePath = fileName;
@@ -320,8 +312,7 @@ void TextureManager::ExtractTextureSettings(const std::string& qualifiedName, GL
         return;
     }
 
-    std::string lowerQualifiedName(qualifiedName);
-    std::transform(lowerQualifiedName.begin(), lowerQualifiedName.end(), lowerQualifiedName.begin(), tolower);
+    std::string lowerQualifiedName = Utils::ToLower(qualifiedName);
 
     // Default mode for user textures is "fw" (bilinear filtering + wrap).
     wrapMode = GL_REPEAT;
