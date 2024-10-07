@@ -2,6 +2,7 @@
 
 #include "PerFrameContext.hpp"
 #include "PresetState.hpp"
+#include "Utils.hpp"
 
 #include <MilkdropStaticShaders.hpp>
 
@@ -69,8 +70,7 @@ void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
             baseName = name.substr(3);
         }
 
-        std::string lowerCaseName(baseName);
-        std::transform(lowerCaseName.begin(), lowerCaseName.end(), lowerCaseName.begin(), tolower);
+        std::string lowerCaseName = Utils::ToLower(baseName);
 
         // The "main" and "blurX" textures are preset-specific and are not managed by TextureManager.
         if (lowerCaseName == "main")
