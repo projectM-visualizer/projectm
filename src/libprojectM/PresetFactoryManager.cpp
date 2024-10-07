@@ -2,6 +2,8 @@
 
 #include <MilkdropPreset/Factory.hpp>
 
+#include <Utils.hpp>
+
 #include <algorithm>
 #include <cassert>
 #include <iostream>
@@ -135,9 +137,8 @@ auto PresetFactoryManager::ParseExtension(const std::string& filename) -> std::s
     if (start == std::string::npos || start >= (filename.length() - 1)) {
         return "";
     }
-    std::string ext = filename.substr(start + 1, filename.length());
-    std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
-    return ext;
+
+    return Utils::ToLower(filename.substr(start + 1, filename.length()));
 }
 
 } // namespace libprojectM
