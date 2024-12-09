@@ -27,6 +27,7 @@
 #include <Audio/PCM.hpp>
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -40,6 +41,10 @@ class TextureManager;
 class ShaderCache;
 class TransitionShaderManager;
 } // namespace Renderer
+
+namespace UserSprites {
+class SpriteManager;
+} // namespace UserSprites
 
 class Preset;
 class PresetFactoryManager;
@@ -192,6 +197,51 @@ public:
 
     auto WindowHeight() -> int;
 
+    /**
+     * @brief Creates a new user sprite.
+     * @param type The type of the sprite to create.
+     * @param spriteData The type-dependent sprite data.
+     * @return A unique, non-zero sprite identifier if the sprite was created successfully,
+     *         or zero if any error occurred or the sprite limit was reached.
+     */
+    auto AddUserSprite(const std::string& type, const std::string& spriteData) -> uint32_t;
+
+    /**
+     * @brief Destroys a single sprite using its identifier.
+     * @param spriteIdentifier The identifier of the sprite to destroy.
+     */
+    void DestroyUserSprite(uint32_t spriteIdentifier);
+
+    /**
+     * @brief Destroys all active user sprites.
+     */
+    void DestroyAllUserSprites();
+
+    /**
+     * @brief Returns the current user sprite count.
+     * @return The number of currently active user sprites.
+     */
+    auto UserSpriteCount() const -> uint32_t;
+
+    /**
+     * @brief Sets a new limit for user sprites.
+     * Any sprites above the new limit will be removed in order, oldest first.
+     * @param maxSprites The new sprite limit. 0 disables sprites, 16 is the default.
+     */
+    void SetUserSpriteLimit(uint32_t maxSprites);
+
+    /**
+     * @brief Returns the current user sprite display limit.
+     * @return The current user sprite limit.
+     */
+    auto UserSpriteLimit() const -> uint32_t;
+
+    /**
+     * @brief Returns a list of identifiers for all active user sprites.
+     * @return A list of all active user sprite identifiers, ordered by age (oldest first).
+     */
+    auto UserSpriteIdentifiers() const -> std::vector<uint32_t>;
+
 private:
     void Initialize();
 
@@ -235,6 +285,7 @@ private:
     std::unique_ptr<Preset> m_transitioningPreset;                                //!< Destination preset when smooth preset switching.
     std::unique_ptr<Renderer::PresetTransition> m_transition;                     //!< Transition effect used for blending.
     std::unique_ptr<TimeKeeper> m_timeKeeper;                                     //!< Keeps the different timers used to render and switch presets.
+    std::unique_ptr<UserSprites::SpriteManager> m_spriteManager;                  //!< Manages all types of user sprites.
 };
 
 } // namespace libprojectM
