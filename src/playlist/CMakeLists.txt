@@ -63,7 +63,7 @@ target_link_libraries(projectM_playlist
 if(BUILD_SHARED_LIBS)
     target_compile_definitions(projectM_playlist
             PRIVATE
-            projectM_api_EXPORTS
+            projectM_playlist_EXPORTS
             )
 
     target_link_libraries(projectM_playlist
