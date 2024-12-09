@@ -1,6 +1,6 @@
 /**
  * @file projectM.h
- * @copyright 2003-2023 projectM Team
+ * @copyright 2003-2024 projectM Team
  * @brief Convenience include file that includes all other API headers.
  *
  * projectM -- Milkdrop-esque visualisation SDK
