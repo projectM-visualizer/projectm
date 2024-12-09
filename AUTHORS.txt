@@ -20,8 +20,7 @@ For the purposes of the copyright statement in the preamble of each source
 code file comprising projectM, the projectM team are:
 
 Carmelo Piccione
-    Parser
-    Evaluator
+    Original Expression Parser/Evaluator
     Pulse Audio support (projectM-pulseaudio)
     Qt GUI (projectM-qt)
 
@@ -41,14 +40,14 @@ Roger Dannenburg
     Advice & Support
 
 Matthias Klumpp
-    CMake build system
+    Original CMake build system
     Distro integration
     Bug fixes
 
 Mischa Spiegelmock
     OSX native iTunes visualization plugin
     Preliminary web support (projectM-emscripten)
-    cmake improvements for OSX and Linux
+    CMake improvements for OSX and Linux
     SDL
     OpenGLES
 
@@ -58,3 +57,23 @@ Robert Pancoast
     Provide XBOX Support
     Input Windows Audio Loopback with WASAPI
 
+Kai Blaschke
+    Updated CMake build system
+    New Bison-/Flex-based Expression Evaluator (projectm-eval)
+    C API
+    Modernized Milkdrop 2 Renderer
+
+Blaque Allen
+    Rust Crates
+    Emscripten Improvements
+    Code Reviews
+
+Dane Wagner
+    Improved Audio Processing
+    HLSL Shader Translation Fixes
+    Sphinx Documentation
+
+...and many others!
+
+For a full list, please see the contributors page on GitHub:
+https://github.com/projectM-visualizer/projectm/graphs/contributors
