@@ -2,6 +2,7 @@
  * @file audio.h
  * @copyright 2003-2024 projectM Team
  * @brief Functions to pass in audio data to libprojectM.
+ * @since 4.0.0
  *
  * projectM -- Milkdrop-esque visualisation SDK
  * Copyright (C)2003-2024 projectM Team
@@ -38,6 +39,7 @@ extern "C" {
  * are added, only this number of samples is stored and the remainder discarded.
  *
  * @return The number of audio samples that are stored, per channel.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT unsigned int projectm_pcm_get_max_samples();
 
@@ -51,10 +53,11 @@ PROJECTM_EXPORT unsigned int projectm_pcm_get_max_samples();
  *
  * @param instance The projectM instance handle.
  * @param samples An array of PCM samples.
- * Each sample is expected to be within the range -1 to 1.
+ *                Each sample is expected to be within the range -1 to 1.
  * @param count The number of audio samples in a channel.
  * @param channels If the buffer is mono or stereo.
- * Can be PROJECTM_MONO or PROJECTM_STEREO.
+ *                 Can be PROJECTM_MONO, PROJECTM_STEREO or the actual numerical channel count.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_pcm_add_float(projectm_handle instance, const float* samples,
                                             unsigned int count, projectm_channels channels);
@@ -71,7 +74,8 @@ PROJECTM_EXPORT void projectm_pcm_add_float(projectm_handle instance, const floa
  * @param samples An array of PCM samples.
  * @param count The number of audio samples in a channel.
  * @param channels If the buffer is mono or stereo.
- * Can be PROJECTM_MONO or PROJECTM_STEREO.
+ *                 Can be PROJECTM_MONO, PROJECTM_STEREO or the actual numerical channel count.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_pcm_add_int16(projectm_handle instance, const int16_t* samples,
                                             unsigned int count, projectm_channels channels);
@@ -88,7 +92,8 @@ PROJECTM_EXPORT void projectm_pcm_add_int16(projectm_handle instance, const int1
  * @param samples An array of PCM samples.
  * @param count The number of audio samples in a channel.
  * @param channels If the buffer is mono or stereo.
- * Can be PROJECTM_MONO or PROJECTM_STEREO.
+ *                 Can be PROJECTM_MONO, PROJECTM_STEREO or the actual numerical channel count.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_pcm_add_uint8(projectm_handle instance, const uint8_t* samples,
                                             unsigned int count, projectm_channels channels);

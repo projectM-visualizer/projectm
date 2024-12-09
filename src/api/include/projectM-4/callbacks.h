@@ -2,6 +2,7 @@
  * @file callbacks.h
  * @copyright 2003-2024 projectM Team
  * @brief Functions and prototypes for projectM callbacks.
+ * @since 4.0.0
  *
  * projectM -- Milkdrop-esque visualisation SDK
  * Copyright (C)2003-2024 projectM Team
@@ -36,7 +37,8 @@ extern "C" {
  *
  * @param is_hard_cut If true, the transition was triggered by a beat-driven event.
  * @param user_data A user-defined data pointer that was provided when registering the callback,
-*                   e.g. context information.
+ *                   e.g. context information.
+ * @since 4.0.0
  */
 typedef void (*projectm_preset_switch_requested_event)(bool is_hard_cut, void* user_data);
 
@@ -50,6 +52,7 @@ typedef void (*projectm_preset_switch_requested_event)(bool is_hard_cut, void* u
  * @param message The error message.
  * @param user_data A user-defined data pointer that was provided when registering the callback,
  *                  e.g. context information.
+ * @since 4.0.0
  */
 typedef void (*projectm_preset_switch_failed_event)(const char* preset_filename,
                                                     const char* message, void* user_data);
@@ -64,6 +67,7 @@ typedef void (*projectm_preset_switch_failed_event)(const char* preset_filename,
  * @param callback A pointer to the callback function.
  * @param user_data A pointer to any data that will be sent back in the callback, e.g. context
  *                  information.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_preset_switch_requested_event_callback(projectm_handle instance,
                                                                          projectm_preset_switch_requested_event callback,
@@ -78,6 +82,7 @@ PROJECTM_EXPORT void projectm_set_preset_switch_requested_event_callback(project
  * @param callback A pointer to the callback function.
  * @param user_data A pointer to any data that will be sent back in the callback, e.g. context
  *                  information.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_preset_switch_failed_event_callback(projectm_handle instance,
                                                                       projectm_preset_switch_failed_event callback,

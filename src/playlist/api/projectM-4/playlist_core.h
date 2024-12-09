@@ -2,6 +2,7 @@
  * @file playlist_core.h
  * @copyright 2003-2024 projectM Team
  * @brief Core functions to instantiate, destroy and connect a projectM playlist.
+ * @since 4.0.0
  *
  * projectM -- Milkdrop-esque visualisation SDK
  * Copyright (C)2003-2024 projectM Team
@@ -44,6 +45,7 @@ extern "C" {
  * @param projectm_instance The projectM instance to connect to. Can be a null pointer to leave the newly
  *                          created playlist instance unconnected.
  * @return An opaque pointer to the newly created playlist manager instance. Null if creation failed.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT projectm_playlist_handle projectm_playlist_create(projectm_handle projectm_instance);
 
@@ -53,6 +55,7 @@ PROJECTM_PLAYLIST_EXPORT projectm_playlist_handle projectm_playlist_create(proje
  * If the playlist manager is currently connected to a projectM instance, it will be disconnected.
  *
  * @param instance The playlist manager instance to destroy.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT void projectm_playlist_destroy(projectm_playlist_handle instance);
 
@@ -71,6 +74,7 @@ PROJECTM_PLAYLIST_EXPORT void projectm_playlist_destroy(projectm_playlist_handle
  * @param instance The playlist manager instance.
  * @param projectm_instance The projectM instance to connect to. Can be a null pointer to remove
  *                          an existing binding and clear the projectM preset switch callback.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT void projectm_playlist_connect(projectm_playlist_handle instance, projectm_handle projectm_instance);
 
