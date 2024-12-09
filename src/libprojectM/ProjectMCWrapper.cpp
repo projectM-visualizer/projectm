@@ -5,9 +5,9 @@
 #include <Audio/AudioConstants.hpp>
 
 #include <cstring>
-#include <sstream>
-#include <projectM-4/render_opengl.h>
 #include <projectM-4/parameters.h>
+#include <projectM-4/render_opengl.h>
+#include <sstream>
 
 
 namespace libprojectM {
@@ -26,7 +26,7 @@ void projectMWrapper::PresetSwitchFailedEvent(const std::string& presetFilename,
     if (m_presetSwitchFailedEventCallback)
     {
         m_presetSwitchFailedEventCallback(presetFilename.c_str(),
-                                         failureMessage.c_str(), m_presetSwitchFailedEventUserData);
+                                          failureMessage.c_str(), m_presetSwitchFailedEventUserData);
     }
 }
 
@@ -395,4 +395,58 @@ auto projectm_pcm_add_uint8(projectm_handle instance, const uint8_t* samples, un
 auto projectm_write_debug_image_on_next_frame(projectm_handle, const char*) -> void
 {
     // UNIMPLEMENTED
+}
+
+uint32_t projectm_sprite_create(projectm_handle instance, const char* type, const char* code)
+{
+    auto* projectMInstance = handle_to_instance(instance);
+
+    return projectMInstance->AddUserSprite(type, code);
+}
+
+void projectm_sprite_destroy(projectm_handle instance, uint32_t sprite_id)
+{
+    auto* projectMInstance = handle_to_instance(instance);
+
+    projectMInstance->DestroyUserSprite(sprite_id);
+}
+
+void projectm_sprite_destroy_all(projectm_handle instance)
+{
+    auto* projectMInstance = handle_to_instance(instance);
+
+    projectMInstance->DestroyAllUserSprites();
+}
+
+uint32_t projectm_sprite_get_sprite_count(projectm_handle instance)
+{
+    auto* projectMInstance = handle_to_instance(instance);
+
+    return projectMInstance->UserSpriteCount();
+}
+
+void projectm_sprite_get_sprite_ids(projectm_handle instance, uint32_t* sprite_ids)
+{
+    auto* projectMInstance = handle_to_instance(instance);
+
+    auto spriteIdList = projectMInstance->UserSpriteIdentifiers();
+    for (const auto& spriteId : spriteIdList)
+    {
+        *sprite_ids = spriteId;
+        sprite_ids++;
+    }
+}
+
+void projectm_sprite_set_max_sprites(projectm_handle instance, uint32_t max_sprites)
+{
+    auto* projectMInstance = handle_to_instance(instance);
+
+    projectMInstance->SetUserSpriteLimit(max_sprites);
+}
+
+uint32_t projectm_sprite_get_max_sprites(projectm_handle instance)
+{
+    auto* projectMInstance = handle_to_instance(instance);
+
+    return projectMInstance->UserSpriteLimit();
 }
