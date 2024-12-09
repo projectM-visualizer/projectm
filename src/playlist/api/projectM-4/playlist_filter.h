@@ -1,10 +1,11 @@
 /**
  * @file playlist_filter.h
- * @copyright 2003-2023 projectM Team
+ * @copyright 2003-2024 projectM Team
  * @brief Playlist filter functions.
+ * @since 4.0.0
  *
  * projectM -- Milkdrop-esque visualisation SDK
- * Copyright (C)2003-2023 projectM Team
+ * Copyright (C)2003-2024 projectM Team
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -67,6 +68,7 @@ extern "C" {
  * @param instance The playlist manager instance.
  * @param filter_list An array with filter strings.
  * @param count The size of the filter array.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT void projectm_playlist_set_filter(projectm_playlist_handle instance, const char** filter_list,
                                                            size_t count);
@@ -80,6 +82,7 @@ PROJECTM_PLAYLIST_EXPORT void projectm_playlist_set_filter(projectm_playlist_han
  * @param instance The playlist manager instance.
  * @param[out] count The size of the filter array.
  * @return An array with filter strings.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT char** projectm_playlist_get_filter(projectm_playlist_handle instance, size_t* count);
 
@@ -91,6 +94,7 @@ PROJECTM_PLAYLIST_EXPORT char** projectm_playlist_get_filter(projectm_playlist_h
  *
  * @param instance The playlist manager instance.
  * @return The number of removed items.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT size_t projectm_playlist_apply_filter(projectm_playlist_handle instance);
 
