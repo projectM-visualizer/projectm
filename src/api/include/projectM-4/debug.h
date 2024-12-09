@@ -2,6 +2,7 @@
  * @file debug.h
  * @copyright 2003-2024 projectM Team
  * @brief Debug functions for both libprojectM and preset developers.
+ * @since 4.0.0
  *
  * projectM -- Milkdrop-esque visualisation SDK
  * Copyright (C)2003-2024 projectM Team
@@ -47,6 +48,7 @@ extern "C" {
  *
  * @param instance The projectM instance handle.
  * @param output_file The filename to write the dump to or NULL.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_write_debug_image_on_next_frame(projectm_handle instance, const char* output_file);
 
