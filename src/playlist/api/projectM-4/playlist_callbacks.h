@@ -2,6 +2,7 @@
  * @file playlist_callbacks.h
  * @copyright 2003-2024 projectM Team
  * @brief Functions and prototypes for projectM playlist callbacks.
+ * @since 4.0.0
  *
  * projectM -- Milkdrop-esque visualisation SDK
  * Copyright (C)2003-2024 projectM Team
@@ -42,6 +43,7 @@ extern "C" {
  * @param index The playlist index of the new preset.
  * @param user_data A user-defined data pointer that was provided when registering the callback,
  *                  e.g. context information.
+ * @since 4.0.0
  */
 typedef void (*projectm_playlist_preset_switched_event)(bool is_hard_cut, unsigned int index,
                                                         void* user_data);
@@ -61,6 +63,7 @@ typedef void (*projectm_playlist_preset_switched_event)(bool is_hard_cut, unsign
  * @param message The last error message.
  * @param user_data A user-defined data pointer that was provided when registering the callback,
  *                  e.g. context information.
+ * @since 4.0.0
  */
 typedef void (*projectm_playlist_preset_switch_failed_event)(const char* preset_filename,
                                                              const char* message, void* user_data);
@@ -75,6 +78,7 @@ typedef void (*projectm_playlist_preset_switch_failed_event)(const char* preset_
  * @param callback A pointer to the callback function.
  * @param user_data A pointer to any data that will be sent back in the callback, e.g. context
  *                  information.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT void projectm_playlist_set_preset_switched_event_callback(projectm_playlist_handle instance,
                                                                                    projectm_playlist_preset_switched_event callback,
@@ -94,6 +98,7 @@ PROJECTM_PLAYLIST_EXPORT void projectm_playlist_set_preset_switched_event_callba
  * @param callback A pointer to the callback function.
  * @param user_data A pointer to any data that will be sent back in the callback, e.g. context
  *                  information.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT void projectm_playlist_set_preset_switch_failed_event_callback(projectm_playlist_handle instance,
                                                                                         projectm_playlist_preset_switch_failed_event callback,

@@ -2,6 +2,7 @@
  * @file memory.h
  * @copyright 2003-2024 projectM Team
  * @brief Memory allocation/deallocation helpers.
+ * @since 4.0.0
  *
  * projectM -- Milkdrop-esque visualisation SDK
  * Copyright (C)2003-2024 projectM Team
@@ -37,6 +38,7 @@ extern "C" {
  * To free the allocated memory, call projectm_free_string(). Do not use free()!
  *
  * @return A pointer to a zero-initialized memory area.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT char* projectm_alloc_string(unsigned int length);
 
@@ -49,6 +51,7 @@ PROJECTM_EXPORT char* projectm_alloc_string(unsigned int length);
  * <p>Do not use free() to delete the pointer!</p>
  *
  * @param str A pointer returned by projectm_alloc_string().
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_free_string(const char* str);
 

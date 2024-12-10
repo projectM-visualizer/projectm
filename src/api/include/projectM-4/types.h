@@ -2,6 +2,7 @@
  * @file types.h
  * @copyright 2003-2024 projectM Team
  * @brief Types and enumerations used in the other API headers.
+ * @since 4.0.0
  *
  * projectM -- Milkdrop-esque visualisation SDK
  * Copyright (C)2003-2024 projectM Team
@@ -40,6 +41,7 @@ typedef struct projectm* projectm_handle; //!< A pointer to the opaque projectM 
 
 /**
  * For specifying audio data format.
+ * @since 4.0.0
  */
 typedef enum
 {
@@ -49,6 +51,7 @@ typedef enum
 
 /**
  * Placeholder values that can be used to address channel indices in PCM data arrays.
+ * @since 4.0.0
  */
 typedef enum
 {
@@ -60,6 +63,7 @@ typedef enum
 
 /**
  * Waveform render types used in the touch start method.
+ * @since 4.0.0
  */
 typedef enum
 {
