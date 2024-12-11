@@ -641,6 +641,11 @@ const Intrinsic _intrinsic[] =
         Intrinsic("refract",  HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Float),
         Intrinsic("refract",  HLSLBaseType_Float4, HLSLBaseType_Float4, HLSLBaseType_Float4, HLSLBaseType_Float),
 
+        Intrinsic("faceforward",  HLSLBaseType_Float, HLSLBaseType_Float, HLSLBaseType_Float, HLSLBaseType_Float),
+        Intrinsic("faceforward",  HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2),
+        Intrinsic("faceforward",  HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Float3),
+        Intrinsic("faceforward",  HLSLBaseType_Float4, HLSLBaseType_Float4, HLSLBaseType_Float4, HLSLBaseType_Float4),
+
 		Intrinsic("isnan",    HLSLBaseType_Bool, HLSLBaseType_Float),
 		Intrinsic("isinf",    HLSLBaseType_Bool, HLSLBaseType_Float),
 
