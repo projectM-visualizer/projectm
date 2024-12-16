@@ -2,6 +2,7 @@
 
 #include "PerFrameContext.hpp"
 #include "PresetState.hpp"
+#include "Utils.hpp"
 
 #include <MilkdropStaticShaders.hpp>
 
@@ -69,8 +70,7 @@ void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
             baseName = name.substr(3);
         }
 
-        std::string lowerCaseName(baseName);
-        std::transform(lowerCaseName.begin(), lowerCaseName.end(), lowerCaseName.begin(), tolower);
+        std::string lowerCaseName = Utils::ToLower(baseName);
 
         // The "main" and "blurX" textures are preset-specific and are not managed by TextureManager.
         if (lowerCaseName == "main")
@@ -515,6 +515,33 @@ void MilkdropShader::GetReferencedSamplers(const std::string& program)
         }
 
         found = program.find("texsize_", found);
+    }
+
+    {
+        // Remove duplicate mentions or "randXX" names, keeping the long forms only (first one will determine the actual texture loaded).
+        auto samplerName = m_samplerNames.begin();
+        std::locale loc;
+        while (samplerName != m_samplerNames.end())
+        {
+            std::string lowerCaseName = Utils::ToLower(*samplerName);
+            if (lowerCaseName.length() == 6 &&
+                lowerCaseName.substr(0, 4) == "rand" && std::isdigit(lowerCaseName.at(4), loc) && std::isdigit(lowerCaseName.at(5), loc))
+            {
+                auto additionalName = samplerName;
+                additionalName++;
+                if (additionalName != m_samplerNames.end())
+                {
+                    std::string addLowerCaseName = Utils::ToLower(*additionalName);
+                    if (addLowerCaseName.length() > 7 &&
+                        addLowerCaseName.substr(0, 6) == lowerCaseName &&
+                        addLowerCaseName[6] == '_')
+                    {
+                        samplerName = m_samplerNames.erase(samplerName);
+                    }
+                }
+            }
+            samplerName++;
+        }
     }
 
     if (program.find("GetBlur3") != std::string::npos)

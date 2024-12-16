@@ -1019,6 +1019,23 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
             m_writer.Write(")");
             handled = true;
         }
+        else if (String_Equal(functionName, "ldexp"))
+        {
+            /* HLSL has the second argument as float, while GLSL only supports ints, so we simulate the HLSL behaviour
+             * by using the equivalent "x * exp2(exp)" expression. */
+            HLSLExpression* argument[2];
+            if (GetFunctionArguments(functionCall, argument, 2) != 2)
+            {
+                Error("%s expects 2 arguments", functionName);
+                return;
+            }
+            m_writer.Write("(");
+            OutputExpression(argument[0], &functionCall->function->returnType);
+            m_writer.Write("*exp2(");
+            OutputExpression(argument[1], &functionCall->function->returnType);
+            m_writer.Write("))");
+            handled = true;
+        }
 
         if (!handled)
         {

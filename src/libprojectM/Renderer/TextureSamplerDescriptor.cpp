@@ -95,6 +95,15 @@ auto TextureSamplerDescriptor::SamplerDeclaration() const -> std::string
     declaration.append(m_samplerName);
     declaration.append(";\n");
 
+    // Add short sampler name for prefixed random textures.
+    // E.g. "sampler_rand00" if a sampler "sampler_rand00_smalltiled" was declared
+    if (m_samplerName.substr(0, 4) == "rand" && m_samplerName.length() > 7 && m_samplerName.at(6) == '_')
+    {
+        declaration.append("uniform sampler2D sampler_");
+        declaration.append(m_samplerName.substr(0, 6));
+        declaration.append(";\n");
+    }
+
     return declaration;
 }
 

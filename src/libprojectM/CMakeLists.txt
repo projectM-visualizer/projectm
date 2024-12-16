@@ -23,6 +23,8 @@ add_library(projectM_main OBJECT
         ProjectMCWrapper.hpp
         TimeKeeper.cpp
         TimeKeeper.hpp
+        Utils.cpp
+        Utils.hpp
         projectM-opengl.h
         )
 
