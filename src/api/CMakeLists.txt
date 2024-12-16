@@ -5,10 +5,14 @@ target_sources(projectM_api
         "${PROJECTM_EXPORT_HEADER}"
         include/projectM-4/audio.h
         include/projectM-4/callbacks.h
+        include/projectM-4/core.h
         include/projectM-4/debug.h
         include/projectM-4/memory.h
         include/projectM-4/projectM.h
+        include/projectM-4/render_opengl.h
+        include/projectM-4/touch.h
         include/projectM-4/types.h
+        include/projectM-4/user_sprites.h
         )
 
 set_target_properties(projectM_api PROPERTIES

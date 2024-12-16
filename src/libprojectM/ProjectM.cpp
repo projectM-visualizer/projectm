@@ -30,7 +30,10 @@
 #include <Renderer/CopyTexture.hpp>
 #include <Renderer/PresetTransition.hpp>
 #include <Renderer/TextureManager.hpp>
+#include <Renderer/ShaderCache.hpp>
 #include <Renderer/TransitionShaderManager.hpp>
+
+#include <UserSprites/SpriteManager.hpp>
 
 namespace libprojectM {
 
@@ -177,6 +180,9 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
         m_textureCopier->Draw(m_activePreset->OutputTexture(), false, false);
     }
 
+    // Draw user sprites
+    m_spriteManager->Draw(audioData, renderContext, targetFramebufferObject, { m_activePreset, m_transitioningPreset });
+
     m_frameCount++;
     m_previousFrameVolume = audioData.vol;
 }
@@ -194,10 +200,13 @@ void ProjectM::Initialize()
     /** Initialise per-pixel matrix calculations */
     /** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
     m_textureManager = std::make_unique<Renderer::TextureManager>(m_textureSearchPaths);
+    m_shaderCache = std::make_unique<Renderer::ShaderCache>();
 
     m_transitionShaderManager = std::make_unique<Renderer::TransitionShaderManager>();
 
     m_textureCopier = std::make_unique<Renderer::CopyTexture>();
+
+    m_spriteManager = std::make_unique<UserSprites::SpriteManager>();
 
     m_presetFactoryManager->initialize();
 
@@ -266,6 +275,41 @@ auto ProjectM::WindowWidth() -> int
 auto ProjectM::WindowHeight() -> int
 {
     return m_windowHeight;
+}
+
+auto ProjectM::AddUserSprite(const std::string& type, const std::string& spriteData) -> uint32_t
+{
+    return m_spriteManager->Spawn(type, spriteData, GetRenderContext());
+}
+
+void ProjectM::DestroyUserSprite(uint32_t spriteIdentifier)
+{
+    m_spriteManager->Destroy(spriteIdentifier);
+}
+
+void ProjectM::DestroyAllUserSprites()
+{
+    m_spriteManager->DestroyAll();
+}
+
+auto ProjectM::UserSpriteCount() const -> uint32_t
+{
+    return m_spriteManager->ActiveSpriteCount();
+}
+
+void ProjectM::SetUserSpriteLimit(uint32_t maxSprites)
+{
+    m_spriteManager->SpriteSlots(maxSprites);
+}
+
+auto ProjectM::UserSpriteLimit() const -> uint32_t
+{
+    return m_spriteManager->SpriteSlots();
+}
+
+auto ProjectM::UserSpriteIdentifiers() const -> std::vector<uint32_t>
+{
+    return m_spriteManager->ActiveSpriteIdentifiers();
 }
 
 void ProjectM::SetPresetLocked(bool locked)
@@ -452,6 +496,16 @@ auto ProjectM::GetRenderContext() -> Renderer::RenderContext
     ctx.perPixelMeshX = static_cast<int>(m_meshX);
     ctx.perPixelMeshY = static_cast<int>(m_meshY);
     ctx.textureManager = m_textureManager.get();
+    ctx.shaderCache = m_shaderCache.get();
+
+    if (m_transition)
+    {
+        ctx.blendProgress = m_transition->Progress(ctx.time);
+    }
+    else
+    {
+        ctx.blendProgress = 0.0;
+    }
 
     return ctx;
 }

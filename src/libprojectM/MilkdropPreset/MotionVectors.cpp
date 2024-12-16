@@ -2,6 +2,7 @@
 
 #include "MilkdropStaticShaders.hpp"
 
+#include <Renderer/ShaderCache.hpp>
 #include <Renderer/TextureManager.hpp>
 
 namespace libprojectM {
@@ -11,9 +12,6 @@ MotionVectors::MotionVectors(PresetState& presetState)
     : RenderItem()
     , m_presetState(presetState)
 {
-    auto staticShaders = libprojectM::MilkdropPreset::MilkdropStaticShaders::Get();
-    m_motionVectorShader.CompileProgram(staticShaders->GetPresetMotionVectorsVertexShader(),
-                                        staticShaders->GetUntexturedDrawFragmentShader());
     RenderItem::Init();
 }
 
@@ -89,12 +87,13 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    m_motionVectorShader.Bind();
-    m_motionVectorShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
-    m_motionVectorShader.SetUniformFloat("length_multiplier", static_cast<float>(*presetPerFrameContext.mv_l));
-    m_motionVectorShader.SetUniformFloat("minimum_length", minimumLength);
+    auto shader = GetShader();
+    shader->Bind();
+    shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+    shader->SetUniformFloat("length_multiplier", static_cast<float>(*presetPerFrameContext.mv_l));
+    shader->SetUniformFloat("minimum_length", minimumLength);
 
-    m_motionVectorShader.SetUniformInt("warp_coordinates", 0);
+    shader->SetUniformInt("warp_coordinates", 0);
 
     motionTexture->Bind(0, m_sampler);
 
@@ -160,6 +159,30 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
     Renderer::Shader::Unbind();
 
     glDisable(GL_BLEND);
+}
+
+std::shared_ptr<Renderer::Shader> MotionVectors::GetShader()
+{
+    auto shader = m_motionVectorShader.lock();
+    if (!shader)
+    {
+        shader = m_presetState.renderContext.shaderCache->Get("milkdrop_motion_vectors");
+    }
+    if (!shader)
+    {
+        // First use, compile and cache.
+        auto staticShaders = libprojectM::MilkdropPreset::MilkdropStaticShaders::Get();
+
+        shader = std::make_shared<Renderer::Shader>();
+        shader->CompileProgram(staticShaders->GetPresetMotionVectorsVertexShader(),
+                               staticShaders->GetUntexturedDrawFragmentShader());
+
+        m_presetState.renderContext.shaderCache->Insert("milkdrop_motion_vectors", shader);
+    }
+
+    m_motionVectorShader = shader;
+
+    return shader;
 }
 
 } // namespace MilkdropPreset

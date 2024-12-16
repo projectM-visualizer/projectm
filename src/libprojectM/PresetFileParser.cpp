@@ -2,12 +2,10 @@
 
 #include <algorithm>
 #include <fstream>
-#include <functional>
 #include <sstream>
 #include <vector>
 
 namespace libprojectM {
-namespace MilkdropPreset {
 
 auto PresetFileParser::Read(const std::string& presetFile) -> bool
 {
@@ -77,14 +75,16 @@ auto PresetFileParser::Read(std::istream& presetStream) -> bool
 
 auto PresetFileParser::GetCode(const std::string& keyPrefix) const -> std::string
 {
-    std::stringstream code;                        //!< The parsed code
-    std::string key(keyPrefix.length() + 5, '\0'); //!< Allocate a string that can hold up to 5 digits.
+    auto lowerKey = ToLower(keyPrefix);
 
-    key.replace(0, keyPrefix.length(), keyPrefix);
+    std::stringstream code;                        //!< The parsed code
+    std::string key(lowerKey.length() + 5, '\0'); //!< Allocate a string that can hold up to 5 digits.
+
+    key.replace(0, lowerKey.length(), lowerKey);
 
     for (int index{1}; index <= 99999; ++index)
     {
-        key.replace(keyPrefix.length(), 5, std::to_string(index));
+        key.replace(lowerKey.length(), 5, std::to_string(index));
         if (m_presetValues.find(key) == m_presetValues.end())
         {
             break;
@@ -107,11 +107,12 @@ auto PresetFileParser::GetCode(const std::string& keyPrefix) const -> std::strin
 
 auto PresetFileParser::GetInt(const std::string& key, int defaultValue) -> int
 {
-    if (m_presetValues.find(key) != m_presetValues.end())
+    auto lowerKey = ToLower(key);
+    if (m_presetValues.find(lowerKey) != m_presetValues.end())
     {
         try
         {
-            return std::stoi(m_presetValues.at(key));
+            return std::stoi(m_presetValues.at(lowerKey));
         }
         catch (std::logic_error&)
         {
@@ -123,11 +124,12 @@ auto PresetFileParser::GetInt(const std::string& key, int defaultValue) -> int
 
 auto PresetFileParser::GetFloat(const std::string& key, float defaultValue) -> float
 {
-    if (m_presetValues.find(key) != m_presetValues.end())
+    auto lowerKey = ToLower(key);
+    if (m_presetValues.find(lowerKey) != m_presetValues.end())
     {
         try
         {
-            return std::stof(m_presetValues.at(key));
+            return std::stof(m_presetValues.at(lowerKey));
         }
         catch (std::logic_error&)
         {
@@ -144,9 +146,10 @@ auto PresetFileParser::GetBool(const std::string& key, bool defaultValue) -> boo
 
 auto PresetFileParser::GetString(const std::string& key, const std::string& defaultValue) -> std::string
 {
-    if (m_presetValues.find(key) != m_presetValues.end())
+    auto lowerKey = ToLower(key);
+    if (m_presetValues.find(lowerKey) != m_presetValues.end())
     {
-        return m_presetValues.at(key);
+        return m_presetValues.at(lowerKey);
     }
 
     return defaultValue;
@@ -168,7 +171,8 @@ void PresetFileParser::ParseLine(const std::string& line)
         return;
     }
 
-    std::string varName(line.begin(), line.begin() + varNameDelimiterPos);
+    // Convert key to lower case, as INI functions are not case-sensitive.
+    std::string varName(ToLower(std::string(line.begin(), line.begin() + varNameDelimiterPos)));
     std::string value(line.begin() + varNameDelimiterPos + 1, line.end());
 
     // Only add first occurrence to mimic Milkdrop behaviour
@@ -178,5 +182,13 @@ void PresetFileParser::ParseLine(const std::string& line)
     }
 }
 
-} // namespace MilkdropPreset
+auto PresetFileParser::ToLower(std::string str) -> std::string
+{
+    std::transform(str.begin(), str.end(), str.begin(),
+                   [](unsigned char c){ return std::tolower(c); }
+    );
+
+    return str;
+}
+
 } // namespace libprojectM

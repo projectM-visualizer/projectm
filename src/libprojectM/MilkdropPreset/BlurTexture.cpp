@@ -1,8 +1,11 @@
 #include "BlurTexture.hpp"
 
 #include "PerFrameContext.hpp"
+#include "PresetState.hpp"
 
 #include "MilkdropStaticShaders.hpp"
+
+#include "Renderer/ShaderCache.hpp"
 
 #include <array>
 
@@ -12,14 +15,6 @@ namespace MilkdropPreset {
 BlurTexture::BlurTexture()
     : m_blurSampler(std::make_shared<Renderer::Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR))
 {
-    auto staticShaders = libprojectM::MilkdropPreset::MilkdropStaticShaders::Get();
-
-    // Compile shader sources
-    m_blur1Shader.CompileProgram(staticShaders->GetBlurVertexShader(),
-                                 staticShaders->GetBlur1FragmentShader());
-    m_blur2Shader.CompileProgram(staticShaders->GetBlurVertexShader(),
-                                 staticShaders->GetBlur2FragmentShader());
-
     m_blurFramebuffer.CreateColorAttachment(0, 0);
 
     // Initialize Blur VAO/VBO with a single fullscreen quad.
@@ -63,6 +58,33 @@ BlurTexture::~BlurTexture()
 {
     glDeleteBuffers(1, &m_vboBlur);
     glDeleteVertexArrays(1, &m_vaoBlur);
+}
+
+void BlurTexture::Initialize(const Renderer::RenderContext& renderContext)
+{
+    auto staticShaders = libprojectM::MilkdropPreset::MilkdropStaticShaders::Get();
+
+    // Load/compile shader sources
+    auto blur1Shader = renderContext.shaderCache->Get("milkdrop_blur1");
+    if (!blur1Shader)
+    {
+        blur1Shader = std::make_shared<Renderer::Shader>();
+        blur1Shader->CompileProgram(staticShaders->GetBlurVertexShader(),
+                                    staticShaders->GetBlur1FragmentShader());
+        renderContext.shaderCache->Insert("milkdrop_blur1", blur1Shader);
+    }
+
+    auto blur2Shader = renderContext.shaderCache->Get("milkdrop_blur2");
+    if (!blur2Shader)
+    {
+        blur2Shader = std::make_shared<Renderer::Shader>();
+        blur2Shader->CompileProgram(staticShaders->GetBlurVertexShader(),
+                                    staticShaders->GetBlur2FragmentShader());
+        renderContext.shaderCache->Insert("milkdrop_blur2", blur2Shader);
+    }
+
+    m_blur1Shader = blur1Shader;
+    m_blur2Shader = blur2Shader;
 }
 
 void BlurTexture::SetRequiredBlurLevel(BlurTexture::BlurLevel level)
@@ -152,15 +174,20 @@ void BlurTexture::Update(const Renderer::Texture& sourceTexture, const PerFrameC
         }
 
         // set pixel shader
-        Renderer::Shader* blurShader;
+        std::shared_ptr<Renderer::Shader> blurShader;
         if ((pass % 2) == 0)
         {
-            blurShader = &m_blur1Shader;
+            blurShader = m_blur1Shader.lock();
         }
         else
         {
-            blurShader = &m_blur2Shader;
+            blurShader = m_blur2Shader.lock();
         }
+        if (!blurShader)
+        {
+            return;
+        }
+
         blurShader->Bind();
         blurShader->SetUniformInt("texture_sampler", 0);
 
@@ -205,10 +232,10 @@ void BlurTexture::Update(const Renderer::Texture& sourceTexture, const PerFrameC
             //float4 _c2; // d1..d4
             //float4 _c3; // scale, bias, w_div, 0
             //-------------------------------------
-            m_blur1Shader.SetUniformFloat4("_c0", {srcWidth, srcHeight, 1.0f / srcWidth, 1.0f / srcHeight});
-            m_blur1Shader.SetUniformFloat4("_c1", {w1, w2, w3, w4});
-            m_blur1Shader.SetUniformFloat4("_c2", {d1, d2, d3, d4});
-            m_blur1Shader.SetUniformFloat4("_c3", {scaleNow, biasNow, w_div, 0.0});
+            blurShader->SetUniformFloat4("_c0", {srcWidth, srcHeight, 1.0f / srcWidth, 1.0f / srcHeight});
+            blurShader->SetUniformFloat4("_c1", {w1, w2, w3, w4});
+            blurShader->SetUniformFloat4("_c2", {d1, d2, d3, d4});
+            blurShader->SetUniformFloat4("_c3", {scaleNow, biasNow, w_div, 0.0});
         }
         else
         {
@@ -224,19 +251,19 @@ void BlurTexture::Update(const Renderer::Texture& sourceTexture, const PerFrameC
             //float4 _c5; // w1,w2,d1,d2
             //float4 _c6; // w_div, edge_darken_c1, edge_darken_c2, edge_darken_c3
             //-------------------------------------
-            m_blur2Shader.SetUniformFloat4("_c0", {srcWidth, srcHeight, 1.0f / srcWidth, 1.0f / srcHeight});
-            m_blur2Shader.SetUniformFloat4("_c5", {w1, w2, d1, d2});
+            blurShader->SetUniformFloat4("_c0", {srcWidth, srcHeight, 1.0f / srcWidth, 1.0f / srcHeight});
+            blurShader->SetUniformFloat4("_c5", {w1, w2, d1, d2});
             // note: only do this first time; if you do it many times,
             // then the super-blurred levels will have big black lines along the top & left sides.
             if (pass == 1)
             {
                 // Darken edges
-                m_blur2Shader.SetUniformFloat4("_c6", {w_div, (1 - blur1EdgeDarken), blur1EdgeDarken, 5.0f});
+                blurShader->SetUniformFloat4("_c6", {w_div, (1 - blur1EdgeDarken), blur1EdgeDarken, 5.0f});
             }
             else
             {
                 // Don't darken
-                m_blur2Shader.SetUniformFloat4("_c6", {w_div, 1.0f, 0.0f, 5.0f});
+                blurShader->SetUniformFloat4("_c6", {w_div, 1.0f, 0.0f, 5.0f});
             }
         }
 

@@ -6,6 +6,8 @@
 #include "PerPixelContext.hpp"
 #include "PresetState.hpp"
 
+#include "Renderer/ShaderCache.hpp"
+
 #include <algorithm>
 #include <cmath>
 
@@ -22,10 +24,6 @@ PerPixelMesh::PerPixelMesh()
     : RenderItem()
 {
     RenderItem::Init();
-
-    auto staticShaders = libprojectM::MilkdropPreset::MilkdropStaticShaders::Get();
-    m_perPixelMeshShader.CompileProgram(staticShaders->GetPresetWarpVertexShader(),
-                                        staticShaders->GetPresetWarpFragmentShader());
 }
 
 void PerPixelMesh::InitVertexAttrib()
@@ -80,7 +78,7 @@ void PerPixelMesh::LoadWarpShader(const PresetState& presetState)
 #ifdef MILKDROP_PRESET_DEBUG
                 std::cerr << "[Warp Shader] Error loading warp shader code:" << ex.message() << std::endl;
 #else
-                (void)ex; // silence unused parameter warning
+                (void) ex; // silence unused parameter warning
 #endif
                 m_warpShader.reset();
             }
@@ -104,7 +102,7 @@ void PerPixelMesh::CompileWarpShader(PresetState& presetState)
 #ifdef MILKDROP_PRESET_DEBUG
             std::cerr << "[Warp Shader] Error compiling warp shader code:" << ex.message() << std::endl;
 #else
-            (void)ex; // silence unused parameter warning
+            (void) ex; // silence unused parameter warning
 #endif
             m_warpShader.reset();
         }
@@ -321,18 +319,19 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
 
     if (!m_warpShader)
     {
-        m_perPixelMeshShader.Bind();
-        m_perPixelMeshShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
-        m_perPixelMeshShader.SetUniformInt("texture_sampler", 0);
-        m_perPixelMeshShader.SetUniformFloat4("aspect", {presetState.renderContext.aspectX,
-                                                         presetState.renderContext.aspectY,
-                                                         presetState.renderContext.invAspectX,
-                                                         presetState.renderContext.invAspectY});
-        m_perPixelMeshShader.SetUniformFloat("warpTime", warpTime);
-        m_perPixelMeshShader.SetUniformFloat("warpScaleInverse", warpScaleInverse);
-        m_perPixelMeshShader.SetUniformFloat4("warpFactors", warpFactors);
-        m_perPixelMeshShader.SetUniformFloat2("texelOffset", texelOffsets);
-        m_perPixelMeshShader.SetUniformFloat("decay", decay);
+        auto perPixelMeshShader = GetDefaultWarpShader(presetState);
+        perPixelMeshShader->Bind();
+        perPixelMeshShader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+        perPixelMeshShader->SetUniformInt("texture_sampler", 0);
+        perPixelMeshShader->SetUniformFloat4("aspect", {presetState.renderContext.aspectX,
+                                                        presetState.renderContext.aspectY,
+                                                        presetState.renderContext.invAspectX,
+                                                        presetState.renderContext.invAspectY});
+        perPixelMeshShader->SetUniformFloat("warpTime", warpTime);
+        perPixelMeshShader->SetUniformFloat("warpScaleInverse", warpScaleInverse);
+        perPixelMeshShader->SetUniformFloat4("warpFactors", warpFactors);
+        perPixelMeshShader->SetUniformFloat2("texelOffset", texelOffsets);
+        perPixelMeshShader->SetUniformFloat("decay", decay);
     }
     else
     {
@@ -397,6 +396,32 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
 
     Renderer::Sampler::Unbind(0);
     Renderer::Shader::Unbind();
+}
+
+auto PerPixelMesh::GetDefaultWarpShader(const PresetState& presetState) -> std::shared_ptr<Renderer::Shader>
+{
+    auto perPixelMeshShader = m_perPixelMeshShader.lock();
+    if (perPixelMeshShader)
+    {
+        return perPixelMeshShader;
+    }
+
+    perPixelMeshShader = presetState.renderContext.shaderCache->Get("milkdrop_default_warp_shader");
+    if (perPixelMeshShader)
+    {
+        return perPixelMeshShader;
+    }
+
+    auto staticShaders = libprojectM::MilkdropPreset::MilkdropStaticShaders::Get();
+
+    perPixelMeshShader = std::make_shared<Renderer::Shader>();
+    perPixelMeshShader->CompileProgram(staticShaders->GetPresetWarpVertexShader(),
+                                       staticShaders->GetPresetWarpFragmentShader());
+
+    presetState.renderContext.shaderCache->Insert("milkdrop_default_warp_shader", perPixelMeshShader);
+    m_perPixelMeshShader = perPixelMeshShader;
+
+    return perPixelMeshShader;
 }
 
 } // namespace MilkdropPreset

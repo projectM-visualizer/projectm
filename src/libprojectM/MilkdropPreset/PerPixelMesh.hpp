@@ -111,6 +111,13 @@ private:
      */
     void WarpedBlit(const PresetState& presetState, const PerFrameContext& perFrameContext);
 
+    /**
+     * @brief Creates or retrieves the default warp shader.
+     * @param presetState The preset state to retrieve the rendering context from.
+     * @return A shared pointer to the default warp shader instance.
+     */
+    auto GetDefaultWarpShader(const PresetState& presetState) -> std::shared_ptr<Renderer::Shader>;
+
     int m_gridSizeX{}; //!< Warp mesh X resolution.
     int m_gridSizeY{}; //!< Warp mesh Y resolution.
 
@@ -122,8 +129,8 @@ private:
     std::vector<int> m_listIndices; //!< List of vertex indices to render.
     VertexList m_drawVertices;      //!< Temp data buffer for the vertices to be drawn.
 
-    Renderer::Shader m_perPixelMeshShader;                            //!< Special shader which calculates the per-pixel UV coordinates.
-    std::unique_ptr<MilkdropShader> m_warpShader;           //!< The warp shader. Either preset-defined or a default shader.
+    std::weak_ptr<Renderer::Shader> m_perPixelMeshShader;             //!< Special shader which calculates the per-pixel UV coordinates.
+    std::unique_ptr<MilkdropShader> m_warpShader;                     //!< The warp shader. Either preset-defined or a default shader.
     Renderer::Sampler m_perPixelSampler{GL_CLAMP_TO_EDGE, GL_LINEAR}; //!< The main texture sampler.
 };
 
