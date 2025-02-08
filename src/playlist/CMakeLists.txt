@@ -71,6 +71,10 @@ if(BUILD_SHARED_LIBS)
             ${CMAKE_DL_LIBS}
             )
 else()
+    target_compile_definitions(projectM_playlist_main
+            PUBLIC
+            PROJECTM_STATIC_DEFINE
+            )
     target_compile_definitions(projectM_playlist
             PUBLIC
             PROJECTM_STATIC_DEFINE
