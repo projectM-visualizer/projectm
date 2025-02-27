@@ -29,8 +29,8 @@
 
 #include <Renderer/CopyTexture.hpp>
 #include <Renderer/PresetTransition.hpp>
-#include <Renderer/TextureManager.hpp>
 #include <Renderer/ShaderCache.hpp>
+#include <Renderer/TextureManager.hpp>
 #include <Renderer/TransitionShaderManager.hpp>
 
 #include <UserSprites/SpriteManager.hpp>
@@ -177,11 +177,11 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
     }
     else
     {
-        m_textureCopier->Draw(m_activePreset->OutputTexture(), false, false);
+        m_textureCopier->Draw(*renderContext.shaderCache, m_activePreset->OutputTexture(), false, false);
     }
 
     // Draw user sprites
-    m_spriteManager->Draw(audioData, renderContext, targetFramebufferObject, { m_activePreset, m_transitioningPreset });
+    m_spriteManager->Draw(audioData, renderContext, targetFramebufferObject, {m_activePreset, m_transitioningPreset});
 
     m_frameCount++;
     m_previousFrameVolume = audioData.vol;
@@ -310,6 +310,23 @@ auto ProjectM::UserSpriteLimit() const -> uint32_t
 auto ProjectM::UserSpriteIdentifiers() const -> std::vector<uint32_t>
 {
     return m_spriteManager->ActiveSpriteIdentifiers();
+}
+
+void ProjectM::BurnInTexture(uint32_t openGlTextureId, int left, int top, int width, int height)
+{
+    if (m_activePreset)
+    {
+        m_activePreset->BindFramebuffer();
+        m_textureCopier->Draw(*m_shaderCache, openGlTextureId, m_windowWidth, m_windowHeight, left, top, width, height);
+    }
+
+    if (m_transitioningPreset)
+    {
+        m_transitioningPreset->BindFramebuffer();
+        m_textureCopier->Draw(*m_shaderCache, openGlTextureId, m_windowWidth, m_windowHeight, left, top, width, height);
+    }
+
+    Renderer::Framebuffer::Unbind();
 }
 
 void ProjectM::SetPresetLocked(bool locked)
