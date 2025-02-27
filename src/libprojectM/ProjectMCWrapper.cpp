@@ -180,6 +180,12 @@ void projectm_opengl_render_frame_fbo(projectm_handle instance, uint32_t framebu
     projectMInstance->RenderFrame(framebuffer_object_id);
 }
 
+void projectm_opengl_burn_texture(projectm_handle instance, uint32_t texture, int left, int top, int width, int height)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->BurnInTexture(texture, left, top, width, height);
+}
+
 void projectm_set_frame_time(projectm_handle instance, double seconds_since_first_frame)
 {
     auto projectMInstance = handle_to_instance(instance);
