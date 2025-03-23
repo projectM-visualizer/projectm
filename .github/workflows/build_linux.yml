@@ -43,23 +43,22 @@ jobs:
           cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --target install
           cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target install
 
-      # appended to the end of the build-shared job steps:
       - name: Check Installed Headers Compile Cleanly
         run: |
           mkdir -p header-check
           cd header-check
-          cmake -S . -B build -DCMAKE_C_STANDARD=99 -DMYAPI_INCLUDE_DIR="${{ github.workspace }}/install/include" <<EOF
+          cmake -S . -B build -DCMAKE_C_STANDARD=99 -DPM_INCLUDE_DIR="${{ github.workspace }}/install/include" <<EOF
           cmake_minimum_required(VERSION 3.15)
           project(HeaderCheck C)
           
-          file(GLOB PUBLIC_HEADERS "\${MYAPI_INCLUDE_DIR}/*.h")
+          file(GLOB PUBLIC_HEADERS "\${PM_INCLUDE_DIR}/*.h")
           
           foreach(header IN LISTS PUBLIC_HEADERS)
           get_filename_component(header_file "\${header}" NAME)
           set(test_source "\${CMAKE_BINARY_DIR}/check_\${header_file}.c")
           file(WRITE "\${test_source}" "#include <\${header_file}>\nint main(void) { return 0; }\n")
           add_executable("check_\${header_file}" "\${test_source}")
-          target_include_directories("check_\${header_file}" PRIVATE "\${MYAPI_INCLUDE_DIR}")
+          target_include_directories("check_\${header_file}" PRIVATE "\${PM_INCLUDE_DIR}")
           endforeach()
           EOF
           cmake --build build --parallel
