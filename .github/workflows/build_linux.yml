@@ -54,16 +54,17 @@ jobs:
           file(GLOB_RECURSE PUBLIC_HEADERS "\${PROJECTM_INCLUDE_DIR}/*.h")
           
           foreach(header IN LISTS PUBLIC_HEADERS)
-            get_filename_component(header_file "\${header}" NAME)
-            set(test_source "\${CMAKE_BINARY_DIR}/check_\${header_file}.c")
-            file(WRITE "\${test_source}" "#include <\${header_file}>\nint main(void) { return 0; }\n")
-            add_executable("check_\${header_file}" "\${test_source}")
-            target_include_directories("check_\${header_file}" PRIVATE "\${PROJECTM_INCLUDE_DIR}")
+            file(RELATIVE_PATH header_rel "\${PROJECTM_INCLUDE_DIR}" "\${header}")
+            set(test_source "\${CMAKE_BINARY_DIR}/check_\${header_rel}.c")
+            file(WRITE "\${test_source}" "#include <\${header_rel}>\nint main(void){return 0;}\n")
+            add_executable("check_\${header_rel}" "\${test_source}")
+            target_include_directories("check_\${header_rel}" PRIVATE "\${PROJECTM_INCLUDE_DIR}")
           endforeach()
           EOF
           
           cmake -S header-check -B header-check/build -DCMAKE_C_STANDARD=99
           cmake --build header-check/build --parallel
+
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
