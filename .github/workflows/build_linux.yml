@@ -51,7 +51,7 @@ jobs:
           project(HeaderCheck C)
           
           set(PROJECTM_INCLUDE_DIR "${{ github.workspace }}/install/include")
-          file(GLOB PUBLIC_HEADERS "\${PROJECTM_INCLUDE_DIR}/*.h")
+          file(GLOB_RECURSE PUBLIC_HEADERS "\${PROJECTM_INCLUDE_DIR}/*.h")
           
           foreach(header IN LISTS PUBLIC_HEADERS)
             get_filename_component(header_file "\${header}" NAME)
