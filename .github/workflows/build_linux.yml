@@ -55,16 +55,16 @@ jobs:
           
           foreach(header IN LISTS PUBLIC_HEADERS)
             file(RELATIVE_PATH header_rel "\${PROJECTM_INCLUDE_DIR}" "\${header}")
-            set(test_source "\${CMAKE_BINARY_DIR}/check_\${header_rel}.c")
+            string(MAKE_C_IDENTIFIER "\${header_rel}" safe_name)
+            set(test_source "\${CMAKE_BINARY_DIR}/check_\${safe_name}.c")
             file(WRITE "\${test_source}" "#include <\${header_rel}>\nint main(void){return 0;}\n")
-            add_executable("check_\${header_rel}" "\${test_source}")
-            target_include_directories("check_\${header_rel}" PRIVATE "\${PROJECTM_INCLUDE_DIR}")
+            add_executable("check_\${safe_name}" "\${test_source}")
+            target_include_directories("check_\${safe_name}" PRIVATE "\${PROJECTM_INCLUDE_DIR}")
           endforeach()
           EOF
           
           cmake -S header-check -B header-check/build -DCMAKE_C_STANDARD=99
           cmake --build header-check/build --parallel
-
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
