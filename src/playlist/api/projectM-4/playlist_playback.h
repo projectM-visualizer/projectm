@@ -28,6 +28,9 @@
 
 #include "projectM-4/playlist_types.h"
 
+#include <stdint.h>
+#include <stdbool.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
