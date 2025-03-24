@@ -1,5 +1,31 @@
 find_package(GTest 1.10 REQUIRED NO_MODULE)
 
+# Compile-test C API headers
+set(INCLUDE_FILES
+        ${CMAKE_SOURCE_DIR}/src/api/include/projectM-4/types.h
+
+        ${CMAKE_SOURCE_DIR}/src/api/include/projectM-4/audio.h
+        ${CMAKE_SOURCE_DIR}/src/api/include/projectM-4/callbacks.h
+        ${CMAKE_SOURCE_DIR}/src/api/include/projectM-4/core.h
+        ${CMAKE_SOURCE_DIR}/src/api/include/projectM-4/debug.h
+        ${CMAKE_SOURCE_DIR}/src/api/include/projectM-4/memory.h
+        ${CMAKE_SOURCE_DIR}/src/api/include/projectM-4/parameters.h
+        ${CMAKE_SOURCE_DIR}/src/api/include/projectM-4/render_opengl.h
+        ${CMAKE_SOURCE_DIR}/src/api/include/projectM-4/touch.h
+        ${CMAKE_SOURCE_DIR}/src/api/include/projectM-4/user_sprites.h
+
+        # Convenience header last, so it doesn't obscure issues with a single header above.
+        ${CMAKE_SOURCE_DIR}/src/api/include/projectM-4/projectM.h
+        )
+
+get_target_property(API_HEADER_INCLUDE_DIRS libprojectM::API INTERFACE_INCLUDE_DIRECTORIES)
+
+include(TestAPIHeaders)
+test_api_headers(TestMainAPIHeaders
+        "${API_HEADER_INCLUDE_DIRS}"
+        "${INCLUDE_FILES}"
+        )
+
 add_executable(projectM-unittest
         WaveformAlignerTest.cpp
         PresetFileParserTest.cpp
