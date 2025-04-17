@@ -26,19 +26,56 @@ public:
 
     void InitVertexAttrib() override;
 
+    /**
+     * @brief Loads the initial values and code from the preset file.
+     * @param parsedFile The file parser with the preset data.
+     * @param index The waveform index.
+     */
     void Initialize(::libprojectM::PresetFileParser& parsedFile, int index);
 
+    /**
+     * @brief Compiles all code blocks and runs the init expression.
+     * @throws MilkdropCompileException Thrown if one of the code blocks couldn't be compiled.
+     * @param presetPerFrameContext The per-frame context to retrieve the init Q vars from.
+     */
     void CompileCodeAndRunInitExpressions(const PerFrameContext& presetPerFrameContext);
 
+    /**
+     * @brief Renders the waveform.
+     * @param presetPerFrameContext The per-frame context to retrieve the init Q vars from.
+     */
     void Draw(const PerFrameContext& presetPerFrameContext);
 
 private:
+    /**
+     * @brief Initializes the per-frame context with the preset per-frame state.
+     * @param presetPerFrameContext The preset per-frame context to pull q vars from.
+     */
     void LoadPerFrameEvaluationVariables(const PerFrameContext& presetPerFrameContext);
 
+    /**
+     * @brief Loads the Q and T variables from the per-frame code into the per-point context.
+     */
     void InitPerPointEvaluationVariables();
 
+    /**
+     * @brief Loads the variables for each point into the per-point evaluation context.
+     * @param sample The sample index being rendered.
+     * @param value1 The left channel value.
+     * @param value2 The right channel value.
+     */
     void LoadPerPointEvaluationVariables(float sample, float value1, float value2);
 
+    /**
+     * @brief Does a better-than-linear smooth on a wave.
+     *
+     * Roughly doubles the number of points.
+     *
+     * @param inputVertices Array of input vertices to be smoothed.
+     * @param vertexCount Number of vertices in the input array.
+     * @param outputVertices Array to store the smoothed vertices.
+     * @return The number of vertices in the output array.
+     */
     static int SmoothWave(const ColoredPoint* inputVertices, int vertexCount, ColoredPoint* outputVertices);
 
     int m_index{0}; //!< Custom waveform index in the preset.

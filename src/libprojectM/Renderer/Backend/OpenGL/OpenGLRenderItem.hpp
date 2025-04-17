@@ -25,7 +25,8 @@ public:
     void Init() override;
 
 protected:
-    using ::libprojectM::Renderer::RenderItem::Init; // Unhide base Init() to avoid -Woverloaded-virtual warning
+    // Unhide base Init() to avoid -Woverloaded-virtual warning and allow calling base from derived
+    using ::libprojectM::Renderer::RenderItem::Init;
     GLuint m_vboID{0};
     GLuint m_vaoID{0};
 };

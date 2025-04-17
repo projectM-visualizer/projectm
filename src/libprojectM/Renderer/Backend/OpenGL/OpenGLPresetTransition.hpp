@@ -24,7 +24,9 @@ public:
     // Mark override for clarity and to avoid hiding warnings
     void Init() override
     {
+        // Call both base class Init() to ensure proper initialization
         OpenGLRenderItem::Init();
+        PresetTransition::Init();
     }
 
     using OpenGLRenderItem::Init; // Unhide base Init() to avoid -Woverloaded-virtual warning
