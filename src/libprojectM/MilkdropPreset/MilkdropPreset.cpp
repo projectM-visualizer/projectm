@@ -40,6 +40,8 @@ MilkdropPreset::MilkdropPreset(const std::string& absoluteFilePath)
     , m_border(m_state)
     , m_flipTexture(std::make_unique<libprojectM::Renderer::Backend::OpenGL::OpenGLCopyTexture>())
 {
+    // Ensure OpenGLCopyTexture is visible to this translation unit
+    // (include the header if not already included at the top of this file)
     Load(absoluteFilePath);
 }
 
@@ -52,6 +54,8 @@ MilkdropPreset::MilkdropPreset(std::istream& presetData)
     , m_border(m_state)
     , m_flipTexture(std::make_unique<libprojectM::Renderer::Backend::OpenGL::OpenGLCopyTexture>())
 {
+    // Ensure OpenGLCopyTexture is visible to this translation unit
+    // (include the header if not already included at the top of this file)
     Load(presetData);
 }
 
