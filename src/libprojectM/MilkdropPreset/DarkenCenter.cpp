@@ -7,17 +7,17 @@ namespace MilkdropPreset {
 
 DarkenCenter::DarkenCenter(PresetState& presetState)
     : m_presetState(presetState)
-    , m_mesh(Renderer::VertexBufferUsage::StaticDraw, true, false)
 {
-    m_mesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::TriangleFan);
-    m_mesh.SetVertexCount(6);
-    m_mesh.Colors().Set({{0.0f, 0.0f, 0.0f, 3.0f / 32.0f},
-                         {0.0f, 0.0f, 0.0f, 0.0f},
-                         {0.0f, 0.0f, 0.0f, 0.0f},
-                         {0.0f, 0.0f, 0.0f, 0.0f},
-                         {0.0f, 0.0f, 0.0f, 0.0f},
-                         {0.0f, 0.0f, 0.0f, 0.0f}});
-    m_mesh.Update();
+    Init();
+}
+
+void DarkenCenter::InitVertexAttrib()
+{
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(ColoredPoint), nullptr);                                            // points
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(ColoredPoint), reinterpret_cast<void*>(offsetof(ColoredPoint, r))); // colors
 }
 
 void DarkenCenter::Draw()

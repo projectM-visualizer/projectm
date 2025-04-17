@@ -3,9 +3,7 @@
 #include "WaveformPerFrameContext.hpp"
 #include "WaveformPerPointContext.hpp"
 
-#include <Renderer/Color.hpp>
-#include <Renderer/Mesh.hpp>
-#include <Renderer/Point.hpp>
+#include <Renderer/Backend/OpenGL/OpenGLRenderItem.hpp>
 
 #include <vector>
 
@@ -14,7 +12,9 @@ namespace MilkdropPreset {
 
 class PresetFileParser;
 
-class CustomWaveform
+namespace MilkdropPreset {
+
+class CustomWaveform : public libprojectM::Renderer::Backend::OpenGL::OpenGLRenderItem
 {
 public:
 
@@ -24,55 +24,22 @@ public:
      */
     explicit CustomWaveform(PresetState& presetState);
 
-    /**
-     * @brief Loads the initial values and code from the preset file.
-     * @param parsedFile The file parser with the preset data.
-     * @param index The waveform index.
-     */
-    void Initialize(PresetFileParser& parsedFile, int index);
+    void InitVertexAttrib() override;
 
-    /**
-     * @brief Compiles all code blocks and runs the init expression.
-     * @throws MilkdropCompileException Thrown if one of the code blocks couldn't be compiled.
-     * @param presetPerFrameContext The per-frame context to retrieve the init Q vars from.
-     */
+    void Initialize(::libprojectM::PresetFileParser& parsedFile, int index);
+
     void CompileCodeAndRunInitExpressions(const PerFrameContext& presetPerFrameContext);
 
-    /**
-     * @brief Renders the waveform.
-     * @param presetPerFrameContext The per-frame context to retrieve the init Q vars from.
-     */
     void Draw(const PerFrameContext& presetPerFrameContext);
 
 private:
-    /**
-     * @brief Initializes the per-frame context with the preset per-frame state.
-     * @param presetPerFrameContext The preset per-frame context to pull q vars from.
-     */
     void LoadPerFrameEvaluationVariables(const PerFrameContext& presetPerFrameContext);
 
-    /**
-     * @brief Loads the Q and T variables from the per-frame code into the per-point context.
-     */
     void InitPerPointEvaluationVariables();
 
-    /**
-     * @brief Loads the variables for each point into the per-point evaluation context.
-     * @param sample The sample index being rendered.
-     * @param value1 The left channel value.
-     * @param value2 The right channel value.
-     */
     void LoadPerPointEvaluationVariables(float sample, float value1, float value2);
 
-    /**
-     * @brief Does a better-than-linear smooth on a wave.
-     *
-     * Roughly doubles the number of points.
-     *
-     * @param points A vector of points to be smoothed.
-     * @param colors A vector of colors for the points.
-     */
-    void SmoothWave(const std::vector<Renderer::Point>& points, const std::vector<Renderer::Color>& colors);
+    static int SmoothWave(const ColoredPoint* inputVertices, int vertexCount, ColoredPoint* outputVertices);
 
     int m_index{0}; //!< Custom waveform index in the preset.
     bool m_enabled{false}; //!< Render waveform if non-zero.

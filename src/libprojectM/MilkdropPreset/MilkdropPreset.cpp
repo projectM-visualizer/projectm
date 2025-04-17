@@ -38,6 +38,7 @@ MilkdropPreset::MilkdropPreset(const std::string& absoluteFilePath)
     , m_waveform(m_state)
     , m_darkenCenter(m_state)
     , m_border(m_state)
+    , m_flipTexture(std::make_unique<libprojectM::Renderer::Backend::OpenGL::OpenGLCopyTexture>())
 {
     Load(absoluteFilePath);
 }
@@ -49,6 +50,7 @@ MilkdropPreset::MilkdropPreset(std::istream& presetData)
     , m_waveform(m_state)
     , m_darkenCenter(m_state)
     , m_border(m_state)
+    , m_flipTexture(std::make_unique<libprojectM::Renderer::Backend::OpenGL::OpenGLCopyTexture>())
 {
     Load(presetData);
 }
@@ -103,8 +105,8 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     }
 
     // y-flip the previous frame and assign the flipped texture as "main"
-    m_flipTexture.Draw(*renderContext.shaderCache, m_framebuffer.GetColorAttachmentTexture(m_previousFrameBuffer, 0), nullptr, true, false);
-    m_state.mainTexture = m_flipTexture.Texture();
+    m_flipTexture->Draw(m_framebuffer.GetColorAttachmentTexture(m_previousFrameBuffer, 0), nullptr, true, false);
+    m_state.mainTexture = m_flipTexture->Texture();
 
     // We now draw to the current framebuffer.
     m_framebuffer.Bind(m_currentFrameBuffer);
@@ -144,8 +146,8 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     m_border.Draw(m_perFrameContext);
 
     // y-flip the image for final compositing again
-    m_flipTexture.Draw(*renderContext.shaderCache, m_framebuffer.GetColorAttachmentTexture(m_currentFrameBuffer, 0), nullptr, true, false);
-    m_state.mainTexture = m_flipTexture.Texture();
+    m_flipTexture->Draw(m_framebuffer.GetColorAttachmentTexture(m_currentFrameBuffer, 0), nullptr, true, false);
+    m_state.mainTexture = m_flipTexture->Texture();
 
     // We no longer need the previous frame image, use it to render the final composite.
     m_framebuffer.BindRead(m_currentFrameBuffer);
@@ -156,7 +158,7 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     if (!m_finalComposite.HasCompositeShader())
     {
         // Flip texture again in "previous" framebuffer as old-school effects are still upside down.
-        m_flipTexture.Draw(*renderContext.shaderCache, m_framebuffer.GetColorAttachmentTexture(m_previousFrameBuffer, 0), m_framebuffer, m_previousFrameBuffer, true, false);
+        m_flipTexture->Draw(m_framebuffer.GetColorAttachmentTexture(m_previousFrameBuffer, 0), m_framebuffer, m_previousFrameBuffer, true, false);
     }
 
     // Swap framebuffer IDs for the next frame.
@@ -176,7 +178,7 @@ void MilkdropPreset::DrawInitialImage(const std::shared_ptr<Renderer::Texture>& 
     m_framebuffer.SetSize(renderContext.viewportSizeX, renderContext.viewportSizeY);
 
     // Render to previous framebuffer, as this is the image used to draw the next frame on.
-    m_flipTexture.Draw(*renderContext.shaderCache, image, m_framebuffer, m_previousFrameBuffer);
+    m_flipTexture->Draw(image, m_framebuffer, m_previousFrameBuffer);
 }
 
 void MilkdropPreset::BindFramebuffer()
