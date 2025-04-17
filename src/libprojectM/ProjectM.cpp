@@ -28,7 +28,7 @@
 
 #include <Audio/PCM.hpp>
 
-#include <Renderer/CopyTexture.hpp>
+#include <Renderer/Backend/OpenGL/OpenGLCopyTexture.hpp>
 #include <Renderer/PresetTransition.hpp>
 #include <Renderer/ShaderCache.hpp>
 #include <Renderer/TextureManager.hpp>
@@ -222,7 +222,7 @@ void ProjectM::Initialize()
 
     m_transitionShaderManager = std::make_unique<Renderer::TransitionShaderManager>();
 
-    m_textureCopier = std::make_unique<Renderer::CopyTexture>();
+    m_textureCopier = std::make_unique<Renderer::Backend::OpenGL::OpenGLCopyTexture>();
 
     m_spriteManager = std::make_unique<UserSprites::SpriteManager>();
 
