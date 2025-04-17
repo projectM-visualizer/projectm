@@ -21,7 +21,7 @@ public:
     void Draw(const std::shared_ptr<class Texture>& originalTexture,
               bool flipVertical = false, bool flipHorizontal = false) override;
 
-    void Draw(const std::shared_ptr<class Texture>& originalTexture, const std::shared_ptr<class Texture>& targetTexture = {},
+    void Draw(const std::shared_ptr<class Texture>& originalTexture, const std::shared_ptr<class Texture>& targetTexture,
               bool flipVertical = false, bool flipHorizontal = false) override;
 
     void Draw(const std::shared_ptr<class Texture>& originalTexture, Framebuffer& framebuffer, int framebufferIndex,

@@ -21,7 +21,7 @@ public:
     virtual void Draw(const std::shared_ptr<class Texture>& originalTexture,
                      bool flipVertical = false, bool flipHorizontal = false) = 0;
 
-    virtual void Draw(const std::shared_ptr<class Texture>& originalTexture, const std::shared_ptr<class Texture>& targetTexture = {},
+    virtual void Draw(const std::shared_ptr<class Texture>& originalTexture, const std::shared_ptr<class Texture>& targetTexture,
                      bool flipVertical = false, bool flipHorizontal = false) = 0;
 
     virtual void Draw(const std::shared_ptr<class Texture>& originalTexture, Framebuffer& framebuffer, int framebufferIndex,
