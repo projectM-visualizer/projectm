@@ -19,7 +19,9 @@ class PresetFileParser;
  * The class creates two sets of VBO/VAO as it's only known later (in the Draw() call) whether the shape is textured
  * or not.
  */
-class CustomShape
+#include <Renderer/Backend/OpenGL/OpenGLRenderItem.hpp>
+
+class CustomShape : public Renderer::Backend::OpenGL::OpenGLRenderItem
 {
 public:
     CustomShape(PresetState& presetState);
