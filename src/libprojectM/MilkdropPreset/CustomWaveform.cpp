@@ -12,12 +12,11 @@ namespace MilkdropPreset {
 static constexpr int CustomWaveformMaxSamples = std::max(libprojectM::Audio::WaveformSamples, libprojectM::Audio::SpectrumSamples);
 
 CustomWaveform::CustomWaveform(PresetState& presetState)
-    : RenderItem()
-    , m_presetState(presetState)
+    : m_presetState(presetState)
     , m_perFrameContext(presetState.globalMemory, &presetState.globalRegisters)
     , m_perPointContext(presetState.globalMemory, &presetState.globalRegisters)
 {
-    RenderItem::Init();
+    Init();
 
     m_perFrameContext.RegisterBuiltinVariables();
     m_perPointContext.RegisterBuiltinVariables();

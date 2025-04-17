@@ -15,7 +15,7 @@ static std::string const defaultCompositeShader = "shader_body\n{\nret = tex2D(s
 
 FinalComposite::FinalComposite()
 {
-    RenderItem::Init();
+    Init();
 }
 
 void FinalComposite::InitVertexAttrib()

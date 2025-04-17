@@ -3,7 +3,7 @@
 #include "PresetFileParser.hpp"
 
 #include <Renderer/TextureManager.hpp>
-#include <Renderer/RenderItem.hpp>
+#include <Renderer/Backend/OpenGL/OpenGLRenderItem.hpp>
 
 #include <vector>
 
@@ -47,7 +47,7 @@ CustomShape::CustomShape(PresetState& presetState)
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
 
-    RenderItem::Init();
+    Init();
 
     m_perFrameContext.RegisterBuiltinVariables();
 }
@@ -285,8 +285,8 @@ void CustomShape::Draw()
             glEnable(GL_LINE_SMOOTH);
 #endif
 
-            glBindVertexArray(m_vaoID);
-            glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
+            glBindVertexArray(m_vaoIdUntextured);
+            glBindBuffer(GL_ARRAY_BUFFER, m_vboIdUntextured);
 
             const auto iterations = m_thickOutline ? 4 : 1;
 

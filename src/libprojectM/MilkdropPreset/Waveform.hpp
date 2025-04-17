@@ -5,7 +5,7 @@
 
 #include "Waveforms/WaveformMath.hpp"
 
-#include <Renderer/RenderItem.hpp>
+#include <Renderer/Backend/OpenGL/OpenGLRenderItem.hpp>
 
 #include <memory>
 #include <vector>
@@ -16,7 +16,7 @@ namespace MilkdropPreset {
 class PresetState;
 class PerFrameContext;
 
-class Waveform : public Renderer::RenderItem
+class Waveform : public libprojectM::Renderer::Backend::OpenGL::OpenGLRenderItem
 {
 public:
     explicit Waveform(PresetState& presetState);

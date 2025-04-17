@@ -4,10 +4,9 @@ namespace libprojectM {
 namespace MilkdropPreset {
 
 Border::Border(PresetState& presetState)
-    : RenderItem()
-    , m_presetState(presetState)
+    : m_presetState(presetState)
 {
-    RenderItem::Init();
+    Init();
 }
 
 void Border::InitVertexAttrib()
