@@ -29,24 +29,6 @@ PresetTransition::PresetTransition(const std::shared_ptr<Shader>& transitionShad
 
     std::mt19937 rand32(m_randomDevice());
     m_staticRandomValues = {rand32(), rand32(), rand32(), rand32()};
-
-    // RenderItem is now an abstract base class; OpenGL implementation should use OpenGLRenderItem::Init()
-    // This will break if PresetTransition is not refactored to use a backend-specific implementation.
-    // For now, comment out the call to Init() to avoid runtime errors.
-    // RenderItem::Init();
-}
-
-void PresetTransition::InitVertexAttrib()
-{
-    static const std::array<RenderItem::Point, 4> points{{{-1.0f, 1.0f},
-                                                          {1.0f, 1.0f},
-                                                          {-1.0f, -1.0f},
-                                                          {1.0f, -1.0f}}};
-
-    // This is OpenGL-specific code and should be in a backend implementation.
-    // glEnableVertexAttribArray(0);
-    // glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Point), reinterpret_cast<void*>(offsetof(Point, x))); // Position
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(points), points.data(), GL_STATIC_DRAW);
 }
 
 auto PresetTransition::IsDone(double currentFrameTime) const -> bool
@@ -135,9 +117,7 @@ void PresetTransition::Draw(const Preset& oldPreset,
 
     // Render the transition quad
     // This is OpenGL-specific code and should be in a backend implementation.
-    // glBindVertexArray(m_vaoID);
-    // glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    // glBindVertexArray(0);
+    // TODO: Move quad rendering to backend-specific implementation.
 
     // Clean up
     oldPreset.OutputTexture()->Unbind(0);

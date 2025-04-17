@@ -30,6 +30,8 @@ public:
                               double durationSeconds,
                               double transitionStartTime);
 
+    // No longer inherits from RenderItem; InitVertexAttrib is not part of the interface.
+
     /**
      * @brief Returns true if the transition is done.
      * @param currentFrameTime The time in seconds since start of the current frame.
