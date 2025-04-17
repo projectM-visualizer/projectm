@@ -20,7 +20,12 @@ public:
     void InitVertexAttrib() override;
 
     // Mark override for clarity and to avoid hiding warnings
-    void Init() override { OpenGLRenderItem::Init(); }
+    void Init() override
+    {
+        OpenGLRenderItem::Init();
+    }
+
+    using OpenGLRenderItem::Init; // Unhide base Init() to avoid -Woverloaded-virtual warning
 
     void Draw(const std::shared_ptr<class Texture>& originalTexture,
               bool flipVertical = false, bool flipHorizontal = false) override;

@@ -22,7 +22,12 @@ public:
     void InitVertexAttrib() override;
 
     // Mark override for clarity and to avoid hiding warnings
-    void Init() override { OpenGLRenderItem::Init(); }
+    void Init() override
+    {
+        OpenGLRenderItem::Init();
+    }
+
+    using OpenGLRenderItem::Init; // Unhide base Init() to avoid -Woverloaded-virtual warning
 
     void Draw(const Preset& oldPreset,
               const Preset& newPreset,
