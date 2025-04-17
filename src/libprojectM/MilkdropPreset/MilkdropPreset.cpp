@@ -24,6 +24,7 @@
 #include "Factory.hpp"
 #include "MilkdropPresetExceptions.hpp"
 #include "PresetFileParser.hpp"
+#include <Renderer/Backend/OpenGL/OpenGLCopyTexture.hpp>
 
 #include <Logging.hpp>
 
