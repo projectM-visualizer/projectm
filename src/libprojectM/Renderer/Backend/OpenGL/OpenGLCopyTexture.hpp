@@ -3,7 +3,7 @@
 #include <Renderer/CopyTexture.hpp>
 #include <Renderer/Framebuffer.hpp>
 #include <Renderer/Shader.hpp>
-#include <Renderer/Backend/OpenGL/OpenGLRenderItem.hpp>
+#include "Renderer/Backend/OpenGL/OpenGLRenderItem.hpp"
 
 namespace libprojectM {
 namespace Renderer {
