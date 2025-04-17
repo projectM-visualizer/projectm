@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Renderer/RenderItem.hpp>
+#include "Renderer/RenderItem.hpp"
 #include <projectM-opengl.h>
 
 namespace libprojectM {
