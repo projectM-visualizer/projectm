@@ -16,9 +16,10 @@ public:
 
     void InitVertexAttrib() override;
 
-protected:
-    void Init();
+    // Override Init to provide OpenGL-specific initialization
+    void Init() override;
 
+protected:
     GLuint m_vboID{0};
     GLuint m_vaoID{0};
 };
