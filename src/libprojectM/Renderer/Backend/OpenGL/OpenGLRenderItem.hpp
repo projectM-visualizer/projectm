@@ -12,7 +12,7 @@ class OpenGLRenderItem : public libprojectM::Renderer::RenderItem
 {
 public:
     OpenGLRenderItem();
-    virtual ~OpenGLRenderItem();
+    ~OpenGLRenderItem() override;
 
     void InitVertexAttrib() override;
 

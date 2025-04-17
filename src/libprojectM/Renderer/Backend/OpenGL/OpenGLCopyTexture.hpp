@@ -27,7 +27,7 @@ public:
     void Draw(const std::shared_ptr<class Texture>& originalTexture, Framebuffer& framebuffer, int framebufferIndex,
               bool flipVertical = false, bool flipHorizontal = false) override;
 
-    auto Texture() -> std::shared_ptr<class Texture> override;
+    std::shared_ptr<class Texture> Texture() override;
 
 private:
     void UpdateTextureSize(int width, int height);
