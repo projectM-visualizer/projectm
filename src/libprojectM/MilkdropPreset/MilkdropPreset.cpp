@@ -170,7 +170,7 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
 auto MilkdropPreset::OutputTexture() const -> std::shared_ptr<Renderer::Texture>
 {
     // the composited image is always stored in the "current" framebuffer after a frame is rendered.
-    return m_framebuffer.GetColorAttachmentTexture(m_currentFrameBuffer, 0);
+    return m_flipTexture->Texture();
 }
 
 void MilkdropPreset::DrawInitialImage(const std::shared_ptr<Renderer::Texture>& image, const Renderer::RenderContext& renderContext)
