@@ -18,10 +18,11 @@ public:
     OpenGLRenderItem();
     virtual ~OpenGLRenderItem();
 
-    virtual void InitVertexAttrib();
+    // Mark override for clarity and to avoid hiding warnings
+    void InitVertexAttrib() override;
 
-    // Override Init to provide OpenGL-specific initialization
-    virtual void Init();
+    // Mark override for clarity and to avoid hiding warnings
+    void Init() override;
 
 protected:
     GLuint m_vboID{0};

@@ -16,7 +16,11 @@ public:
     OpenGLCopyTexture();
     ~OpenGLCopyTexture() = default;
 
-    void InitVertexAttrib();
+    // Mark override for clarity and to avoid hiding warnings
+    void InitVertexAttrib() override;
+
+    // Mark override for clarity and to avoid hiding warnings
+    void Init() override { OpenGLRenderItem::Init(); }
 
     void Draw(const std::shared_ptr<class Texture>& originalTexture,
               bool flipVertical = false, bool flipHorizontal = false) override;

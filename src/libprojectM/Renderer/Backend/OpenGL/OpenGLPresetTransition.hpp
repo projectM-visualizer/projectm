@@ -18,7 +18,11 @@ public:
                            double durationSeconds,
                            double transitionStartTime);
 
+    // Mark override for clarity and to avoid hiding warnings
     void InitVertexAttrib() override;
+
+    // Mark override for clarity and to avoid hiding warnings
+    void Init() override { OpenGLRenderItem::Init(); }
 
     void Draw(const Preset& oldPreset,
               const Preset& newPreset,
