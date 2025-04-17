@@ -3,12 +3,16 @@
 #include "Renderer/RenderItem.hpp"
 #include <projectM-opengl.h>
 
+#ifdef PROJECTM_USERSPRITES_DEBUG
+#pragma message("DEBUG: Including OpenGLRenderItem.hpp")
+#endif
+
 namespace libprojectM {
 namespace Renderer {
 namespace Backend {
 namespace OpenGL {
 
-class OpenGLRenderItem : public libprojectM::Renderer::RenderItem
+class OpenGLRenderItem : public ::libprojectM::Renderer::RenderItem
 {
 public:
     OpenGLRenderItem();
