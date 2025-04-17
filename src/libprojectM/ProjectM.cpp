@@ -305,8 +305,11 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
     {
         m_transitioningPreset = std::move(preset);
         m_timeKeeper->StartSmoothing();
-        m_transition = std::make_unique<Renderer::PresetTransition>(m_transitionShaderManager->RandomTransition(), m_softCutDuration, m_timeKeeper->GetFrameTime());
-        // TODO: In the future, instantiate a backend-specific PresetTransition implementation here.
+        m_transition = std::make_unique<Renderer::Backend::OpenGL::OpenGLPresetTransition>(
+            m_transitionShaderManager->RandomTransition(),
+            m_softCutDuration,
+            m_timeKeeper->GetFrameTime()
+        );
     }
 }
 

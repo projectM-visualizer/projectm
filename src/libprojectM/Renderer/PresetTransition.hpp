@@ -20,47 +20,22 @@ class PresetTransition
 public:
     PresetTransition() = delete;
 
-    /**
-     * Constructor.
-     * @param transitionShader The transition shader program.
-     * @param durationSeconds Transition duration in seconds.
-     * @param transitionStartTime The time in seconds since start of projectM.
-     */
     explicit PresetTransition(const std::shared_ptr<Shader>& transitionShader,
                               double durationSeconds,
                               double transitionStartTime);
 
-    // No longer inherits from RenderItem; InitVertexAttrib is not part of the interface.
+    virtual ~PresetTransition() = default;
 
-    /**
-     * @brief Returns true if the transition is done.
-     * @param currentFrameTime The time in seconds since start of the current frame.
-     * @return false if the transition is still in progress, true if it's done.
-     */
     auto IsDone(double currentFrameTime) const -> bool;
-
-    /**
-     * @brief Returns the current linear blending progress according to the given frame time.
-     * @param currentFrameTime The time in seconds since start of the current frame.
-     * @return The linear blending progress from 0.0 to 1.0.
-     */
     auto Progress(double currentFrameTime) const -> double;
 
-    /**
-     * @brief Updates the transition variables and renders the shader quad to the current FBO.
-     * @param oldPreset A reference to the old (fading out) preset.
-     * @param newPreset A reference to the new (fading in) preset.
-     * @param context The rendering context used to render the presets.
-     * @param audioData Current audio data and beat detection values.
-     * @param currentFrameTime The time in seconds since start of the current frame.
-     */
-    void Draw(const Preset& oldPreset,
-              const Preset& newPreset,
-              const RenderContext& context,
-              const Audio::FrameAudioData& audioData,
-              double currentFrameTime);
+    virtual void Draw(const Preset& oldPreset,
+                     const Preset& newPreset,
+                     const RenderContext& context,
+                     const libprojectM::Audio::FrameAudioData& audioData,
+                     double currentFrameTime);
 
-private:
+protected:
     std::vector<std::string> m_noiseTextureNames{"noise_lq",
                                                  "pw_noise_lq",
                                                  "noise_mq",
@@ -70,19 +45,18 @@ private:
                                                  "noisevol_lq",
                                                  "pw_noisevol_lq",
                                                  "noisevol_hq",
-                                                 "pw_noisevol_hq"}; //!< Names of noise textures to retrieve from TextureManager.
+                                                 "pw_noisevol_hq"};
 
-    Mesh m_mesh;                                                                                      //!< The mesh used to draw the transition effect.
-    std::shared_ptr<Shader> m_transitionShader;                                                       //!< The compiled shader used for this transition.
-    std::shared_ptr<Sampler> m_presetSampler{std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR)}; //!< Sampler for preset textures. Uses bilinear interpolation and no repeat.
+    std::shared_ptr<Shader> m_transitionShader;
+    std::shared_ptr<Sampler> m_presetSampler{std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR)};
 
-    double m_durationSeconds{3.0};  //!< Transition duration in seconds.
-    double m_transitionStartTime{}; //!< Start time of this transition. Duration is measured from this point.
-    double m_lastFrameTime{};       //!< Time when the previous frame was rendered.
+    double m_durationSeconds{3.0};
+    double m_transitionStartTime{};
+    double m_lastFrameTime{};
 
-    glm::ivec4 m_staticRandomValues{}; //!< Four random integers, remaining static during the whole transition.
+    glm::ivec4 m_staticRandomValues{};
 
-    std::random_device m_randomDevice; //!< Seed for the random number generator
+    std::random_device m_randomDevice;
 };
 
 } // namespace Renderer
