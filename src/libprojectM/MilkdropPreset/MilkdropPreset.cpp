@@ -38,7 +38,7 @@ MilkdropPreset::MilkdropPreset(const std::string& absoluteFilePath)
     , m_waveform(m_state)
     , m_darkenCenter(m_state)
     , m_border(m_state)
-    , m_flipTexture(std::unique_ptr<Renderer::CopyTexture>(new libprojectM::Renderer::Backend::OpenGL::OpenGLCopyTexture()))
+    , m_flipTexture(std::make_unique<libprojectM::Renderer::Backend::OpenGL::OpenGLCopyTexture>())
 {
     Load(absoluteFilePath);
 }
@@ -50,7 +50,7 @@ MilkdropPreset::MilkdropPreset(std::istream& presetData)
     , m_waveform(m_state)
     , m_darkenCenter(m_state)
     , m_border(m_state)
-    , m_flipTexture(std::unique_ptr<Renderer::CopyTexture>(new libprojectM::Renderer::Backend::OpenGL::OpenGLCopyTexture()))
+    , m_flipTexture(std::make_unique<libprojectM::Renderer::Backend::OpenGL::OpenGLCopyTexture>())
 {
     Load(presetData);
 }

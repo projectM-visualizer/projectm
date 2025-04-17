@@ -30,7 +30,7 @@ namespace UserSprites {
 MilkdropSprite::MilkdropSprite()
     : m_mesh(Renderer::VertexBufferUsage::DynamicDraw, false, true)
 {
-    OpenGLRenderItem::Init();
+    this->Init();
 }
 
 void MilkdropSprite::InitVertexAttrib()
