@@ -12,12 +12,12 @@ class OpenGLRenderItem : public libprojectM::Renderer::RenderItem
 {
 public:
     OpenGLRenderItem();
-    ~OpenGLRenderItem() override;
+    ~OpenGLRenderItem();
 
-    void InitVertexAttrib() override;
+    void InitVertexAttrib();
 
     // Override Init to provide OpenGL-specific initialization
-    void Init() override;
+    void Init();
 
 protected:
     GLuint m_vboID{0};
