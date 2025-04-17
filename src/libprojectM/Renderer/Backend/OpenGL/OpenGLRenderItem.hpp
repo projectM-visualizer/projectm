@@ -8,7 +8,7 @@ namespace Renderer {
 namespace Backend {
 namespace OpenGL {
 
-class OpenGLRenderItem : public RenderItem
+class OpenGLRenderItem : public libprojectM::Renderer::RenderItem
 {
 public:
     OpenGLRenderItem();
