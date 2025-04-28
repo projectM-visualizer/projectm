@@ -59,6 +59,8 @@ void MilkdropPreset::Initialize(const Renderer::RenderContext& renderContext)
 {
     assert(renderContext.textureManager);
     m_state.renderContext = renderContext;
+    m_state.blurTexture.Initialize(renderContext);
+    m_state.LoadShaders();
 
     // Initialize variables and code now we have a proper render state.
     CompileCodeAndRunInitExpressions();
@@ -143,8 +145,6 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     }
     m_border.Draw(m_perFrameContext);
 
-    // Todo: Song title anim would go here
-
     // y-flip the image for final compositing again
     m_flipTexture.Draw(m_framebuffer.GetColorAttachmentTexture(m_currentFrameBuffer, 0), nullptr, true, false);
     m_state.mainTexture = m_flipTexture.Texture();
@@ -154,8 +154,6 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     m_framebuffer.BindDraw(m_previousFrameBuffer);
 
     m_finalComposite.Draw(m_state, m_perFrameContext);
-
-    // ToDo: Draw user sprites (can have evaluated code)
 
     if (!m_finalComposite.HasCompositeShader())
     {
@@ -183,6 +181,14 @@ void MilkdropPreset::DrawInitialImage(const std::shared_ptr<Renderer::Texture>& 
     m_flipTexture.Draw(image, m_framebuffer, m_previousFrameBuffer);
 }
 
+void MilkdropPreset::BindFramebuffer()
+{
+    if (m_framebuffer.Width() > 0 && m_framebuffer.Height() > 0)
+    {
+        m_framebuffer.BindDraw(m_previousFrameBuffer);
+    }
+}
+
 void MilkdropPreset::PerFrameUpdate()
 {
     m_perFrameContext.LoadStateVariables(m_state);
@@ -205,7 +211,7 @@ void MilkdropPreset::Load(const std::string& pathname)
 
     SetFilename(ParseFilename(pathname));
 
-    PresetFileParser parser;
+    ::libprojectM::PresetFileParser parser;
 
     if (!parser.Read(pathname))
     {
@@ -224,7 +230,7 @@ void MilkdropPreset::Load(std::istream& stream)
     std::cerr << "[Preset] Loading preset from stream." << std::endl;
 #endif
 
-    PresetFileParser parser;
+    ::libprojectM::PresetFileParser parser;
 
     if (!parser.Read(stream))
     {
@@ -237,7 +243,7 @@ void MilkdropPreset::Load(std::istream& stream)
     InitializePreset(parser);
 }
 
-void MilkdropPreset::InitializePreset(PresetFileParser& parsedFile)
+void MilkdropPreset::InitializePreset(::libprojectM::PresetFileParser& parsedFile)
 {
     // Create the offscreen rendering surfaces.
     m_motionVectorUVMap = std::make_shared<Renderer::TextureAttachment>(GL_RG16F, GL_RG, GL_FLOAT, 0, 0);
@@ -313,6 +319,7 @@ auto MilkdropPreset::ParseFilename(const std::string& filename) -> std::string
 
     return filename.substr(start + 1, filename.length());
 }
+
 
 } // namespace MilkdropPreset
 } // namespace libprojectM

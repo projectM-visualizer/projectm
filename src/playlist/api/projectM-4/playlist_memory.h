@@ -1,10 +1,11 @@
 /**
  * @file playlist_memory.h
- * @copyright 2003-2023 projectM Team
+ * @copyright 2003-2024 projectM Team
  * @brief Memory allocation/deallocation helpers.
+ * @since 4.0.0
  *
  * projectM -- Milkdrop-esque visualisation SDK
- * Copyright (C)2003-2023 projectM Team
+ * Copyright (C)2003-2024 projectM Team
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,6 +39,7 @@ extern "C" {
  * other projectM memory management functions with pointers returned by the playlist library.
  *
  * @param string A pointer to a string that should be freed.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT void projectm_playlist_free_string(char* string);
 
@@ -48,6 +50,7 @@ PROJECTM_PLAYLIST_EXPORT void projectm_playlist_free_string(char* string);
  * other projectM memory management functions with pointers returned by the playlist library.
  *
  * @param array The pointer to the array of strings that should be freed.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT void projectm_playlist_free_string_array(char** array);
 

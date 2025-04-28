@@ -1,10 +1,11 @@
 /**
  * @file parameters.h
- * @copyright 2003-2023 projectM Team
+ * @copyright 2003-2024 projectM Team
  * @brief Functions to set and retrieve all sorts of projectM parameters and setting.
+ * @since 4.0.0
  *
  * projectM -- Milkdrop-esque visualisation SDK
- * Copyright (C)2003-2023 projectM Team
+ * Copyright (C)2003-2024 projectM Team
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -40,6 +41,7 @@ extern "C" {
  * @param instance The projectM instance handle.
  * @param texture_search_paths A list of texture search paths.
  * @param count The number of paths in the list.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_texture_search_paths(projectm_handle instance,
                                                        const char** texture_search_paths,
@@ -63,6 +65,7 @@ PROJECTM_EXPORT void projectm_set_texture_search_paths(projectm_handle instance,
  *
  * @param instance The projectM instance handle.
  * @param seconds_since_first_frame Any value >= 0 to use user-specified timestamps, values < 0 will use the system clock.
+ * @since 4.2.0
  */
 PROJECTM_EXPORT void projectm_set_frame_time(projectm_handle instance, double seconds_since_first_frame);
 
@@ -74,6 +77,7 @@ PROJECTM_EXPORT void projectm_set_frame_time(projectm_handle instance, double se
  * @param instance The projectM instance handle.
  * @return Time elapsed since projectM was started, or the value of the user-specified time value used
  *         to render the last frame.
+ * @since 4.2.0
  */
 PROJECTM_EXPORT double projectm_get_last_frame_time(projectm_handle instance);
 
@@ -84,6 +88,7 @@ PROJECTM_EXPORT double projectm_get_last_frame_time(projectm_handle instance);
  *
  * @param instance The projectM instance handle.
  * @param sensitivity The sensitivity setting.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_beat_sensitivity(projectm_handle instance, float sensitivity);
 
@@ -91,6 +96,7 @@ PROJECTM_EXPORT void projectm_set_beat_sensitivity(projectm_handle instance, flo
  * @brief Returns the beat sensitivity.
  * @param instance The projectM instance handle.
  * @return The current sensitivity setting.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT float projectm_get_beat_sensitivity(projectm_handle instance);
 
@@ -104,6 +110,7 @@ PROJECTM_EXPORT float projectm_get_beat_sensitivity(projectm_handle instance);
  *
  * @param instance The projectM instance handle.
  * @param seconds Minimum number of seconds the preset will be displayed before a hard cut.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_hard_cut_duration(projectm_handle instance, double seconds);
 
@@ -111,6 +118,7 @@ PROJECTM_EXPORT void projectm_set_hard_cut_duration(projectm_handle instance, do
  * @brief Returns the minimum display time before a hard cut can happen.
  * @param instance The projectM instance handle.
  * @return The minimum number of seconds the preset will be displayed before a hard cut.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT double projectm_get_hard_cut_duration(projectm_handle instance);
 
@@ -122,6 +130,7 @@ PROJECTM_EXPORT double projectm_get_hard_cut_duration(projectm_handle instance);
  *
  * @param instance The projectM instance handle.
  * @param enabled True to enable hard cuts, false to disable.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_hard_cut_enabled(projectm_handle instance, bool enabled);
 
@@ -129,6 +138,7 @@ PROJECTM_EXPORT void projectm_set_hard_cut_enabled(projectm_handle instance, boo
  * @brief Returns whether hard cuts are enabled or not.
  * @param instance The projectM instance handle.
  * @return True if hard cuts are enabled, false otherwise.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT bool projectm_get_hard_cut_enabled(projectm_handle instance);
 
@@ -139,6 +149,7 @@ PROJECTM_EXPORT bool projectm_get_hard_cut_enabled(projectm_handle instance);
  *
  * @param instance The projectM instance handle.
  * @param sensitivity The volume threshold that triggers a hard cut if surpassed.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_hard_cut_sensitivity(projectm_handle instance, float sensitivity);
 
@@ -146,6 +157,7 @@ PROJECTM_EXPORT void projectm_set_hard_cut_sensitivity(projectm_handle instance,
  * @brief Returns the current hard cut sensitivity.
  * @param instance The projectM instance handle.
  * @return The current hard cut sensitivity.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT float projectm_get_hard_cut_sensitivity(projectm_handle instance);
 
@@ -157,6 +169,7 @@ PROJECTM_EXPORT float projectm_get_hard_cut_sensitivity(projectm_handle instance
  *
  * @param instance The projectM instance handle.
  * @param seconds Time in seconds it takes to smoothly transition from one preset to another.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_soft_cut_duration(projectm_handle instance, double seconds);
 
@@ -164,6 +177,7 @@ PROJECTM_EXPORT void projectm_set_soft_cut_duration(projectm_handle instance, do
  * @brief Returns the time in seconds for a soft transition between two presets.
  * @param instance The projectM instance handle.
  * @return Time in seconds it takes to smoothly transition from one preset to another.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT double projectm_get_soft_cut_duration(projectm_handle instance);
 
@@ -175,6 +189,7 @@ PROJECTM_EXPORT double projectm_get_soft_cut_duration(projectm_handle instance);
  *
  * @param instance The projectM instance handle.
  * @param seconds The number of seconds a preset will be displayed before the next is shown.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_preset_duration(projectm_handle instance, double seconds);
 
@@ -186,16 +201,20 @@ PROJECTM_EXPORT void projectm_set_preset_duration(projectm_handle instance, doub
  *
  * @param instance The projectM instance handle.
  * @return The currently set preset display duration in seconds.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT double projectm_get_preset_duration(projectm_handle instance);
 
 /**
  * @brief Sets the per-pixel equation mesh size in units.
+ *
  * Will internally be clamped to [8,300] in each axis. If any dimension is set to an odd value, it will be incremented by 1
  * so only multiples of two are used.
+ *
  * @param instance The projectM instance handle.
  * @param width The new width of the mesh.
  * @param height The new height of the mesh.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_mesh_size(projectm_handle instance, size_t width, size_t height);
 
@@ -204,6 +223,7 @@ PROJECTM_EXPORT void projectm_set_mesh_size(projectm_handle instance, size_t wid
  * @param instance The projectM instance handle.
  * @param width The width of the mesh.
  * @param height The height of the mesh.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_get_mesh_size(projectm_handle instance, size_t* width, size_t* height);
 
@@ -216,6 +236,7 @@ PROJECTM_EXPORT void projectm_get_mesh_size(projectm_handle instance, size_t* wi
  *
  * @param instance The projectM instance handle.
  * @param fps The current FPS value projectM is running with.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_fps(projectm_handle instance, int32_t fps);
 
@@ -226,6 +247,7 @@ PROJECTM_EXPORT void projectm_set_fps(projectm_handle instance, int32_t fps);
  *
  * @param instance The projectM instance handle.
  * @return The current/average frames per second.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT int32_t projectm_get_fps(projectm_handle instance);
 
@@ -237,6 +259,7 @@ PROJECTM_EXPORT int32_t projectm_get_fps(projectm_handle instance);
  *
  * @param instance The projectM instance handle.
  * @param enabled True to enable aspect correction, false to disable it.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_aspect_correction(projectm_handle instance, bool enabled);
 
@@ -244,6 +267,7 @@ PROJECTM_EXPORT void projectm_set_aspect_correction(projectm_handle instance, bo
  * @brief Returns whether aspect ratio correction is enabled or not.
  * @param instance The projectM instance handle.
  * @return True if aspect ratio correction is enabled, false otherwise.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT bool projectm_get_aspect_correction(projectm_handle instance);
 
@@ -258,6 +282,7 @@ PROJECTM_EXPORT bool projectm_get_aspect_correction(projectm_handle instance);
  *
  * @param instance The projectM instance handle.
  * @param value The new "easter egg" value. Must be greater than zero, otherwise a default sigma value of 1.0 will be used.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_easter_egg(projectm_handle instance, float value);
 
@@ -265,6 +290,7 @@ PROJECTM_EXPORT void projectm_set_easter_egg(projectm_handle instance, float val
  * @brief Returns the current "easter egg" value.
  * @param instance The projectM instance handle.
  * @return The current "easter egg" value.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT float projectm_get_easter_egg(projectm_handle instance);
 
@@ -276,6 +302,7 @@ PROJECTM_EXPORT float projectm_get_easter_egg(projectm_handle instance);
  *
  * @param instance The projectM instance handle.
  * @param lock True to lock the current preset, false to enable automatic transitions.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_preset_locked(projectm_handle instance, bool lock);
 
@@ -283,6 +310,7 @@ PROJECTM_EXPORT void projectm_set_preset_locked(projectm_handle instance, bool l
  * @brief Returns whether the current preset is locked or not.
  * @param instance The projectM instance handle.
  * @return True if the preset lock is enabled, false otherwise.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT bool projectm_get_preset_locked(projectm_handle instance);
 
@@ -294,6 +322,7 @@ PROJECTM_EXPORT bool projectm_get_preset_locked(projectm_handle instance);
  * @param instance The projectM instance handle.
  * @param width New viewport width in pixels.
  * @param height New viewport height in pixels.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_window_size(projectm_handle instance, size_t width, size_t height);
 
@@ -302,6 +331,7 @@ PROJECTM_EXPORT void projectm_set_window_size(projectm_handle instance, size_t w
  * @param instance The projectM instance handle.
  * @param width Valid pointer to a size_t variable that will receive the window width value.
  * @param height Valid pointer to a size_t variable that will receive the window height value.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_get_window_size(projectm_handle instance, size_t* width, size_t* height);
 

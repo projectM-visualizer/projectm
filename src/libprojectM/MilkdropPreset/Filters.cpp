@@ -29,8 +29,9 @@ void Filters::Draw()
 
     glEnable(GL_BLEND);
 
-    m_presetState.untexturedShader.Bind();
-    m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+    auto shader = m_presetState.untexturedShader.lock();
+    shader->Bind();
+    shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
 
     glBindVertexArray(m_vaoID);
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);

@@ -48,7 +48,7 @@ jobs:
 
       - name: Download Artifacts From Linux Build
         id: download-linux-artifact
-        uses: dawidd6/action-download-artifact@v2
+        uses: dawidd6/action-download-artifact@v6
         with:
             github_token: ${{secrets.GITHUB_TOKEN}}
             workflow: build_linux.yml
@@ -64,7 +64,7 @@ jobs:
 
       - name: Download Artifacts From Emscripten Build
         id: download-emscripten-artifact
-        uses: dawidd6/action-download-artifact@v2
+        uses: dawidd6/action-download-artifact@v6
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           workflow: build_emscripten.yml
@@ -79,7 +79,7 @@ jobs:
 
       - name: Download Artifacts From macOS Build
         id: download-osx-artifact
-        uses: dawidd6/action-download-artifact@v2
+        uses: dawidd6/action-download-artifact@v6
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           workflow: build_osx.yml
@@ -95,7 +95,7 @@ jobs:
 
       - name: Download Artifacts From Windows Build
         id: download-windows-artifact
-        uses: dawidd6/action-download-artifact@v2
+        uses: dawidd6/action-download-artifact@v6
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           workflow: build_windows.yml

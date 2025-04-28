@@ -47,6 +47,19 @@ public:
     virtual void DrawInitialImage(const std::shared_ptr<Renderer::Texture>& image,
                                   const Renderer::RenderContext& renderContext) = 0;
 
+    /**
+     * @brief Bind the preset's internal framebuffer.
+     * This framebuffer contains the image passed on to the next frame, onto which warp effects etc.
+     * are then applied. Has no effect if the framebuffer isn't initialized yet, e.g. before drawing
+     * the first frame.
+     *
+     * Can be used to draw anything on top of the preset's image, "burning in" additional shapes,
+     * images or text. Depending on the preset, it's not guaranteed though that the image actually
+     * is used in the next frame, or completely painted over. That said, the effect varies between
+     * presets.
+     */
+    virtual void BindFramebuffer() = 0;
+
     inline void SetFilename(const std::string& filename)
     {
         m_filename = filename;

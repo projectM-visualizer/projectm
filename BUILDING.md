@@ -22,7 +22,7 @@ Optional packages for additional features:
 sudo apt install qtbase5-dev # For building Qt-based UIs
 sudo apt install libvisual-0.4-dev # To build the libvisual plug-in
 sudo apt install libjack-jackd2-dev # To build the JACK visualizer application
-sudo apt install ninja # To build projectM with Ninja instead of make
+sudo apt install ninja-build # To build projectM with Ninja instead of make
 ```
 
 ### Download the projectM sources
