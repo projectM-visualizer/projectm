@@ -1,5 +1,7 @@
 #include "FileScanner.hpp"
 
+#include "Utils.hpp"
+
 #include <algorithm>
 #include <cctype>
 
@@ -17,7 +19,7 @@ FileScanner::FileScanner(const std::vector<std::string>& rootDirs, std::vector<s
     // Convert all extensions to lower-case.
     for (auto& extension : _extensions)
     {
-        std::transform(extension.begin(), extension.end(), extension.begin(), [](unsigned char c) { return std::tolower(c); });
+        Utils::ToLowerInPlace(extension);
     }
 }
 
@@ -59,8 +61,7 @@ void FileScanner::Scan(ScanCallback callback)
                 }
 
                 // Match the lower-case extension of the file with the provided list of valid extensions.
-                auto extension = entry.path().extension().string();
-                std::transform(extension.begin(), extension.end(), extension.begin(), [](unsigned char c) { return std::tolower(c); });
+                auto extension = Utils::ToLower(entry.path().extension().string());
                 if (std::find(_extensions.begin(), _extensions.end(), extension) != _extensions.end())
                 {
                     callback(entry.path().string(), entry.path().stem().string());

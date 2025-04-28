@@ -45,10 +45,11 @@
 #include <string>
 
 namespace libprojectM {
+class PresetFileParser;
+
 namespace MilkdropPreset {
 
 class Factory;
-class PresetFileParser;
 
 class MilkdropPreset : public ::libprojectM::Preset
 {
@@ -86,6 +87,8 @@ public:
 
     void DrawInitialImage(const std::shared_ptr<Renderer::Texture>& image, const Renderer::RenderContext& renderContext) override;
 
+    void BindFramebuffer() override;
+
 private:
     void PerFrameUpdate();
 
@@ -93,7 +96,7 @@ private:
 
     void Load(std::istream& stream);
 
-    void InitializePreset(PresetFileParser& parsedFile);
+    void InitializePreset(::libprojectM::PresetFileParser& parsedFile);
 
     void CompileCodeAndRunInitExpressions();
 

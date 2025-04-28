@@ -82,7 +82,7 @@ private:
 
     void Preload();
 
-    TextureSamplerDescriptor LoadTexture(const std::string& fileName, const std::string& name);
+    auto LoadTexture(const ScannedFile& file) -> std::shared_ptr<Texture>;
 
     void AddTextureFile(const std::string& fileName, const std::string& baseName);
 

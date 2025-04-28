@@ -5,6 +5,7 @@
 #pragma once
 
 #include <Renderer/Framebuffer.hpp>
+#include <Renderer/RenderContext.hpp>
 #include <Renderer/Shader.hpp>
 #include <Renderer/TextureSamplerDescriptor.hpp>
 
@@ -48,6 +49,12 @@ public:
      * Destructor.
      */
     ~BlurTexture();
+
+    /**
+     * @brief Initializes the blur texture.
+     * @param renderContext
+     */
+    void Initialize(const Renderer::RenderContext& renderContext);
 
     /**
      * @brief Sets the minimum required blur level.
@@ -101,8 +108,8 @@ private:
     GLuint m_vboBlur; //!< Vertex buffer object for the fullscreen blur quad.
     GLuint m_vaoBlur; //!< Vertex array object for the fullscreen blur quad.
 
-    Renderer::Shader m_blur1Shader; //!< The shader used on the first blur pass.
-    Renderer::Shader m_blur2Shader; //!< The shader used for subsequent blur passes after the initial pass.
+    std::weak_ptr<Renderer::Shader> m_blur1Shader; //!< The shader used on the first blur pass.
+    std::weak_ptr<Renderer::Shader> m_blur2Shader; //!< The shader used for subsequent blur passes after the initial pass.
 
     int m_sourceTextureWidth{};  //!< Width of the source texture used to create the blur textures.
     int m_sourceTextureHeight{}; //!< Height of the source texture used to create the blur textures.

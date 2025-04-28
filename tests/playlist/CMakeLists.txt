@@ -4,6 +4,30 @@ endif()
 
 find_package(GTest 1.10 REQUIRED NO_MODULE)
 
+# Compile-test C API headers
+set(INCLUDE_FILES
+        ${CMAKE_SOURCE_DIR}/src/playlist/api/projectM-4/playlist_types.h
+
+        ${CMAKE_SOURCE_DIR}/src/playlist/api/projectM-4/playlist_callbacks.h
+        ${CMAKE_SOURCE_DIR}/src/playlist/api/projectM-4/playlist_core.h
+        ${CMAKE_SOURCE_DIR}/src/playlist/api/projectM-4/playlist_filter.h
+        ${CMAKE_SOURCE_DIR}/src/playlist/api/projectM-4/playlist_items.h
+        ${CMAKE_SOURCE_DIR}/src/playlist/api/projectM-4/playlist_memory.h
+        ${CMAKE_SOURCE_DIR}/src/playlist/api/projectM-4/playlist_playback.h
+
+        # Convenience header last, so it doesn't obscure issues with a single header above.
+        ${CMAKE_SOURCE_DIR}/src/playlist/api/projectM-4/playlist.h
+        )
+
+get_target_property(API_HEADER_INCLUDE_DIRS_MAIN libprojectM::API INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(API_HEADER_INCLUDE_DIRS_PLAYLIST projectM_playlist_main INTERFACE_INCLUDE_DIRECTORIES)
+
+include(TestAPIHeaders)
+test_api_headers(TestPlaylistAPIHeaders
+        "${API_HEADER_INCLUDE_DIRS_MAIN};${API_HEADER_INCLUDE_DIRS_PLAYLIST}"
+        "${INCLUDE_FILES}"
+        )
+
 add_executable(projectM-playlist-unittest
         $<TARGET_OBJECTS:projectM_playlist_main>
         APITest.cpp

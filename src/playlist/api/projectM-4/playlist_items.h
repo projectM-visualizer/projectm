@@ -1,10 +1,11 @@
 /**
  * @file playlist_items.h
- * @copyright 2003-2023 projectM Team
+ * @copyright 2003-2024 projectM Team
  * @brief Playlist item management functions.
+ * @since 4.0.0
  *
  * projectM -- Milkdrop-esque visualisation SDK
- * Copyright (C)2003-2023 projectM Team
+ * Copyright (C)2003-2024 projectM Team
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,6 +28,9 @@
 
 #include "projectM-4/playlist_types.h"
 
+#include <stdint.h>
+#include <stdbool.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -35,12 +39,14 @@ extern "C" {
  * @brief Returns the number of presets in the current playlist.
  * @param instance The playlist manager instance.
  * @return The number of presets in the current playlist.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_size(projectm_playlist_handle instance);
 
 /**
  * @brief Clears the playlist.
  * @param instance The playlist manager instance to clear.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT void projectm_playlist_clear(projectm_playlist_handle instance);
 
@@ -60,6 +66,7 @@ PROJECTM_PLAYLIST_EXPORT void projectm_playlist_clear(projectm_playlist_handle i
  * @param count The maximum number if items to return.
  * @return A pointer to a list of char pointers, each containing a single preset. The last entry
  *         is denoted by a null pointer.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT char** projectm_playlist_items(projectm_playlist_handle instance, uint32_t start, uint32_t count);
 
@@ -72,6 +79,7 @@ PROJECTM_PLAYLIST_EXPORT char** projectm_playlist_items(projectm_playlist_handle
  * @param index The index to retrieve the filename for.
  * @return The filename of the requested preset, or NULL if the index was out of bounds or the
  *         playlist is empty.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT char* projectm_playlist_item(projectm_playlist_handle instance, uint32_t index);
 
@@ -90,6 +98,7 @@ PROJECTM_PLAYLIST_EXPORT char* projectm_playlist_item(projectm_playlist_handle i
  * @param allow_duplicates If true, files found will always be added. If false, only files are
  *                         added that do not already exist in the current playlist.
  * @return The number of files added. 0 may indicate issues scanning the path.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_add_path(projectm_playlist_handle instance, const char* path,
                                                              bool recurse_subdirs, bool allow_duplicates);
@@ -112,6 +121,7 @@ PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_add_path(projectm_playlist_h
  * @param allow_duplicates If true, files found will always be added. If false, only files are
  *                         added that do not already exist in the current playlist.
  * @return The number of files added. 0 may indicate issues scanning the path.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_insert_path(projectm_playlist_handle instance, const char* path,
                                                                 uint32_t index, bool recurse_subdirs, bool allow_duplicates);
@@ -128,6 +138,7 @@ PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_insert_path(projectm_playlis
  *                         current playlist.
  * @return True if the file was added to the playlist, false if the file was a duplicate and
  *         allow_duplicates was set to false.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT bool projectm_playlist_add_preset(projectm_playlist_handle instance, const char* filename,
                                                            bool allow_duplicates);
@@ -149,6 +160,7 @@ PROJECTM_PLAYLIST_EXPORT bool projectm_playlist_add_preset(projectm_playlist_han
  *                         current playlist.
  * @return True if the file was added to the playlist, false if the file was a duplicate and
  *         allow_duplicates was set to false.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT bool projectm_playlist_insert_preset(projectm_playlist_handle instance, const char* filename,
                                                               uint32_t index, bool allow_duplicates);
@@ -165,6 +177,7 @@ PROJECTM_PLAYLIST_EXPORT bool projectm_playlist_insert_preset(projectm_playlist_
  *                         is only added to the playlist if the exact filename doesn't exist in the
  *                         current playlist.
  * @return The number of files added to the playlist. Ranges between 0 and count.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_add_presets(projectm_playlist_handle instance, const char** filenames,
                                                                 uint32_t count, bool allow_duplicates);
@@ -186,6 +199,7 @@ PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_add_presets(projectm_playlis
  *                         is only added to the playlist if the exact filename doesn't exist in the
  *                         current playlist.
  * @return The number of files added to the playlist. Ranges between 0 and count.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_insert_presets(projectm_playlist_handle instance, const char** filenames,
                                                                    uint32_t count, unsigned int index, bool allow_duplicates);
@@ -197,6 +211,7 @@ PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_insert_presets(projectm_play
  * @param index The preset index to remove. If it exceeds the playlist size, no preset will be
  *              removed.
  * @return True if the preset was removed from the playlist, false if the index was out of range.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT bool projectm_playlist_remove_preset(projectm_playlist_handle instance, uint32_t index);
 
@@ -208,6 +223,7 @@ PROJECTM_PLAYLIST_EXPORT bool projectm_playlist_remove_preset(projectm_playlist_
  *              removed.
  * @param count The number of presets to remove from the given index.
  * @return The number of presets removed from the playlist.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_remove_presets(projectm_playlist_handle instance, uint32_t index,
                                                                    uint32_t count);
@@ -231,6 +247,7 @@ PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_remove_presets(projectm_play
  * @param count The number of items, beginning at start_index, to sort.
  * @param predicate The predicate to use for sorting. Default is SORT_PREDICATE_FULL_PATH.
  * @param order The sort order. Default is SORT_ORDER_ASCENDING.
+ * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT void projectm_playlist_sort(projectm_playlist_handle instance, uint32_t start_index, uint32_t count,
                                                      projectm_playlist_sort_predicate predicate, projectm_playlist_sort_order order);

@@ -1,10 +1,10 @@
 /**
  * @file render_opengl.h
- * @copyright 2003-2023 projectM Team
+ * @copyright 2003-2024 projectM Team
  * @brief Functions to configure and render projectM visuals using OpenGL.
  *
  * projectM -- Milkdrop-esque visualisation SDK
- * Copyright (C)2003-2023 projectM Team
+ * Copyright (C)2003-2024 projectM Team
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,6 +35,7 @@ extern "C" {
  * @brief Renders a single frame.
  *
  * @param instance The projectM instance handle.
+ * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_opengl_render_frame(projectm_handle instance);
 
@@ -43,6 +44,7 @@ PROJECTM_EXPORT void projectm_opengl_render_frame(projectm_handle instance);
  *
  * @param instance The projectM instance handle.
  * @param framebuffer_object_id The OpenGL FBO ID to render to.
+ * @since 4.2.0
  */
 PROJECTM_EXPORT void projectm_opengl_render_frame_fbo(projectm_handle instance, uint32_t framebuffer_object_id);
 

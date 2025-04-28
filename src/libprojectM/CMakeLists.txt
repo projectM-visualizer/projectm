@@ -9,6 +9,7 @@ add_compile_definitions(
 add_subdirectory(Audio)
 add_subdirectory(MilkdropPreset)
 add_subdirectory(Renderer)
+add_subdirectory(UserSprites)
 
 add_library(projectM_main OBJECT
         "${PROJECTM_EXPORT_HEADER}"
@@ -17,12 +18,16 @@ add_library(projectM_main OBJECT
         PresetFactory.hpp
         PresetFactoryManager.cpp
         PresetFactoryManager.hpp
+        PresetFileParser.cpp
+        PresetFileParser.hpp
         ProjectM.cpp
         ProjectM.hpp
         ProjectMCWrapper.cpp
         ProjectMCWrapper.hpp
         TimeKeeper.cpp
         TimeKeeper.hpp
+        Utils.cpp
+        Utils.hpp
         projectM-opengl.h
         )
 
@@ -61,6 +66,7 @@ add_library(projectM
         $<TARGET_OBJECTS:Audio>
         $<TARGET_OBJECTS:MilkdropPreset>
         $<TARGET_OBJECTS:Renderer>
+        $<TARGET_OBJECTS:UserSprites>
         $<TARGET_OBJECTS:hlslparser>
         $<TARGET_OBJECTS:SOIL2>
         $<TARGET_OBJECTS:projectM_main>

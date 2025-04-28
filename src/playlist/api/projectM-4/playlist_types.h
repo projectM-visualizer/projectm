@@ -1,10 +1,11 @@
 /**
  * @file playlist_types.h
- * @copyright 2003-2023 projectM Team
+ * @copyright 2003-2024 projectM Team
  * @brief Types and enumerations used in the playlist API headers.
+ * @since 4.0.0
  *
  * projectM -- Milkdrop-esque visualisation SDK
- * Copyright (C)2003-2023 projectM Team
+ * Copyright (C)2003-2024 projectM Team
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,11 +32,21 @@
 extern "C" {
 #endif
 
-struct projectm_playlist;                                   //!< Opaque projectM playlist instance type.
-typedef struct projectm_playlist* projectm_playlist_handle; //!< A pointer to the opaque projectM playlist instance.
+/**
+ * Opaque projectM playlist instance type.
+ * @since 4.0.0
+ */
+struct projectm_playlist;
+
+/**
+ * A pointer to the opaque projectM playlist instance.
+ * @since 4.0.0
+ */
+typedef struct projectm_playlist* projectm_playlist_handle;
 
 /**
  * Sort predicate for playlist sorting.
+ * @since 4.0.0
  */
 typedef enum
 {
@@ -46,6 +57,7 @@ typedef enum
 
 /**
  * Sort order for playlist sorting.
+ * @since 4.0.0
  */
 typedef enum
 {
