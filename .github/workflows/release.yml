@@ -18,12 +18,16 @@ jobs:
       tag: ${{ steps.set-tag.outputs.tag }}
     steps:
       - id: set-tag
+        name: Determine Tag
         run: |
+          # Determine the tag name for this release
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "::set-output name=tag::${{ github.event.inputs.tag }}"
+            TAG="${{ github.event.inputs.tag }}"
           else
-            echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
+            TAG="${GITHUB_REF#refs/tags/}"
           fi
+          # Export the tag output
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
         shell: bash
 
   build-linux:
