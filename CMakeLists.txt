@@ -105,7 +105,8 @@ if(ENABLE_SYSTEM_GLM)
 endif()
 
 if(ENABLE_SYSTEM_PROJECTM_EVAL)
-    find_package(projectM-Eval)
+    # Attempt to use an external projectm-eval library; fall back to vendored copy if not found
+    find_package(projectM-Eval QUIET)
 endif()
 
 if(NOT BUILD_SHARED_LIBS AND CMAKE_SYSTEM_NAME STREQUAL "Windows")

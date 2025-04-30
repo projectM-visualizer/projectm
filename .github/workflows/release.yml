@@ -103,8 +103,12 @@ jobs:
         run: |
           TAG=${{ needs.set_tag.outputs.tag }}
           TAR=projectm-$TAG-source.tar.gz
-          # Exclude VCS metadata and the output archive itself to avoid "file changed as we read it" errors
-          tar --warning=no-file-changed --exclude-vcs --exclude="$TAR" -czvf "$TAR" .
+          # Create a clean clone (with submodules) for packaging
+          git clone --depth 1 --recurse-submodules . source-pkg
+          # Remove any VCS metadata in the clone
+          find source-pkg -name .git -exec rm -rf {} +
+          # Package the clean source tree
+          tar -czvf "$TAR" -C source-pkg .
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
