@@ -100,7 +100,7 @@ jobs:
           TAG=${{ needs.set_tag.outputs.tag }}
           TAR=projectm-$TAG-source.tar.gz
           # Exclude VCS metadata and the output archive itself to avoid "file changed as we read it" errors
-          tar --warning=no-file-changed czvf "$TAR" \
+          tar --warning=no-file-changed -czvf "$TAR" \
             --exclude='.git*' \
             --exclude="$TAR" \
             .
