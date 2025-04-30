@@ -97,7 +97,13 @@ jobs:
           submodules: recursive
       - name: Package Source
         run: |
-          tar czvf projectm-${{ needs.set_tag.outputs.tag }}-source.tar.gz --exclude='.git*' .
+          TAG=${{ needs.set_tag.outputs.tag }}
+          TAR=projectm-$TAG-source.tar.gz
+          # Exclude VCS metadata and the output archive itself to avoid "file changed as we read it" errors
+          tar --warning=no-file-changed czvf "$TAR" \
+            --exclude='.git*' \
+            --exclude="$TAR" \
+            .
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
