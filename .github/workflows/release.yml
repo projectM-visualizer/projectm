@@ -125,7 +125,14 @@ jobs:
         with:
           submodules: recursive
       - name: Configure
-        run: cmake -S . -B build -G "Visual Studio 17 2022" -A "x64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install -DBUILD_TESTING=OFF -DBUILD_SHARED_LIBS=ON
+        run: |
+          cmake -S . -B build -G "Visual Studio 17 2022" -A "x64" `
+            -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `
+            -DVCPKG_TARGET_TRIPLET=x64-windows `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_INSTALL_PREFIX=install `
+            -DBUILD_TESTING=OFF `
+            -DBUILD_SHARED_LIBS=ON
       - name: Build & Install
         run: cmake --build build --config Release --parallel --target INSTALL
       - name: Package
