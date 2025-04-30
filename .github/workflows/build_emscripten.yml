@@ -2,14 +2,6 @@ name: Emscripten
 
 on:
   push:
-      branches: 
-        - "*"
-      tags:
-        - "*"
-    
-  pull_request:
-      branches: 
-        - "*"
 
 jobs:
   build:
@@ -19,17 +11,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: 'recursive'
-      
+          submodules: "recursive"
+
       - name: Setup emsdk
-        uses: mymindstorm/setup-emsdk@v13
+        uses: mymindstorm/setup-emsdk@v14
         with:
           # Make sure to set a version number!
           version: 3.1.53
           # This is the name of the cache folder.
           # The cache folder will be placed in the build directory,
           #  so make sure it doesn't conflict with anything!
-          actions-cache-folder: 'emsdk-cache'
+          actions-cache-folder: "emsdk-cache"
 
       - name: Verify EMSDK
         run: emcc -v
@@ -52,18 +44,16 @@ jobs:
 
       # - name: Run Unit Tests
       #   run: ctest --test-dir "${{ github.workspace }}/cmake-build" --verbose --build-config "Debug"
-
       # - name: Build Release
       #   run: emcmake cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --parallel
-
       - name: Install
         run: |
           cd "${{ github.workspace }}/cmake-build" && emmake make install
-          
+
         # emcmake cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target install
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-            name: projectm-emscripten-static-latest
-            path: install/*
+          name: projectm-emscripten-static-latest
+          path: install/*
