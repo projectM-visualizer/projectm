@@ -2,14 +2,6 @@ name: Windows (x64)
 
 on:
   push:
-      branches: 
-        - "*"
-      tags:
-        - "*"
-    
-  pull_request:
-      branches: 
-        - "*"
 
 jobs:
   build-shared:
@@ -19,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
 
       - name: Configure Build (MD)
         run: cmake -G "Visual Studio 17 2022" -A "X64" -S "${{ github.workspace }}" -B "${{ github.workspace }}/cmake-build" -DCMAKE_TOOLCHAIN_FILE="${Env:VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded$<$<CONFIG:Debug>:Debug>DLL" -DCMAKE_VERBOSE_MAKEFILE=YES -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=YES
@@ -41,8 +33,8 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-            name: projectm-windows-shared-latest
-            path: install/*
+          name: projectm-windows-shared-latest
+          path: install/*
 
   build-static:
     name: Static Library
@@ -51,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
 
       - name: Configure Build (MD)
         run: cmake -G "Visual Studio 17 2022" -A "X64" -S "${{ github.workspace }}" -B "${{ github.workspace }}/cmake-build" -DCMAKE_TOOLCHAIN_FILE="${Env:VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded$<$<CONFIG:Debug>:Debug>" -DCMAKE_VERBOSE_MAKEFILE=YES -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=YES

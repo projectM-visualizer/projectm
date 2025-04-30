@@ -2,14 +2,6 @@ name: Ubuntu Linux (x86_64)
 
 on:
   push:
-      branches: 
-        - "*"
-      tags:
-        - "*"
-    
-  pull_request:
-      branches: 
-        - "*"
 
 jobs:
   build-shared:
@@ -19,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
 
       - name: Install Packages
         run: |
@@ -46,8 +38,8 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-            name: projectm-linux-shared-latest
-            path: install/*
+          name: projectm-linux-shared-latest
+          path: install/*
 
   build-static:
     name: Static Library
@@ -56,7 +48,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: 'recursive'
+          submodules: "recursive"
 
       - name: Install Packages
         run: |

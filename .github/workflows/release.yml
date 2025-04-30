@@ -1,0 +1,204 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*" # Trigger on any tag push
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag name to use for manual dispatch (e.g., v1.2.3)"
+        required: true
+
+jobs:
+  set_tag:
+    name: Set Release Tag
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.set-tag.outputs.tag }}
+    steps:
+      - id: set-tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "::set-output name=tag::${{ github.event.inputs.tag }}"
+          else
+            echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
+          fi
+        shell: bash
+
+  build-linux:
+    name: Build Linux (x64)
+    if: false
+    needs: set_tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1-mesa-dev mesa-common-dev libsdl2-dev libglm-dev ninja-build cmake g++ zip
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install -DBUILD_TESTING=OFF -DBUILD_SHARED_LIBS=ON
+      - name: Build & Install
+        run: |
+          cmake --build build --parallel
+          cmake --install build --prefix install
+      - name: Package
+        run: |
+          mkdir package
+          cp -R install/* package/
+          tar -czvf projectm-${{ needs.set_tag.outputs.tag }}-linux-x64.tar.gz -C package .
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-x64
+          path: projectm-${{ needs.set_tag.outputs.tag }}-linux-x64.tar.gz
+
+  build-macos:
+    name: Build macOS (x64)
+    if: false
+    needs: set_tag
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install Dependencies
+        run: brew install sdl2 ninja cmake
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install -DBUILD_TESTING=OFF -DBUILD_SHARED_LIBS=ON
+      - name: Build & Install
+        run: |
+          cmake --build build --parallel
+          cmake --install build --prefix install
+      - name: Package
+        run: |
+          mkdir package
+          cp -R install/* package/
+          tar -czvf projectm-${{ needs.set_tag.outputs.tag }}-macos-x64.tar.gz -C package .
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-x64
+          path: projectm-${{ needs.set_tag.outputs.tag }}-macos-x64.tar.gz
+
+  build-source:
+    name: Package Source
+    needs: set_tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Package Source
+        run: |
+          tar czvf projectm-${{ needs.set_tag.outputs.tag }}-source.tar.gz --exclude='.git*' .
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: source
+          path: projectm-${{ needs.set_tag.outputs.tag }}-source.tar.gz
+
+  build-windows:
+    name: Build Windows (x64)
+    needs: set_tag
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Configure
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -A "x64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install -DBUILD_TESTING=OFF -DBUILD_SHARED_LIBS=ON
+      - name: Build & Install
+        run: cmake --build build --config Release --parallel --target INSTALL
+      - name: Package
+        shell: pwsh
+        run: |
+          $env:TAG = '${{ needs.set_tag.outputs.tag }}'
+          New-Item -Path package -ItemType Directory -Force
+          Copy-Item -Path install\\* -Destination package\\ -Recurse -Force
+          Compress-Archive -Path package\\* -DestinationPath projectm-$env:TAG-windows-x64.zip
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64
+          path: projectm-${{ needs.set_tag.outputs.tag }}-windows-x64.zip
+
+  build-emscripten:
+    name: Build Emscripten
+    needs: set_tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Setup EMSDK
+        uses: mymindstorm/setup-emsdk@v13
+        with:
+          version: 3.1.53
+          actions-cache-folder: "emsdk-cache"
+          cache: false  # disable shared runner cache to avoid key reservation conflicts
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1-mesa-dev mesa-common-dev libsdl2-dev libglm-dev ninja-build cmake g++ zip
+      - name: Build GoogleTest
+        run: |
+          git clone https://github.com/projectM-visualizer/build-gtest.git build-gtest
+          cd build-gtest && ./setup.sh && ./build-emscripten.sh
+      - name: Configure
+        run: emcmake cmake \
+          -S . -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX=install \
+          -DCMAKE_VERBOSE_MAKEFILE=YES \
+          -DBUILD_TESTING=OFF \
+          -DGTest_DIR="${{ github.workspace }}/build-gtest/dist/emscripten/lib/lib/cmake/GTest" \
+          -DBUILD_SHARED_LIBS=OFF
+      - name: Build & Install
+        run: |
+          emmake cmake --build build --parallel
+          emmake cmake --install build --prefix install
+      - name: Package
+        run: |
+          mkdir package
+          cp -R install/* package/
+          cd package
+          zip -r ../projectm-${{ needs.set_tag.outputs.tag }}-emscripten.zip .
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: emscripten
+          path: projectm-${{ needs.set_tag.outputs.tag }}-emscripten.zip
+
+  release:
+    name: Create GitHub Release
+    needs: [set_tag, build-source, build-windows, build-emscripten]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Copy artifacts
+        run: |
+          mkdir release
+          cp artifacts/*/* release/
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.set_tag.outputs.tag }}
+          name: Release ${{ needs.set_tag.outputs.tag }}
+          generate_release_notes: true
+          draft: true
+          prerelease: false
+          files: |
+            release/**
