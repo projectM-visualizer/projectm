@@ -182,7 +182,7 @@ else()
             list(APPEND PROJECTM_OPENGL_LIBRARIES OpenGL::GLX)
         endif()
         if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-            find_package(GLEW REQUIRED)
+            find_package(GLEW CONFIG REQUIRED)
             # Prefer shared, but check for static lib if shared is not available.
             if(TARGET GLEW::glew)
                 list(APPEND PROJECTM_OPENGL_LIBRARIES GLEW::glew)

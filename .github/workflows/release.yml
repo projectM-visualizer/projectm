@@ -104,10 +104,7 @@ jobs:
           TAG=${{ needs.set_tag.outputs.tag }}
           TAR=projectm-$TAG-source.tar.gz
           # Exclude VCS metadata and the output archive itself to avoid "file changed as we read it" errors
-          tar --warning=no-file-changed -czvf "$TAR" \
-            --exclude='.git*' \
-            --exclude="$TAR" \
-            .
+          tar --warning=no-file-changed --exclude-vcs --exclude="$TAR" -czvf "$TAR" .
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -150,11 +147,10 @@ jobs:
         with:
           submodules: recursive
       - name: Setup EMSDK
-        uses: mymindstorm/setup-emsdk@v13
+        uses: mymindstorm/setup-emsdk@v14
         with:
           version: 3.1.53
           actions-cache-folder: "emsdk-cache"
-          cache: false  # disable shared runner cache to avoid key reservation conflicts
       - name: Install Dependencies
         run: |
           sudo apt-get update
