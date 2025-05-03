@@ -373,8 +373,9 @@ let values = meshValue.split(',').map(Number);
 console.log('Setting Mesh:', values[0], values[1]);
 Module.setMesh(values[0], values[1]);
 });
-
+setTimeout(function(){
 Module.startRender(window.innerHeight);
+},1500);
 
 //  const meshValue = document.querySelector('#meshSize').value;
     // Split the value into two numbers
