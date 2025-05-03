@@ -348,7 +348,6 @@ const songSrc=$sngs[randSong+5];
 document.querySelector('#track').src=songSrc;
 const sng=new BroadcastChannel('sng');
 sng.postMessage({data:songSrc});
-Module.startRender(window.innerHeight);
 };
 
 document.querySelector('#musicBtn').addEventListener('click',function(){
@@ -374,6 +373,8 @@ let values = meshValue.split(',').map(Number);
 console.log('Setting Mesh:', values[0], values[1]);
 Module.setMesh(values[0], values[1]);
 });
+
+Module.startRender(window.innerHeight);
 
 //  const meshValue = document.querySelector('#meshSize').value;
     // Split the value into two numbers
@@ -443,7 +444,6 @@ Module.setMesh(values[0], values[1]);
     projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, nullptr);
 
     printf("projectM initialized\n");
-
     return 0;
 }
 
