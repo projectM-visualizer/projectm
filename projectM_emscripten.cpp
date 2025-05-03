@@ -245,8 +245,8 @@ FS.mkdir('/presets');
 FS.mkdir('/textures');
 FS.mkdir('/snd');
 
-document.querySelector('#scanvas).height=size;
-document.querySelector('#scanvas).width=size;
+document.querySelector('#scanvas).height=window.innerHeight;
+document.querySelector('#scanvas).width=window.innerHeight;
 
 var $sngs=[];
 var $shds=[];
