@@ -4,11 +4,28 @@
 #include <emscripten/html5.h>
 #include <projectM-4/projectM.h>
 
-#include <GLES3/gl3.h>
+#include <emscripten/html5_webgl.h>
+
 #define GL_GLEXT_PROTOTYPES
+#define GL_FRAGMENT_PRECISION_HIGH
 #include <GL/gl.h>
 #include <GL/glext.h>
+#include <GLES3/gl31.h>
+// #include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include <GLES3/gl3.h>
 
+#define GL_CONTEXT_PROFILE_MASK 0x9126
+#define GL_CONTEXT_COMPATIBILITY_PROFILE_BIT 0x00000002
+#define GL_CONTEXT_CORE_PROFILE_BIT 0x00000001
+#define CONTEXT_FLAG_NO_ERROR_BIT_KHR 0x00000008
+
+#define GL_ANISOTROPIC_FILTER 0x3000
+#define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
+#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
+
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_audio.h>
 #include <cstdint>      // For int16_t, int32_t
@@ -194,6 +211,10 @@ return;
 }
 
 void renderLoop(){
+    
+// eglSwapBuffers(display,surface);
+    
+glClear(GL_COLOR_BUFFER_BIT);
 projectm_opengl_render_frame(pm);
 return;
 }
@@ -201,7 +222,7 @@ return;
 void start_render(int size){
 
 glClearColor(0.0, 0.0, 0.0, 1.0);
-glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 //    printf("Setting window size: %i\n", size);
 glViewport(0,0,size,size);  //  viewport/scissor after UsePrg runs at full resolution
 glEnable(GL_SCISSOR_TEST);
@@ -398,7 +419,83 @@ Module.startRender(window.innerHeight);
     webgl_attrs.depth = true;
     webgl_attrs.antialias = true;
     webgl_attrs.premultipliedAlpha = false;
-
+webgl_attrs.preserveDrawingBuffer=EM_FALSE;
+webgl_attrs.enableExtensionsByDefault=EM_FALSE;
+webgl_attrs.powerPreference=EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE;
+/*
+display=eglGetDisplay(EGL_DEFAULT_DISPLAY);
+PFNEGLGETCONFIGATTRIBPROC eglGetConfigAttribHI = reinterpret_cast<PFNEGLGETCONFIGATTRIBPROC>(eglGetProcAddress("eglGetConfigAttribHI"));
+eglInitialize(display,&major,&minor);
+eglGetConfigAttrib(display,eglconfig,EGL_SAMPLES,&numSamples);
+eglGetConfigAttrib(display,eglconfig,EGL_COVERAGE_BUFFERS_NV,&numSamplesNV);
+eglGetConfigAttrib(display,eglconfig,EGL_SAMPLE_BUFFERS,&numMBuffers);
+eglGetConfigAttrib(display,eglconfig,EGL_RED_SIZE,&numRed);
+eglGetConfigAttrib(display,eglconfig,EGL_GREEN_SIZE,&numGreen);
+eglGetConfigAttrib(display,eglconfig,EGL_BLUE_SIZE,&numBlue);
+eglGetConfigAttrib(display,eglconfig,EGL_ALPHA_SIZE,&numAlpha);
+eglGetConfigAttrib(display,eglconfig,EGL_DEPTH_SIZE,&numDepth);
+eglGetConfigAttrib(display,eglconfig,EGL_STENCIL_SIZE,&numStencil);
+eglGetConfigAttrib(display,eglconfig,EGL_BUFFER_SIZE,&numBuffer);
+eglGetConfigAttrib(display,eglconfig,EGL_COVERAGE_BUFFERS_NV,&numBuffersNV);
+eglGetConfigAttrib(display,eglconfig,EGL_GL_COLORSPACE,&colorSpace);
+eglGetConfigAttrib(display,eglconfig,EGL_COLOR_FORMAT_HI,&colorFormat);
+static EGLint ctx_att[]={
+EGL_CONTEXT_CLIENT_TYPE,EGL_OPENGL_ES_API,
+EGL_CONTEXT_CLIENT_VERSION,3,
+EGL_CONTEXT_MAJOR_VERSION_KHR,3,
+EGL_CONTEXT_MINOR_VERSION_KHR,0,
+// EGL_CONTEXT_FLAGS_KHR,EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR,
+EGL_CONTEXT_PRIORITY_LEVEL_IMG,EGL_CONTEXT_PRIORITY_REALTIME_NV,
+// EGL_CONTEXT_PRIORITY_LEVEL_IMG,EGL_CONTEXT_PRIORITY_HIGH_IMG,
+EGL_NONE
+};
+static EGLint att_lst2[]={ 
+EGL_GL_COLORSPACE_KHR,colorSpace,
+EGL_NONE
+};
+static EGLint att_lst[]={
+EGL_COLOR_COMPONENT_TYPE_EXT,EGL_COLOR_COMPONENT_TYPE_FLOAT_EXT,
+// EGL_COLOR_COMPONENT_TYPE_EXT,EGL_COLOR_COMPONENT_TYPE_FIXED_EXT,
+// EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR,EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR,
+EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR,EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT_KHR,
+EGL_RENDERABLE_TYPE,EGL_OPENGL_ES3_BIT,
+// EGL_RENDERABLE_TYPE,EGL_OPENGL_BIT,  // EGL 1.5 needed  (WASM cannot Window surface)
+// EGL_RENDERABLE_TYPE,EGL_NONE,
+// EGL_CONFORMANT,EGL_OPENGL_BIT,
+// EGL_CONFORMANT,EGL_NONE,
+//  EGL_CONFIG_CAVEAT,EGL_NONE,
+EGL_CONTEXT_OPENGL_ROBUST_ACCESS_EXT,EGL_TRUE,
+EGL_CONTEXT_OPENGL_NO_ERROR_KHR,EGL_TRUE,
+// EGL_DEPTH_ENCODING_NV,EGL_DEPTH_ENCODING_NONLINEAR_NV,
+// EGL_RENDER_BUFFER,EGL_TRIPLE_BUFFER_NV,
+EGL_RENDER_BUFFER,EGL_QUADRUPLE_BUFFER_NV, //   available in OpenGL
+// EGL_SURFACE_TYPE,EGL_MULTISAMPLE_RESOLVE_BOX_BIT,
+EGL_SURFACE_TYPE,EGL_SWAP_BEHAVIOR_PRESERVED_BIT|EGL_MULTISAMPLE_RESOLVE_BOX_BIT,
+EGL_MULTISAMPLE_RESOLVE,EGL_MULTISAMPLE_RESOLVE_BOX,
+//  EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE,EGL_TRUE, // EGL 1.5 "...the context will only support OpenGL ES 3.0 and later features."
+EGL_COLOR_FORMAT_HI,colorFormat, //  available in OpenGL
+// EGL_CONTEXT_OPENGL_RESET_NOTIFICATION_STRATEGY,EGL_NO_RESET_NOTIFICATION,
+// EGL_NATIVE_RENDERABLE,EGL_TRUE,
+EGL_COLOR_BUFFER_TYPE,EGL_RGB_BUFFER,
+EGL_LUMINANCE_SIZE,0, // available in OpenGL
+EGL_RED_SIZE,numRed,
+EGL_GREEN_SIZE,numGreen,
+EGL_BLUE_SIZE,numBlue,
+EGL_ALPHA_SIZE,numAlpha,
+EGL_DEPTH_SIZE,numDepth,
+EGL_STENCIL_SIZE,numStencil,
+EGL_BUFFER_SIZE,numBuffer,
+EGL_COVERAGE_BUFFERS_NV,numBuffersNV, // available in GLES 3.1
+EGL_COVERAGE_SAMPLES_NV,numSamplesNV,
+EGL_SAMPLE_BUFFERS,numMBuffers,
+EGL_SAMPLES,numSamples,
+EGL_NONE
+};
+eglChooseConfig(display,att_lst,&eglconfig,1,&config_size);
+ctxegl=eglCreateContext(display,eglconfig,EGL_NO_CONTEXT,ctx_att);
+surface=eglCreateWindowSurface(display,eglconfig,(NativeWindowType)0,att_lst2);
+eglBindAPI(EGL_OPENGL_ES_API);
+*/
     gl_ctx = emscripten_webgl_create_context("#scanvas", &webgl_attrs);
 
     if (!gl_ctx) {
@@ -407,7 +504,13 @@ Module.startRender(window.innerHeight);
     }
 
     EMSCRIPTEN_RESULT em_res = emscripten_webgl_make_context_current(gl_ctx);
-
+/*
+eglMakeCurrent(display,surface,surface,cntx.at(0,0));
+emscripten_webgl_make_context_current(gl_ctx);
+*/
+glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT,GL_NICEST);
+glHint(GL_GENERATE_MIPMAP_HINT,GL_NICEST);
+  
     if (em_res != EMSCRIPTEN_RESULT_SUCCESS) {
         fprintf(stderr, "Failed to activate the WebGL context for rendering\n");
         return 1;
@@ -427,6 +530,8 @@ Module.startRender(window.innerHeight);
     // so we have to enable the following WebGL extensions.
     emscripten_webgl_enable_extension(gl_ctx, "OES_texture_half_float");
     emscripten_webgl_enable_extension(gl_ctx, "OES_texture_half_float_linear");
+emscripten_webgl_enable_extension(gl_ctx,"EXT_color_buffer_float"); // GLES float
+emscripten_webgl_enable_extension(gl_ctx,"EXT_float_blend"); // GLES float
 
     pm = projectm_create();
 
