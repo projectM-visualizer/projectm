@@ -199,6 +199,10 @@ return;
 }
 
 void start_render(int size){
+EM_ASM({
+document.querySelector('#scanvas).height=size;
+document.querySelector('#scanvas).width=size;
+});
 glClearColor(0.0, 0.0, 0.0, 1.0);
 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 //    printf("Setting window size: %i\n", size);
