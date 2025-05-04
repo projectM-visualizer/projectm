@@ -388,12 +388,13 @@ getShader(milkSrc,'/presets/preset.milk');
 });
 
 document.querySelector('#meshSize').addEventListener('change', (event) => {
-let selectedValue = event.target.value;
+let meshValue = event.target.value;
     // Split the value into two numbers
 let values = meshValue.split(',').map(Number);
 console.log('Setting Mesh:', values[0], values[1]);
 Module.setMesh(values[0], values[1]);
 });
+
 setTimeout(function(){
 Module.startRender(window.innerHeight);
 },1500);
@@ -405,20 +406,19 @@ Module.startRender(window.innerHeight);
 // Module.setMesh(values[0], values[1]);
 });
 
-    if (pm) return 0;
+if (pm) return 0;
 
     // initialize WebGL context attributes
     // https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes
-    EmscriptenWebGLContextAttributes webgl_attrs;
-    emscripten_webgl_init_context_attributes(&webgl_attrs);
-    //webgl_attrs.alpha = false;
-    webgl_attrs.majorVersion = 2;
-    webgl_attrs.minorVersion = 0;
-    webgl_attrs.alpha = true;
-    webgl_attrs.stencil = true;
-    webgl_attrs.depth = true;
-    webgl_attrs.antialias = true;
-    webgl_attrs.premultipliedAlpha = false;
+EmscriptenWebGLContextAttributes webgl_attrs;
+emscripten_webgl_init_context_attributes(&webgl_attrs);
+webgl_attrs.majorVersion = 2;
+webgl_attrs.minorVersion = 0;
+webgl_attrs.alpha = true;
+webgl_attrs.stencil = true;
+webgl_attrs.depth = true;
+webgl_attrs.antialias = true;
+webgl_attrs.premultipliedAlpha = false;
 webgl_attrs.preserveDrawingBuffer=EM_FALSE;
 webgl_attrs.enableExtensionsByDefault=EM_FALSE;
 webgl_attrs.powerPreference=EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE;
@@ -496,14 +496,14 @@ ctxegl=eglCreateContext(display,eglconfig,EGL_NO_CONTEXT,ctx_att);
 surface=eglCreateWindowSurface(display,eglconfig,(NativeWindowType)0,att_lst2);
 eglBindAPI(EGL_OPENGL_ES_API);
 */
-    gl_ctx = emscripten_webgl_create_context("#scanvas", &webgl_attrs);
+gl_ctx = emscripten_webgl_create_context("#scanvas", &webgl_attrs);
 
-    if (!gl_ctx) {
-        fprintf(stderr, "Failed to create WebGL context\n");
-        return 1;
-    }
+if (!gl_ctx) {
+fprintf(stderr, "Failed to create WebGL context\n");
+return 1;
+}
 
-    EMSCRIPTEN_RESULT em_res = emscripten_webgl_make_context_current(gl_ctx);
+EMSCRIPTEN_RESULT em_res = emscripten_webgl_make_context_current(gl_ctx);
 /*
 eglMakeCurrent(display,surface,surface,cntx.at(0,0));
 emscripten_webgl_make_context_current(gl_ctx);
@@ -511,10 +511,10 @@ emscripten_webgl_make_context_current(gl_ctx);
 glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT,GL_NICEST);
 glHint(GL_GENERATE_MIPMAP_HINT,GL_NICEST);
   
-    if (em_res != EMSCRIPTEN_RESULT_SUCCESS) {
-        fprintf(stderr, "Failed to activate the WebGL context for rendering\n");
-        return 1;
-    }
+if (em_res != EMSCRIPTEN_RESULT_SUCCESS) {
+fprintf(stderr, "Failed to activate the WebGL context for rendering\n");
+return 1;
+}
 
     // These are probably redundant since all GL extensions are enabled by default
     // https://github.com/emscripten-core/emscripten/blob/1b01a9ef2b60184eb70616bbb294cf33d011bbb2/src/settings.js#L481
@@ -533,24 +533,24 @@ glHint(GL_GENERATE_MIPMAP_HINT,GL_NICEST);
 emscripten_webgl_enable_extension(gl_ctx,"EXT_color_buffer_float"); // GLES float
 emscripten_webgl_enable_extension(gl_ctx,"EXT_float_blend"); // GLES float
 
-    pm = projectm_create();
+pm = projectm_create();
 
-    if (!pm) {
-        fprintf(stderr, "Failed to create projectM handle\n");
-        return 1;
-    }
+if (!pm) {
+fprintf(stderr, "Failed to create projectM handle\n");
+return 1;
+}
 
     // configure projectM
 
-    const char* texture_search_paths[] = {"textures"};
-    projectm_set_texture_search_paths(pm, texture_search_paths, 1);
+const char* texture_search_paths[] = {"textures"};
+projectm_set_texture_search_paths(pm, texture_search_paths, 1);
 
-    projectm_set_fps(pm, 60);
-    projectm_set_soft_cut_duration(pm, 5);
-    projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, nullptr);
+projectm_set_fps(pm, 60);
+projectm_set_soft_cut_duration(pm, 5);
+projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, nullptr);
 
-    printf("projectM initialized\n");
-    return 0;
+printf("projectM initialized\n");
+return 0;
 }
 
 void set_mesh(int w,int h){
@@ -559,48 +559,46 @@ return;
 }
 
 void destruct() {
-    if (pm) projectm_destroy(pm);
-    pm = NULL;
+if (pm) projectm_destroy(pm);
+pm = NULL;
 
-    if (gl_ctx) emscripten_webgl_destroy_context(gl_ctx);
-    gl_ctx = NULL;
+if (gl_ctx) emscripten_webgl_destroy_context(gl_ctx);
+gl_ctx = NULL;
 }
 
 void load_preset_file(std::string filename) {
-    if (!pm) return;
+if (!pm) return;
     // XXX: smooth_transition true does not work
     //projectm_load_preset_file(pm, filename.c_str(), true);
-    projectm_load_preset_file(pm, filename.c_str(), false);
+projectm_load_preset_file(pm, filename.c_str(), false);
 }
 
 void render_frame() {
-    if (!pm) return;
-    projectm_opengl_render_frame(pm);
+if (!pm) return;
+projectm_opengl_render_frame(pm);
 }
 
 void set_window_size(int width, int height) {
-    if (!pm) return;
-    glViewport(0,0,height,height);  //  viewport/scissor after UsePrg runs at full resolution
+if (!pm) return;
+glViewport(0,0,height,height);  //  viewport/scissor after UsePrg runs at full resolution
    // glEnable(GL_SCISSOR_TEST);
    // glScissor(0,0,height,height);
-    projectm_set_window_size(pm, height, height);
+projectm_set_window_size(pm, height, height);
 }
 
 // https://emscripten.org/docs/api_reference/bind.h.html#_CPPv419EMSCRIPTEN_BINDINGS4name
 // https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html
 EMSCRIPTEN_BINDINGS(projectm_bindings) {
-    function("destruct", &destruct);
-    function("init", &init);
-    function("loadPresetFile", &load_preset_file);
-    function("renderFrame", &render_frame);
-    function("startRender", &start_render);
-    function("setWindowSize", &set_window_size);
-    function("setMesh", &set_mesh);
+function("destruct", &destruct);
+function("init", &init);
+function("loadPresetFile", &load_preset_file);
+function("renderFrame", &render_frame);
+function("startRender", &start_render);
+function("setWindowSize", &set_window_size);
+function("setMesh", &set_mesh);
 }
 
 int main(){
 init();
-// sleep(4);
-// load_preset_file("/presets/preset.milk"); 
 return 1;
 }
