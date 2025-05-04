@@ -233,14 +233,15 @@ return;
 }
 
 void renderLoop(){
-// eglSwapBuffers(display,surface);
+glClearColor( 1.0, 1.0, 1.0, 0.0 );
 glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 projectm_opengl_render_frame(pm);
+eglSwapBuffers(display,surface);
 return;
 }
 
 void start_render(int size){
-glClearColor(0.0, 0.0, 0.0, 0.0);
+glClearColor( 1.0, 1.0, 1.0, 0.0 );
 glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 //    printf("Setting window size: %i\n", size);
 glViewport(0,0,size,size);  //  viewport/scissor after UsePrg runs at full resolution
@@ -479,7 +480,7 @@ static EGLint att_lst[]={
 EGL_COLOR_COMPONENT_TYPE_EXT,EGL_COLOR_COMPONENT_TYPE_FLOAT_EXT,
 // EGL_COLOR_COMPONENT_TYPE_EXT,EGL_COLOR_COMPONENT_TYPE_FIXED_EXT,
 // EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR,EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR,
-EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR,EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT_KHR,
+// EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR,EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT_KHR,
 EGL_RENDERABLE_TYPE,EGL_OPENGL_ES3_BIT,
 // EGL_RENDERABLE_TYPE,EGL_OPENGL_BIT,  // EGL 1.5 needed  (WASM cannot Window surface)
 // EGL_RENDERABLE_TYPE,EGL_NONE,
@@ -516,7 +517,8 @@ EGL_NONE
 eglChooseConfig(display,att_lst,&eglconfig,1,&config_size);
 ctxegl=eglCreateContext(display,eglconfig,EGL_NO_CONTEXT,ctx_att);
 surface=eglCreateWindowSurface(display,eglconfig,(NativeWindowType)0,att_lst2);
-eglBindAPI(EGL_OPENGL_ES_API);
+// eglBindAPI(EGL_OPENGL_ES_API);
+eglBindAPI(EGL_OPENGL_API);
 
 gl_ctx = emscripten_webgl_create_context("#mcanvas", &webgl_attrs);
 
