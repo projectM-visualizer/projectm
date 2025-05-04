@@ -288,6 +288,8 @@ FS.mkdir('/snd');
 
 document.querySelector('#scanvas').height=window.innerHeight;
 document.querySelector('#scanvas').width=window.innerHeight;
+document.querySelector('#mcanvas').height=window.innerHeight;
+document.querySelector('#mcanvas').width=window.innerHeight;
 
 var $sngs=[];
 var $shds=[];
@@ -515,7 +517,7 @@ ctxegl=eglCreateContext(display,eglconfig,EGL_NO_CONTEXT,ctx_att);
 surface=eglCreateWindowSurface(display,eglconfig,(NativeWindowType)0,att_lst2);
 eglBindAPI(EGL_OPENGL_ES_API);
 
-gl_ctx = emscripten_webgl_create_context("#scanvas", &webgl_attrs);
+gl_ctx = emscripten_webgl_create_context("#mcanvas", &webgl_attrs);
 
 if (!gl_ctx) {
 fprintf(stderr, "Failed to create WebGL context\n");
