@@ -37,8 +37,8 @@ using namespace emscripten;
 
 EGLDisplay display;
 EGLSurface surface;
-EGLContext contextegl;
 EGLConfig eglconfig=NULL;
+EGLContext ctxegl;
 
 EGLint config_size,major,minor,atb_pos;
 
@@ -524,7 +524,7 @@ return 1;
 
 EMSCRIPTEN_RESULT em_res = emscripten_webgl_make_context_current(gl_ctx);
 
-eglMakeCurrent(display,surface,surface,cntx.at(0,0));
+eglMakeCurrent(display,surface,surface,ctxegl);
 emscripten_webgl_make_context_current(gl_ctx);
 
 glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT,GL_NICEST);
