@@ -233,17 +233,18 @@ return;
 }
 
 void renderLoop(){
-glClearColor( 1.0, 1.0, 1.0, 0.0 );
-glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+// glClearColor( 1.0, 1.0, 1.0, 0.0 );
+// glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 projectm_opengl_render_frame(pm);
 eglSwapBuffers(display,surface);
 return;
 }
 
 void start_render(int size){
-glClearColor( 1.0, 1.0, 1.0, 0.0 );
+glClearColor( 1.0, 1.0, 1.0, 1.0 );
 glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 //    printf("Setting window size: %i\n", size);
+glViewport(0,0,8192,8192);  //  viewport/scissor after UsePrg runs at full resolution
 glViewport(0,0,size,size);  //  viewport/scissor after UsePrg runs at full resolution
 glEnable(GL_SCISSOR_TEST);
 glScissor(0,0,size,size);
