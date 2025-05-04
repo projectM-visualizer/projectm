@@ -226,7 +226,7 @@ SDL_strlcpy(flnm,"/snd/sample.wav",sizeof(flnm));
 if(SDL_LoadWAV(flnm,&wave.spec,&wave.snd,&wave.slen)==NULL){
 qu(1);
 }
-wave.spec.samples = 1024; // Try 2048 or 4096
+wave.spec.samples = 256; // Try 2048 or 4096
 wave.pos=0;
 wave.spec.callback=bfr;
 opn_aud();
