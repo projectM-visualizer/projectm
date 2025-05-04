@@ -281,6 +281,29 @@ projectm_pcm_add_uint8(pm, data, len, PROJECTM_MONO);
 
 }
 
+EM_JS(void,getShader,(),{
+var pth=document.querySelector('#milkPath').innerHTML;
+const ff=new XMLHttpRequest();
+ff.open('GET',pth,true);
+ff.responseType='arraybuffer';
+document.querySelector('#stat').innerHTML='Downloading Shader';
+document.querySelector('#stat').style.backgroundColor='yellow';
+ff.addEventListener("load",function(){
+let sarrayBuffer=ff.response;
+if(sarrayBuffer){
+let sfil=new Uint8ClampedArray(sarrayBuffer);
+FS.writeFile("/presets/preset.milk",sfil);
+console.log('got preset: '+pth);
+setTimeout(function(){
+Module.loadPresetFile("/presets/preset.milk"); 
+document.querySelector('#stat').innerHTML='Downloaded Shader';
+document.querySelector('#stat').style.backgroundColor='blue';
+},500);
+}
+});
+ff.send(null);
+});
+
 int init() {
 
 EM_ASM({
@@ -360,6 +383,7 @@ const shutDown=new BroadcastChannel('shutDown');
 shutDown.postMessage({data:222});
 });
 
+/*
 function getShader(pth,fname){
 const ff=new XMLHttpRequest();
 ff.open('GET',pth,true);
@@ -379,9 +403,10 @@ document.querySelector('#stat').style.backgroundColor='blue';
 });
 ff.send(null);
 }
+*/
 
 var pth=document.querySelector('#milkPath').innerHTML;
-getShader(pth,'/presets/preset.milk');
+Module.getShader();
 
 scanSongs();
 scanShaders();
@@ -407,7 +432,7 @@ const randShd=Math.floor(($shds[0]-5)*Math.random());
 const milkSrc=$shds[randShd+5];
 console.log('Got shader: '+milkSrc);
 document.querySelector('#milkPath').innerHTML=milkSrc;
-getShader(milkSrc,'/presets/preset.milk');
+Module.getShader();
 });
 
 document.querySelector('#meshSize').addEventListener('change', (event) => {
@@ -442,10 +467,9 @@ webgl_attrs.stencil = EM_TRUE;
 webgl_attrs.depth = EM_TRUE;
 webgl_attrs.antialias = EM_TRUE;
 webgl_attrs.premultipliedAlpha=EM_TRUE;
-webgl_attrs.preserveDrawingBuffer=EM_TRUE;
+webgl_attrs.preserveDrawingBuffer=EM_FALSE;
 webgl_attrs.enableExtensionsByDefault=EM_TRUE;
 webgl_attrs.powerPreference=EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE;
-
 display=eglGetDisplay(EGL_DEFAULT_DISPLAY);
 PFNEGLGETCONFIGATTRIBPROC eglGetConfigAttribHI = reinterpret_cast<PFNEGLGETCONFIGATTRIBPROC>(eglGetProcAddress("eglGetConfigAttribHI"));
 eglInitialize(display,&major,&minor);
@@ -473,10 +497,12 @@ EGL_CONTEXT_PRIORITY_LEVEL_IMG,EGL_CONTEXT_PRIORITY_REALTIME_NV,
 // EGL_CONTEXT_PRIORITY_LEVEL_IMG,EGL_CONTEXT_PRIORITY_HIGH_IMG,
 EGL_NONE
 };
+
 static EGLint att_lst2[]={ 
 EGL_GL_COLORSPACE_KHR,colorSpace,
 EGL_NONE
 };
+
 static EGLint att_lst[]={
 EGL_COLOR_COMPONENT_TYPE_EXT,EGL_COLOR_COMPONENT_TYPE_FLOAT_EXT,
 // EGL_COLOR_COMPONENT_TYPE_EXT,EGL_COLOR_COMPONENT_TYPE_FIXED_EXT,
@@ -515,6 +541,7 @@ EGL_SAMPLE_BUFFERS,numMBuffers,
 EGL_SAMPLES,numSamples,
 EGL_NONE
 };
+
 eglChooseConfig(display,att_lst,&eglconfig,1,&config_size);
 ctxegl=eglCreateContext(display,eglconfig,EGL_NO_CONTEXT,ctx_att);
 surface=eglCreateWindowSurface(display,eglconfig,(NativeWindowType)0,att_lst2);
@@ -566,14 +593,11 @@ return 1;
 }
 
     // configure projectM
-
 const char* texture_search_paths[] = {"textures"};
 projectm_set_texture_search_paths(pm, texture_search_paths, 1);
-
 projectm_set_fps(pm, 60);
 projectm_set_soft_cut_duration(pm, 5);
 projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, nullptr);
-
 printf("projectM initialized\n");
 return 0;
 }
@@ -621,6 +645,7 @@ function("renderFrame", &render_frame);
 function("startRender", &start_render);
 function("setWindowSize", &set_window_size);
 function("setMesh", &set_mesh);
+function("getShader", &getShader);
 }
 
 int main(){
