@@ -234,7 +234,7 @@ return;
 
 void renderLoop(){
 // eglSwapBuffers(display,surface);
-// glClear(GL_COLOR_BUFFER_BIT);
+glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 projectm_opengl_render_frame(pm);
 return;
 }
@@ -435,13 +435,13 @@ EmscriptenWebGLContextAttributes webgl_attrs;
 emscripten_webgl_init_context_attributes(&webgl_attrs);
 webgl_attrs.majorVersion = 2;
 webgl_attrs.minorVersion = 0;
-webgl_attrs.alpha = true;
-webgl_attrs.stencil = true;
-webgl_attrs.depth = true;
-webgl_attrs.antialias = true;
-webgl_attrs.premultipliedAlpha = false;
-webgl_attrs.preserveDrawingBuffer=EM_FALSE;
-webgl_attrs.enableExtensionsByDefault=EM_FALSE;
+webgl_attrs.alpha = EM_TRUE;
+webgl_attrs.stencil = EM_TRUE;
+webgl_attrs.depth = EM_TRUE;
+webgl_attrs.antialias = EM_TRUE;
+webgl_attrs.premultipliedAlpha=EM_TRUE;
+webgl_attrs.preserveDrawingBuffer=EM_TRUE;
+webgl_attrs.enableExtensionsByDefault=EM_TRUE;
 webgl_attrs.powerPreference=EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE;
 
 display=eglGetDisplay(EGL_DEFAULT_DISPLAY);
@@ -460,6 +460,7 @@ eglGetConfigAttrib(display,eglconfig,EGL_BUFFER_SIZE,&numBuffer);
 eglGetConfigAttrib(display,eglconfig,EGL_COVERAGE_BUFFERS_NV,&numBuffersNV);
 eglGetConfigAttrib(display,eglconfig,EGL_GL_COLORSPACE,&colorSpace);
 eglGetConfigAttrib(display,eglconfig,EGL_COLOR_FORMAT_HI,&colorFormat);
+
 static EGLint ctx_att[]={
 EGL_CONTEXT_CLIENT_TYPE,EGL_OPENGL_ES_API,
 EGL_CONTEXT_CLIENT_VERSION,3,
