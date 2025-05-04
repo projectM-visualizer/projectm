@@ -233,8 +233,8 @@ glDisable(GL_DITHER);
 glFrontFace(GL_CW);
 glCullFace(GL_BACK);
 projectm_set_window_size(pm,size,size);
-emscripten_set_main_loop_timing(2,1);
 emscripten_set_main_loop((void (*)())renderLoop,0,0);
+emscripten_set_main_loop_timing(2,1);
 }
 
 void _on_preset_switch_failed(const char *preset_filename, const char *message, void *user_data) {
