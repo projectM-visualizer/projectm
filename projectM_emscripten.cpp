@@ -34,6 +34,28 @@
 #include <cmath>        // For std::max (optional, can use INT32_MAX directly)
 
 using namespace emscripten;
+
+EGLDisplay display;
+EGLSurface surface;
+EGLContext contextegl;
+EGLConfig eglconfig=NULL;
+
+EGLint config_size,major,minor,atb_pos;
+
+EGLint numSamples;
+EGLint numSamplesNV;
+EGLint numBuffersNV;
+EGLint numGreen;
+EGLint numRed;
+EGLint numBlue;
+EGLint numAlpha;
+EGLint numDepth;
+EGLint numStencil;
+EGLint numBuffer;
+EGLint numMBuffers;
+EGLint colorSpace;
+EGLint colorFormat;
+
 EMSCRIPTEN_WEBGL_CONTEXT_HANDLE gl_ctx;
 projectm_handle pm;
 SDL_AudioDeviceID dev;
@@ -211,16 +233,13 @@ return;
 }
 
 void renderLoop(){
-    
 // eglSwapBuffers(display,surface);
-    
-glClear(GL_COLOR_BUFFER_BIT);
+// glClear(GL_COLOR_BUFFER_BIT);
 projectm_opengl_render_frame(pm);
 return;
 }
 
 void start_render(int size){
-
 glClearColor(0.0, 0.0, 0.0, 1.0);
 glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 //    printf("Setting window size: %i\n", size);
@@ -422,7 +441,7 @@ webgl_attrs.premultipliedAlpha = false;
 webgl_attrs.preserveDrawingBuffer=EM_FALSE;
 webgl_attrs.enableExtensionsByDefault=EM_FALSE;
 webgl_attrs.powerPreference=EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE;
-/*
+
 display=eglGetDisplay(EGL_DEFAULT_DISPLAY);
 PFNEGLGETCONFIGATTRIBPROC eglGetConfigAttribHI = reinterpret_cast<PFNEGLGETCONFIGATTRIBPROC>(eglGetProcAddress("eglGetConfigAttribHI"));
 eglInitialize(display,&major,&minor);
@@ -495,7 +514,7 @@ eglChooseConfig(display,att_lst,&eglconfig,1,&config_size);
 ctxegl=eglCreateContext(display,eglconfig,EGL_NO_CONTEXT,ctx_att);
 surface=eglCreateWindowSurface(display,eglconfig,(NativeWindowType)0,att_lst2);
 eglBindAPI(EGL_OPENGL_ES_API);
-*/
+
 gl_ctx = emscripten_webgl_create_context("#scanvas", &webgl_attrs);
 
 if (!gl_ctx) {
@@ -504,10 +523,10 @@ return 1;
 }
 
 EMSCRIPTEN_RESULT em_res = emscripten_webgl_make_context_current(gl_ctx);
-/*
+
 eglMakeCurrent(display,surface,surface,cntx.at(0,0));
 emscripten_webgl_make_context_current(gl_ctx);
-*/
+
 glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT,GL_NICEST);
 glHint(GL_GENERATE_MIPMAP_HINT,GL_NICEST);
   
@@ -523,13 +542,13 @@ return 1;
     // enable floating-point texture support for motion vector grid
     // https://github.com/projectM-visualizer/projectm/blob/master/docs/emscripten.rst#initializing-emscriptens-opengl-context
     // https://emscripten.org/docs/api_reference/html5.h.html#c.emscripten_webgl_enable_extension
-    emscripten_webgl_enable_extension(gl_ctx, "OES_texture_float");
+emscripten_webgl_enable_extension(gl_ctx, "OES_texture_float");
     // projectM uses half-float textures for the motion vector grid to store
     // the displacement of the previous frame's warp mesh. WebGL 2.0 sadly
     // doesn't support this texture format by default (while OpenGL ES 3 does)
     // so we have to enable the following WebGL extensions.
-    emscripten_webgl_enable_extension(gl_ctx, "OES_texture_half_float");
-    emscripten_webgl_enable_extension(gl_ctx, "OES_texture_half_float_linear");
+emscripten_webgl_enable_extension(gl_ctx, "OES_texture_half_float");
+emscripten_webgl_enable_extension(gl_ctx, "OES_texture_half_float_linear");
 emscripten_webgl_enable_extension(gl_ctx,"EXT_color_buffer_float"); // GLES float
 emscripten_webgl_enable_extension(gl_ctx,"EXT_float_blend"); // GLES float
 
