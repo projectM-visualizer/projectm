@@ -352,6 +352,7 @@ const preList=htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
 $texs[0]=preList.length;
 for(var i=1;i<preList.length;i++){
 var txxt=preList[i].href;
+console.log('scanned to be: '+txxt);
 let pathName = 'https://noahcohn.com/textures';
 let currentOrigin = window.location.origin; 
 let lastSlashIndex = pathName.lastIndexOf('/');
