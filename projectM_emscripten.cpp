@@ -282,6 +282,31 @@ projectm_pcm_add_uint8(pm, data, len, PROJECTM_MONO);
 
 }
 
+
+EM_JS(void,getTexture,(),{
+var pth=document.querySelector('#milkPath').innerHTML;
+const ff=new XMLHttpRequest();
+ff.open('GET',pth,true);
+ff.responseType='arraybuffer';
+document.querySelector('#stat').innerHTML='Downloading Shader';
+document.querySelector('#stat').style.backgroundColor='yellow';
+ff.addEventListener("load",function(){
+let sarrayBuffer=ff.response;
+if(sarrayBuffer){
+let sfil=new Uint8ClampedArray(sarrayBuffer);
+FS.writeFile("/presets/preset.milk",sfil);
+console.log('got preset: '+pth);
+setTimeout(function(){
+Module.loadPresetFile("/presets/preset.milk"); 
+document.querySelector('#stat').innerHTML='Downloaded Shader';
+document.querySelector('#stat').style.backgroundColor='blue';
+},500);
+}
+});
+ff.send(null);
+});
+
+
 EM_JS(void,getShader,(),{
 var pth=document.querySelector('#milkPath').innerHTML;
 const ff=new XMLHttpRequest();
@@ -306,7 +331,6 @@ ff.send(null);
 });
 
 int init() {
-
 EM_ASM({
 FS.mkdir('/presets');
 FS.mkdir('/textures');
@@ -319,6 +343,50 @@ document.querySelector('#mcanvas').width=window.innerHeight;
 
 var $sngs=[];
 var $shds=[];
+var $texs=[];
+
+function textures(xml){
+const nparser=new DOMParser();
+const htmlDocs=nparser.parseFromString(xml.responseText,'text/html');
+const preList=htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
+$texs[0]=preList.length;
+for(var i=1;i<preList.length;i++){
+var txxt=preList[i].href;
+let pathName = 'https://noahcohn.com/textures';
+let currentOrigin = window.location.origin; 
+let lastSlashIndex = pathName.lastIndexOf('/');
+let basePath = pathName.substring(0, lastSlashIndex);
+txxt=txxt.replace(currentOrigin,'');
+$texs[i]=basePath+'/textures'+txxt;
+const ff=new XMLHttpRequest();
+ff.open('GET',$texs[i],true);
+ff.responseType='arraybuffer';
+document.querySelector('#stat').innerHTML='Downloading Texture';
+document.querySelector('#stat').style.backgroundColor='yellow';
+ff.addEventListener("load",function(){
+let sarrayBuffer=ff.response;
+if(sarrayBuffer){
+let sfil=new Uint8ClampedArray(sarrayBuffer);
+FS.writeFile("/textures/"+txxt,sfil);
+console.log('got texture: '+$texs[i]);
+setTimeout(function(){
+document.querySelector('#stat').innerHTML='Downloaded Texture';
+document.querySelector('#stat').style.backgroundColor='blue';
+},500);
+}
+});
+ff.send(null);
+}};
+
+function scanTextures(){
+const nxhttp=new XMLHttpRequest();
+nxhttp.onreadystatechange=function(){
+if(this.readyState==4&&this.status==200){
+textures(this);
+}};
+nxhttp.open('GET','./textures/',true);
+nxhttp.send();
+}
 
 function shds(xml){
 const nparser=new DOMParser();
@@ -411,6 +479,7 @@ Module.getShader();
 
 scanSongs();
 scanShaders();
+scanTextures();
 
 function snd(){
 const randSong=Math.floor(($sngs[0]-5)*Math.random());
