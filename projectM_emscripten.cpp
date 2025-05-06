@@ -368,7 +368,7 @@ let sarrayBuffer=ff.response;
 if(sarrayBuffer){
 let sfil=new Uint8ClampedArray(sarrayBuffer);
 FS.writeFile("/textures/"+txxt,sfil);
-console.log('got texture: '+$texs[i]);
+console.log('got texture: '+txxt+' / '+$texs[i]);
 setTimeout(function(){
 document.querySelector('#stat').innerHTML='Downloaded Texture';
 document.querySelector('#stat').style.backgroundColor='blue';
