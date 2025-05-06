@@ -359,6 +359,7 @@ function scanTextures(){
 const nxhttp=new XMLHttpRequest();
 nxhttp.onreadystatechange=function(){
 if(this.readyState==4&&this.status==200){
+console.log('scanning textures.');
 textures(this);
 }};
 nxhttp.open('GET','./textures/',true);
