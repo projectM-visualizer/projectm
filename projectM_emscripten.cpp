@@ -283,30 +283,6 @@ projectm_pcm_add_uint8(pm, data, len, PROJECTM_MONO);
 }
 
 
-EM_JS(void,getTexture,(),{
-var pth=document.querySelector('#milkPath').innerHTML;
-const ff=new XMLHttpRequest();
-ff.open('GET',pth,true);
-ff.responseType='arraybuffer';
-document.querySelector('#stat').innerHTML='Downloading Shader';
-document.querySelector('#stat').style.backgroundColor='yellow';
-ff.addEventListener("load",function(){
-let sarrayBuffer=ff.response;
-if(sarrayBuffer){
-let sfil=new Uint8ClampedArray(sarrayBuffer);
-FS.writeFile("/presets/preset.milk",sfil);
-console.log('got preset: '+pth);
-setTimeout(function(){
-Module.loadPresetFile("/presets/preset.milk"); 
-document.querySelector('#stat').innerHTML='Downloaded Shader';
-document.querySelector('#stat').style.backgroundColor='blue';
-},500);
-}
-});
-ff.send(null);
-});
-
-
 EM_JS(void,getShader,(),{
 var pth=document.querySelector('#milkPath').innerHTML;
 const ff=new XMLHttpRequest();
@@ -350,9 +326,9 @@ const nparser=new DOMParser();
 const htmlDocs=nparser.parseFromString(xml.responseText,'text/html');
 const preList=htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
 $texs[0]=preList.length;
+console.log('scanned: '+$texs[0]+' textures.');
 for(var i=1;i<preList.length;i++){
 var txxt=preList[i].href;
-console.log('scanned to be: '+txxt);
 let pathName = 'https://noahcohn.com/textures';
 let currentOrigin = window.location.origin; 
 let lastSlashIndex = pathName.lastIndexOf('/');
