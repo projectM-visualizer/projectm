@@ -3,16 +3,15 @@
 #include "PerFrameContext.hpp"
 #include "PresetState.hpp"
 
-#include "Renderer/RenderItem.hpp"
+#include <Renderer/Backend/OpenGL/OpenGLRenderItem.hpp>
 
 namespace libprojectM {
 namespace MilkdropPreset {
 
-
 /**
  * @brief Renders a border around the screen.
  */
-class Border : public Renderer::RenderItem
+class Border : public libprojectM::Renderer::Backend::OpenGL::OpenGLRenderItem
 {
 public:
     Border() = delete;

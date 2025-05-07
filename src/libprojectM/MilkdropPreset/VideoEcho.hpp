@@ -5,7 +5,7 @@
 
 #include <projectM-opengl.h>
 
-#include <Renderer/RenderItem.hpp>
+#include <Renderer/Backend/OpenGL/OpenGLRenderItem.hpp>
 
 namespace libprojectM {
 namespace MilkdropPreset {
@@ -13,15 +13,15 @@ namespace MilkdropPreset {
 /**
  * @brief Renders a video "echo" (ghost image) effect and gamma adjustments.
  */
-class VideoEcho: public Renderer::RenderItem
+class VideoEcho : public libprojectM::Renderer::Backend::OpenGL::OpenGLRenderItem
 {
 public:
-	VideoEcho() = delete;
+    VideoEcho() = delete;
     explicit VideoEcho(const PresetState& presetState);
 
     void InitVertexAttrib() override;
 
-	void Draw();
+    void Draw();
 
 private:
     void DrawVideoEcho();
