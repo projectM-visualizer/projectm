@@ -41,12 +41,13 @@ developers.
   a [development preview](https://github.com/kblaschke/frontend-sdl2/releases/tag/2.0-windows-pre1))
 - [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/) (Same as standalone development
   preview)
-- [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN) (Old 3.1.12 release )
+- [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN) (Old 3.1.12 release)
 
 #### macOS
 
-- Standalone (currently only available as
-  a [development preview](https://github.com/kblaschke/frontend-sdl2/releases/tag/2.0-macos-pre1))
+- Standalone
+  - [C++ app development preview](https://github.com/kblaschke/frontend-sdl2/releases/tag/2.0-macos-pre1)
+  - [Rust app development preview (signed)](https://github.com/projectM-visualizer/frontend-sdl-rust/releases/tag/v0.1.0)
 - [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/) (Old 3.1.12 release)
 - Music.app Plugin  (currently only available as an
   _unsigned_ [development preview](https://github.com/kblaschke/frontend-music-plug-in/releases/tag/v3.0-pre1))
@@ -80,6 +81,7 @@ Store. Any bug reports in the projectM issue tracker regarding the apps will be 
 Source code and other resources, mostly aimed at developers.
 
 - [Library source code](https://github.com/projectM-visualizer/projectm/) (this repository)
+- [GStreamer plugin](https://github.com/projectM-visualizer/gst-projectm/)
 - [Qt5](https://www.qt.io/) based [PulseAudio](https://www.freedesktop.org/wiki/Software/PulseAudio/) and JACK desktop
   apps [as source code for Linux](https://github.com/projectM-visualizer/frontend-qt), currently broken and needs some
   updating (help wanted!).
@@ -88,11 +90,13 @@ Source code and other resources, mostly aimed at developers.
 
 ### Discord chat
 
-[Chat with us on Discord!](https://discord.gg/mMrxAqaa3W)
+🗨️ [Chat with us on Discord!](https://discord.gg/mMrxAqaa3W)
 
-### Demo Video
+### Click For Demo Videos
 
-[![](http://img.youtube.com/vi/2dSam8zwSFw/0.jpg)](http://www.youtube.com/watch?v=2dSam8zwSFw "Demo")
+<a href="https://www.youtube.com/watch?v=jJmLQGhYWys&list=PLFLkbObX4o6TK1jGL6pm1wMwvq2FXnpYJ">
+  <img src="https://i3.ytimg.com/vi/QlfqpVvo4zM/maxresdefault.jpg" width="800" alt="4k ProjectM render demo playlist" />
+</a>
 
 ### Presets
 
@@ -176,11 +180,11 @@ the [projectM organization's repositories](https://github.com/projectM-visualize
 
 ---
 
-# Todo
+# See Also
 
-- Improve projectM using the recently-released Milkdrop source (WIP).
-- Update the various implementations using libprojectM.
-- Update downstream projects with new versions.
+- [GStreamer plugin for offline rendering](https://github.com/projectM-visualizer/gst-projectm/)
+- [ProjectM Rust Crate](https://crates.io/crates/projectm)
+- [Milkdrop evaluation library](https://github.com/projectM-visualizer/projectm-eval)
 
 ---
 
@@ -202,7 +206,7 @@ and findings to the existing issue instead of opening a new ticket.
 
 ## Get in contact with us
 
-[Chat with us on Discord.](https://discord.gg/mMrxAqaa3W)
+🗨️ [Chat with us on Discord.](https://discord.gg/mMrxAqaa3W)
 
 ## Contribute to projectM
 
@@ -212,6 +216,8 @@ please let us know! We gladly accept pull requests and issues.
 Before starting to write code, please take your time to read
 the [contribution guidelines](https://github.com/projectM-visualizer/projectm/wiki#contributing-to-projectm) in our
 wiki.
+
+Come talk to the dev team on Discord.
 
 ## Package Maintainers
 
