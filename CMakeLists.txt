@@ -131,6 +131,8 @@ if(ENABLE_EMSCRIPTEN)
     add_compile_options(
             "SHELL:-s USE_SDL=2"
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
+            "SHELL:-msimd128 -mavx2"
+            "SHELL:-mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -mextended-const -fno-strict-aliasing -fno-math-errno"
             )
 
     add_link_options(
@@ -141,11 +143,17 @@ if(ENABLE_EMSCRIPTEN)
             "SHELL:-s FULL_ES3=1"
             "SHELL:-s ALLOW_MEMORY_GROWTH=1"
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
+            "SHELL:-msimd128 -mavx2"
+            "SHELL:-mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -mextended-const -fno-strict-aliasing"
+            "SHELL:--typed-function-references --enable-reference-types -fno-math-errno"
+            "SHELL:-sTRUSTED_TYPES=1"
+            "SHELL:-sWASM_LEGACY_EXCEPTIONS=0"
+            "SHELL:-sINITIAL_MEMORY=1024mb"
             )
 
     if(USE_PTHREADS)
-        add_compile_options("SHELL:-s USE_PTHREADS=1")
-        add_link_options("SHELL:-s USE_PTHREADS=1")
+        add_compile_options("SHELL:-s USE_PTHREADS=1 -pthread -openmp-simd")
+        add_link_options("SHELL:-s USE_PTHREADS=1 -pthread -openmp-simd")
     endif()
 
     set(USE_GLES ON)
