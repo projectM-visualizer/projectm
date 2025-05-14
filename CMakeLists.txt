@@ -140,7 +140,7 @@ if(ENABLE_EMSCRIPTEN)
             "SHELL:-s MAX_WEBGL_VERSION=2"
             "SHELL:-s FULL_ES2=1"
             "SHELL:-s FULL_ES3=1"
-            "SHELL:-s ALLOW_MEMORY_GROWTH=1"
+            "SHELL:-s ALLOW_MEMORY_GROWTH=0"
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
             "SHELL:-mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing"
             "SHELL:--typed-function-references --enable-reference-types -fno-math-errno"
