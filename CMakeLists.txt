@@ -143,7 +143,7 @@ if(ENABLE_EMSCRIPTEN)
             "SHELL:-s FULL_ES3=1"
             "SHELL:-s ALLOW_MEMORY_GROWTH=1"
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
-            "SHELL:-msimd128 -mavx2"
+            "SHELL:--enable-simd -msimd128 -msse -msse2 -msse3 -mssse3 -msse4 -msse4.1 -msse4.2 -mavx -mavx2"
             "SHELL:-mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -mextended-const -fno-strict-aliasing"
             "SHELL:--typed-function-references --enable-reference-types -fno-math-errno"
             "SHELL:-sTRUSTED_TYPES=1"
