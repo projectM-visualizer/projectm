@@ -20,6 +20,9 @@
  */
 #pragma once
 
+#include <wasm_simd128.h>
+#include <immintrin.h> 
+
 #include <projectM-4/projectM_export.h>
 
 #include <Renderer/RenderContext.hpp>
