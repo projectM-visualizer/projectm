@@ -644,7 +644,7 @@ return 1;
 const char* texture_search_paths[] = {"textures"};
 projectm_set_texture_search_paths(pm, texture_search_paths, 1);
 projectm_set_fps(pm, 60);
-projectm_set_soft_cut_duration(pm, 5);
+projectm_set_soft_cut_duration(pm, 17);
 projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, nullptr);
 printf("projectM initialized\n");
 return 0;
@@ -666,8 +666,8 @@ gl_ctx = NULL;
 void load_preset_file(std::string filename) {
 if (!pm) return;
     // XXX: smooth_transition true does not work
-    //projectm_load_preset_file(pm, filename.c_str(), true);
-projectm_load_preset_file(pm, filename.c_str(), false);
+projectm_load_preset_file(pm, filename.c_str(), true);
+    //projectm_load_preset_file(pm, filename.c_str(), false);
 }
 
 void render_frame() {
