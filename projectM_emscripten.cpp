@@ -327,24 +327,15 @@ const htmlDocs=nparser.parseFromString(xml.responseText,'text/html');
 const preList=htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
 $texs[0]=preList.length;
 console.log('scanned: '+$texs[0]+' textures.');
-for(var i=1;i<preList.length;i++){
+for(var i=5;i<preList.length;i++){
 var txxt=preList[i].href;
 let currentOrigin = window.location.origin; 
-console.log('currentOrigin: ',currentOrigin);
 let pathName = currentOrigin+'/textures';
-
 let lastSlashIndex = pathName.lastIndexOf('/');
-console.log('lastSlashIndex: ',lastSlashIndex);
-
 let basePath = pathName.substring(0, lastSlashIndex);
-console.log('basePath: ',basePath);
-
 txxt=txxt.replace(currentOrigin,'');
-console.log('txxt: ',txxt);
-
 $texs[i]=basePath+'/textures'+txxt;
 console.log('$texs['+i+']: ',$texs[i]);
-
 const ff=new XMLHttpRequest();
 ff.open('GET',$texs[i],true);
 ff.responseType='arraybuffer';
@@ -440,7 +431,7 @@ const shutDown=new BroadcastChannel('shutDown');
 shutDown.postMessage({data:222});
 });
 
-/*
+
 function getShader(pth,fname){
 const ff=new XMLHttpRequest();
 ff.open('GET',pth,true);
@@ -460,7 +451,8 @@ document.querySelector('#stat').style.backgroundColor='blue';
 });
 ff.send(null);
 }
-*/
+
+
 
 var pth=document.querySelector('#milkPath').innerHTML;
 Module.getShader();
@@ -492,6 +484,17 @@ console.log('Got shader: '+milkSrc);
 document.querySelector('#milkPath').innerHTML=milkSrc;
 Module.getShader();
 });
+
+function getShaders(){
+for (var i=0;i<25;i++){
+var randShd=Math.floor(($shds[0]-5)*Math.random());
+var milkSrc=$shds[randShd+5];
+getShader(milkSrc,'/presets/milk_'+i+'.milk');
+console.log('Wrote '+'/presets/milk_'+i+'.milk to the filesystem.');
+}
+}
+
+getShaders();
 
 document.querySelector('#meshSize').addEventListener('change', (event) => {
 let meshValue = event.target.value;
