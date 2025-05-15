@@ -330,11 +330,21 @@ console.log('scanned: '+$texs[0]+' textures.');
 for(var i=1;i<preList.length;i++){
 var txxt=preList[i].href;
 let currentOrigin = window.location.origin; 
+console.log('currentOrigin: ',currentOrigin);
 let pathName = currentOrigin+'/textures';
+
 let lastSlashIndex = pathName.lastIndexOf('/');
+console.log('lastSlashIndex: ',lastSlashIndex);
+
 let basePath = pathName.substring(0, lastSlashIndex);
+console.log('basePath: ',basePath);
+
 txxt=txxt.replace(currentOrigin,'');
+console.log('txxt: ',txxt);
+
 $texs[i]=basePath+'/textures'+txxt;
+console.log('$texs['+i+']: ',$texs[i]);
+
 const ff=new XMLHttpRequest();
 ff.open('GET',$texs[i],true);
 ff.responseType='arraybuffer';
