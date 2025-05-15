@@ -144,7 +144,7 @@ if(ENABLE_EMSCRIPTEN)
             "SHELL:-msimd128 -openmp-simd -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing"
             "SHELL:--typed-function-references --enable-reference-types -fno-math-errno"
             "SHELL:-sTRUSTED_TYPES=1 -sASSERTIONS=1 -DNDEBUG=1 -sWASM_BIGINT=1"
-            "SHELL:-sWASM_LEGACY_EXCEPTIONS=0 -sFORCE_FILESYSTEM=1"
+            "SHELL:-sWASM_LEGACY_EXCEPTIONS=0 -sFORCE_FILESYSTEM=1 -sASYNCIFY=1"
             )
 
     if(USE_PTHREADS)
