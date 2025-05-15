@@ -7,7 +7,7 @@ include(CheckSymbolExists)
 set(PROJECTM_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(PROJECTM_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_POSITION_INDEPENDENT_CODE YES)
 
@@ -135,17 +135,16 @@ if(ENABLE_EMSCRIPTEN)
             )
 
     add_link_options(
-            "SHELL:-s USE_SDL=2"
+            "SHELL:-s USE_SDL=2 -std=c++26"
             "SHELL:-s MIN_WEBGL_VERSION=2"
             "SHELL:-s MAX_WEBGL_VERSION=2"
-            "SHELL:-s FULL_ES2=1"
-            "SHELL:-s FULL_ES3=1"
+            "SHELL:-s USE_WEBGL2=1 -s FULL_ES2=1 -s FULL_ES3=1"
             "SHELL:-s ALLOW_MEMORY_GROWTH=1"
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
             "SHELL:-msimd128 -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing"
             "SHELL:--typed-function-references --enable-reference-types -fno-math-errno"
-            "SHELL:-sTRUSTED_TYPES=1"
-            "SHELL:-sWASM_LEGACY_EXCEPTIONS=0"
+            "SHELL:-sTRUSTED_TYPES=1 -sASSERTIONS=0 -DNDEBUG=1"
+            "SHELL:-sWASM_LEGACY_EXCEPTIONS=0 -sFORCE_FILESYSTEM=1 -sWASMFS=1"
             )
 
     if(USE_PTHREADS)
