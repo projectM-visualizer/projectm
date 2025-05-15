@@ -129,16 +129,16 @@ if(ENABLE_EMSCRIPTEN)
     # Instead, specifying the required options directly to emcc is the way to go.
     # Note: The "SHELL:" syntax is required to pass each argument as-is, but without quotes and CMake's de-duplication.
     add_compile_options(
-            "SHELL:-s USE_SDL=2"
+            "SHELL:-s USE_SDL=2 -O2"
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
             "SHELL:-msimd128 -openmp-simd -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing -fno-math-errno"
             )
 
     add_link_options(
-            "SHELL:-s USE_SDL=2 -std=c++26"
+            "SHELL:-s USE_SDL=2 -std=c++26 -O2 -rtlib=compiler-rt-mt"
             "SHELL:-s MIN_WEBGL_VERSION=2"
             "SHELL:-s MAX_WEBGL_VERSION=2"
-            "SHELL:-s USE_WEBGL2=1 -s FULL_ES2=1 -s FULL_ES3=1"
+            "SHELL:-s USE_WEBGL2=1 -s FULL_ES2=1 -s FULL_ES3=1 -sGL_MAX_TEMP_BUFFER_SIZE=33177600 -sGL_TRACK_ERRORS=0"
             "SHELL:-s ALLOW_MEMORY_GROWTH=1"
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
             "SHELL:-msimd128 -openmp-simd -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing"
