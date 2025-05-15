@@ -329,8 +329,8 @@ $texs[0]=preList.length;
 console.log('scanned: '+$texs[0]+' textures.');
 for(var i=1;i<preList.length;i++){
 var txxt=preList[i].href;
-let pathName = 'https://noahcohn.com/textures';
 let currentOrigin = window.location.origin; 
+let pathName = currentOrigin+'textures';
 let lastSlashIndex = pathName.lastIndexOf('/');
 let basePath = pathName.substring(0, lastSlashIndex);
 txxt=txxt.replace(currentOrigin,'');
