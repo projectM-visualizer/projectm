@@ -452,8 +452,6 @@ document.querySelector('#stat').style.backgroundColor='blue';
 ff.send(null);
 }
 
-
-
 var pth=document.querySelector('#milkPath').innerHTML;
 Module.getShader();
 
@@ -477,21 +475,25 @@ snd();
 });
 
 document.querySelector('#milkBtn').addEventListener('click',function(){
+/*
 Module.setWindowSize(window.innerHeight,window.innerHeight);
 const randShd=Math.floor(($shds[0]-5)*Math.random());
 const milkSrc=$shds[randShd+5];
 console.log('Got shader: '+milkSrc);
 document.querySelector('#milkPath').innerHTML=milkSrc;
 Module.getShader();
+*/
+var randShd=Math.floor(25*Math.random());
+Module.loadPresetFile("/presets/preset_'+randShd+'.milk"); 
 });
 
 function getShaders(){
 for (var i=0;i<25;i++){
 var randShd=Math.floor(($shds[0]-5)*Math.random());
 var milkSrc=$shds[randShd+5];
-getShader(milkSrc,'/presets/milk_'+i+'.milk');
-console.log('Wrote '+'/presets/milk_'+i+'.milk to the filesystem.');
-}
+getShader(milkSrc,'/presets/preset_'+i+'.milk');
+console.log('Wrote '+'/presets/preset_'+i+'.milk to the filesystem.');
+};
 }
 
 getShaders();
