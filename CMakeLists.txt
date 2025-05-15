@@ -131,7 +131,7 @@ if(ENABLE_EMSCRIPTEN)
     add_compile_options(
             "SHELL:-s USE_SDL=2"
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
-            "SHELL:-msimd128 -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing -fno-math-errno"
+            "SHELL:-msimd128 -openmp-simd -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing -fno-math-errno"
             )
 
     add_link_options(
@@ -141,10 +141,10 @@ if(ENABLE_EMSCRIPTEN)
             "SHELL:-s USE_WEBGL2=1 -s FULL_ES2=1 -s FULL_ES3=1"
             "SHELL:-s ALLOW_MEMORY_GROWTH=1"
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING"
-            "SHELL:-msimd128 -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing"
+            "SHELL:-msimd128 -openmp-simd -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing"
             "SHELL:--typed-function-references --enable-reference-types -fno-math-errno"
-            "SHELL:-sTRUSTED_TYPES=1 -sASSERTIONS=0 -DNDEBUG=1"
-            "SHELL:-sWASM_LEGACY_EXCEPTIONS=0 -sFORCE_FILESYSTEM=1 -sWASMFS=1"
+            "SHELL:-sTRUSTED_TYPES=1 -sASSERTIONS=1 -DNDEBUG=1 -sWASM_BIGINT=1"
+            "SHELL:-sWASM_LEGACY_EXCEPTIONS=0 -sFORCE_FILESYSTEM=1"
             )
 
     if(USE_PTHREADS)
