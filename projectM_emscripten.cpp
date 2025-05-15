@@ -493,7 +493,7 @@ var randShd=Math.floor(($shds[0]-5)*Math.random());
 var milkSrc=$shds[randShd+5];
 getShader(milkSrc,'/presets/preset_'+i+'.milk');
 console.log('Wrote '+'/presets/preset_'+i+'.milk to the filesystem.');
-};
+}
 }
 
 getShaders();
