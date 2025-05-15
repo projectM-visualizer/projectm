@@ -29,16 +29,7 @@
 # include <GL/wglew.h>
 #else /* linux/unix/other */
 # ifdef USE_GLES
-#ifndef GL_FRAGMENT_PRECISION_HIGH
-#define GL_FRAGMENT_PRECISION_HIGH 1
-#endif
-#include <GL/gl.h>
-#include <GL/glext.h>
-#define GL_GLES_PROTOTYPES 1
-#include <GLES3/gl3platform.h>
-# include <GLES3/gl31.h>
-#include <GLES3/gl3.h>
-#include <GLES2/gl2ext.h>
+#  include <GLES3/gl3.h>
 # else
 #  if !defined(GL_GLEXT_PROTOTYPES)
 #     define GL_GLEXT_PROTOTYPES
