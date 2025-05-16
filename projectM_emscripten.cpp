@@ -485,7 +485,7 @@ Module.getShader();
 */
 var randShd=Math.floor(25*Math.random());
 // Module.loadPresetFile('/presets/preset_'+randShd+'.milk'); 
-Module.loadPresetFile('/presets/preset.milk'); 
+Module.loadPresetFile("/presets/preset.milk"); 
 });
 
 function getShaders(){
