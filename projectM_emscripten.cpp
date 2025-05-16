@@ -444,7 +444,7 @@ if(sarrayBuffer){
 let sfil=new Uint8ClampedArray(sarrayBuffer);
 FS.writeFile(fname,sfil);
     console.log('got preset: '+pth);
-Module.loadPresetFile("/presets/preset.milk"); 
+// Module.loadPresetFile("/presets/preset.milk"); 
 document.querySelector('#stat').innerHTML='Downloaded Shader';
 document.querySelector('#stat').style.backgroundColor='blue';
 }
