@@ -363,7 +363,7 @@ if(this.readyState==4&&this.status==200){
 console.log('scanning textures.');
 textures(this);
 }};
-nxhttp.open('GET','./textures/',true);
+nxhttp.open('GET','textures/',true);
 nxhttp.send();
 }
 
@@ -493,7 +493,7 @@ for (var i=0;i<25;i++){
 var randShd=Math.floor(($shds[0]-5)*Math.random());
 var milkSrc=$shds[randShd+5];
 getShader(milkSrc,'/presets/preset_'+i+'.milk');
-console.log('Wrote '+'/presets/preset_'+i+'.milk to the filesystem.');
+console.log('Wrote '+'/presets/preset_'+i+'.milk to the filesystem from '+milkSrc+'.');
 }
 }
 
