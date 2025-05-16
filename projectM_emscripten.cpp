@@ -453,7 +453,7 @@ ff.send(null);
 }
 
 var pth=document.querySelector('#milkPath').innerHTML;
-Module.getShader();
+// Module.getShader();
 
 scanSongs();
 scanShaders();
@@ -484,7 +484,8 @@ document.querySelector('#milkPath').innerHTML=milkSrc;
 Module.getShader();
 */
 var randShd=Math.floor(25*Math.random());
-Module.loadPresetFile('/presets/preset_'+randShd+'.milk'); 
+// Module.loadPresetFile('/presets/preset_'+randShd+'.milk'); 
+Module.loadPresetFile('/presets/preset.milk'); 
 });
 
 function getShaders(){
