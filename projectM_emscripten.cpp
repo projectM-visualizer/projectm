@@ -270,7 +270,9 @@ printf("Preset switch failed (%s): %s\n", preset_filename, message);
 extern "C" {
 
 void pl(){
-plt();
+SDL_Init(SDL_INIT_AUDIO);
+SDL_Thread* audioThread = SDL_CreateThread(plt, "plt", nullptr);
+// plt();
 return;
 }
 
