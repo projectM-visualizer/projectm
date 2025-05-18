@@ -288,10 +288,6 @@ void on_preset_loaded() {
 load_preset_file("/presets/preset.milk");
 }
 
-void getShader() {
-getShaderM(on_preset_loaded); // Pass function pointer, don't call it
-}
-
 EM_JS(void,getShaderM,(void(*cb)(void)),{
 var pth=document.querySelector('#milkPath').innerHTML;
 const ff=new XMLHttpRequest();
@@ -314,6 +310,10 @@ document.querySelector('#stat').style.backgroundColor='blue';
 });
 ff.send(null);
 });
+
+void getShader() {
+getShaderM(on_preset_loaded); // Pass function pointer, don't call it
+}
 
 int init() {
 EM_ASM({
