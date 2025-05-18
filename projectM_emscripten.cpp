@@ -284,8 +284,15 @@ projectm_pcm_add_uint8(pm, data, len, PROJECTM_MONO);
 
 }
 
+void on_preset_loaded() {
+load_preset_file("/presets/preset.milk");
+}
 
-EM_JS(void,getShader,(),{
+void getShader() {
+getShaderM(on_preset_loaded); // Pass function pointer, don't call it
+}
+
+EM_JS(void,getShaderM,(void(*cb)(void)),{
 var pth=document.querySelector('#milkPath').innerHTML;
 const ff=new XMLHttpRequest();
 ff.open('GET',pth,true);
@@ -302,7 +309,7 @@ setTimeout(function(){
 Module.loadPresetFile("/presets/preset.milk"); 
 document.querySelector('#stat').innerHTML='Downloaded Shader';
 document.querySelector('#stat').style.backgroundColor='blue';
-},500);
+},50);
 }
 });
 ff.send(null);
