@@ -215,7 +215,7 @@ wave.pos = 0; // Wrap around
 } // End while(len > 0)
 }
 
-void plt(){
+void plt(void* data){
 char flnm[24];
 SDL_FreeWAV(wave.snd);
 SDL_SetMainReady();
