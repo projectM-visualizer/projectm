@@ -254,8 +254,8 @@ private:
 
     auto GetRenderContext() -> Renderer::RenderContext;
 
-    uint32_t m_meshX{80};            //!< Per-point mesh horizontal resolution.
-    uint32_t m_meshY{60};            //!< Per-point mesh vertical resolution.
+    uint32_t m_meshX{100};            //!< Per-point mesh horizontal resolution.
+    uint32_t m_meshY{100};            //!< Per-point mesh vertical resolution.
     uint32_t m_targetFps{60};        //!< Target frames per second.
     uint32_t m_windowWidth{0};       //!< EvaluateFrameData window width. If 0, nothing is rendered.
     uint32_t m_windowHeight{0};      //!< EvaluateFrameData window height. If 0, nothing is rendered.
@@ -264,7 +264,7 @@ private:
     double m_hardCutDuration{20.0};  //!< Time after which a hard cut can happen at the earliest.
     bool m_hardCutEnabled{false};    //!< If true, hard cuts based on beat detection are enabled.
     float m_hardCutSensitivity{2.0}; //!< Loudness sensitivity value for hard cuts.
-    float m_beatSensitivity{3.0};    //!< General beat sensitivity modifier for presets.
+    float m_beatSensitivity{1.0};    //!< General beat sensitivity modifier for presets.
     bool m_aspectCorrection{true};   //!< If true, corrects aspect ratio for non-rectangular windows.
     float m_easterEgg{1.0};          //!< Random preset duration modifier. See TimeKeeper class.
     float m_previousFrameVolume{};   //!< Volume in previous frame, used for hard cuts.
