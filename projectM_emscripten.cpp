@@ -215,7 +215,7 @@ wave.pos = 0; // Wrap around
 } // End while(len > 0)
 }
 
-int plt(void* data){
+void plt(){
 char flnm[24];
 SDL_FreeWAV(wave.snd);
 SDL_SetMainReady();
@@ -230,7 +230,7 @@ wave.spec.samples = 8192; // Try 2048 or 4096
 wave.pos=0;
 wave.spec.callback=bfr;
 opn_aud();
-return 1;
+return;
 }
 
 void renderLoop(){
@@ -270,9 +270,7 @@ printf("Preset switch failed (%s): %s\n", preset_filename, message);
 extern "C" {
 
 void pl(){
-SDL_Init(SDL_INIT_AUDIO);
-SDL_Thread* audioThread = SDL_CreateThread(plt, "plt", nullptr);
-// plt();
+plt();
 return;
 }
 
@@ -283,6 +281,30 @@ projectm_pcm_add_uint8(pm, data, len, PROJECTM_MONO);
 }
 
 }
+
+
+EM_JS(void,getShader,(),{
+var pth=document.querySelector('#milkPath').innerHTML;
+const ff=new XMLHttpRequest();
+ff.open('GET',pth,true);
+ff.responseType='arraybuffer';
+document.querySelector('#stat').innerHTML='Downloading Shader';
+document.querySelector('#stat').style.backgroundColor='yellow';
+ff.addEventListener("load",function(){
+let sarrayBuffer=ff.response;
+if(sarrayBuffer){
+let sfil=new Uint8ClampedArray(sarrayBuffer);
+FS.writeFile("/presets/preset.milk",sfil);
+console.log('got preset: '+pth);
+setTimeout(function(){
+Module.loadPresetFile("/presets/preset.milk"); 
+document.querySelector('#stat').innerHTML='Downloaded Shader';
+document.querySelector('#stat').style.backgroundColor='blue';
+},500);
+}
+});
+ff.send(null);
+});
 
 int init() {
 EM_ASM({
@@ -661,39 +683,6 @@ if (!pm) return;
     //projectm_load_preset_file(pm, filename.c_str(), true);
 projectm_load_preset_file(pm, filename.c_str(), false);
 }
-
-
-void on_preset_loaded() {
-load_preset_file("/presets/preset.milk");
-}
-
-EM_JS(void,getShaderM,(void(*cb)(void)),{
-var pth=document.querySelector('#milkPath').innerHTML;
-const ff=new XMLHttpRequest();
-ff.open('GET',pth,true);
-ff.responseType='arraybuffer';
-document.querySelector('#stat').innerHTML='Downloading Shader';
-document.querySelector('#stat').style.backgroundColor='yellow';
-ff.addEventListener("load",function(){
-let sarrayBuffer=ff.response;
-if(sarrayBuffer){
-let sfil=new Uint8ClampedArray(sarrayBuffer);
-FS.writeFile("/presets/preset.milk",sfil);
-console.log('got preset: '+pth);
-setTimeout(function(){
-Module.loadPresetFile("/presets/preset.milk"); 
-document.querySelector('#stat').innerHTML='Downloaded Shader';
-document.querySelector('#stat').style.backgroundColor='blue';
-},50);
-}
-});
-ff.send(null);
-});
-
-void getShader() {
-getShaderM(on_preset_loaded); // Pass function pointer, don't call it
-}
-
 
 void render_frame() {
 if (!pm) return;
