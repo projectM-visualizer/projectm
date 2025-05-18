@@ -148,8 +148,8 @@ if(ENABLE_EMSCRIPTEN)
             )
 
     if(USE_PTHREADS)
-        add_compile_options("SHELL:-s USE_PTHREADS=1 -pthread -openmp-simd")
-        add_link_options("SHELL:-s USE_PTHREADS=1 -pthread -openmp-simd")
+        add_compile_options("SHELL:-pthread -openmp-simd")
+        add_link_options("SHELL:-pthread -openmp-simd")
     endif()
 
     set(USE_GLES ON)
