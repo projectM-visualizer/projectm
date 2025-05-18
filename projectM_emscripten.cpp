@@ -444,7 +444,7 @@ int init() {
                         let sfil=new Uint8ClampedArray(sarrayBuffer);
                         FS.writeFile(fname,sfil);
                         console.log('got preset: '+fname);
-// Module.loadPresetFile("/presets/preset.milk");
+                        Module.loadPresetFile(fname);
                         document.querySelector('#stat').innerHTML='Downloaded Shader';
                         document.querySelector('#stat').style.backgroundColor='blue';
                     }
@@ -479,7 +479,7 @@ int init() {
                     var randShd=Math.floor(($shds[0]-5)*Math.random());
                     var milkSrc=$shds[randShd+5];
                     getShader(milkSrc,'/presets/preset_'+i+'.milk');
-                    Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
+                   // Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
                     console.log('Loaded '+'/presets/preset_'+i+'.milk from '+milkSrc+'.');
                 }
 /*
@@ -500,7 +500,7 @@ int init() {
                     var randShd=Math.floor(($shds[0]-5)*Math.random());
                     var milkSrc=$shds[randShd+5];
                     getShader(milkSrc,'/presets/preset_'+i+'.milk');
-                    Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
+                   // Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
                     console.log('Loaded '+'/presets/preset_'+i+'.milk from '+milkSrc+'.');
                 }
                 setTimeout(function(){
