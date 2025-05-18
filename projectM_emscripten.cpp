@@ -284,37 +284,6 @@ projectm_pcm_add_uint8(pm, data, len, PROJECTM_MONO);
 
 }
 
-void on_preset_loaded() {
-load_preset_file("/presets/preset.milk");
-}
-
-EM_JS(void,getShaderM,(void(*cb)(void)),{
-var pth=document.querySelector('#milkPath').innerHTML;
-const ff=new XMLHttpRequest();
-ff.open('GET',pth,true);
-ff.responseType='arraybuffer';
-document.querySelector('#stat').innerHTML='Downloading Shader';
-document.querySelector('#stat').style.backgroundColor='yellow';
-ff.addEventListener("load",function(){
-let sarrayBuffer=ff.response;
-if(sarrayBuffer){
-let sfil=new Uint8ClampedArray(sarrayBuffer);
-FS.writeFile("/presets/preset.milk",sfil);
-console.log('got preset: '+pth);
-setTimeout(function(){
-Module.loadPresetFile("/presets/preset.milk"); 
-document.querySelector('#stat').innerHTML='Downloaded Shader';
-document.querySelector('#stat').style.backgroundColor='blue';
-},50);
-}
-});
-ff.send(null);
-});
-
-void getShader() {
-getShaderM(on_preset_loaded); // Pass function pointer, don't call it
-}
-
 int init() {
 EM_ASM({
 FS.mkdir('/presets');
@@ -692,6 +661,39 @@ if (!pm) return;
     //projectm_load_preset_file(pm, filename.c_str(), true);
 projectm_load_preset_file(pm, filename.c_str(), false);
 }
+
+
+void on_preset_loaded() {
+load_preset_file("/presets/preset.milk");
+}
+
+EM_JS(void,getShaderM,(void(*cb)(void)),{
+var pth=document.querySelector('#milkPath').innerHTML;
+const ff=new XMLHttpRequest();
+ff.open('GET',pth,true);
+ff.responseType='arraybuffer';
+document.querySelector('#stat').innerHTML='Downloading Shader';
+document.querySelector('#stat').style.backgroundColor='yellow';
+ff.addEventListener("load",function(){
+let sarrayBuffer=ff.response;
+if(sarrayBuffer){
+let sfil=new Uint8ClampedArray(sarrayBuffer);
+FS.writeFile("/presets/preset.milk",sfil);
+console.log('got preset: '+pth);
+setTimeout(function(){
+Module.loadPresetFile("/presets/preset.milk"); 
+document.querySelector('#stat').innerHTML='Downloaded Shader';
+document.querySelector('#stat').style.backgroundColor='blue';
+},50);
+}
+});
+ff.send(null);
+});
+
+void getShader() {
+getShaderM(on_preset_loaded); // Pass function pointer, don't call it
+}
+
 
 void render_frame() {
 if (!pm) return;
