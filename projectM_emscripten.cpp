@@ -475,17 +475,15 @@ snd();
 });
 
 document.querySelector('#milkBtn').addEventListener('click',function(){
-/*
 Module.setWindowSize(window.innerHeight,window.innerHeight);
 const randShd=Math.floor(($shds[0]-5)*Math.random());
 const milkSrc=$shds[randShd+5];
 console.log('Got shader: '+milkSrc);
 document.querySelector('#milkPath').innerHTML=milkSrc;
 Module.getShader();
-*/
-var randShd=Math.floor(25*Math.random());
+// var randShd=Math.floor(25*Math.random());
 // Module.loadPresetFile('/presets/preset_'+randShd+'.milk'); 
-Module.loadPresetFile("/presets/preset.milk"); 
+// Module.loadPresetFile("/presets/preset.milk"); 
 });
 
 function getShaders(){
