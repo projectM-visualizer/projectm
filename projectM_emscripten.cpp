@@ -215,7 +215,7 @@ wave.pos = 0; // Wrap around
 } // End while(len > 0)
 }
 
-void plt(void* data){
+int plt(void* data){
 char flnm[24];
 SDL_FreeWAV(wave.snd);
 SDL_SetMainReady();
@@ -230,7 +230,7 @@ wave.spec.samples = 8192; // Try 2048 or 4096
 wave.pos=0;
 wave.spec.callback=bfr;
 opn_aud();
-return;
+return 1;
 }
 
 void renderLoop(){
