@@ -130,20 +130,20 @@ if(ENABLE_EMSCRIPTEN)
     # Note: The "SHELL:" syntax is required to pass each argument as-is, but without quotes and CMake's de-duplication.
     add_compile_options(
             "SHELL:-s USE_SDL=2 -O3 -mtune=wasm32"
-            "SHELL:-sSTRICT=1 -sSHARED_MEMORY=1 -sWASM_WORKERS=1 -fwasm-exceptions -sSUPPORT_LONGJMP='wasm'"
+            "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING -s SHARED_MEMORY=1"
             "SHELL:-msimd128 -openmp-simd -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing -fno-math-errno"
             )
 
     add_link_options(
-            "SHELL:-s USE_SDL=2 -std=c++26 -O3 -rtlib=compiler-rt-mt -mtune=wasm32 -sSTRICT=1 -sSHARED_MEMORY=1 -sWASM_WORKERS=1 -fwasm-exceptions -sSUPPORT_LONGJMP='wasm'"
+            "SHELL:-s USE_SDL=2 -std=c++26 -O3 -rtlib=compiler-rt-mt -mtune=wasm32 -s SHARED_MEMORY=1"
             "SHELL:-s MIN_WEBGL_VERSION=2"
             "SHELL:-s MAX_WEBGL_VERSION=2"
-            "SHELL:-s USE_WEBGL2=1 -s FULL_ES2=1 -s FULL_ES3=1 -sGL_MAX_TEMP_BUFFER_SIZE=33177600 -sGL_TRACK_ERRORS=0"
+            "SHELL:-s USE_WEBGL2=1 -s FULL_ES2=1 -s FULL_ES3=1 -s GL_MAX_TEMP_BUFFER_SIZE=33177600 -s GL_TRACK_ERRORS=0"
             "SHELL:-s ALLOW_MEMORY_GROWTH=1 -sMALLOC='mimalloc'"
             "SHELL:-msimd128 -openmp-simd -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing"
             "SHELL:--typed-function-references --enable-reference-types -fno-math-errno"
-            "SHELL:-sTRUSTED_TYPES=1 -sASSERTIONS=1 -sWASM_BIGINT=1"
-            "SHELL:-sFORCE_FILESYSTEM=1 -sASYNCIFY=1 -sWASMFS=1"
+            "SHELL:-s TRUSTED_TYPES=1 -s WASM_BIGINT=1"
+            "SHELL:-s FORCE_FILESYSTEM=1 -s ASYNCIFY=1 -s WASMFS=1"
             )
 
     if(USE_PTHREADS)
