@@ -389,7 +389,7 @@ int init() {
                     txxt=txxt.replace(currentOrigin,'');
                     $shds[i]=basePath+'/milk'+txxt;
                 }
-console.log('Got '+$shds[0]+' Shaders.');
+console.log('Scanned '+$shds[0]+' Shaders.');
 };
 
             function scanShaders(){
@@ -478,12 +478,6 @@ try {
                 ff.send(null);
             }
 
-            var pth=document.querySelector('#milkPath').innerHTML;
-// Module.getShader();
-
-            scanSongs();
-            scanShaders();
-            scanTextures();
 
             function snd(){
                 const randSong=Math.floor(($sngs[0]-5)*Math.random());
@@ -533,10 +527,19 @@ document.querySelector('#milkPath').innerHTML=milkSrc;
                 }
                 setTimeout(function(){
                     Module.startRender(window.innerHeight);
-                },1500);
+                },500);
             }
 
+            var pth=document.querySelector('#milkPath').innerHTML;
+// Module.getShader();
+
+            scanTextures();
+            scanSongs();
+            scanShaders();
+
+                setTimeout(function(){
             getShaders();
+                },2500);
 
             document.querySelector('#meshSize').addEventListener('change', (event) => {
                 let meshValue = event.target.value;
