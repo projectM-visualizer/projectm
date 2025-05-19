@@ -444,7 +444,7 @@ int init() {
                         let sfil=new Uint8ClampedArray(sarrayBuffer);
                         FS.writeFile(fname,sfil);
                         console.log('got preset: '+fname);
-                        Module.loadPresetFile(fname);
+                        // Module.loadPresetFile(fname);
                         document.querySelector('#stat').innerHTML='Downloaded Shader';
                         document.querySelector('#stat').style.backgroundColor='blue';
                     }
@@ -671,8 +671,26 @@ int init() {
     projectm_set_fps(pm, 60);
     projectm_set_soft_cut_duration(pm, 17);
     projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, nullptr);
+
+    projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, nullptr);
+
     printf("projectM initialized\n");
     return 0;
+}
+
+ void on_preset_switch_requested(projectm_handle handle, bool is_hard_cut, void* user_data) {
+        printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ? "true" : "false");
+        EM_ASM({
+            // This JS code is executed when on_preset_switch_requested is called
+            console.log("JS: Handling preset switch request via EM_ASM.");
+            if (!window.$shds || window.$shds.length <= 5) {
+                console.warn("JS: Shader list ($shds) not ready for random selection.");
+                return;
+            }
+            // Ensure $shds is accessible, e.g. window.$shds if it's global
+            const randIndex = Math.floor(Math.random() * (window.$shds.length - 5)) + 5;
+Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
+});
 }
 
 void set_mesh(int w,int h){
