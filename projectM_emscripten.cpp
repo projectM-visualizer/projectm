@@ -282,7 +282,7 @@ void add_audio_data(uint8_t* data, int len) {
 
 }
 
-
+extern "C" {
  void on_preset_switch_requested(projectm_handle handle, bool is_hard_cut, void* user_data) {
         printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ? "true" : "false");
         EM_ASM({
@@ -296,6 +296,7 @@ void add_audio_data(uint8_t* data, int len) {
             const randIndex = Math.floor(Math.random() * (window.$shds.length - 5)) + 5;
 Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
 });
+}
 }
 
 EM_JS(void,getShader,(),{
