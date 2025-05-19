@@ -455,6 +455,22 @@ int init() {
                         // Module.loadPresetFile(fname);
                         document.querySelector('#stat').innerHTML='Downloaded Shader';
                         document.querySelector('#stat').style.backgroundColor='blue';
+
+const presetFileNameToLoad = fname;
+console.log("JS: Attempting to load pre-downloaded: " + presetFileNameToLoad);
+
+try {
+    const content = FS.readFile(presetFileNameToLoad, { encoding: 'utf8' });
+    console.log("JS: Content of " + presetFileNameToLoad + " (first 200 chars):", content.substring(0,200));
+    if (content.length === 0) {
+        console.error("JS: File " + presetFileNameToLoad + " is EMPTY!");
+    }
+} catch (e) {
+    console.error("JS: Failed to read file " + presetFileNameToLoad + " from FS:", e);
+    // Don't proceed to Module.loadPresetFile if it can't be read or is empty
+    return;
+}
+
                     }
                 });
                 ff.send(null);
