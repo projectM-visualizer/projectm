@@ -390,6 +390,10 @@ int init() {
                     $shds[i]=basePath+'/milk'+txxt;
                 }
 console.log('Scanned '+$shds[0]+' Shaders.');
+               setTimeout(function(){
+            getShaders();
+                },2500);
+
 };
 
             function scanShaders(){
@@ -537,10 +541,7 @@ document.querySelector('#milkPath').innerHTML=milkSrc;
             scanSongs();
             scanShaders();
 
-                setTimeout(function(){
-            getShaders();
-                },2500);
-
+ 
             document.querySelector('#meshSize').addEventListener('change', (event) => {
                 let meshValue = event.target.value;
                 // Split the value into two numbers
