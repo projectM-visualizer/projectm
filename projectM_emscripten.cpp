@@ -282,17 +282,10 @@ void add_audio_data(uint8_t* data, int len) {
 
 }
 
- void on_preset_switch_requested(bool is_hard_cut, void* user_data) {
-        printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ? "true" : "false");
-        EM_ASM({
-            // This JS code is executed when on_preset_switch_requested is called
-            console.log("JS: Handling preset switch request via EM_ASM.");
-            if (!window.$shds || window.$shds.length <= 5) {
-                console.warn("JS: Shader list ($shds) not ready for random selection.");
-                return;
-            }
-            // Ensure $shds is accessible, e.g. window.$shds if it's global
-            const randIndex = Math.floor(Math.random() * (window.$shds.length - 5)) + 5;
+void on_preset_switch_requested(bool is_hard_cut, void* user_data) {
+printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ? "true" : "false");
+EM_ASM({
+const randIndex = Math.floor(Math.random()*25);
 Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
 });
 }
