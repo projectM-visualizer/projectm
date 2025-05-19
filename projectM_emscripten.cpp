@@ -283,6 +283,21 @@ void add_audio_data(uint8_t* data, int len) {
 }
 
 
+ void on_preset_switch_requested(projectm_handle handle, bool is_hard_cut, void* user_data) {
+        printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ? "true" : "false");
+        EM_ASM({
+            // This JS code is executed when on_preset_switch_requested is called
+            console.log("JS: Handling preset switch request via EM_ASM.");
+            if (!window.$shds || window.$shds.length <= 5) {
+                console.warn("JS: Shader list ($shds) not ready for random selection.");
+                return;
+            }
+            // Ensure $shds is accessible, e.g. window.$shds if it's global
+            const randIndex = Math.floor(Math.random() * (window.$shds.length - 5)) + 5;
+Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
+});
+}
+
 EM_JS(void,getShader,(),{
 var pth=document.querySelector('#milkPath').innerHTML;
 const ff=new XMLHttpRequest();
@@ -678,20 +693,6 @@ int init() {
     return 0;
 }
 
- void on_preset_switch_requested(projectm_handle handle, bool is_hard_cut, void* user_data) {
-        printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ? "true" : "false");
-        EM_ASM({
-            // This JS code is executed when on_preset_switch_requested is called
-            console.log("JS: Handling preset switch request via EM_ASM.");
-            if (!window.$shds || window.$shds.length <= 5) {
-                console.warn("JS: Shader list ($shds) not ready for random selection.");
-                return;
-            }
-            // Ensure $shds is accessible, e.g. window.$shds if it's global
-            const randIndex = Math.floor(Math.random() * (window.$shds.length - 5)) + 5;
-Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
-});
-}
 
 void set_mesh(int w,int h){
     projectm_set_mesh_size(pm,w,h);
