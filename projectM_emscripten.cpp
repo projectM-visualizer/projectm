@@ -291,8 +291,9 @@ Module.loadPresetFile('/presets/preset_'+randIndex+'.milk');
 }
 
 
-EM_JS(void,getShader,(),{
+EM_JS(void,getShader,(int num),{
 var pth=document.querySelector('#milkPath').innerHTML;
+console.log('Getting preset: '+pth);
 const ff=new XMLHttpRequest();
 ff.open('GET',pth,true);
 ff.responseType='arraybuffer';
@@ -302,13 +303,12 @@ ff.addEventListener("load",function(){
     let sarrayBuffer=ff.response;
     if(sarrayBuffer){
         let sfil=new Uint8ClampedArray(sarrayBuffer);
-        FS.writeFile("/presets/preset.milk",sfil);
-        console.log('got preset: '+pth);
+        FS.writeFile("/presets/preset_"+num+".milk",sfil);
         setTimeout(function(){
-            Module.loadPresetFile("/presets/preset.milk");
+           // Module.loadPresetFile("/presets/preset.milk");
             document.querySelector('#stat').innerHTML='Downloaded Shader';
             document.querySelector('#stat').style.backgroundColor='blue';
-        },500);
+        },50);
     }
 });
 ff.send(null);
@@ -502,9 +502,10 @@ try {
                 for (var i=0;i<25;i++){
                     var randShd=Math.floor(($shds[0]-5)*Math.random());
                     var milkSrc=$shds[randShd+5];
-                    getShader(milkSrc,'/presets/preset_'+i+'.milk');
+document.querySelector('#milkPath').innerHTML=milkSrc;
+                    Module.getShader(i);
                    // Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
-                    console.log('Loaded '+'/presets/preset_'+i+'.milk from '+milkSrc+'.');
+                    console.log('Got '+'/presets/preset_'+i+'.milk from '+milkSrc+'.');
                 }
 /*
                 Module.setWindowSize(window.innerHeight,window.innerHeight);
@@ -523,9 +524,10 @@ try {
                 for (var i=0;i<25;i++){
                     var randShd=Math.floor(($shds[0]-5)*Math.random());
                     var milkSrc=$shds[randShd+5];
-                    getShader(milkSrc,'/presets/preset_'+i+'.milk');
-                   // Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
-                    console.log('Loaded '+'/presets/preset_'+i+'.milk from '+milkSrc+'.');
+document.querySelector('#milkPath').innerHTML=milkSrc;
+                    Module.getShader(i);
+// Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
+                    console.log('Got '+'/presets/preset_'+i+'.milk from '+milkSrc+'.');
                 }
                 setTimeout(function(){
                     Module.startRender(window.innerHeight);
