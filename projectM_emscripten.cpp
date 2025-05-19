@@ -388,7 +388,9 @@ int init() {
                     let basePath = pathName.substring(0, lastSlashIndex);
                     txxt=txxt.replace(currentOrigin,'');
                     $shds[i]=basePath+'/milk'+txxt;
-                }};
+                }
+console.log('Got '+$shds[0]+' Shaders.');
+};
 
             function scanShaders(){
                 const nxhttp=new XMLHttpRequest();
