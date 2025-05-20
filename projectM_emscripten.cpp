@@ -41,6 +41,7 @@ using namespace emscripten;
 
 typedef struct {
 projectm_handle projectm_engine;
+projectm_playlist_handle playlist{nullptr};
     // You could add other data here if your callbacks need it.
 } AppData;
 
@@ -685,10 +686,10 @@ Module.setMesh(values[0], values[1]);
 AppData app_data;
 app_data.projectm_engine = pm;
 
-projectm_playlist_settings playlist_settings;
-memset(&playlist_settings, 0, sizeof(projectm_playlist_settings)); // Initialize to zero
-playlist_settings.load_preset_callback = load_preset_callback_example;
-playlist_settings.user_data_load_preset = &app_data; // Pass our AppData to the callback
+// projectm_playlist_settings playlist_settings;
+// memset(&playlist_settings, 0, sizeof(projectm_playlist_settings)); // Initialize to zero
+// playlist_settings.load_preset_callback = load_preset_callback_example;
+// playlist_settings.user_data_load_preset = &app_data; // Pass our AppData to the callback
     printf("Playlist settings configured.\n");
 
     // --- 3. Create a Playlist ---
@@ -703,6 +704,12 @@ playlist_settings.user_data_load_preset = &app_data; // Pass our AppData to the 
 
 projectm_playlist_add_path(pm,'/presets/,true,true);
     printf("Added /presets/ to playlist successfully.\n");
+
+projectm_playlist_set_preset_switched_event_callback(playlist,load_preset_callback_example,app_data);
+
+// projectm_playlist_set_preset_switched_event_callback(projectm_playlist_handle instance,
+//                                                          projectm_playlist_preset_switched_event callback,
+//                                                          void* user_data)
 
     if (!pm) {
         fprintf(stderr, "Failed to create projectM handle\n");
