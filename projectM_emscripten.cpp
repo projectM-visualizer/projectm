@@ -235,8 +235,8 @@ void plt(){
 }
 
 void renderLoop(){
-// glClearColor( 1.0, 1.0, 1.0, 0.0 );
-glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+    // glClearColor( 1.0, 1.0, 1.0, 0.0 );
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
     projectm_opengl_render_frame(pm);
     eglSwapBuffers(display,surface);
     return;
@@ -261,7 +261,8 @@ void start_render(int size){
 }
 
 void _on_preset_switch_failed(const char *preset_filename, const char *message, void *user_data) {
-    printf("Preset switch failed (%s): %s\n", preset_filename, message);
+printf("Preset switch failed (%s): %s\n", preset_filename, message);
+return;
 }
 
 // C++ name mangling means that “normal” C++ functions cannot be called; the
@@ -277,7 +278,8 @@ void pl(){
 
 void add_audio_data(uint8_t* data, int len) {
 // if (!pm) return;
-    projectm_pcm_add_uint8(pm, data, len, PROJECTM_MONO);
+ //   projectm_pcm_add_uint8(pm, data, len, PROJECTM_MONO);
+return;
 // }
 }
 
@@ -289,6 +291,7 @@ EM_ASM({
 const randIndex = Math.floor(Math.random()*25);
 Module.loadPresetFile('/presets/preset_'+randIndex+'.milk');
 });
+return;
 }
 
 
