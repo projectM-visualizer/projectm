@@ -705,7 +705,7 @@ app_data.playlist = playlist;
     projectm_set_soft_cut_duration(pm, 17);
     projectm_playlist_set_shuffle(playlist,true);
     projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, nullptr);
-    projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, nullptr);
+   // projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, nullptr);
     printf("projectM initialized\n");
     return 0;
 }
@@ -716,9 +716,6 @@ projectm_playlist_add_path(app_data.playlist,loc,true,true);
 projectm_playlist_connect(app_data.playlist,app_data.projectm_engine);
 projectm_set_preset_switch_requested_event_callback(app_data.projectm_engine, &on_preset_switch_requested, &app_data);
 printf("Added /presets/ to playlist successfully.\n");
-if (app_data.projectm_engine->getPlaylistSize() <= 0) {
-printf("No presets found! Check your preset directory.");
-}
 }
 
 void set_mesh(int w,int h){
