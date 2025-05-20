@@ -143,7 +143,7 @@ if(ENABLE_EMSCRIPTEN)
             "SHELL:-msimd128 -openmp-simd -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing"
             "SHELL:--typed-function-references --enable-reference-types -fno-math-errno"
             "SHELL:-s TRUSTED_TYPES=1 -s WASM_BIGINT=1 -sSDL_PTHREADS=1"
-            "SHELL:-s FORCE_FILESYSTEM=1 -s ASYNCIFY=1 "
+            "SHELL:-s FORCE_FILESYSTEM=1 -s ASYNCIFY=1 -sAUDIO_WORKLET=1"
             )
 
     if(USE_PTHREADS)
