@@ -717,7 +717,7 @@ projectm_playlist_connect(app_data.playlist,app_data.projectm_engine);
 projectm_set_preset_switch_requested_event_callback(app_data.projectm_engine, &on_preset_switch_requested, &app_data);
 printf("Added /presets/ to playlist successfully.\n");
 if (app_data.projectm_engine->getPlaylistSize() <= 0) {
-    std::cerr << "No presets found! Check your preset directory." << std::endl;
+printf("No presets found! Check your preset directory.");
 }
 }
 
