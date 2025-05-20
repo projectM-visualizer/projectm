@@ -707,7 +707,7 @@ app_data.projectm_engine = pm;
 projectm_playlist_add_path(playlist,'/presets/',true,true);
     printf("Added /presets/ to playlist successfully.\n");
 
-projectm_playlist_set_preset_switched_event_callback(playlist,load_preset_callback_example,app_data);
+projectm_playlist_set_preset_switched_event_callback(playlist,load_preset_callback_example,&app_data);
 
 // projectm_playlist_set_preset_switched_event_callback(projectm_playlist_handle instance,
 //                                                          projectm_playlist_preset_switched_event callback,
