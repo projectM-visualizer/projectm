@@ -54,6 +54,7 @@ return false;
 }
 AppData* app_data = (AppData*)user_data;
 projectm_handle engine = app_data->projectm_engine;
+projectm_playlist_handle playlist = app_data->playlist;
 if (!engine) {
 fprintf(stderr, "Load preset callback: ProjectM engine handle is null.\n");
 return false;
@@ -62,7 +63,7 @@ return false;
     // Here, you instruct the main ProjectM engine to load the preset.
     // The exact function might vary based on your ProjectM version or specific C wrapper,
     // but projectm_select_preset_by_url() is a common one.
-    if (projectm_playlist_play_next(engine, false)) {
+    if (projectm_playlist_play_next(playlist, false)) {
         printf("Preset %s selected successfully in ProjectM engine.\n", preset_url);
         return true;
 } else {
@@ -697,7 +698,7 @@ app_data.projectm_engine = pm;
     projectm_playlist_handle playlist(projectm_playlist_create(pm));
     if (!playlist) {
         fprintf(stderr, "Failed to create playlist.\n");
-        projectm_destroy(engine);
+        projectm_destroy(app_data.projectm_engine);
         return 1;
     }
     printf("Playlist created successfully.\n");
