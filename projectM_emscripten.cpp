@@ -47,7 +47,8 @@ projectm_playlist_handle playlist{nullptr};
 
   // Callback function that the playlist will call to load a preset
 
-void load_preset_callback_example(projectm_playlist_handle playlist,const char* preset_url,void* user_data) {
+void load_preset_callback_example(bool is_hard_cut, unsigned int index,
+                                                        void* user_data) {
 if (!preset_url || !user_data) {
 fprintf(stderr, "Load preset callback: Invalid arguments.\n");
 return;
@@ -703,7 +704,7 @@ app_data.projectm_engine = pm;
     }
     printf("Playlist created successfully.\n");
 
-projectm_playlist_add_path(pm,'/presets/,true,true);
+projectm_playlist_add_path(pm,'/presets/',true,true);
     printf("Added /presets/ to playlist successfully.\n");
 
 projectm_playlist_set_preset_switched_event_callback(playlist,load_preset_callback_example,app_data);
