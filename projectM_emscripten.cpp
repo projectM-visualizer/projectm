@@ -302,7 +302,7 @@ printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ?
 // });
 AppData* app_data = (AppData*)user_data;
 projectm_playlist_handle playlist = app_data->playlist;
-projectm_playlist_play_next(playlist,false);
+// projectm_playlist_play_next(playlist,false);
 return;
 }
 
@@ -704,7 +704,7 @@ projectm_playlist_set_preset_switched_event_callback(playlist,&load_preset_callb
     projectm_set_fps(pm, 60);
     projectm_set_soft_cut_duration(pm, 17);
     projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, nullptr);
- //   projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, nullptr);
+    projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, nullptr);
     printf("projectM initialized\n");
     return 0;
 }
