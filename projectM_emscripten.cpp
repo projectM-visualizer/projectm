@@ -704,7 +704,7 @@ projectm_playlist_set_preset_switched_event_callback(playlist,load_preset_callba
     projectm_set_fps(pm, 60);
     projectm_set_soft_cut_duration(pm, 17);
     projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, nullptr);
-    projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, nullptr);
+  //  projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, nullptr);
     printf("projectM initialized\n");
     return 0;
 }
