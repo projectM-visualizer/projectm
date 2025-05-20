@@ -302,7 +302,7 @@ printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ?
 // });
 // AppData* app_data = (AppData*)user_data;
 projectm_playlist_handle playlist = app_data->playlist;
-// projectm_playlist_play_next(playlist,false);
+projectm_playlist_play_next(playlist,false);
 return;
 }
 
