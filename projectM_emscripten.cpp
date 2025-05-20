@@ -3,6 +3,7 @@
 #include <emscripten/bind.h>
 #include <emscripten/html5.h>
 #include <projectM-4/projectM.h>
+#include <projectM-4/playlist.h> // This should include all necessary playlist_*.h headers
 
 #include <emscripten/html5_webgl.h>
 
@@ -34,6 +35,44 @@
 #include <cmath>        // For std::max (optional, can use INT32_MAX directly)
 
 using namespace emscripten;
+
+// Data structure to hold any application-specific data needed in callbacks.
+// In this case, it will hold the main ProjectM engine handle.
+
+typedef struct {
+projectm_handle projectm_engine;
+    // You could add other data here if your callbacks need it.
+} AppData;
+
+  // Callback function that the playlist will call to load a preset
+
+bool load_preset_callback_example(projectm_playlist_handle_t playlist,const char* preset_url,void* user_data) {
+if (!preset_url || !user_data) {
+fprintf(stderr, "Load preset callback: Invalid arguments.\n");
+return false;
+}
+AppData* app_data = (AppData*)user_data;
+projectm_handle engine = app_data->projectm_engine;
+if (!engine) {
+fprintf(stderr, "Load preset callback: ProjectM engine handle is null.\n");
+return false;
+}
+    printf("Playlist directs to load preset: %s\n", preset_url);
+    // Here, you instruct the main ProjectM engine to load the preset.
+    // The exact function might vary based on your ProjectM version or specific C wrapper,
+    // but projectm_select_preset_url() is a common one.
+    if (projectm_select_preset_url(engine, preset_url)) {
+        printf("Preset %s selected successfully in ProjectM engine.\n", preset_url);
+        return true;
+} else {
+fprintf(stderr, "Failed to select preset %s in ProjectM engine.\n", preset_url);
+return false;
+}
+}
+
+
+
+
 
 EGLDisplay display;
 EGLSurface surface;
@@ -308,16 +347,13 @@ EM_ASM({
    FS.mkdir('/presets');
 FS.mkdir('/textures');
 FS.mkdir('/snd');
-
 document.querySelector('#scanvas').height=window.innerHeight;
 document.querySelector('#scanvas').width=window.innerHeight;
 document.querySelector('#mcanvas').height=window.innerHeight;
 document.querySelector('#mcanvas').width=window.innerHeight;
-
 var $sngs=[];
 var $shds=[];
 var $texs=[];
-
 function textures(xml){
 const nparser=new DOMParser();
 const htmlDocs=nparser.parseFromString(xml.responseText,'text/html');
@@ -352,7 +388,6 @@ document.querySelector('#stat').style.backgroundColor='blue';
 });
 ff.send(null);
 }};
-
 function scanTextures(){
 const nxhttp=new XMLHttpRequest();
 nxhttp.onreadystatechange=function(){
@@ -362,9 +397,8 @@ textures(this);
 }};
 nxhttp.open('GET','textures/',true);
 nxhttp.send();
-            }
-
-            function shds(xml){
+}
+function shds(xml){
 const nparser=new DOMParser();
 const htmlDocs=nparser.parseFromString(xml.responseText,'text/html');
 const preList=htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
@@ -382,10 +416,8 @@ console.log('Scanned '+$shds[0]+' Shaders.');
                setTimeout(function(){
             getShaders();
 },2500);
-
 };
-
-            function scanShaders(){
+function scanShaders(){
 const nxhttp=new XMLHttpRequest();
 nxhttp.onreadystatechange=function(){
     if(this.readyState==4&&this.status==200){
@@ -394,8 +426,7 @@ nxhttp.onreadystatechange=function(){
 nxhttp.open('GET','https://glsl.1ink.us/milk/',true);
 nxhttp.send();
             }
-
-            function sngs(xml){
+function sngs(xml){
 const nparser=new DOMParser();
 const htmlDocs=nparser.parseFromString(xml.responseText,'text/html');
 const preList=htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
@@ -410,8 +441,7 @@ for(var i=1;i<preList.length;i++){
     $sngs[i]=basePath+'songs/'+txxt;
 // $sngs[i]=currentOrigin+txxt;
 }};
-
-            function scanSongs(){
+function scanSongs(){
 const nxhttp=new XMLHttpRequest();
 nxhttp.onreadystatechange=function(){
     if(this.readyState==4&&this.status==200){
@@ -420,22 +450,18 @@ nxhttp.onreadystatechange=function(){
 nxhttp.open('GET','songs/',true);
 nxhttp.send();
             }
-
-            function pll(){
+function pll(){
 Module.ccall('pl');
-            }
-
-            const fll=new BroadcastChannel('file');
-            fll.addEventListener('message',ea=>{
+}
+const fll=new BroadcastChannel('file');
+fll.addEventListener('message',ea=>{
 const fill=new Uint8Array(ea.data.data);
 FS.writeFile('/snd/sample.wav',fill);
 setTimeout(function(){pll();},500);
 const shutDown=new BroadcastChannel('shutDown');
 shutDown.postMessage({data:222});
             });
-
-
-            function getShader(pth,fname){
+function getShader(pth,fname){
 const ff=new XMLHttpRequest();
 ff.open('GET',pth,true);
 ff.responseType='arraybuffer';
@@ -450,10 +476,8 @@ ff.addEventListener("load",function(){
         // Module.loadPresetFile(fname);
         document.querySelector('#stat').innerHTML='Downloaded Shader';
         document.querySelector('#stat').style.backgroundColor='blue';
-
 const presetFileNameToLoad = fname;
 console.log("JS: Attempting to load pre-downloaded: " + presetFileNameToLoad);
-
 try {
     const content = FS.readFile(presetFileNameToLoad, { encoding: 'utf8' });
     console.log("JS: Content of " + presetFileNameToLoad + " (first 200 chars):", content.substring(0,200));
@@ -465,29 +489,24 @@ try {
     // Don't proceed to Module.loadPresetFile if it can't be read or is empty
     return;
 }
-
     }
 });
 ff.send(null);
             }
-
-
-            function snd(){
+function snd(){
 const randSong=Math.floor(($sngs[0]-5)*Math.random());
 const songSrc=$sngs[randSong+5];
 document.querySelector('#track').src=songSrc;
 const sng=new BroadcastChannel('sng');
 sng.postMessage({data:songSrc});
             };
-
-            document.querySelector('#musicBtn').addEventListener('click',function(){
+document.querySelector('#musicBtn').addEventListener('click',function(){
 window.open('./flac');
 setTimeout(function(){
     snd();
 },1450);
-            });
-
-            document.querySelector('#milkBtn').addEventListener('click',function(){
+});
+document.querySelector('#milkBtn').addEventListener('click',function(){
 for (var i=0;i<25;i++){
     var randShd=Math.floor(($shds[0]-5)*Math.random());
     var milkSrc=$shds[randShd+5];
@@ -508,8 +527,7 @@ Module.getShader();
 // Module.loadPresetFile("/presets/preset.milk");
 */
             });
-
-            function getShaders(){
+function getShaders(){
 for (var i=0;i<25;i++){
     var randShd=Math.floor(($shds[0]-5)*Math.random());
     var milkSrc=$shds[randShd+5];
@@ -521,16 +539,12 @@ document.querySelector('#milkPath').innerHTML=milkSrc;
 setTimeout(function(){
     Module.startRender(window.innerHeight);
 },500);
-            }
-
-            var pth=document.querySelector('#milkPath').innerHTML;
+}
+var pth=document.querySelector('#milkPath').innerHTML;
 // Module.getShader();
-
             scanTextures();
             scanSongs();
             scanShaders();
-
- 
             document.querySelector('#meshSize').addEventListener('change', (event) => {
 let meshValue = event.target.value;
 // Split the value into two numbers
@@ -538,18 +552,13 @@ let values = meshValue.split(',').map(Number);
 console.log('Setting Mesh:', values[0], values[1]);
 Module.setMesh(values[0], values[1]);
             });
-
-
-
 //  const meshValue = document.querySelector('#meshSize').value;
    // Split the value into two numbers
 // const values = meshValue.split(',').map(Number);
 // console.log('Setting Mesh:', values[0], values[1]);
 // Module.setMesh(values[0], values[1]);
            });
-
     if (pm) return 0;
-
     // initialize WebGL context attributes
     // https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes
     EmscriptenWebGLContextAttributes webgl_attrs;
@@ -580,7 +589,6 @@ Module.setMesh(values[0], values[1]);
     eglGetConfigAttrib(display,eglconfig,EGL_COVERAGE_BUFFERS_NV,&numBuffersNV);
     eglGetConfigAttrib(display,eglconfig,EGL_GL_COLORSPACE,&colorSpace);
     eglGetConfigAttrib(display,eglconfig,EGL_COLOR_FORMAT_HI,&colorFormat);
-
     static EGLint ctx_att[]={
             EGL_CONTEXT_CLIENT_TYPE,EGL_OPENGL_ES_API,
             EGL_CONTEXT_CLIENT_VERSION,3,
@@ -591,12 +599,10 @@ Module.setMesh(values[0], values[1]);
 // EGL_CONTEXT_PRIORITY_LEVEL_IMG,EGL_CONTEXT_PRIORITY_HIGH_IMG,
             EGL_NONE
     };
-
     static EGLint att_lst2[]={
             EGL_GL_COLORSPACE_KHR,colorSpace,
             EGL_NONE
     };
-
     static EGLint att_lst[]={
             EGL_COLOR_COMPONENT_TYPE_EXT,EGL_COLOR_COMPONENT_TYPE_FLOAT_EXT,
 // EGL_COLOR_COMPONENT_TYPE_EXT,EGL_COLOR_COMPONENT_TYPE_FIXED_EXT,
@@ -635,33 +641,25 @@ Module.setMesh(values[0], values[1]);
             EGL_SAMPLES,numSamples,
             EGL_NONE
     };
-
     eglChooseConfig(display,att_lst,&eglconfig,1,&config_size);
     ctxegl=eglCreateContext(display,eglconfig,EGL_NO_CONTEXT,ctx_att);
     surface=eglCreateWindowSurface(display,eglconfig,(NativeWindowType)0,att_lst2);
 // eglBindAPI(EGL_OPENGL_ES_API);
     eglBindAPI(EGL_OPENGL_API);
-
     gl_ctx = emscripten_webgl_create_context("#mcanvas", &webgl_attrs);
-
     if (!gl_ctx) {
         fprintf(stderr, "Failed to create WebGL context\n");
         return 1;
     }
-
     EMSCRIPTEN_RESULT em_res = emscripten_webgl_make_context_current(gl_ctx);
-
     eglMakeCurrent(display,surface,surface,ctxegl);
     emscripten_webgl_make_context_current(gl_ctx);
-
     glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT,GL_NICEST);
     glHint(GL_GENERATE_MIPMAP_HINT,GL_NICEST);
-
     if (em_res != EMSCRIPTEN_RESULT_SUCCESS) {
         fprintf(stderr, "Failed to activate the WebGL context for rendering\n");
         return 1;
     }
-
     // These are probably redundant since all GL extensions are enabled by default
     // https://github.com/emscripten-core/emscripten/blob/1b01a9ef2b60184eb70616bbb294cf33d011bbb2/src/settings.js#L481
     // https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.enableExtensionsByDefault
@@ -681,69 +679,80 @@ Module.setMesh(values[0], values[1]);
 
     pm = projectm_create();
 
+projectm_playlist_settings_t playlist_settings;
+memset(&playlist_settings, 0, sizeof(projectm_playlist_settings_t)); // Initialize to zero
+playlist_settings.load_preset_callback = load_preset_callback_example;
+playlist_settings.user_data_load_preset = &app_data; // Pass our AppData to the callback
+    printf("Playlist settings configured.\n");
+
+    // --- 3. Create a Playlist ---
+    projectm_playlist_handle_t playlist = projectm_playlist_create(&playlist_settings);
+    if (!playlist) {
+        fprintf(stderr, "Failed to create playlist.\n");
+        projectm_destroy(engine);
+        return 1;
+    }
+    printf("Playlist created successfully.\n");
+
     if (!pm) {
         fprintf(stderr, "Failed to create projectM handle\n");
         return 1;
     }
-
     // configure projectM
     const char* texture_search_paths[] = {"textures"};
     projectm_set_texture_search_paths(pm, texture_search_paths, 1);
     projectm_set_fps(pm, 60);
     projectm_set_soft_cut_duration(pm, 17);
     projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, nullptr);
-
     projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, nullptr);
-
     printf("projectM initialized\n");
     return 0;
 }
 
-
 void set_mesh(int w,int h){
-    projectm_set_mesh_size(pm,w,h);
-    return;
+projectm_set_mesh_size(pm,w,h);
+return;
 }
 
 void destruct() {
-    if (pm) projectm_destroy(pm);
+if (pm) projectm_destroy(pm);
     pm = NULL;
 
     if (gl_ctx) emscripten_webgl_destroy_context(gl_ctx);
-    gl_ctx = NULL;
+gl_ctx = NULL;
 }
 
 void load_preset_file(std::string filename) {
-    if (!pm) return;
+if (!pm) return;
     // XXX: smooth_transition true does not work
     //projectm_load_preset_file(pm, filename.c_str(), true);
-    projectm_load_preset_file(pm, filename.c_str(), false);
+projectm_load_preset_file(pm, filename.c_str(), false);
 }
 
 void render_frame() {
-    if (!pm) return;
+if (!pm) return;
     projectm_opengl_render_frame(pm);
 }
 
 void set_window_size(int width, int height) {
-    if (!pm) return;
+if (!pm) return;
     glViewport(0,0,height,height);  //  viewport/scissor after UsePrg runs at full resolution
     // glEnable(GL_SCISSOR_TEST);
     // glScissor(0,0,height,height);
-    projectm_set_window_size(pm, height, height);
+projectm_set_window_size(pm, height, height);
 }
 
 // https://emscripten.org/docs/api_reference/bind.h.html#_CPPv419EMSCRIPTEN_BINDINGS4name
 // https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html
 EMSCRIPTEN_BINDINGS(projectm_bindings) {
-        function("destruct", &destruct);
-        function("init", &init);
-        function("loadPresetFile", &load_preset_file);
-        function("renderFrame", &render_frame);
-        function("startRender", &start_render);
-        function("setWindowSize", &set_window_size);
-        function("setMesh", &set_mesh);
-        function("getShader", &getShader);
+function("destruct", &destruct);
+function("init", &init);
+function("loadPresetFile", &load_preset_file);
+function("renderFrame", &render_frame);
+function("startRender", &start_render);
+function("setWindowSize", &set_window_size);
+function("setMesh", &set_mesh);
+function("getShader", &getShader);
 }
 
 int main(){
