@@ -711,7 +711,7 @@ projectm_playlist_add_path(playlist,loc,true,true);
 
 void add_preset_path(){
 const char * loc="/presets/";
-projectm_playlist_add_path(appData.playlist,loc,true,true);
+projectm_playlist_add_path(app_data.playlist,loc,true,true);
 printf("Added /presets/ to playlist successfully.\n");
 }
 
