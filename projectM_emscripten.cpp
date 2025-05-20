@@ -42,7 +42,7 @@ using namespace emscripten;
 
 typedef struct {
 projectm_handle projectm_engine;
-projectm_playlist_handle playlist{nullptr};
+projectm_playlist_handle playlist;
     // You could add other data here if your callbacks need it.
 } AppData;
 
@@ -52,7 +52,7 @@ AppData app_data;
   // Callback function that the playlist will call to load a preset
 void load_preset_callback_example(bool is_hard_cut, unsigned int index,void* user_data) {
 // AppData* app_data = (AppData*)user_data;
-projectm_playlist_handle playlist = app_data->playlist;
+projectm_playlist_handle playlist = app_data.playlist;
 projectm_playlist_play_next(playlist, false);
 return;
 }
@@ -301,7 +301,7 @@ printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ?
 // Module.loadPresetFile('/presets/preset_'+randIndex+'.milk');
 // });
 // AppData* app_data = (AppData*)user_data;
-projectm_playlist_handle playlist = app_data->playlist;
+projectm_playlist_handle playlist = app_data.playlist;
 projectm_playlist_play_next(playlist,false);
 return;
 }
