@@ -46,7 +46,7 @@ projectm_handle projectm_engine;
 
   // Callback function that the playlist will call to load a preset
 
-bool load_preset_callback_example(projectm_playlist_handle_t playlist,const char* preset_url,void* user_data) {
+bool load_preset_callback_example(projectm_playlist_handle playlist,const char* preset_url,void* user_data) {
 if (!preset_url || !user_data) {
 fprintf(stderr, "Load preset callback: Invalid arguments.\n");
 return false;
@@ -679,14 +679,14 @@ Module.setMesh(values[0], values[1]);
 
     pm = projectm_create();
 
-projectm_playlist_settings_t playlist_settings;
+projectm_playlist_settingsplaylist_settings;
 memset(&playlist_settings, 0, sizeof(projectm_playlist_settings_t)); // Initialize to zero
 playlist_settings.load_preset_callback = load_preset_callback_example;
 playlist_settings.user_data_load_preset = &app_data; // Pass our AppData to the callback
     printf("Playlist settings configured.\n");
 
     // --- 3. Create a Playlist ---
-    projectm_playlist_handle_t playlist = projectm_playlist_create(&playlist_settings);
+    projectm_playlist_handle playlist = projectm_playlist_create(&playlist_settings);
     if (!playlist) {
         fprintf(stderr, "Failed to create playlist.\n");
         projectm_destroy(engine);
