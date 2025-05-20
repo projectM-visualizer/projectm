@@ -53,7 +53,7 @@ AppData app_data;
 void load_preset_callback_example(bool is_hard_cut, unsigned int index,void* user_data) {
 // AppData* app_data = (AppData*)user_data;
 projectm_playlist_handle playlist = app_data.playlist;
-projectm_playlist_play_next(playlist, false);
+uint32_t indx = projectm_playlist_play_next(playlist, false);
 return;
 }
 
@@ -302,7 +302,7 @@ printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ?
 // });
 // AppData* app_data = (AppData*)user_data;
 projectm_playlist_handle playlist = app_data.playlist;
-projectm_playlist_play_next(playlist,false);
+uint32_t indx = projectm_playlist_play_next(playlist,false);
 return;
 }
 
@@ -703,6 +703,7 @@ projectm_playlist_add_path(playlist,loc,true,true);
     projectm_set_texture_search_paths(pm, texture_search_paths, 1);
     projectm_set_fps(pm, 60);
     projectm_set_soft_cut_duration(pm, 17);
+    projectm_playlist_set_shuffle(playlist,true);
     projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, nullptr);
     projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, nullptr);
     printf("projectM initialized\n");
