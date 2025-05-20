@@ -84,8 +84,6 @@ SDL_PauseAudioDevice(dev,SDL_FALSE);
 return;
 }
 
-extern "C"{
-
 void SDLCALL bfr(void* userdata, Uint8* stm, int len) {
     // --- Start with safety checks and handling for when pm is null ---
 if (!pm) {
@@ -205,7 +203,7 @@ wave.pos = 0; // Wrap around
 }
 } // End while(len > 0)
 }
-}
+
 
 void plt(){
 char flnm[24];
