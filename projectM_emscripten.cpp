@@ -45,34 +45,14 @@ projectm_playlist_handle playlist{nullptr};
     // You could add other data here if your callbacks need it.
 } AppData;
 
+
   // Callback function that the playlist will call to load a preset
-
-void load_preset_callback_example(bool is_hard_cut, unsigned int index,
-                                                        void* user_data) {
-if (!preset_url || !user_data) {
-fprintf(stderr, "Load preset callback: Invalid arguments.\n");
-return;
-}
+void load_preset_callback_example(bool is_hard_cut, unsigned int index,void* user_data) {
 AppData* app_data = (AppData*)user_data;
-projectm_handle engine = app_data->projectm_engine;
 playlist = app_data->playlist;
-if (!engine) {
-fprintf(stderr, "Load preset callback: ProjectM engine handle is null.\n");
+projectm_playlist_play_next(playlist, false);
 return;
 }
-    printf("Playlist directs to load preset: %s\n", preset_url);
-    // Here, you instruct the main ProjectM engine to load the preset.
-    // The exact function might vary based on your ProjectM version or specific C wrapper,
-    // but projectm_select_preset_by_url() is a common one.
-    if (projectm_playlist_play_next(playlist, false)) {
-        printf("Preset %s selected successfully in ProjectM engine.\n", preset_url);
-        return;
-} else {
-fprintf(stderr, "Failed to select next preset in ProjectM engine.\n");
-return;
-}
-}
-
 
 
 
