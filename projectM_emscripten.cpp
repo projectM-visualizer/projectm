@@ -48,6 +48,7 @@ projectm_playlist_handle playlist;
 
 
 AppData app_data;
+projectm_playlist_handle playlist={};
 
   // Callback function that the playlist will call to load a preset
 void load_preset_callback_example(bool is_hard_cut, unsigned int index,void* user_data) {
@@ -665,7 +666,7 @@ Module.setMesh(values[0], values[1]);
     emscripten_webgl_enable_extension(gl_ctx,"EXT_color_buffer_float"); // GLES float
     emscripten_webgl_enable_extension(gl_ctx,"EXT_float_blend"); // GLES float
 
-    pm = projectm_create();
+pm = projectm_create();
 
 app_data.projectm_engine = pm;
 
@@ -677,16 +678,15 @@ app_data.projectm_engine = pm;
 
     // --- 3. Create a Playlist ---
 
-    projectm_playlist_handle playlist(projectm_playlist_create(pm));
+playlist(projectm_playlist_create(pm));
 
-    printf("Playlist created successfully.\n");
+printf("Playlist created successfully.\n");
 
 app_data.playlist = playlist;
 
-const char * loc="/presets/";
-projectm_playlist_add_path(playlist,loc,true,true);
-
-    printf("Added /presets/ to playlist successfully.\n");
+// const char * loc="/presets/";
+// projectm_playlist_add_path(playlist,loc,true,true);
+// printf("Added /presets/ to playlist successfully.\n");
 
 // projectm_playlist_set_preset_switched_event_callback(playlist,&load_preset_callback_example,&app_data);
 
@@ -705,7 +705,7 @@ projectm_playlist_add_path(playlist,loc,true,true);
     projectm_set_soft_cut_duration(pm, 17);
     projectm_playlist_set_shuffle(playlist,true);
     projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, nullptr);
-    projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, nullptr);
+    projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, &app_data);
     printf("projectM initialized\n");
     return 0;
 }
