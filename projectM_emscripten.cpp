@@ -523,6 +523,7 @@ document.querySelector('#milkPath').innerHTML=milkSrc;
 // Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
     console.log('Got '+'/presets/preset_'+i+'.milk from '+milkSrc+'.');
 }
+Module.addPath();
 setTimeout(function(){
     Module.startRender(window.innerHeight);
 },500);
@@ -677,18 +678,14 @@ app_data.projectm_engine = pm;
     // --- 3. Create a Playlist ---
 
     projectm_playlist_handle playlist(projectm_playlist_create(pm));
-    if (!playlist) {
-        fprintf(stderr, "Failed to create playlist.\n");
-        projectm_destroy(app_data.projectm_engine);
-        return 1;
-    }
+
     printf("Playlist created successfully.\n");
 
 app_data.playlist = playlist;
 
-
 const char * loc="/presets/";
 projectm_playlist_add_path(playlist,loc,true,true);
+
     printf("Added /presets/ to playlist successfully.\n");
 
 // projectm_playlist_set_preset_switched_event_callback(playlist,&load_preset_callback_example,&app_data);
@@ -710,6 +707,12 @@ projectm_playlist_add_path(playlist,loc,true,true);
     projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, nullptr);
     printf("projectM initialized\n");
     return 0;
+}
+
+void add_preset_path(){
+const char * loc="/presets/";
+projectm_playlist_add_path(appData.playlist,loc,true,true);
+printf("Added /presets/ to playlist successfully.\n");
 }
 
 void set_mesh(int w,int h){
@@ -756,6 +759,7 @@ function("startRender", &start_render);
 function("setWindowSize", &set_window_size);
 function("setMesh", &set_mesh);
 function("getShader", &getShader);
+function("addPath", &add_preset_path);
 }
 
 int main(){
