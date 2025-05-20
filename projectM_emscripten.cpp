@@ -692,7 +692,8 @@ playlist_settings.user_data_load_preset = &app_data; // Pass our AppData to the 
     printf("Playlist settings configured.\n");
 
     // --- 3. Create a Playlist ---
-    projectm_playlist_handle playlist = projectm_playlist_create(&playlist_settings);
+
+    projectm_playlist_handle playlist(projectm_playlist_create(pm));
     if (!playlist) {
         fprintf(stderr, "Failed to create playlist.\n");
         projectm_destroy(engine);
