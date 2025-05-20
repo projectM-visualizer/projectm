@@ -688,7 +688,7 @@ const char * loc="/presets/";
 projectm_playlist_add_path(playlist,loc,true,true);
     printf("Added /presets/ to playlist successfully.\n");
 
-projectm_playlist_set_preset_switched_callback(playlist,load_preset_callback_example,&app_data);
+projectm_playlist_set_preset_switched_event_callback(playlist,load_preset_callback_example,&app_data);
 
 // projectm_playlist_set_preset_switched_event_callback(projectm_playlist_handle instance,
 //                                                          projectm_playlist_preset_switched_event callback,
