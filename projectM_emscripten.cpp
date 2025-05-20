@@ -678,7 +678,7 @@ app_data.projectm_engine = pm;
 
     // --- 3. Create a Playlist ---
 
-playlist(projectm_playlist_create(pm));
+playlist = projectm_playlist_create(pm);
 
 printf("Playlist created successfully.\n");
 
