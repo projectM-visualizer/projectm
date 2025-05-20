@@ -47,15 +47,15 @@ projectm_playlist_handle playlist{nullptr};
 } AppData;
 
 
+AppData app_data;
+
   // Callback function that the playlist will call to load a preset
 void load_preset_callback_example(bool is_hard_cut, unsigned int index,void* user_data) {
-AppData* app_data = (AppData*)user_data;
+// AppData* app_data = (AppData*)user_data;
 projectm_playlist_handle playlist = app_data->playlist;
-// projectm_playlist_play_next(playlist, false);
+projectm_playlist_play_next(playlist, false);
 return;
 }
-
-
 
 
 EGLDisplay display;
@@ -300,7 +300,7 @@ printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ?
 // const randIndex = Math.floor(Math.random()*25);
 // Module.loadPresetFile('/presets/preset_'+randIndex+'.milk');
 // });
-AppData* app_data = (AppData*)user_data;
+// AppData* app_data = (AppData*)user_data;
 projectm_playlist_handle playlist = app_data->playlist;
 // projectm_playlist_play_next(playlist,false);
 return;
@@ -666,7 +666,6 @@ Module.setMesh(values[0], values[1]);
 
     pm = projectm_create();
 
-AppData app_data;
 app_data.projectm_engine = pm;
 
 // projectm_playlist_settings playlist_settings;
