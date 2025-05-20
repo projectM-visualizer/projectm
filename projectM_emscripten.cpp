@@ -688,7 +688,7 @@ const char * loc="/presets/";
 projectm_playlist_add_path(playlist,loc,true,true);
     printf("Added /presets/ to playlist successfully.\n");
 
-projectm_playlist_set_preset_switched_event_callback(playlist,load_preset_callback_example,&app_data);
+// projectm_playlist_set_preset_switched_event_callback(playlist,load_preset_callback_example,&app_data);
 
 // projectm_playlist_set_preset_switched_event_callback(projectm_playlist_handle instance,
 //                                                          projectm_playlist_preset_switched_event callback,
@@ -704,7 +704,7 @@ projectm_playlist_set_preset_switched_event_callback(playlist,load_preset_callba
     projectm_set_fps(pm, 60);
     projectm_set_soft_cut_duration(pm, 17);
     projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, nullptr);
-  //  projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, nullptr);
+    projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, nullptr);
     printf("projectM initialized\n");
     return 0;
 }
