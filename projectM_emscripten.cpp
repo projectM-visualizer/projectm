@@ -60,8 +60,8 @@ return false;
     printf("Playlist directs to load preset: %s\n", preset_url);
     // Here, you instruct the main ProjectM engine to load the preset.
     // The exact function might vary based on your ProjectM version or specific C wrapper,
-    // but projectm_select_preset_url() is a common one.
-    if (projectm_select_preset_url(engine, preset_url)) {
+    // but projectm_select_preset_by_url() is a common one.
+    if (projectm_select_preset_by_url(engine, preset_url)) {
         printf("Preset %s selected successfully in ProjectM engine.\n", preset_url);
         return true;
 } else {
