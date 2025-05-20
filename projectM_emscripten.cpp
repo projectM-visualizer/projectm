@@ -51,7 +51,7 @@ projectm_playlist_handle playlist{nullptr};
 void load_preset_callback_example(bool is_hard_cut, unsigned int index,void* user_data) {
 AppData* app_data = (AppData*)user_data;
 projectm_playlist_handle playlist = app_data->playlist;
-projectm_playlist_play_next(playlist, false);
+// projectm_playlist_play_next(playlist, false);
 return;
 }
 
