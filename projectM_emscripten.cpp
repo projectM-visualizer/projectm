@@ -61,11 +61,11 @@ return false;
     // Here, you instruct the main ProjectM engine to load the preset.
     // The exact function might vary based on your ProjectM version or specific C wrapper,
     // but projectm_select_preset_by_url() is a common one.
-    if (projectm_select_preset_by_url(engine, preset_url)) {
+    if (projectm_playlist_play_next(engine, false)) {
         printf("Preset %s selected successfully in ProjectM engine.\n", preset_url);
         return true;
 } else {
-fprintf(stderr, "Failed to select preset %s in ProjectM engine.\n", preset_url);
+fprintf(stderr, "Failed to select next preset in ProjectM engine.\n");
 return false;
 }
 }
@@ -679,6 +679,9 @@ Module.setMesh(values[0], values[1]);
 
     pm = projectm_create();
 
+AppData app_data;
+app_data.projectm_engine = pm;
+
 projectm_playlist_settings playlist_settings;
 memset(&playlist_settings, 0, sizeof(projectm_playlist_settings)); // Initialize to zero
 playlist_settings.load_preset_callback = load_preset_callback_example;
@@ -693,6 +696,9 @@ playlist_settings.user_data_load_preset = &app_data; // Pass our AppData to the 
         return 1;
     }
     printf("Playlist created successfully.\n");
+
+projectm_playlist_add_path(pm,'/presets/,true,true);
+    printf("Added /presets/ to playlist successfully.\n");
 
     if (!pm) {
         fprintf(stderr, "Failed to create projectM handle\n");
