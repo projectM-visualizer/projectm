@@ -47,7 +47,7 @@ projectm_playlist_handle playlist;
     // You could add other data here if your callbacks need it.
 } AppData;
 
-extern projectm_handle pm;
+projectm_handle pm;
 AppData app_data;
 projectm_playlist_handle playlist={};
 
