@@ -795,7 +795,7 @@ function("setWindowSize", &set_window_size);
 function("setMesh", &set_mesh);
 function("getShader", &getShader);
 function("addPath", &add_preset_path);
-    function("projectm_pcm_add_float", &projectm_pcm_add_float_embind_wrapper);
+    function("projectm_pcm_add_float", &projectm_pcm_add_float_from_js_array_wrapper);
 
 }
 
