@@ -3,7 +3,7 @@
 #include <emscripten/bind.h>
 #include <emscripten/val.h>
 #include <emscripten/html5.h>
-#include <projectM-4/playlist.h> // This should include all necessary playlist_*.h headers
+// #include <projectM-4/playlist.h> // This should include all necessary playlist_*.h headers
 
 #include <projectM-4/projectM.h>
 
