@@ -59,19 +59,34 @@ uint32_t indx = projectm_playlist_play_next(playlist, false);
 return;
 }
 
-void projectm_pcm_add_float_embind_wrapper(uintptr_t pm_handle_value,
-                                           emscripten::typed_memory_view<const float> pcm_data_view,
-                                           unsigned int num_samples_per_channel,
-                                           int channels_enum_value) {
-    projectm_handle current_pm_handle = reinterpret_cast<projectm_handle>(pm_handle_value);
-    if (!current_pm_handle) {
-        // Optional: Add a check or logging if the handle is null
-        // fprintf(stderr, "projectm_pcm_add_float_embind_wrapper: projectM handle is null!\n");
+void projectm_pcm_add_float_from_js_array_wrapper(
+    uintptr_t pm_handle_value,
+    emscripten::val js_audio_array_val, // This will be the Float32Array from JavaScript
+    unsigned int num_samples_per_channel,
+    int channels_enum_value) {
+projectm_handle current_pm_handle = reinterpret_cast<projectm_handle>(pm_handle_value);
+if (!current_pm_handle) {
+        fprintf(stderr, "Error: projectM handle is null in from_js_array_wrapper.\n");
         return;
     }
-    // The .data() method of typed_memory_view gives a C-style pointer to the buffer's data
+    // Convert the JavaScript array (expected to be Float32Array) to std::vector<float>
+    // This performs a copy of the data.
+    std::vector<float> cpp_audio_buffer = emscripten::vecFromJSArray<float>(js_audio_array_val);
+    // Optional: Sanity checks
+    if (channels_enum_value <= 0 || num_samples_per_channel == 0) {
+        fprintf(stderr, "Error: Invalid channel count (%d) or samples_per_channel (%u).\n",
+                channels_enum_value, num_samples_per_channel);
+        return;
+    }
+        size_t expected_total_elements = static_cast<size_t>(num_samples_per_channel) * static_cast<size_t>(channels_enum_value);
+    if (cpp_audio_buffer.size() != expected_total_elements) {
+        fprintf(stderr, "Error: Audio data size mismatch. Expected %zu elements, got %zu elements from JS array.\n",
+                expected_total_elements, cpp_audio_buffer.size());
+        return;
+    }
+    // Call the original projectM function with data from the C++ vector
     projectm_pcm_add_float(current_pm_handle,
-                           pcm_data_view.data(),
+                           cpp_audio_buffer.data(), // Get raw pointer from std::vector
                            num_samples_per_channel,
                            static_cast<projectm_channels>(channels_enum_value));
 }
