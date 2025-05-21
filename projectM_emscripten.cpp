@@ -327,15 +327,15 @@ return;
 }
 }
 
-void on_preset_switch_requested(bool is_hard_cut, void* user_data) {
+projectm_preset_switch_requested_event on_preset_switch_requested(bool is_hard_cut, void* user_data) {
 printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ? "true" : "false");
 // EM_ASM({
 // const randIndex = Math.floor(Math.random()*25);
 // Module.loadPresetFile('/presets/preset_'+randIndex+'.milk');
 // });
 // AppData* app_data = (AppData*)user_data;
-projectm_playlist_handle playlist = app_data.playlist;
-uint32_t indx = projectm_playlist_play_next(playlist,false);
+// projectm_playlist_handle playlist = app_data.playlist;
+uint32_t indx = projectm_playlist_play_next(app_data.playlist,false);
 return;
 }
 
