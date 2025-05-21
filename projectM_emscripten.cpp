@@ -60,7 +60,7 @@ return;
 }
 
 void projectm_pcm_add_float_embind_wrapper(uintptr_t pm_handle_value,
-                                           emscripten::val(emscripten::typed_memory_view<const float> pcm_data_view),
+                                           emscripten::val(emscripten::typed_memory_view<const float>(pcm_data_view)),
                                            unsigned int num_samples_per_channel,
                                            int channels_enum_value) {
     projectm_handle current_pm_handle = reinterpret_cast<projectm_handle>(pm_handle_value);
