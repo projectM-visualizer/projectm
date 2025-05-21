@@ -754,8 +754,8 @@ app_data.playlist = playlist;
 
 void add_preset_path(){
 const char * loc="/presets/";
-const char * loca="/presets/milk_10.milk";
-const char * locb="/presets/milk_11.milk";
+const char * loca="/presets/preset_10.milk";
+const char * locb="/presets/preset_11.milk";
 projectm_playlist_add_preset(app_data.playlist,loca,false);
 projectm_playlist_add_preset(app_data.playlist,locb,false);
 projectm_playlist_add_path(app_data.playlist,loc,true,true);
