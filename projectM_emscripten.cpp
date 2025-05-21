@@ -46,7 +46,7 @@ projectm_playlist_handle playlist;
     // You could add other data here if your callbacks need it.
 } AppData;
 
-
+extern projectm_handle pm;
 AppData app_data;
 projectm_playlist_handle playlist={};
 
@@ -58,6 +58,22 @@ uint32_t indx = projectm_playlist_play_next(playlist, false);
 return;
 }
 
+void projectm_pcm_add_float_embind_wrapper(uintptr_t pm_handle_value,
+                                           emscripten::typed_memory_view<const float> pcm_data_view,
+                                           unsigned int num_samples_per_channel,
+                                           int channels_enum_value) {
+    projectm_handle current_pm_handle = reinterpret_cast<projectm_handle>(pm_handle_value);
+    if (!current_pm_handle) {
+        // Optional: Add a check or logging if the handle is null
+        // fprintf(stderr, "projectm_pcm_add_float_embind_wrapper: projectM handle is null!\n");
+        return;
+    }
+    // The .data() method of typed_memory_view gives a C-style pointer to the buffer's data
+    projectm_pcm_add_float(current_pm_handle,
+                           pcm_data_view.data(),
+                           num_samples_per_channel,
+                           static_cast<projectm_channels>(channels_enum_value));
+}
 
 EGLDisplay display;
 EGLSurface surface;
@@ -81,7 +97,7 @@ EGLint colorSpace;
 EGLint colorFormat;
 
 EMSCRIPTEN_WEBGL_CONTEXT_HANDLE gl_ctx;
-projectm_handle pm;
+
 SDL_AudioDeviceID dev;
 struct{Uint8* snd;int pos;Uint32 slen;SDL_AudioSpec spec;}wave;
 
@@ -763,6 +779,8 @@ function("setWindowSize", &set_window_size);
 function("setMesh", &set_mesh);
 function("getShader", &getShader);
 function("addPath", &add_preset_path);
+    function("projectm_pcm_add_float", &projectm_pcm_add_float_embind_wrapper);
+
 }
 
 int main(){
