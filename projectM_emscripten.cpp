@@ -333,9 +333,16 @@ printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ?
 // const randIndex = Math.floor(Math.random()*25);
 // Module.loadPresetFile('/presets/preset_'+randIndex+'.milk');
 // });
+char *str = (char*)EM_ASM_PTR({
+const randIndex = Math.floor(Math.random()*25);
+var jsString = '/presets/preset_'+randIndex+'.milk';
+var lengthBytes = lengthBytesUTF8(jsString)+1;
+return stringToNewUTF8(jsString);
+});
+projectm_load_preset_file(pm, str, false);
 // AppData* app_data = (AppData*)user_data;
 // projectm_playlist_handle playlist = app_data.playlist;
-uint32_t indx = projectm_playlist_play_next(app_data.playlist,false);
+// uint32_t indx = projectm_playlist_play_next(app_data.playlist,false);
 return;
 }
 
