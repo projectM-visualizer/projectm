@@ -343,7 +343,7 @@ return stringToNewUTF8(jsString);
 AppData* app_datas = (AppData*)user_data;
 projectm_playlist_add_preset(app_datas->playlist,str,false);
 // projectm_playlist_handle playlist = app_data.playlist;
-uint32_t indx = projectm_playlist_play_next(app_data.playlist,false);
+uint32_t indx = projectm_playlist_play_next(app_data.playlist,true);
 return;
 }
 
