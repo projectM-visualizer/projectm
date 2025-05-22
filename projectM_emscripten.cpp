@@ -114,6 +114,10 @@ EGLint colorFormat;
 
 EMSCRIPTEN_WEBGL_CONTEXT_HANDLE gl_ctx;
 
+
+extern "C"{
+
+
 SDL_AudioDeviceID dev;
 struct{Uint8* snd;int pos;Uint32 slen;SDL_AudioSpec spec;}wave;
 
@@ -278,6 +282,10 @@ wave.spec.callback=bfr;
 opn_aud();
 return;
 }
+
+
+}
+
 
 void renderLoop(){
 // glClearColor( 1.0, 1.0, 1.0, 0.0 );
