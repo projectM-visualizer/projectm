@@ -753,12 +753,13 @@ app_data.playlist = playlist;
 }
 
 void add_preset_path(){
-const char * loc="/presets/";
-const char * loca="/presets/preset_10.milk";
-const char * locb="/presets/preset_11.milk";
-projectm_playlist_add_preset(app_data.playlist,loca,false);
-projectm_playlist_add_preset(app_data.playlist,locb,false);
-projectm_playlist_add_path(app_data.playlist,loc,true,true);
+const char * loc="/presets/";    
+char preset_file[64]; // Buffer for the generated filename
+for (int i = 0; i <= 25; ++i) {
+snprintf(preset_file, sizeof(preset_file), "/presets/preset_%d.milk", i);
+projectm_playlist_add_preset(app_data.playlist, preset_file, false);
+}
+// projectm_playlist_add_path(app_data.playlist,loc,true,true);
 // projectm_set_preset_switch_requested_event_callback(app_data.projectm_engine, &on_preset_switch_requested, &app_data);
 printf("Added /presets/ to playlist successfully.\n");
 }
