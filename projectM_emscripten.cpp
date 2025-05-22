@@ -339,7 +339,7 @@ var jsString = '/presets/preset_'+randIndex+'.milk';
 var lengthBytes = lengthBytesUTF8(jsString)+1;
 return stringToNewUTF8(jsString);
 });
-projectm_playlist_add_preset(user_data.playlist,str,false);
+projectm_playlist_add_preset(&user_data.playlist,str,false);
 // projectm_load_preset_file(pm, str, false);
 // AppData* app_data = (AppData*)user_data;
 // projectm_playlist_handle playlist = app_data.playlist;
