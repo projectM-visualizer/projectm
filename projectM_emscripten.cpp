@@ -745,7 +745,7 @@ app_data.playlist = playlist;
     projectm_set_soft_cut_duration(pm, 17);
     projectm_playlist_set_shuffle(playlist,true);
     projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, nullptr);
-    projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, nullptr);
+    projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, &app_data);
 // projectm_playlist_connect(app_data.playlist,app_data.projectm_engine);
 
     printf("projectM initialized\n");
