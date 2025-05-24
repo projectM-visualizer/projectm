@@ -238,7 +238,7 @@ std::vector<float> float_buffer(total_samples_in_chunk);
                         // Conversion constant (using INT32_MAX from <limits>)
 const float max_s32_val = static_cast<float>(std::numeric_limits<int32_t>::max()); // 2147483647.0f
     
-// #pragma omp simd // Ideal for this kind of data transformation
+#pragma omp simd // Ideal for this kind of data transformation
 for(unsigned int i=0;i<total_samples_in_chunk;++i){
 float_buffer[i]=static_cast<float>(s32_samples[i])/max_s32_val;
 }
