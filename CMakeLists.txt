@@ -136,7 +136,7 @@ if(ENABLE_EMSCRIPTEN)
 
     add_link_options(
             "SHELL:-s USE_SDL=2 -std=c++26 -O3 -rtlib=compiler-rt-mt -mtune=wasm32 -s SHARED_MEMORY=1 -s WASM_WORKERS=1 "
-            "SHELL:-s MIN_WEBGL_VERSION=2 -sTOTAL_STACK=100mb "
+            "SHELL:-s MIN_WEBGL_VERSION=2 "
             "SHELL:-s MAX_WEBGL_VERSION=2 -sPTHREAD_POOL_SIZE=42 -sDEFAULT_PTHREAD_STACK_SIZE=2mb "
             "SHELL:-s USE_WEBGL2=1 -s FULL_ES2=1 -s FULL_ES3=1 -s GL_MAX_TEMP_BUFFER_SIZE=33177600 -s GL_TRACK_ERRORS=0 "
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING -s ALLOW_MEMORY_GROWTH=1 -sMALLOC='mimalloc' "
