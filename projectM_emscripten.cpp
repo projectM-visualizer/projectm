@@ -236,11 +236,12 @@ const int32_t* s32_samples = reinterpret_cast<const int32_t*>(wptr_wav_chunk_sta
 std::vector<float> float_buffer(total_samples_in_chunk);
                         // Conversion constant (using INT32_MAX from <limits>)
 const float max_s32_val = static_cast<float>(std::numeric_limits<int32_t>::max()); // 2147483647.0f
-for (unsigned int i = 0; i < total_samples_in_chunk; ++i) {
-float_buffer[i] = static_cast<float>(s32_samples[i]) / max_s32_val;
-                            // Optional clamping in case of rounding errors, though division should handle it
-                            // float_buffer[i] = std::max(-1.0f, std::min(1.0f, float_buffer[i]));
+    
+#pragma omp simd // Ideal for this kind of data transformation
+for(unsigned int i=0;i<total_samples_in_chunk;++i){
+float_buffer[i]=static_cast<float>(s32_samples[i])/max_s32_val;
 }
+
                         // Feed the converted float buffer to projectM
 projectm_pcm_add_float(pm,float_buffer.data(),samples_per_channel_in_chunk,(projectm_channels)channels);
                         // vector float_buffer goes out of scope and automatically cleans up memory
