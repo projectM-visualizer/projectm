@@ -131,13 +131,13 @@ if(ENABLE_EMSCRIPTEN)
     add_compile_options(
             "SHELL:-s USE_SDL=2 -O3 -mtune=wasm32 "
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING -s SHARED_MEMORY=1 -s WASM_WORKERS=1 "
-            "SHELL:-msimd128 -mrelaxed-simd -openmp-simd -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing -fno-math-errno"
+            "SHELL:-msimd128 -openmp-simd -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing -fno-math-errno"
             )
 
     add_link_options(
             "SHELL:-s USE_SDL=2 -std=c++26 -O3 -rtlib=compiler-rt-mt -mtune=wasm32 -s SHARED_MEMORY=1 -s WASM_WORKERS=1 "
             "SHELL:-s MIN_WEBGL_VERSION=2 "
-            "SHELL:-s MAX_WEBGL_VERSION=2 -sPTHREAD_POOL_SIZE=42 -sDEFAULT_PTHREAD_STACK_SIZE=64kb "
+            "SHELL:-s MAX_WEBGL_VERSION=2 "
             "SHELL:-s USE_WEBGL2=1 -s FULL_ES2=1 -s FULL_ES3=1 -s GL_MAX_TEMP_BUFFER_SIZE=33177600 -s GL_TRACK_ERRORS=0 "
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING -s ALLOW_MEMORY_GROWTH=1 -sMALLOC='mimalloc' "
             "SHELL:-msimd128 -openmp-simd -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing "
