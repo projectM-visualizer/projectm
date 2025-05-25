@@ -142,7 +142,7 @@ if(ENABLE_EMSCRIPTEN)
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING -s ALLOW_MEMORY_GROWTH=1 -sMALLOC='mimalloc' "
             "SHELL:-msimd128 -mrelaxed-simd -openmp-simd -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing "
             "SHELL:--typed-function-references --enable-reference-types -fno-math-errno "
-            "SHELL:-s TRUSTED_TYPES=1 -s WASM_BIGINT=1 "
+            "SHELL:-s TRUSTED_TYPES=1 -s WASM_BIGINT=1 -sAUDIO_WORKLET=1 "
             "SHELL:-s FORCE_FILESYSTEM=1 -s ASYNCIFY=1"
             )
 
