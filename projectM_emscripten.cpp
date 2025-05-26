@@ -381,6 +381,7 @@ ff.send(null);
 });
 
 int init() {
+
 EM_ASM({
 FS.mkdir('/presets');
 FS.mkdir('/textures');
@@ -392,6 +393,7 @@ document.querySelector('#mcanvas').width=window.innerHeight;
 var $sngs=[];
 var $shds=[];
 var $texs=[];
+
 function textures(xml){
 const nparser=new DOMParser();
 const htmlDocs=nparser.parseFromString(xml.responseText,'text/html');
@@ -426,6 +428,7 @@ document.querySelector('#stat').style.backgroundColor='blue';
 });
 ff.send(null);
 }};
+
 function scanTextures(){
 const nxhttp=new XMLHttpRequest();
 nxhttp.onreadystatechange=function(){
@@ -436,61 +439,67 @@ textures(this);
 nxhttp.open('GET','textures/',true);
 nxhttp.send();
 }
+
 function shds(xml){
 const nparser=new DOMParser();
 const htmlDocs=nparser.parseFromString(xml.responseText,'text/html');
 const preList=htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
 $shds[0]=preList.length;
 for(var i=1;i<preList.length;i++){
-    var txxt=preList[i].href;
-    let pathName = 'https://glsl.1ink.us/milk';
-    let currentOrigin = window.location.origin;
-    let lastSlashIndex = pathName.lastIndexOf('/');
-    let basePath = pathName.substring(0, lastSlashIndex);
-    txxt=txxt.replace(currentOrigin,'');
-    $shds[i]=basePath+'/milk'+txxt;
+var txxt=preList[i].href;
+let pathName = 'https://glsl.1ink.us/milk';
+let currentOrigin = window.location.origin;
+let lastSlashIndex = pathName.lastIndexOf('/');
+let basePath = pathName.substring(0, lastSlashIndex);
+txxt=txxt.replace(currentOrigin,'');
+$shds[i]=basePath+'/milk'+txxt;
 }
 console.log('Scanned '+$shds[0]+' Shaders.');
-               setTimeout(function(){
-            getShaders();
+setTimeout(function(){
+getShaders();
 },2500);
 };
+
 function scanShaders(){
 const nxhttp=new XMLHttpRequest();
 nxhttp.onreadystatechange=function(){
-    if(this.readyState==4&&this.status==200){
-        shds(this);
-    }};
+if(this.readyState==4&&this.status==200){
+shds(this);
+}};
 nxhttp.open('GET','https://glsl.1ink.us/milk/',true);
 nxhttp.send();
-            }
+}
+
 function sngs(xml){
 const nparser=new DOMParser();
 const htmlDocs=nparser.parseFromString(xml.responseText,'text/html');
 const preList=htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
 $sngs[0]=preList.length;
 for(var i=1;i<preList.length;i++){
-    var txxt=preList[i].href;
-    let pathName = window.location.pathname;
-    let currentOrigin = window.location.origin;
-    let lastSlashIndex = pathName.lastIndexOf('/');
-    let basePath = pathName.substring(0, lastSlashIndex + 1);
-    txxt=txxt.replace(currentOrigin,'');
-    $sngs[i]=basePath+'songs/'+txxt;
+var txxt=preList[i].href;
+let pathName = window.location.pathname;
+let currentOrigin = window.location.origin;
+let lastSlashIndex = pathName.lastIndexOf('/');
+let basePath = pathName.substring(0, lastSlashIndex + 1);
+txxt=txxt.replace(currentOrigin,'');
+$sngs[i]=basePath+'songs/'+txxt;
 // $sngs[i]=currentOrigin+txxt;
 }};
+
 function scanSongs(){
 const nxhttp=new XMLHttpRequest();
 nxhttp.onreadystatechange=function(){
-    if(this.readyState==4&&this.status==200){
-        sngs(this);
-    }};
+if(this.readyState==4&&this.status==200){
+sngs(this);
+}};
 nxhttp.open('GET','songs/',true);
 nxhttp.send();
-            }
+}
+
 function pll(){
 Module.ccall('pl');
 }
+
 const fll=new BroadcastChannel('file');
 fll.addEventListener('message',ea=>{
 const fill=new Uint8Array(ea.data.data);
@@ -498,7 +507,8 @@ FS.writeFile('/snd/sample.wav',fill);
 setTimeout(function(){pll();},500);
 const shutDown=new BroadcastChannel('shutDown');
 shutDown.postMessage({data:222});
-            });
+});
+
 function getShader(pth,fname){
 const ff=new XMLHttpRequest();
 ff.open('GET',pth,true);
@@ -506,52 +516,55 @@ ff.responseType='arraybuffer';
 document.querySelector('#stat').innerHTML='Downloading Shader';
 document.querySelector('#stat').style.backgroundColor='yellow';
 ff.addEventListener("load",function(){
-    let sarrayBuffer=ff.response;
-    if(sarrayBuffer){
-        let sfil=new Uint8ClampedArray(sarrayBuffer);
-        FS.writeFile(fname,sfil);
-        console.log('got preset: '+fname);
+let sarrayBuffer=ff.response;
+if(sarrayBuffer){
+let sfil=new Uint8ClampedArray(sarrayBuffer);
+FS.writeFile(fname,sfil);
+console.log('got preset: '+fname);
         // Module.loadPresetFile(fname);
-        document.querySelector('#stat').innerHTML='Downloaded Shader';
-        document.querySelector('#stat').style.backgroundColor='blue';
+document.querySelector('#stat').innerHTML='Downloaded Shader';
+document.querySelector('#stat').style.backgroundColor='blue';
 const presetFileNameToLoad = fname;
 console.log("JS: Attempting to load pre-downloaded: " + presetFileNameToLoad);
 try {
-    const content = FS.readFile(presetFileNameToLoad, { encoding: 'utf8' });
-    console.log("JS: Content of " + presetFileNameToLoad + " (first 200 chars):", content.substring(0,200));
-    if (content.length === 0) {
-        console.error("JS: File " + presetFileNameToLoad + " is EMPTY!");
-    }
-} catch (e) {
-    console.error("JS: Failed to read file " + presetFileNameToLoad + " from FS:", e);
-    // Don't proceed to Module.loadPresetFile if it can't be read or is empty
-    return;
+const content = FS.readFile(presetFileNameToLoad, { encoding: 'utf8' });
+console.log("JS: Content of " + presetFileNameToLoad + " (first 200 chars):", content.substring(0,200));
+if (content.length === 0) {
+console.error("JS: File " + presetFileNameToLoad + " is EMPTY!");
 }
-    }
+} catch (e) {
+console.error("JS: Failed to read file " + presetFileNameToLoad + " from FS:", e);
+    // Don't proceed to Module.loadPresetFile if it can't be read or is empty
+return;
+}
+}
 });
 ff.send(null);
-            }
+}
+
 function snd(){
 const randSong=Math.floor(($sngs[0]-5)*Math.random());
 const songSrc=$sngs[randSong+5];
 document.querySelector('#track').src=songSrc;
 const sng=new BroadcastChannel('sng');
 sng.postMessage({data:songSrc});
-            };
+};
+
 document.querySelector('#musicBtn').addEventListener('click',function(){
 window.open('./flac');
 setTimeout(function(){
-    snd();
+snd();
 },1450);
 });
+
 document.querySelector('#milkBtn').addEventListener('click',function(){
 for (var i=0;i<25;i++){
-    var randShd=Math.floor(($shds[0]-5)*Math.random());
-    var milkSrc=$shds[randShd+5];
+var randShd=Math.floor(($shds[0]-5)*Math.random());
+var milkSrc=$shds[randShd+5];
 document.querySelector('#milkPath').innerHTML=milkSrc;
-    Module.getShader(i);
+Module.getShader(i);
    // Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
-    console.log('Got '+'/presets/preset_'+i+'.milk from '+milkSrc+'.');
+console.log('Got '+'/presets/preset_'+i+'.milk from '+milkSrc+'.');
 }
 /*
 Module.setWindowSize(window.innerHeight,window.innerHeight);
@@ -564,33 +577,37 @@ Module.getShader();
 // Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
 // Module.loadPresetFile("/presets/preset.milk");
 */
-            });
+});
+
 function getShaders(){
 for (var i=0;i<25;i++){
-    var randShd=Math.floor(($shds[0]-5)*Math.random());
-    var milkSrc=$shds[randShd+5];
+var randShd=Math.floor(($shds[0]-5)*Math.random());
+var milkSrc=$shds[randShd+5];
 document.querySelector('#milkPath').innerHTML=milkSrc;
-    Module.getShader(i);
+Module.getShader(i);
 // Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
-    console.log('Got '+'/presets/preset_'+i+'.milk from '+milkSrc+'.');
+console.log('Got '+'/presets/preset_'+i+'.milk from '+milkSrc+'.');
 }
 Module.addPath();
 setTimeout(function(){
-    Module.startRender(window.innerHeight);
+Module.startRender(window.innerHeight);
 },500);
 }
 var pth=document.querySelector('#milkPath').innerHTML;
 // Module.getShader();
-            scanTextures();
-            scanSongs();
-            scanShaders();
-            document.querySelector('#meshSize').addEventListener('change', (event) => {
+
+scanTextures();
+scanSongs();
+scanShaders();
+
+document.querySelector('#meshSize').addEventListener('change', (event) => {
 let meshValue = event.target.value;
 // Split the value into two numbers
 let values = meshValue.split(',').map(Number);
 console.log('Setting Mesh:', values[0], values[1]);
 Module.setMesh(values[0], values[1]);
-            });
+});
+
 //  const meshValue = document.querySelector('#meshSize').value;
    // Split the value into two numbers
 // const values = meshValue.split(',').map(Number);
@@ -781,9 +798,8 @@ return;
 
 void destruct() {
 if (pm) projectm_destroy(pm);
-    pm = NULL;
-
-    if (gl_ctx) emscripten_webgl_destroy_context(gl_ctx);
+pm = NULL;
+if (gl_ctx) emscripten_webgl_destroy_context(gl_ctx);
 gl_ctx = NULL;
 }
 
@@ -796,12 +812,12 @@ projectm_load_preset_file(pm, filename.c_str(), false);
 
 void render_frame() {
 if (!pm) return;
-    projectm_opengl_render_frame(pm);
+projectm_opengl_render_frame(pm);
 }
 
 void set_window_size(int width, int height) {
 if (!pm) return;
-    glViewport(0,0,height,height);  //  viewport/scissor after UsePrg runs at full resolution
+glViewport(0,0,height,height);  //  viewport/scissor after UsePrg runs at full resolution
     // glEnable(GL_SCISSOR_TEST);
     // glScissor(0,0,height,height);
 projectm_set_window_size(pm, height, height);
@@ -819,11 +835,10 @@ function("setWindowSize", &set_window_size);
 function("setMesh", &set_mesh);
 function("getShader", &getShader);
 function("addPath", &add_preset_path);
-    function("projectm_pcm_add_float", &projectm_pcm_add_float_from_js_array_wrapper);
-
+function("projectm_pcm_add_float", &projectm_pcm_add_float_from_js_array_wrapper);
 }
 
 int main(){
-    init();
-    return 1;
+init();
+return 1;
 }
