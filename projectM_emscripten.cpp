@@ -65,7 +65,10 @@ void projectm_pcm_add_float_from_js_array_wrapper(
     emscripten::val js_audio_array_val, // This will be the Float32Array from JavaScript
     unsigned int num_samples_per_channel,
     int channels_enum_value) {
-projectm_handle current_pm_handle = reinterpret_cast<projectm_handle>(pm_handle_value);
+    
+// projectm_handle current_pm_handle = reinterpret_cast<projectm_handle>(pm_handle_value);
+projectm_handle current_pm_handle = app_data.projectm_engine;
+    
 if (!current_pm_handle) {
         fprintf(stderr, "Error: projectM handle is null in from_js_array_wrapper.\n");
         return;
@@ -551,9 +554,9 @@ sng.postMessage({data:songSrc});
 };
 
 document.querySelector('#musicBtn').addEventListener('click',function(){
-window.open('./flac');
+// window.open('./flac');
 setTimeout(function(){
-snd();
+// snd();
 },1450);
 });
 
