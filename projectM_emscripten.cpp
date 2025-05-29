@@ -46,6 +46,7 @@ typedef struct {
 projectm_handle projectm_engine;
 projectm_playlist_handle playlist;
     // You could add other data here if your callbacks need it.
+EM_BOOL loading;
 } AppData;
 
 projectm_handle pm;
@@ -57,6 +58,12 @@ void load_preset_callback_example(bool is_hard_cut, unsigned int index,void* use
 // AppData* app_data = (AppData*)user_data;
 projectm_playlist_handle playlist = app_data.playlist;
 uint32_t indx = projectm_playlist_play_next(playlist, false);
+return;
+}
+
+void load_preset_callback_done(bool is_hard_cut, unsigned int index,void* user_data) {
+// AppData* app_data = (AppData*)user_data;
+app_data.loading=EM_FALSE;
 return;
 }
 
@@ -293,6 +300,7 @@ return;
 
 
 void renderLoop(){
+if(app_data.loading==EM_TRUE){return;}
 // glClearColor( 1.0, 1.0, 1.0, 0.0 );
 glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 projectm_opengl_render_frame(pm);
@@ -313,6 +321,7 @@ glHint(GL_GENERATE_MIPMAP_HINT,GL_NICEST);
 glDisable(GL_DITHER);
 glFrontFace(GL_CW);
 glCullFace(GL_BACK);
+app_data.loading=EM_FALSE;
 projectm_set_window_size(pm,size,size);
 emscripten_set_main_loop((void (*)())renderLoop,0,0);
 emscripten_set_main_loop_timing(2,1);
@@ -346,6 +355,7 @@ printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ?
 // const randIndex = Math.floor(Math.random()*25);
 // Module.loadPresetFile('/presets/preset_'+randIndex+'.milk');
 // });
+app_data.loading=EM_TRUE;
 char *str = (char*)EM_ASM_PTR({
 const randIndex = Math.floor(Math.random()*25);
 var jsString = '/presets/preset_'+randIndex+'.milk';
@@ -758,7 +768,7 @@ const char * loc="/presets/";
 projectm_playlist_add_path(playlist,loc,true,true);
 // printf("Added /presets/ to playlist successfully.\n");
 
-// projectm_playlist_set_preset_switched_event_callback(playlist,&load_preset_callback_example,&app_data);
+projectm_playlist_set_preset_switched_event_callback(playlist,&load_preset_callback_done,&app_data);
 
 // projectm_playlist_set_preset_switched_event_callback(projectm_playlist_handle instance,
 //                                                          projectm_playlist_preset_switched_event callback,
