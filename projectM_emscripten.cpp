@@ -4,12 +4,9 @@
 #include <emscripten/bind.h>
 #include <emscripten/val.h>
 #include <emscripten/html5.h>
-#include <projectM-4/playlist.h> // This should include all necessary playlist_*.h headers
-
+#include <projectM-4/playlist.h>
 #include <projectM-4/projectM.h>
-
 #include <emscripten/html5_webgl.h>
-
 #define GL_GLEXT_PROTOTYPES
 #define GL_FRAGMENT_PRECISION_HIGH
 #include <GL/gl.h>
@@ -23,7 +20,6 @@
 #define GL_CONTEXT_COMPATIBILITY_PROFILE_BIT 0x00000002
 #define GL_CONTEXT_CORE_PROFILE_BIT 0x00000001
 #define CONTEXT_FLAG_NO_ERROR_BIT_KHR 0x00000008
-
 #define GL_ANISOTROPIC_FILTER 0x3000
 #define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
 #define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
@@ -39,13 +35,9 @@
 
 using namespace emscripten;
 
-// Data structure to hold any application-specific data needed in callbacks.
-// In this case, it will hold the main ProjectM engine handle.
-
 typedef struct {
 projectm_handle projectm_engine;
 projectm_playlist_handle playlist;
-    // You could add other data here if your callbacks need it.
 EM_BOOL loading;
 } AppData;
 
@@ -53,7 +45,6 @@ projectm_handle pm;
 AppData app_data;
 projectm_playlist_handle playlist={};
 
-  // Callback function that the playlist will call to load a preset
 void load_preset_callback_example(bool is_hard_cut, unsigned int index,void* user_data) {
 // AppData* app_data = (AppData*)user_data;
 projectm_playlist_handle playlist = app_data.playlist;
@@ -63,20 +54,18 @@ return;
 
 void load_preset_callback_done(bool is_hard_cut, unsigned int index,void* user_data) {
 // AppData* app_data = (AppData*)user_data;
-    emscripten_resume_main_loop();
+emscripten_resume_main_loop();
 app_data.loading=EM_FALSE;
 return;
 }
 
 void projectm_pcm_add_float_from_js_array_wrapper(
-    uintptr_t pm_handle_value,
-    emscripten::val js_audio_array_val, // This will be the Float32Array from JavaScript
-    unsigned int num_samples_per_channel,
-    int channels_enum_value) {
-    
+uintptr_t pm_handle_value,
+emscripten::val js_audio_array_val,
+unsigned int num_samples_per_channel,
+int channels_enum_value) {
 // projectm_handle current_pm_handle = reinterpret_cast<projectm_handle>(pm_handle_value);
 projectm_handle current_pm_handle = app_data.projectm_engine;
-    
 if (!current_pm_handle) {
         fprintf(stderr, "Error: projectM handle is null in from_js_array_wrapper.\n");
         return;
@@ -107,9 +96,7 @@ EGLDisplay display;
 EGLSurface surface;
 EGLConfig eglconfig=NULL;
 EGLContext ctxegl;
-
 EGLint config_size,major,minor,atb_pos;
-
 EGLint numSamples;
 EGLint numSamplesNV;
 EGLint numBuffersNV;
@@ -123,15 +110,17 @@ EGLint numBuffer;
 EGLint numMBuffers;
 EGLint colorSpace;
 EGLint colorFormat;
-
 EMSCRIPTEN_WEBGL_CONTEXT_HANDLE gl_ctx;
-
 
 extern "C"{
 
-
 SDL_AudioDeviceID dev;
-struct{Uint8* snd;int pos;Uint32 slen;SDL_AudioSpec spec;}wave;
+struct{
+Uint8* snd;
+int pos;
+Uint32 slen;
+SDL_AudioSpec spec;
+}wave;
 
 void cls_aud(){
 if(dev!=0){
@@ -157,7 +146,7 @@ return;
 }
 
 void SDLCALL bfr(void* userdata, Uint8* stm, int len) {
-    // --- Start with safety checks and handling for when pm is null ---
+/*
 if (!pm) {
         // Simplified SDL playback logic when pm is not ready
 if (!wave.snd || wave.slen == 0) {
@@ -183,6 +172,7 @@ if (len == 0) break; // Avoid infinite loop if len was exactly remaining_in_wav
 }
 return; // Exit early if pm is not valid
 }
+    */
     // --- PM is valid, process audio for SDL and projectM ---
 if (!wave.snd || wave.slen == 0) {
 SDL_memset(stm, 0, len); // Silence for SDL
