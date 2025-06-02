@@ -63,6 +63,7 @@ return;
 
 void load_preset_callback_done(bool is_hard_cut, unsigned int index,void* user_data) {
 // AppData* app_data = (AppData*)user_data;
+    emscripten_resume_main_loop();
 app_data.loading=EM_FALSE;
 return;
 }
@@ -355,6 +356,7 @@ printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ?
 // const randIndex = Math.floor(Math.random()*25);
 // Module.loadPresetFile('/presets/preset_'+randIndex+'.milk');
 // });
+    emscripten_pause_main_loop();
 app_data.loading=EM_TRUE;
 char *str = (char*)EM_ASM_PTR({
 const randIndex = Math.floor(Math.random()*25);
