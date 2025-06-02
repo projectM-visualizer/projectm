@@ -556,9 +556,9 @@ sng.postMessage({data:songSrc});
 };
 
 document.querySelector('#musicBtn').addEventListener('click',function(){
-// window.open('./flac');
+window.open('./flac');
 setTimeout(function(){
-// snd();
+snd();
 },1450);
 });
 
