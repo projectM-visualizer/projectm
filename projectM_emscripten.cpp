@@ -522,6 +522,7 @@ ff.send(null);
 function snd(){
 let randSong=Math.floor(($sngs[0]-5)*Math.random());
 let songSrc=$sngs[randSong+5];
+console.log('Song: ',songSrc);
 document.querySelector('#track').src=songSrc;
 const sng=new BroadcastChannel('sng');
 sng.postMessage({data:songSrc});
