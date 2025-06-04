@@ -295,12 +295,14 @@ return;
 // function must either be defined in a .c file or be a C++ function defined
 // with extern "C".
 // https://emscripten.org/docs/api_reference/preamble.js.html#calling-compiled-c-functions-from-javascript
+
 extern "C" {
 
 void add_audio_data(uint8_t* data, int len) {
 projectm_pcm_add_uint8(pm, data, len, PROJECTM_MONO);
 return;
 }
+
 }
 
 void on_preset_switch_requested(bool is_hard_cut, void* user_data) {
