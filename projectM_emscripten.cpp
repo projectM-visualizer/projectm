@@ -461,7 +461,7 @@ let currentOrigin = window.location.origin;
 let lastSlashIndex = pathName.lastIndexOf('/');
 let basePath = pathName.substring(0, lastSlashIndex + 1);
 txxt=txxt.replace(currentOrigin,'');
-$sngs[i]=basePath+'songs/'+txxt;
+$sngs[i]=basePath+'songs'+txxt;
 // $sngs[i]=currentOrigin+txxt;
 }};
 
