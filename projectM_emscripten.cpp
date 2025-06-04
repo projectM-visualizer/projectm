@@ -108,42 +108,54 @@ EGLint colorSpace;
 EGLint colorFormat;
 EMSCRIPTEN_WEBGL_CONTEXT_HANDLE gl_ctx;
 
-EM_JS(void, js_initialize_audio_system_and_worklet_cpp, (uintptr_t pm_handle_for_addpcm), {
-    const engineHandleForPM = pm_handle_for_addpcm;
+EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const char* path_in_vfs, bool loop, bool start_playing, uintptr_t pm_handle_for_addpcm), {
+    const filePath = UTF8ToString(path_in_vfs);
+    const engineHandleForPM = pm_handle_for_addpcm; // This is the projectm_handle from C++
 
+    // 1. Initialize or get AudioContext (and try to resume)
     if (typeof window.projectMAudioContext_Global_Cpp === 'undefined' || !window.projectMAudioContext_Global_Cpp) {
         try {
             window.projectMAudioContext_Global_Cpp = new (window.AudioContext || window.webkitAudioContext)();
             console.log("JS: Web Audio context created (from Cpp module).");
         } catch (e) {
             console.error("JS: Web Audio API (from Cpp module) not supported or failed to init:", e);
-            return;
+            return; // Cannot proceed
         }
     }
     const audioContext = window.projectMAudioContext_Global_Cpp;
-    if (audioContext.state === 'suspended') {
-        audioContext.resume().catch(e => console.warn("JS: AudioContext (from Cpp module) resume might require user gesture.", e));
-    }
 
-    async function setupWorkletInternal() {
+    async function initializeAndLoad() {
+        if (audioContext.state === 'suspended') {
+            try {
+                await audioContext.resume();
+                console.log("JS: AudioContext resumed.");
+            } catch (e) {
+                console.error("JS: Failed to resume AudioContext (user gesture might be needed on page):", e);
+                // Depending on desired behavior, you might want to stop here or try to proceed.
+                // If resume fails, subsequent operations will likely fail too.
+            }
+        }
+
+        // 2. Setup Worklet (add module, create node, set up message listener)
         try {
+            // Stop/disconnect existing worklet node if any (e.g., on re-init)
             if (window.projectMWorkletNode_Global_Cpp) {
                 try { window.projectMWorkletNode_Global_Cpp.port.postMessage({ type: 'stopPlayback' }); } catch(e){}
                 try { window.projectMWorkletNode_Global_Cpp.disconnect(); } catch(e){}
                 window.projectMWorkletNode_Global_Cpp = null;
+                console.log("JS: Previous worklet node cleaned up.");
             }
             
-            // Ensure 'projectm_audio_processor.js' is in the same directory as your main HTML/JS,
-            // or provide the correct path.
-            await audioContext.audioWorklet.addModule('https://js.1ink.us/projectm_audio_processor.js');
-            console.log("JS: AudioWorklet 'projectm_audio_processor.js' module added (for Cpp module).");
+            // Ensure 'projectm_audio_processor.js' is served and path is correct.
+            await audioContext.audioWorklet.addModule('projectm_audio_processor.js');
+            console.log("JS: AudioWorklet 'projectm_audio_processor.js' module added.");
 
             window.projectMWorkletNode_Global_Cpp = new AudioWorkletNode(audioContext, 'projectm-audio-processor');
             const workletNode = window.projectMWorkletNode_Global_Cpp;
 
             workletNode.port.onmessage = (event) => {
                 if (event.data.type === 'pcmData') {
-                    // 'Module' is the Emscripten instance of THIS C++ module (projectM_emscripten.cpp)
+                    // 'Module' is the Emscripten instance of this projectM_emscripten.cpp module
                     if (Module && Module.projectm_pcm_add_float && engineHandleForPM !== 0) {
                         Module.projectm_pcm_add_float( 
                             engineHandleForPM,
@@ -153,124 +165,107 @@ EM_JS(void, js_initialize_audio_system_and_worklet_cpp, (uintptr_t pm_handle_for
                         );
                     }
                 } else if (event.data.type === 'playbackEnded') {
-                    console.log("JS: Worklet reported playback ended.");
-                    // You could trigger C++ logic here if needed, e.g. Module.ccall('handle_song_end', null);
+                    console.log("JS: Worklet reported playback ended for file:", filePath);
+                    // You could add C++ callback here via Module.ccall if needed
                 }
             };
 
             workletNode.connect(audioContext.destination);
-            console.log("JS: AudioWorkletNode (for Cpp module) created, connected, listener set up.");
+            console.log("JS: AudioWorkletNode created, connected, and listener set up.");
+
+            // 3. Load WAV from VFS and send it to the now-ready worklet
+            if (!FS.analyzePath(filePath).exists) { // Check if file exists in VFS
+                 console.error("JS: WAV file for worklet not found in VFS: " + filePath);
+                 return;
+            }
+            const fileDataUint8Array = FS.readFile(filePath); // Read as Uint8Array
+            const audioDataArrayBuffer = fileDataUint8Array.buffer.slice(
+                fileDataUint8Array.byteOffset, fileDataUint8Array.byteOffset + fileDataUint8Array.byteLength
+            );
+
+            console.log("JS: Decoding audio data '" + filePath + "' for worklet.");
+            const decodedBuffer = await audioContext.decodeAudioData(audioDataArrayBuffer);
+            
+            console.log("JS: Audio data decoded. Sending AudioBuffer to worklet.");
+            workletNode.port.postMessage({
+                type: 'loadWavData',
+                audioBuffer: decodedBuffer, // This transfers the AudioBuffer (or a copy)
+                loop: loop,
+                startPlaying: start_playing
+            });
+
         } catch (err) {
-            console.error('JS: Error setting up AudioWorklet (for Cpp module):', err);
+            console.error('JS: Error in main async setup for AudioWorklet and WAV loading:', err);
         }
     }
-    setupWorkletInternal();
+
+    initializeAndLoad(); // Start the async chain
 });
 
-EM_JS(void, js_load_wav_into_worklet_cpp, (const char* path_in_vfs, bool loop, bool start_playing), {
-    const filePath = UTF8ToString(path_in_vfs);
+// Keep this EM_JS for explicit play/stop control if needed after loading
+EM_JS(void, js_control_worklet_playback_cpp, (bool playCommand, double playheadPositionIfExists), {
+    // playheadPositionIfExists is optional, in seconds.
     if (!window.projectMAudioContext_Global_Cpp || !window.projectMWorkletNode_Global_Cpp) {
-        console.error("JS: Audio system or worklet not initialized (Cpp module). Call js_initialize_audio_system_and_worklet_cpp first.");
-        return;
-    }
-    if (window.projectMAudioContext_Global_Cpp.state === 'suspended') {
-        window.projectMAudioContext_Global_Cpp.resume().then(() => {
-             js_load_wav_into_worklet_cpp(path_in_vfs, loop, start_playing); // Try again after resume
-        }).catch(e => console.error("JS: Error resuming context for WAV load (Cpp module):", e));
+        console.warn("JS: Worklet or AudioContext not ready for playback control.");
         return;
     }
 
-    if (!FS.analyzePath(filePath).exists) {
-         console.error("JS: WAV file for worklet (Cpp module) not found in VFS: " + filePath);
-         return;
-    }
-    try {
-        const fileDataUint8Array = FS.readFile(filePath);
-        const audioDataArrayBuffer = fileDataUint8Array.buffer.slice(
-            fileDataUint8Array.byteOffset, fileDataUint8Array.byteOffset + fileDataUint8Array.byteLength
-        );
-        console.log("JS: Decoding audio data '" + filePath + "' for worklet (Cpp module).");
-        window.projectMAudioContext_Global_Cpp.decodeAudioData(audioDataArrayBuffer)
-            .then(function(decodedBuffer) {
-                console.log("JS: Audio data decoded. Sending AudioBuffer to worklet (Cpp module).");
-                window.projectMWorkletNode_Global_Cpp.port.postMessage({
-                    type: 'loadWavData',
-                    audioBuffer: decodedBuffer,
-                    loop: loop,
-                    startPlaying: start_playing
-                });
-            }).catch(function(err) {
-                console.error("JS: Error decoding WAV '" + filePath + "' for worklet (Cpp module):", err);
-            });
-    } catch (e) {
-        console.error("JS: Error reading file from VFS for worklet '" + filePath + " (Cpp module)':", e);
-    }
-});
-
-EM_JS(void, js_control_worklet_playback_cpp, (bool playCommand), { 
-    if (!window.projectMWorkletNode_Global_Cpp) {
-        console.warn("JS: Worklet node not ready for playback control (Cpp module).");
-        return;
-    }
-    if (!window.projectMAudioContext_Global_Cpp) {
-        console.warn("JS: AudioContext not initialized for playback control (Cpp module).");
-        return;
-    }
     const audioContext = window.projectMAudioContext_Global_Cpp;
     const workletNode = window.projectMWorkletNode_Global_Cpp;
+
     if (playCommand) {
-        // Action: Start Playback
         if (audioContext.state === 'suspended') {
-            console.log("JS: AudioContext is suspended. Attempting to resume for playback start...");
             audioContext.resume().then(() => {
-                console.log("JS: Audio context resumed. Sending 'startPlayback' to worklet.");
-                workletNode.port.postMessage({ type: 'startPlayback' });
-            }).catch(e => {
-                console.error("JS: Failed to resume AudioContext for playback start:", e);
-                // Optionally, you could try to postMessage anyway or handle the error
-                // workletNode.port.postMessage({ type: 'startPlayback' }); // Or not, if resume failed
-            });
+                console.log("JS: Audio context resumed, sending startPlayback to worklet.");
+                workletNode.port.postMessage({ type: 'startPlayback', playheadPosition: playheadPositionIfExists * audioContext.sampleRate });
+            }).catch(e => console.error("JS: Failed to resume context for playback start:", e));
         } else if (audioContext.state === 'running') {
-            console.log("JS: AudioContext is running. Sending 'startPlayback' to worklet.");
-            workletNode.port.postMessage({ type: 'startPlayback' });
+            workletNode.port.postMessage({ type: 'startPlayback', playheadPosition: playheadPositionIfExists * audioContext.sampleRate });
         } else {
-            // Context is 'closed' or in an unexpected state
             console.warn(`JS: AudioContext in unhandled state ('${audioContext.state}') for starting playback.`);
         }
     } else {
-        // Action: Stop Playback
-        console.log("JS: Sending 'stopPlayback' to worklet.");
         workletNode.port.postMessage({ type: 'stopPlayback' });
     }
 });
 
-// Your C++ functions to be called by JS (e.g., from UI events) or other C++
+
+// --- C++ functions to control Web Audio & Worklet ---
 extern "C" {
     EMSCRIPTEN_KEEPALIVE
-void cpp_initialize_audio_and_load_song(const std::string& song_path_in_vfs) {
-    // Pass song_path_in_vfs.c_str() to other C functions if they need const char*
-    js_initialize_audio_system_and_worklet_cpp(reinterpret_cast<uintptr_t>(app_data.projectm_engine));
-    js_load_wav_into_worklet_cpp(song_path_in_vfs.c_str(), true, true);
-}
+    void cpp_initialize_audio_and_load_song(const char* song_path_in_vfs, bool should_loop, bool should_start_playing) {
+        if (!app_data.projectm_engine) {
+            fprintf(stderr, "C++: ProjectM engine not initialized before audio setup!\n");
+            return;
+        }
+        printf("C++: Requesting Web Audio system setup and song load: %s\n", song_path_in_vfs);
+        js_setup_webaudio_and_load_wav_for_worklet_cpp(
+            song_path_in_vfs,
+            should_loop,
+            should_start_playing,
+            reinterpret_cast<uintptr_t>(app_data.projectm_engine)
+        );
+    }
 
     EMSCRIPTEN_KEEPALIVE
-    void cpp_play_audio() {
+    void cpp_play_audio() { // Assumes audio system and song are already loaded via above
         printf("C++: Requesting Web Audio play.\n");
-        js_control_worklet_playback_cpp(true);
+        js_control_worklet_playback_cpp(true, 0.0); // Start from beginning
     }
 
     EMSCRIPTEN_KEEPALIVE
     void cpp_stop_audio() {
         printf("C++: Requesting Web Audio stop.\n");
-        js_control_worklet_playback_cpp(false);
+        js_control_worklet_playback_cpp(false, 0.0); // Second param (playhead) irrelevant for stop
     }
 
-    // Your 'pl' function, now re-purposed for Web Audio via C++
-    // This is what your JS EM_ASM calls via Module.ccall('pl')
+    // Your 'pl' function for convenience
     EMSCRIPTEN_KEEPALIVE
     void pl() {
         printf("C++: pl() called, initializing and loading default song via Web Audio.\n");
-        cpp_initialize_audio_and_load_song("/snd/sample.wav");
+        // You might want to ensure AudioContext is resumable by user gesture before this auto-plays.
+        // For now, js_setup_webaudio_and_load_wav_for_worklet_cpp handles resume attempt.
+        cpp_initialize_audio_and_load_song("/snd/sample.wav", true, true);
     }
 
 } // extern "C"
