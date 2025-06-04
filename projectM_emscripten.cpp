@@ -206,7 +206,7 @@ EM_JS(void, js_load_wav_into_worklet_cpp, (const char* path_in_vfs, bool loop, b
     }
 });
 
-EM_JS(void, js_control_worklet_playback_cpp, (bool playCommand) => { // Renamed param for clarity
+EM_JS(void, js_control_worklet_playback_cpp, (bool playCommand) => {
     if (window.projectMWorkletNode_Global_Cpp) {
         if (playCommand) {
             // To ensure context is active before sending start message
@@ -221,9 +221,6 @@ EM_JS(void, js_control_worklet_playback_cpp, (bool playCommand) => { // Renamed 
         } else {
             window.projectMWorkletNode_Global_Cpp.port.postMessage({ type: 'stopPlayback' });
         }
-    } else {
-        console.warn("JS: Worklet node not ready for playback control (Cpp module).");
-    }
 });
 
 // Your C++ functions to be called by JS (e.g., from UI events) or other C++
@@ -816,14 +813,6 @@ EMSCRIPTEN_BINDINGS(projectm_bindings) {
     function("playAudio", &cpp_play_audio);
     function("stopAudio", &cpp_stop_audio);
     function("pl", &pl); // For compatibility if your JS already calls this
-}
-
-extern "C" {
-
-void pl() {
-initialize_audio_and_load_song("/snd/sample.wav"); // Default song
-}
-
 }
 
 int main(){
