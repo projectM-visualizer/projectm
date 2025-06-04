@@ -108,7 +108,7 @@ EGLint colorSpace;
 EGLint colorFormat;
 EMSCRIPTEN_WEBGL_CONTEXT_HANDLE gl_ctx;
 
-EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const std::string& path_in_vfs, bool loop, bool start_playing, uintptr_t pm_handle_for_addpcm), {
+EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const char* path_in_vfs, bool loop, bool start_playing, uintptr_t pm_handle_for_addpcm), {
     const filePath = UTF8ToString(path_in_vfs);
     const engineHandleForPM = pm_handle_for_addpcm; // This is the projectm_handle from C++
 
