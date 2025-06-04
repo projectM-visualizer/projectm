@@ -835,6 +835,6 @@ EMSCRIPTEN_BINDINGS(projectm_bindings) {
 }
 
 int main(){
-// init();
+init();
 return 0;
 }
