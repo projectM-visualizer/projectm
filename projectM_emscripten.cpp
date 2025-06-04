@@ -584,7 +584,6 @@ var pth=document.querySelector('#milkPath').innerHTML;
 scanTextures();
 scanSongs();
 scanShaders();
-js_init_web_audio(); 
 
 document.querySelector('#meshSize').addEventListener('change', (event) => {
 let meshValue = event.target.value;
