@@ -532,7 +532,7 @@ document.querySelector('#musicBtn').addEventListener('click',function(){
 window.open('./flac');
 setTimeout(function(){
 snd();
-},1250);
+},1550);
 });
 
 document.querySelector('#milkBtn').addEventListener('click',function(){
