@@ -247,15 +247,11 @@ EM_JS(void, js_control_worklet_playback_cpp, (bool playCommand), {
 // Your C++ functions to be called by JS (e.g., from UI events) or other C++
 extern "C" {
     EMSCRIPTEN_KEEPALIVE
-    void cpp_initialize_audio_and_load_song(const char* song_path_in_vfs) {
-        if (!app_data.projectm_engine) {
-            fprintf(stderr, "C++: ProjectM engine not initialized before audio setup!\n");
-            return;
-        }
-        printf("C++: Initializing Web Audio system and loading song: %s\n", song_path_in_vfs);
-        js_initialize_audio_system_and_worklet_cpp(reinterpret_cast<uintptr_t>(app_data.projectm_engine));
-        js_load_wav_into_worklet_cpp(song_path_in_vfs, true, true); // loop=true, start_playing=true
-    }
+void cpp_initialize_audio_and_load_song(const std::string& song_path_in_vfs) {
+    // Pass song_path_in_vfs.c_str() to other C functions if they need const char*
+    js_initialize_audio_system_and_worklet_cpp(reinterpret_cast<uintptr_t>(app_data.projectm_engine));
+    js_load_wav_into_worklet_cpp(song_path_in_vfs.c_str(), true, true);
+}
 
     EMSCRIPTEN_KEEPALIVE
     void cpp_play_audio() {
