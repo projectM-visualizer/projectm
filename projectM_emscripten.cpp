@@ -207,7 +207,7 @@ EM_JS(void, js_load_wav_into_worklet_cpp, (const char* path_in_vfs, bool loop, b
     }
 });
 
-EM_JS(void, js_control_worklet_playback_cpp, (bool playCommand) => {
+EM_JS(void, js_control_worklet_playback_cpp, (bool playCommand), { 
     if (!window.projectMWorkletNode_Global_Cpp) {
         console.warn("JS: Worklet node not ready for playback control (Cpp module).");
         return;
@@ -216,10 +216,8 @@ EM_JS(void, js_control_worklet_playback_cpp, (bool playCommand) => {
         console.warn("JS: AudioContext not initialized for playback control (Cpp module).");
         return;
     }
-
     const audioContext = window.projectMAudioContext_Global_Cpp;
     const workletNode = window.projectMWorkletNode_Global_Cpp;
-
     if (playCommand) {
         // Action: Start Playback
         if (audioContext.state === 'suspended') {
