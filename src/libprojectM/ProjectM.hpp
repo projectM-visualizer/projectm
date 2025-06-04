@@ -254,14 +254,14 @@ private:
 
     auto GetRenderContext() -> Renderer::RenderContext;
 
-    uint32_t m_meshX{100};            //!< Per-point mesh horizontal resolution.
-    uint32_t m_meshY{100};            //!< Per-point mesh vertical resolution.
+    uint32_t m_meshX{128};            //!< Per-point mesh horizontal resolution.
+    uint32_t m_meshY{128};            //!< Per-point mesh vertical resolution.
     uint32_t m_targetFps{60};        //!< Target frames per second.
     uint32_t m_windowWidth{0};       //!< EvaluateFrameData window width. If 0, nothing is rendered.
     uint32_t m_windowHeight{0};      //!< EvaluateFrameData window height. If 0, nothing is rendered.
     double m_presetDuration{17.0};   //!< Preset duration in seconds.
-    double m_softCutDuration{3.0};   //!< Soft cut transition time.
-    double m_hardCutDuration{20.0};  //!< Time after which a hard cut can happen at the earliest.
+    double m_softCutDuration{7.0};   //!< Soft cut transition time.
+    double m_hardCutDuration{4.0};  //!< Time after which a hard cut can happen at the earliest.
     bool m_hardCutEnabled{false};    //!< If true, hard cuts based on beat detection are enabled.
     float m_hardCutSensitivity{2.0}; //!< Loudness sensitivity value for hard cuts.
     float m_beatSensitivity{1.0};    //!< General beat sensitivity modifier for presets.
