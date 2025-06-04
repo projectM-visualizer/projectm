@@ -107,6 +107,7 @@ EGLint numMBuffers;
 EGLint colorSpace;
 EGLint colorFormat;
 EMSCRIPTEN_WEBGL_CONTEXT_HANDLE gl_ctx;
+
 EM_JS(void, js_initialize_audio_system_and_worklet_cpp, (uintptr_t pm_handle_for_addpcm), {
     const engineHandleForPM = pm_handle_for_addpcm;
 
@@ -207,20 +208,42 @@ EM_JS(void, js_load_wav_into_worklet_cpp, (const char* path_in_vfs, bool loop, b
 });
 
 EM_JS(void, js_control_worklet_playback_cpp, (bool playCommand) => {
-    if (window.projectMWorkletNode_Global_Cpp) {
-        if (playCommand) {
-            // To ensure context is active before sending start message
-            if (window.projectMAudioContext_Global_Cpp && window.projectMAudioContext_Global_Cpp.state === 'suspended') {
-                window.projectMAudioContext_Global_Cpp.resume().then(() => {
-                    console.log("JS: Audio context resumed, sending startPlayback to worklet.");
-                    window.projectMWorkletNode_Global_Cpp.port.postMessage({ type: 'startPlayback' });
-                }).catch(e => console.error("JS: Failed to resume context for playback start.", e));
-            } else {
-                 window.projectMWorkletNode_Global_Cpp.port.postMessage({ type: 'startPlayback' });
-            }
+    if (!window.projectMWorkletNode_Global_Cpp) {
+        console.warn("JS: Worklet node not ready for playback control (Cpp module).");
+        return;
+    }
+    if (!window.projectMAudioContext_Global_Cpp) {
+        console.warn("JS: AudioContext not initialized for playback control (Cpp module).");
+        return;
+    }
+
+    const audioContext = window.projectMAudioContext_Global_Cpp;
+    const workletNode = window.projectMWorkletNode_Global_Cpp;
+
+    if (playCommand) {
+        // Action: Start Playback
+        if (audioContext.state === 'suspended') {
+            console.log("JS: AudioContext is suspended. Attempting to resume for playback start...");
+            audioContext.resume().then(() => {
+                console.log("JS: Audio context resumed. Sending 'startPlayback' to worklet.");
+                workletNode.port.postMessage({ type: 'startPlayback' });
+            }).catch(e => {
+                console.error("JS: Failed to resume AudioContext for playback start:", e);
+                // Optionally, you could try to postMessage anyway or handle the error
+                // workletNode.port.postMessage({ type: 'startPlayback' }); // Or not, if resume failed
+            });
+        } else if (audioContext.state === 'running') {
+            console.log("JS: AudioContext is running. Sending 'startPlayback' to worklet.");
+            workletNode.port.postMessage({ type: 'startPlayback' });
         } else {
-            window.projectMWorkletNode_Global_Cpp.port.postMessage({ type: 'stopPlayback' });
+            // Context is 'closed' or in an unexpected state
+            console.warn(`JS: AudioContext in unhandled state ('${audioContext.state}') for starting playback.`);
         }
+    } else {
+        // Action: Stop Playback
+        console.log("JS: Sending 'stopPlayback' to worklet.");
+        workletNode.port.postMessage({ type: 'stopPlayback' });
+    }
 });
 
 // Your C++ functions to be called by JS (e.g., from UI events) or other C++
