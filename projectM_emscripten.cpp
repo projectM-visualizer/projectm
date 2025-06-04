@@ -108,7 +108,7 @@ EGLint colorFormat;
 EMSCRIPTEN_WEBGL_CONTEXT_HANDLE gl_ctx;
 
 EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const char* path_in_vfs, bool loop, bool start_playing, uintptr_t pm_handle_for_addpcm), {
-    const filePath = UTF8ToString(path_in_vfs);
+    let filePath = UTF8ToString(path_in_vfs);
     const engineHandleForPM = pm_handle_for_addpcm;
     let audioContext; // Use 'let' to allow reassignment after initialization check
     // 1. Initialize or get AudioContext
@@ -160,15 +160,15 @@ EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const char* path_in
                  console.error("JS: WAV file for worklet not found in VFS: " + filePath);
                  return;
             }
-            const fileDataUint8Array = FS.readFile(filePath);
-            const audioDataArrayBuffer = fileDataUint8Array.buffer.slice(
+            let fileDataUint8Array = FS.readFile(filePath);
+            let audioDataArrayBuffer = fileDataUint8Array.buffer.slice(
                 fileDataUint8Array.byteOffset, fileDataUint8Array.byteOffset + fileDataUint8Array.byteLength
             );
             console.log("JS: Decoding audio data '" + filePath + "' for worklet.");
-            const decodedBuffer = await audioContext.decodeAudioData(audioDataArrayBuffer);
+            let decodedBuffer = await audioContext.decodeAudioData(audioDataArrayBuffer);
             console.log("JS: Audio data decoded. Sending AudioBuffer raw channel data to worklet.");
-            const numberOfChannels = decodedBuffer.numberOfChannels;
-            const rawChannelData = [];
+            let numberOfChannels = decodedBuffer.numberOfChannels;
+            let rawChannelData = [];
             for (let i = 0; i < numberOfChannels; i++) {
                 rawChannelData.push(decodedBuffer.getChannelData(i).slice(0)); // Send copies
             }
