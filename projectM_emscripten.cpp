@@ -520,8 +520,8 @@ ff.send(null);
 }
 
 function snd(){
-const randSong=Math.floor(($sngs[0]-5)*Math.random());
-const songSrc=$sngs[randSong+5];
+let randSong=Math.floor(($sngs[0]-5)*Math.random());
+let songSrc=$sngs[randSong+5];
 document.querySelector('#track').src=songSrc;
 const sng=new BroadcastChannel('sng');
 sng.postMessage({data:songSrc});
@@ -531,7 +531,7 @@ document.querySelector('#musicBtn').addEventListener('click',function(){
 window.open('./flac');
 setTimeout(function(){
 snd();
-},1450);
+},1250);
 });
 
 document.querySelector('#milkBtn').addEventListener('click',function(){
