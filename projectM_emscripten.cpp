@@ -238,7 +238,7 @@ extern "C" {
             fprintf(stderr, "C++: ProjectM engine not initialized before audio setup!\n");
             return;
         }
-        printf("C++: Requesting Web Audio system setup and song load: %s\n", song_path_in_vfs);
+        printf("C++: Requesting Web Audio system setup and song load: %s\n", song_path_in_vfs.c_str());
         js_setup_webaudio_and_load_wav_for_worklet_cpp(
             song_path_in_vfs.c_str(),
             should_loop,
