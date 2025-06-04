@@ -477,7 +477,7 @@ nxhttp.send();
 
 const fll=new BroadcastChannel('file');
 fll.addEventListener('message',ea=>{
-const fill=new Uint8Array(ea.data.data);
+let fill=new Uint8Array(ea.data.data);
 FS.writeFile('/snd/sample.wav',fill);
 setTimeout(function(){
 Module.ccall('pl', null, []);
