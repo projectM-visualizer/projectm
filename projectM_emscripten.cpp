@@ -557,7 +557,7 @@ Module.getShader();
 });
 
 function getShaders(){
-for (var i=0;i<25;i++){
+for (var i=0;i<100;i++){
 var randShd=Math.floor(($shds[0]-5)*Math.random());
 var milkSrc=$shds[randShd+5];
 document.querySelector('#milkPath').innerHTML=milkSrc;
