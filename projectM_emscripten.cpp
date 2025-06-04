@@ -147,7 +147,7 @@ EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const std::string& 
             }
             
             // Ensure 'projectm_audio_processor.js' is served and path is correct.
-            await audioContext.audioWorklet.addModule('projectm_audio_processor.js');
+            await audioContext.audioWorklet.addModule('https://js.1ink.us/projectm_audio_processor.js');
             console.log("JS: AudioWorklet 'projectm_audio_processor.js' module added.");
 
             window.projectMWorkletNode_Global_Cpp = new AudioWorkletNode(audioContext, 'projectm-audio-processor');
