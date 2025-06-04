@@ -53,7 +53,9 @@ return;
 void load_preset_callback_done(bool is_hard_cut, unsigned int index,void* user_data) {
 // AppData* app_data = (AppData*)user_data;
 // emscripten_resume_main_loop();
-// app_data.loading=EM_FALSE;
+float randomDelay=(emscripten_random()*10.0)+24.0;
+projectm_set_preset_duration(app_data.projectm_engine, randomDelay);
+app_data.loading=EM_FALSE;
 return;
 }
 
@@ -273,7 +275,7 @@ extern "C" {
 } // extern "C"
 
 void renderLoop(){
-// if(app_data.loading==EM_TRUE){return;}
+if(app_data.loading==EM_TRUE){return;}
 // glClearColor( 1.0, 1.0, 1.0, 0.0 );
 glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 projectm_opengl_render_frame(pm);
