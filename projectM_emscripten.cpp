@@ -749,7 +749,7 @@ projectm_set_texture_search_paths(pm, texture_search_paths, 1);
 projectm_set_fps(pm, 60);
 projectm_set_preset_duration(pm, 24.0);
 projectm_set_soft_cut_duration(pm, 7.0);
-projectm_set_hard_cut_duration(pm, 23.0);
+projectm_set_hard_cut_duration(pm, 48.0);
 projectm_set_hard_cut_enabled(pm, true);
 projectm_set_beat_sensitivity(pm, 2.0);
 projectm_playlist_set_shuffle(playlist,true);
