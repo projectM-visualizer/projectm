@@ -128,9 +128,9 @@ EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const char* path_in
     if (!audioContext) { // Double check if it's still null/undefined after attempt
         console.error("JS: AudioContext is not available after initialization attempt.");
         return;
-    }
-    // This async function now correctly uses the initialized 'audioContext'
-    async function setupWorkletAndLoadWavInternal() { // Renamed to avoid conflict if you have other setupWorkletAndLoadWav
+}
+
+async function setupWorkletAndLoadWavInternal() { // Renamed to avoid conflict if you have other setupWorkletAndLoadWav
         try {
             if (window.projectMWorkletNode_Global_Cpp) {
                 try { window.projectMWorkletNode_Global_Cpp.port.postMessage({ type: 'stopPlayback' }); } catch(e){}
@@ -186,9 +186,9 @@ EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const char* path_in
         } catch (err) {
             console.error('JS: Error in setupWorkletAndLoadWavInternal:', err);
         }
-    }
-    // This function now uses the 'audioContext' that is guaranteed to be assigned (if creation didn't fail)
-    function resumeAndProceedInternal() {
+}
+
+function resumeAndProceedInternal() {
         if (audioContext.state === 'suspended') { // THIS LINE SHOULD NOW BE SAFE
             return audioContext.resume().then(() => {
                 console.log("JS: AudioContext resumed.");
@@ -209,7 +209,6 @@ EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const char* path_in
     resumeAndProceedInternal(); // Start the chain
 });
 
-// Keep this EM_JS for explicit play/stop control if needed after loading
 EM_JS(void, js_control_worklet_playback_cpp, (bool playCommand, double playheadPositionIfExists), {
     // playheadPositionIfExists is optional, in seconds.
     if (!window.projectMAudioContext_Global_Cpp || !window.projectMWorkletNode_Global_Cpp) {
@@ -234,10 +233,10 @@ EM_JS(void, js_control_worklet_playback_cpp, (bool playCommand, double playheadP
     }
 });
 
-// --- C++ functions to control Web Audio & Worklet ---
 extern "C" {
-    EMSCRIPTEN_KEEPALIVE
-    void cpp_initialize_audio_and_load_song(const std::string& song_path_in_vfs, bool should_loop, bool should_start_playing) {
+
+EMSCRIPTEN_KEEPALIVE
+void cpp_initialize_audio_and_load_song(const std::string& song_path_in_vfs, bool should_loop, bool should_start_playing) {
         if (!app_data.projectm_engine) {
             fprintf(stderr, "C++: ProjectM engine not initialized before audio setup!\n");
             return;
@@ -249,33 +248,34 @@ extern "C" {
             should_start_playing,
             reinterpret_cast<uintptr_t>(app_data.projectm_engine)
         );
-    }
+}
 
-    EMSCRIPTEN_KEEPALIVE
-    void cpp_play_audio() { // Assumes audio system and song are already loaded via above
+EMSCRIPTEN_KEEPALIVE
+void cpp_play_audio() { // Assumes audio system and song are already loaded via above
         printf("C++: Requesting Web Audio play.\n");
         js_control_worklet_playback_cpp(true, 0.0); // Start from beginning
-    }
+}
 
-    EMSCRIPTEN_KEEPALIVE
-    void cpp_stop_audio() {
+EMSCRIPTEN_KEEPALIVE
+void cpp_stop_audio() {
         printf("C++: Requesting Web Audio stop.\n");
         js_control_worklet_playback_cpp(false, 0.0); // Second param (playhead) irrelevant for stop
-    }
+}
 
-    // Your 'pl' function for convenience
-    EMSCRIPTEN_KEEPALIVE
-    void pl() {
+EMSCRIPTEN_KEEPALIVE
+void pl() {
         printf("C++: pl() called, initializing and loading default song via Web Audio.\n");
         // You might want to ensure AudioContext is resumable by user gesture before this auto-plays.
         // For now, js_setup_webaudio_and_load_wav_for_worklet_cpp handles resume attempt.
         cpp_initialize_audio_and_load_song("/snd/sample.wav", true, true);
-    }
+}
 
 } // extern "C"
 
 void renderLoop(){
-if(app_data.loading==EM_TRUE){return;}
+if(app_data.loading==EM_TRUE){
+return;
+}
 // glClearColor( 1.0, 1.0, 1.0, 0.0 );
 glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 projectm_opengl_render_frame(pm);
