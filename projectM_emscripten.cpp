@@ -134,7 +134,7 @@ EM_JS(void, js_initialize_audio_system_and_worklet_cpp, (uintptr_t pm_handle_for
             
             // Ensure 'projectm_audio_processor.js' is in the same directory as your main HTML/JS,
             // or provide the correct path.
-            await audioContext.audioWorklet.addModule('projectm_audio_processor.js');
+            await audioContext.audioWorklet.addModule('./projectm_audio_processor.js');
             console.log("JS: AudioWorklet 'projectm_audio_processor.js' module added (for Cpp module).");
 
             window.projectMWorkletNode_Global_Cpp = new AudioWorkletNode(audioContext, 'projectm-audio-processor');
