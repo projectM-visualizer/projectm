@@ -26,8 +26,6 @@
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_audio.h>
 #include <cstdint>      // For int16_t, int32_t
 #include <vector>       // Easier temporary buffer management than raw pointers
 #include <limits>       // For INT32_MAX
@@ -112,183 +110,145 @@ EGLint colorSpace;
 EGLint colorFormat;
 EMSCRIPTEN_WEBGL_CONTEXT_HANDLE gl_ctx;
 
-extern "C"{
+EM_JS(void, js_initialize_audio_system_and_worklet, (uintptr_t pm_handle_for_addpcm), {
+    const engineHandleForPM = pm_handle_for_addpcm; // This is the projectm_handle from C++
 
-SDL_AudioDeviceID dev;
-struct{
-Uint8* snd;
-int pos;
-Uint32 slen;
-SDL_AudioSpec spec;
-}wave;
+    // Ensure AudioContext exists (and try to resume if suspended by browser policy)
+    if (typeof window.projectMAudioContext_Global === 'undefined' || !window.projectMAudioContext_Global) {
+        try {
+            window.projectMAudioContext_Global = new (window.AudioContext || window.webkitAudioContext)();
+            console.log("JS: Web Audio context created.");
+        } catch (e) {
+            console.error("JS: Web Audio API is not supported or failed to init:", e);
+            return; // Cannot proceed
+        }
+    }
+    const audioContext = window.projectMAudioContext_Global;
+    if (audioContext.state === 'suspended') {
+        audioContext.resume().catch(e => console.warn("JS: AudioContext resume might require user gesture.", e));
+    }
 
-void cls_aud(){
-if(dev!=0){
-SDL_PauseAudioDevice(dev,SDL_TRUE);
-SDL_CloseAudioDevice(dev);
-dev=0;
-return;
-}
-}
+    async function setupWorklet() {
+        try {
+            // Stop/disconnect existing worklet node if any (e.g., on re-init)
+            if (window.projectMWorkletNode_Global) {
+                try { window.projectMWorkletNode_Global.port.postMessage({ type: 'stopPlayback' }); } catch(e){}
+                try { window.projectMWorkletNode_Global.disconnect(); } catch(e){}
+                window.projectMWorkletNode_Global = null;
+            }
 
-void qu(int rc){
-SDL_Quit();
-return;
-}
+            // Path to your worklet JS file (make sure it's served correctly)
+            await audioContext.audioWorklet.addModule('projectm_audio_processor.js');
+            console.log("JS: AudioWorklet 'projectm_audio_processor.js' module added.");
 
-void opn_aud(){
-dev=SDL_OpenAudioDevice(NULL,SDL_FALSE,&wave.spec,NULL,0);
-if(!dev){
-SDL_FreeWAV(wave.snd);
-}
-SDL_PauseAudioDevice(dev,SDL_FALSE);
-return;
-}
+            window.projectMWorkletNode_Global = new AudioWorkletNode(audioContext, 'projectm-audio-processor');
+            const workletNode = window.projectMWorkletNode_Global;
 
-void SDLCALL bfr(void* userdata, Uint8* stm, int len) {
-/*
-if (!pm) {
-        // Simplified SDL playback logic when pm is not ready
-if (!wave.snd || wave.slen == 0) {
-SDL_memset(stm, 0, len); // Silence for SDL
-} else {
-            // Copy wave data for SDL playback only (loop to handle wrap-around)
-int bytes_to_copy;
-while (len > 0) {
-int remaining_in_wav = wave.slen - wave.pos;
-bytes_to_copy = std::min(len, remaining_in_wav); // Copy whichever is smaller
-if (bytes_to_copy > 0) {
-SDL_memcpy(stm, wave.snd + wave.pos, bytes_to_copy);
-stm += bytes_to_copy;
-wave.pos += bytes_to_copy;
-len -= bytes_to_copy;
-}
-                // Check for wrap-around *after* potential copy
-if (wave.pos >= wave.slen) {
-wave.pos = 0; // Wrap around
-if (len == 0) break; // Avoid infinite loop if len was exactly remaining_in_wav
-}
-}
-}
-return; // Exit early if pm is not valid
-}
-    */
-    // --- PM is valid, process audio for SDL and projectM ---
-if (!wave.snd || wave.slen == 0) {
-SDL_memset(stm, 0, len); // Silence for SDL
-        // Optionally feed silence to projectM
-return;
-}
-    // Determine properties based on the loaded wave spec
-int bytes_per_sample = SDL_AUDIO_BITSIZE(wave.spec.format) / 8;
-int channels = wave.spec.channels;
-if (bytes_per_sample == 0 || channels == 0) {
-fprintf(stderr, "Error in bfr: Invalid audio format (bytes_per_sample=%d, channels=%d)\n", bytes_per_sample, channels);
-SDL_memset(stm, 0, len); // Fill SDL buffer with silence on error
-return;
-}
-    // int bytes_per_frame = bytes_per_sample * channels; // Bytes for one sample across all channels
-Uint8* wptr_current_sdl_chunk_start = stm; // Keep track of where current SDL chunk starts
-    // Process audio in chunks, handling wrap-around for wave.snd buffer
-while (len > 0) {
-int remaining_in_wav = wave.slen - wave.pos; // Bytes remaining in wave buffer from current pos
-int current_chunk_len = std::min(len, remaining_in_wav); // Bytes to process in this iteration
-if (current_chunk_len <= 0) { // Should only happen if len is 0 or wave.pos is wrong
-if (wave.pos >= wave.slen) { // Handle wrap immediately if needed
-wave.pos = 0;
-continue; // Re-evaluate remaining_in_wav and current_chunk_len
-} else {
-fprintf(stderr, "Error in bfr: current_chunk_len is zero or negative (%d). Breaking loop.\n", current_chunk_len);
-break; // Avoid potential infinite loop
-}
-}
-        // Pointer to the start of the current audio data chunk in wave.snd
-Uint8* wptr_wav_chunk_start = wave.snd + wave.pos;
-        // 1. Copy chunk to SDL stream buffer for playback
-SDL_memcpy(wptr_current_sdl_chunk_start, wptr_wav_chunk_start, current_chunk_len);
-        // 2. Feed the *SAME CHUNK* data (from wptr_wav_chunk_start) to projectM
-if (pm && current_chunk_len > 0) {
-unsigned int total_samples_in_chunk = current_chunk_len / bytes_per_sample;
-unsigned int samples_per_channel_in_chunk = total_samples_in_chunk / channels;
-if (samples_per_channel_in_chunk > 0) {
-                // Choose projectM function based on format
-switch (wave.spec.format) {
-case AUDIO_F32LSB: // Handle potential endianness if needed, SDL might abstract this
-case AUDIO_F32MSB:
-                        // case AUDIO_F32:    // Catch-all for float
-projectm_pcm_add_float(pm,reinterpret_cast<const float*>(wptr_wav_chunk_start),samples_per_channel_in_chunk,(projectm_channels)channels);
-break;
-case AUDIO_S16LSB:
-case AUDIO_S16MSB:
-// case AUDIO_S16:
-projectm_pcm_add_int16(pm,reinterpret_cast<const int16_t*>(wptr_wav_chunk_start),samples_per_channel_in_chunk,(projectm_channels)channels);
-break;
-case AUDIO_U8:
-                        // For uint8, projectM expects bytes per channel if mono, total samples if stereo?
-                        // Let's assume the uint8 function also takes samples per channel count like others
-projectm_pcm_add_uint8(pm,wptr_wav_chunk_start,samples_per_channel_in_chunk,(projectm_channels)channels);
-break;
-case AUDIO_S32LSB:
-case AUDIO_S32MSB:
-                        // case AUDIO_S32:
-{ // Create a scope for temporary buffer
-                        // Convert S32 samples to Float samples [-1.0, 1.0]
-const int32_t* s32_samples = reinterpret_cast<const int32_t*>(wptr_wav_chunk_start);
-                        // Use std::vector for RAII (automatic memory management)
-std::vector<float> float_buffer(total_samples_in_chunk);
-                        // Conversion constant (using INT32_MAX from <limits>)
-const float max_s32_val = static_cast<float>(std::numeric_limits<int32_t>::max()); // 2147483647.0f
-    
-#pragma omp simd // Ideal for this kind of data transformation
-for(unsigned int i=0;i<total_samples_in_chunk;++i){
-float_buffer[i]=static_cast<float>(s32_samples[i])/max_s32_val;
-}
+            workletNode.port.onmessage = (event) => {
+                if (event.data.type === 'pcmData') {
+                    // 'Module' is the Emscripten instance of this projectM_emscripten.cpp module
+                    if (Module && Module.projectm_pcm_add_float && engineHandleForPM !== 0) {
+                        Module.projectm_pcm_add_float( // Calls the bound C++ function
+                            engineHandleForPM,
+                            event.data.audioData, // Float32Array from worklet
+                            event.data.samplesPerChannel,
+                            event.data.channelsForPM // Channels being sent for PM
+                        );
+                    }
+                }
+            };
 
-                        // Feed the converted float buffer to projectM
-projectm_pcm_add_float(pm,float_buffer.data(),samples_per_channel_in_chunk,(projectm_channels)channels);
-                        // vector float_buffer goes out of scope and automatically cleans up memory
-}
-break;
-default:
-                        // Use the format code directly in the warning
-fprintf(stderr, "Warning in bfr: Unhandled audio format %d. Audio not sent to projectM.\n", wave.spec.format);
-break;
-}
-}
-}
-        // 3. Advance pointers and remaining length for next iteration
-wave.pos += current_chunk_len;
-wptr_current_sdl_chunk_start += current_chunk_len; // Advance SDL buffer pointer
-len -= current_chunk_len;
-        // Check for wrap-around *after* processing the chunk
-if (wave.pos >= wave.slen) {
-wave.pos = 0; // Wrap around
-}
-} // End while(len > 0)
-}
+            workletNode.connect(audioContext.destination);
+            console.log("JS: AudioWorkletNode created, connected, and listener set up.");
+            // At this point, the worklet is running but needs audio data to play.
+
+        } catch (err) {
+            console.error('JS: Error setting up AudioWorklet:', err);
+        }
+    }
+    setupWorklet();
+});
+
+EM_JS(void, js_load_wav_into_worklet, (const char* path_in_vfs, bool loop, bool start_playing), {
+    const filePath = UTF8ToString(path_in_vfs);
+    if (!window.projectMAudioContext_Global || !window.projectMWorkletNode_Global) {
+        console.error("JS: Audio system or worklet not initialized. Call js_initialize_audio_system_and_worklet first.");
+        return;
+    }
+     if (window.projectMAudioContext_Global.state === 'suspended') {
+        window.projectMAudioContext_Global.resume().then(() => {
+             console.log("JS: Audio context resumed for loading WAV.");
+             // Call recursively after resume attempt, or structure better with promises
+             js_load_wav_into_worklet(path_in_vfs, loop, start_playing);
+        }).catch(e => console.error("JS: Error resuming context for WAV load:", e));
+        return; // Don't proceed if suspended, wait for resume
+    }
 
 
-void plt(){
-char flnm[24];
-SDL_FreeWAV(wave.snd);
-SDL_SetMainReady();
-if (SDL_Init(SDL_INIT_AUDIO)<0){
-qu(1);
-}
-SDL_strlcpy(flnm,"/snd/sample.wav",sizeof(flnm));
-if(SDL_LoadWAV(flnm,&wave.spec,&wave.snd,&wave.slen)==NULL){
-qu(1);
-}
-wave.spec.samples = 8192; // Try 2048 or 4096
-wave.pos=0;
-wave.spec.callback=bfr;
-opn_aud();
-return;
-}
+    if (!FS.analyzePath(filePath).exists) {
+         console.error("JS: WAV file for worklet not found in VFS: " + filePath);
+         return;
+    }
+
+    try {
+        const fileDataUint8Array = FS.readFile(filePath);
+        const audioDataArrayBuffer = fileDataUint8Array.buffer.slice(
+            fileDataUint8Array.byteOffset, fileDataUint8Array.byteOffset + fileDataUint8Array.byteLength
+        );
+
+        console.log("JS: Decoding audio data '" + filePath + "' for worklet.");
+        window.projectMAudioContext_Global.decodeAudioData(audioDataArrayBuffer)
+            .then(function(decodedBuffer) {
+                console.log("JS: Audio data decoded. Sending AudioBuffer to worklet.");
+                // Send the entire decoded AudioBuffer to the worklet
+                window.projectMWorkletNode_Global.port.postMessage({
+                    type: 'loadWavData',
+                    audioBuffer: decodedBuffer, // This transfers the AudioBuffer
+                    loop: loop,
+                    startPlaying: start_playing
+                });
+            })
+            .catch(function(err) {
+                console.error("JS: Error decoding WAV '" + filePath + "' for worklet:", err);
+            });
+    } catch (e) {
+        console.error("JS: Error reading file from VFS for worklet '" + filePath + "':", e);
+    }
+});
+
+EM_JS(void, js_control_worklet_playback, (bool play) => {
+    if (window.projectMWorkletNode_Global) {
+        window.projectMWorkletNode_Global.port.postMessage({ type: play ? 'startPlayback' : 'stopPlayback'});
+    }
+});
 
 
-}
+// Your existing C++ projectm_pcm_add_float_from_js_array_wrapper remains the same.
+// It will be called by the JS listener for messages from the worklet.
+// Make sure it uses the correct 'pm' handle (app_data.projectm_engine).
+// void projectm_pcm_add_float_from_js_array_wrapper(...) { ... }
 
+// --- C++ functions to control Web Audio & Worklet ---
+extern "C" {
+    EMSCRIPTEN_KEEPALIVE
+    void initialize_audio_and_load_song(const char* song_path_in_vfs) {
+        // Pass the current 'pm' handle (cast to uintptr_t) so JS can use it
+        // when setting up the callback to projectm_pcm_add_float.
+        js_initialize_audio_system_and_worklet(reinterpret_cast<uintptr_t>(app_data.projectm_engine));
+        js_load_wav_into_worklet(song_path_in_vfs, true, true); // Loop = true, Start Playing = true
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void play_current_worklet_song() {
+        js_control_worklet_playback(true);
+    }
+
+    EMSCRIPTEN_KEEPALIVE
+    void stop_current_worklet_song() {
+        js_control_worklet_playback(false);
+    }
+
+} // extern "C"
 
 void renderLoop(){
 if(app_data.loading==EM_TRUE){return;}
@@ -328,11 +288,6 @@ return;
 // with extern "C".
 // https://emscripten.org/docs/api_reference/preamble.js.html#calling-compiled-c-functions-from-javascript
 extern "C" {
-
-void pl(){
-plt();
-return;
-}
 
 void add_audio_data(uint8_t* data, int len) {
 projectm_pcm_add_uint8(pm, data, len, PROJECTM_MONO);
@@ -501,15 +456,13 @@ nxhttp.open('GET','songs/',true);
 nxhttp.send();
 }
 
-function pll(){
-Module.ccall('pl');
-}
-
 const fll=new BroadcastChannel('file');
 fll.addEventListener('message',ea=>{
 const fill=new Uint8Array(ea.data.data);
 FS.writeFile('/snd/sample.wav',fill);
-setTimeout(function(){pll();},500);
+setTimeout(function(){
+Module.ccall('pl', null, []);
+},500);
 const shutDown=new BroadcastChannel('shutDown');
 shutDown.postMessage({data:222});
 });
@@ -604,6 +557,7 @@ var pth=document.querySelector('#milkPath').innerHTML;
 scanTextures();
 scanSongs();
 scanShaders();
+js_init_web_audio(); 
 
 document.querySelector('#meshSize').addEventListener('change', (event) => {
 let meshValue = event.target.value;
@@ -831,19 +785,37 @@ projectm_set_window_size(pm, height, height);
 // https://emscripten.org/docs/api_reference/bind.h.html#_CPPv419EMSCRIPTEN_BINDINGS4name
 // https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html
 EMSCRIPTEN_BINDINGS(projectm_bindings) {
-function("destruct", &destruct);
-function("init", &init);
-function("loadPresetFile", &load_preset_file);
-function("renderFrame", &render_frame);
-function("startRender", &start_render);
-function("setWindowSize", &set_window_size);
-function("setMesh", &set_mesh);
-function("getShader", &getShader);
-function("addPath", &add_preset_path);
-function("projectm_pcm_add_float", &projectm_pcm_add_float_from_js_array_wrapper);
+    function("destruct", &destruct);
+    function("init", &init); // Your main C++ init
+    function("loadPresetFile", &load_preset_file);
+    function("renderFrame", &render_frame);
+    function("startRender", &start_render);
+    function("setWindowSize", &set_window_size);
+    function("setMesh", &set_mesh);
+    function("getShader", &getShader); // For JS to download individual presets to VFS
+    function("addPath", &add_preset_path); // Your C++ function to populate playlist (e.g., scan /presets)
+
+    // PCM data receiver for ProjectM engine
+    function("projectm_pcm_add_float", &projectm_pcm_add_float_from_js_array_wrapper);
+
+    // New Web Audio control functions
+    function("initializeAudioAndLoadSong", &initialize_audio_and_load_song);
+    function("playWorkletAudio", &play_current_worklet_song);
+    function("stopWorkletAudio", &stop_current_worklet_song);
+
+    // Keep 'pl' if your JS still calls it, but it now maps to initialize_audio_and_load_song or similar
+    function("pl", &pl); // 'pl' should now call initialize_audio_and_load_song internally
+}
+
+extern "C" {
+
+void pl() {
+initialize_audio_and_load_song("/snd/sample.wav"); // Default song
+}
+
 }
 
 int main(){
-init();
-return 1;
+// init();
+return 0;
 }
