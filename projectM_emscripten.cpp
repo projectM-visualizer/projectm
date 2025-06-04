@@ -107,76 +107,120 @@ EGLint numMBuffers;
 EGLint colorSpace;
 EGLint colorFormat;
 EMSCRIPTEN_WEBGL_CONTEXT_HANDLE gl_ctx;
+
 EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const char* path_in_vfs, bool loop, bool start_playing, uintptr_t pm_handle_for_addpcm), {
     const filePath = UTF8ToString(path_in_vfs);
     const engineHandleForPM = pm_handle_for_addpcm;
+    let audioContext; // Use 'let' to allow reassignment after initialization check
 
-    // ... (AudioContext setup and resume logic as before) ...
-    const audioContext = window.projectMAudioContext_Global_Cpp;
-
-    async function setupWorkletAndLoadWav() {
+    // 1. Initialize or get AudioContext
+    if (typeof window.projectMAudioContext_Global_Cpp === 'undefined' || !window.projectMAudioContext_Global_Cpp) {
         try {
-            // ... (Worklet node creation and onmessage listener setup as before) ...
-            // ... (The onmessage listener for 'pcmData' from worklet remains the same) ...
-            const workletNode = window.projectMWorkletNode_Global_Cpp; // Assume this is created
+            window.projectMAudioContext_Global_Cpp = new (window.AudioContext || window.webkitAudioContext)();
+            console.log("JS: Web Audio context created (from Cpp module).");
+        } catch (e) {
+            console.error("JS: Web Audio API (from Cpp module) not supported or failed to init:", e);
+            return; // Cannot proceed if context creation fails
+        }
+    }
+    // Assign to local audioContext AFTER it's guaranteed to be initialized on the window object
+    audioContext = window.projectMAudioContext_Global_Cpp;
 
-            // Load WAV from VFS
-            // ... (FS.readFile, slice to get audioDataArrayBuffer as before) ...
-            if (!FS.analyzePath(filePath).exists) { /* ... error ... */ return; }
+    if (!audioContext) { // Double check if it's still null/undefined after attempt
+        console.error("JS: AudioContext is not available after initialization attempt.");
+        return;
+    }
+
+    // This async function now correctly uses the initialized 'audioContext'
+    async function setupWorkletAndLoadWavInternal() { // Renamed to avoid conflict if you have other setupWorkletAndLoadWav
+        try {
+            if (window.projectMWorkletNode_Global_Cpp) {
+                try { window.projectMWorkletNode_Global_Cpp.port.postMessage({ type: 'stopPlayback' }); } catch(e){}
+                try { window.projectMWorkletNode_Global_Cpp.disconnect(); } catch(e){}
+                window.projectMWorkletNode_Global_Cpp = null;
+                console.log("JS: Previous worklet node cleaned up.");
+            }
+
+            await audioContext.audioWorklet.addModule('projectm_audio_processor.js');
+            console.log("JS: AudioWorklet 'projectm_audio_processor.js' module added.");
+
+            window.projectMWorkletNode_Global_Cpp = new AudioWorkletNode(audioContext, 'projectm-audio-processor');
+            const workletNode = window.projectMWorkletNode_Global_Cpp;
+
+            workletNode.port.onmessage = (event) => {
+                if (event.data.type === 'pcmData') {
+                    if (Module && Module.projectm_pcm_add_float && engineHandleForPM !== 0) {
+                        Module.projectm_pcm_add_float(
+                            engineHandleForPM,
+                            event.data.audioData,
+                            event.data.samplesPerChannel,
+                            event.data.channelsForPM
+                        );
+                    }
+                } else if (event.data.type === 'playbackEnded') {
+                    console.log("JS: Worklet reported playback ended for file:", filePath);
+                }
+            };
+
+            workletNode.connect(audioContext.destination);
+            console.log("JS: AudioWorkletNode created, connected, and listener set up.");
+
+            if (!FS.analyzePath(filePath).exists) {
+                 console.error("JS: WAV file for worklet not found in VFS: " + filePath);
+                 return;
+            }
             const fileDataUint8Array = FS.readFile(filePath);
-            const audioDataArrayBuffer = fileDataUint8Array.buffer.slice( /* ... */ );
+            const audioDataArrayBuffer = fileDataUint8Array.buffer.slice(
+                fileDataUint8Array.byteOffset, fileDataUint8Array.byteOffset + fileDataUint8Array.byteLength
+            );
 
             console.log("JS: Decoding audio data '" + filePath + "' for worklet.");
             const decodedBuffer = await audioContext.decodeAudioData(audioDataArrayBuffer);
-            console.log("JS: Audio data decoded. Extracting raw channel data to send to worklet.");
-
-            // --- MODIFICATION START ---
+            
+            console.log("JS: Audio data decoded. Sending AudioBuffer raw channel data to worklet.");
+            
             const numberOfChannels = decodedBuffer.numberOfChannels;
             const rawChannelData = [];
             for (let i = 0; i < numberOfChannels; i++) {
-                // decodedBuffer.getChannelData(i) returns a Float32Array.
-                // This array needs to be transferable or a copy needs to be sent.
-                // For postMessage to a worklet, a copy is generally safer unless using SharedArrayBuffer.
-                // The Float32Array itself *can* be transferred if its underlying ArrayBuffer is transferable,
-                // but AudioBuffer's internal buffers usually aren't set up that way by default.
-                // So, let's send copies.
-                rawChannelData.push(decodedBuffer.getChannelData(i).slice(0)); // .slice(0) creates a copy
+                rawChannelData.push(decodedBuffer.getChannelData(i).slice(0)); // Send copies
             }
 
             workletNode.port.postMessage({
                 type: 'loadWavData',
-                // audioBuffer: decodedBuffer, // DON'T send the AudioBuffer object
-                channelData: rawChannelData, // Send array of Float32Array copies
+                channelData: rawChannelData,
                 sampleRate: decodedBuffer.sampleRate,
-                length: decodedBuffer.length, // Total sample frames
+                length: decodedBuffer.length,
                 numberOfChannels: numberOfChannels,
                 loop: loop,
                 startPlaying: start_playing
             });
-            // --- MODIFICATION END ---
-
-            console.log("JS: Raw channel data sent to worklet.");
 
         } catch (err) {
-            console.error('JS: Error in main async setup for AudioWorklet and WAV loading:', err);
+            console.error('JS: Error in setupWorkletAndLoadWavInternal:', err);
         }
     }
 
-    // ... (call resumeAndProceed as before) ...
-    // Ensure resumeAndProceed calls setupWorkletAndLoadWav
-    function resumeAndProceed() {
-        if (audioContext.state === 'suspended') {
+    // This function now uses the 'audioContext' that is guaranteed to be assigned (if creation didn't fail)
+    function resumeAndProceedInternal() {
+        if (audioContext.state === 'suspended') { // THIS LINE SHOULD NOW BE SAFE
             return audioContext.resume().then(() => {
                 console.log("JS: AudioContext resumed.");
-                return setupWorkletAndLoadWav(); // Call the main async logic
+                return setupWorkletAndLoadWavInternal();
             }).catch(e => {
-                console.error("JS: Failed to resume AudioContext:", e);
+                console.error("JS: Failed to resume AudioContext (user gesture might be needed):", e);
+                // Consider calling setupWorkletAndLoadWavInternal() anyway if non-critical,
+                // or alerting the user that audio won't start without interaction.
             });
+        } else if (audioContext.state === 'running') {
+            return setupWorkletAndLoadWavInternal();
         } else {
-            return setupWorkletAndLoadWav(); // Call the main async logic
+            console.warn("JS: AudioContext not in a resumable or running state ('" + audioContext.state + "'). Worklet setup might fail.");
+            // Optionally, still try to proceed if you think it might recover or if setup can partially work
+            // return setupWorkletAndLoadWavInternal(); 
         }
     }
-    resumeAndProceed();
+
+    resumeAndProceedInternal(); // Start the chain
 });
 
 // Keep this EM_JS for explicit play/stop control if needed after loading
