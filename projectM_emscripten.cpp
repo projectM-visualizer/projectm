@@ -26,10 +26,10 @@
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
-#include <cstdint>      // For int16_t, int32_t
-#include <vector>       // Easier temporary buffer management than raw pointers
-#include <limits>       // For INT32_MAX
-#include <cmath>        // For std::max (optional, can use INT32_MAX directly)
+#include <cstdint>
+#include <vector>
+#include <limits>
+#include <cmath>
 
 using namespace emscripten;
 
@@ -85,7 +85,6 @@ if (!current_pm_handle) {
     }
     // Call the original projectM function with data from the C++ vector
     projectm_pcm_add_float(current_pm_handle, cpp_audio_buffer.data(), num_samples_per_channel, static_cast<projectm_channels>(channels_enum_value));
-
 }
 
 EGLDisplay display;
@@ -112,7 +111,6 @@ EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const char* path_in
     const filePath = UTF8ToString(path_in_vfs);
     const engineHandleForPM = pm_handle_for_addpcm;
     let audioContext; // Use 'let' to allow reassignment after initialization check
-
     // 1. Initialize or get AudioContext
     if (typeof window.projectMAudioContext_Global_Cpp === 'undefined' || !window.projectMAudioContext_Global_Cpp) {
         try {
@@ -125,12 +123,10 @@ EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const char* path_in
     }
     // Assign to local audioContext AFTER it's guaranteed to be initialized on the window object
     audioContext = window.projectMAudioContext_Global_Cpp;
-
     if (!audioContext) { // Double check if it's still null/undefined after attempt
         console.error("JS: AudioContext is not available after initialization attempt.");
         return;
     }
-
     // This async function now correctly uses the initialized 'audioContext'
     async function setupWorkletAndLoadWavInternal() { // Renamed to avoid conflict if you have other setupWorkletAndLoadWav
         try {
@@ -140,13 +136,10 @@ EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const char* path_in
                 window.projectMWorkletNode_Global_Cpp = null;
                 console.log("JS: Previous worklet node cleaned up.");
             }
-
             await audioContext.audioWorklet.addModule('projectm_audio_processor.js');
             console.log("JS: AudioWorklet 'projectm_audio_processor.js' module added.");
-
             window.projectMWorkletNode_Global_Cpp = new AudioWorkletNode(audioContext, 'projectm-audio-processor');
             const workletNode = window.projectMWorkletNode_Global_Cpp;
-
             workletNode.port.onmessage = (event) => {
                 if (event.data.type === 'pcmData') {
                     if (Module && Module.projectm_pcm_add_float && engineHandleForPM !== 0) {
@@ -161,10 +154,8 @@ EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const char* path_in
                     console.log("JS: Worklet reported playback ended for file:", filePath);
                 }
             };
-
             workletNode.connect(audioContext.destination);
             console.log("JS: AudioWorkletNode created, connected, and listener set up.");
-
             if (!FS.analyzePath(filePath).exists) {
                  console.error("JS: WAV file for worklet not found in VFS: " + filePath);
                  return;
@@ -173,18 +164,14 @@ EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const char* path_in
             const audioDataArrayBuffer = fileDataUint8Array.buffer.slice(
                 fileDataUint8Array.byteOffset, fileDataUint8Array.byteOffset + fileDataUint8Array.byteLength
             );
-
             console.log("JS: Decoding audio data '" + filePath + "' for worklet.");
             const decodedBuffer = await audioContext.decodeAudioData(audioDataArrayBuffer);
-            
             console.log("JS: Audio data decoded. Sending AudioBuffer raw channel data to worklet.");
-            
             const numberOfChannels = decodedBuffer.numberOfChannels;
             const rawChannelData = [];
             for (let i = 0; i < numberOfChannels; i++) {
                 rawChannelData.push(decodedBuffer.getChannelData(i).slice(0)); // Send copies
             }
-
             workletNode.port.postMessage({
                 type: 'loadWavData',
                 channelData: rawChannelData,
@@ -194,12 +181,10 @@ EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const char* path_in
                 loop: loop,
                 startPlaying: start_playing
             });
-
         } catch (err) {
             console.error('JS: Error in setupWorkletAndLoadWavInternal:', err);
         }
     }
-
     // This function now uses the 'audioContext' that is guaranteed to be assigned (if creation didn't fail)
     function resumeAndProceedInternal() {
         if (audioContext.state === 'suspended') { // THIS LINE SHOULD NOW BE SAFE
@@ -219,7 +204,6 @@ EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const char* path_in
             // return setupWorkletAndLoadWavInternal(); 
         }
     }
-
     resumeAndProceedInternal(); // Start the chain
 });
 
@@ -230,10 +214,8 @@ EM_JS(void, js_control_worklet_playback_cpp, (bool playCommand, double playheadP
         console.warn("JS: Worklet or AudioContext not ready for playback control.");
         return;
     }
-
     const audioContext = window.projectMAudioContext_Global_Cpp;
     const workletNode = window.projectMWorkletNode_Global_Cpp;
-
     if (playCommand) {
         if (audioContext.state === 'suspended') {
             audioContext.resume().then(() => {
@@ -249,7 +231,6 @@ EM_JS(void, js_control_worklet_playback_cpp, (bool playCommand, double playheadP
         workletNode.port.postMessage({ type: 'stopPlayback' });
     }
 });
-
 
 // --- C++ functions to control Web Audio & Worklet ---
 extern "C" {
@@ -323,11 +304,6 @@ void _on_preset_switch_failed(const char *preset_filename, const char *message, 
 printf("Preset switch failed (%s): %s\n", preset_filename, message);
 return;
 }
-
-// C++ name mangling means that “normal” C++ functions cannot be called; the
-// function must either be defined in a .c file or be a C++ function defined
-// with extern "C".
-// https://emscripten.org/docs/api_reference/preamble.js.html#calling-compiled-c-functions-from-javascript
 
 extern "C" {
 
@@ -616,125 +592,124 @@ Module.setMesh(values[0], values[1]);
 // Module.setMesh(values[0], values[1]);
 });
 
-
-    if (pm) return 0;
-    // initialize WebGL context attributes
-    // https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes
-    EmscriptenWebGLContextAttributes webgl_attrs;
-    emscripten_webgl_init_context_attributes(&webgl_attrs);
-    webgl_attrs.majorVersion = 2;
-    webgl_attrs.minorVersion = 0;
-    webgl_attrs.alpha = EM_TRUE;
-    webgl_attrs.stencil = EM_TRUE;
-    webgl_attrs.depth = EM_TRUE;
-    webgl_attrs.antialias = EM_TRUE;
-    webgl_attrs.premultipliedAlpha=EM_TRUE;
-    webgl_attrs.preserveDrawingBuffer=EM_FALSE;
-    webgl_attrs.enableExtensionsByDefault=EM_TRUE;
-    webgl_attrs.powerPreference=EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE;
-    display=eglGetDisplay(EGL_DEFAULT_DISPLAY);
-    PFNEGLGETCONFIGATTRIBPROC eglGetConfigAttribHI = reinterpret_cast<PFNEGLGETCONFIGATTRIBPROC>(eglGetProcAddress("eglGetConfigAttribHI"));
-    eglInitialize(display,&major,&minor);
-    eglGetConfigAttrib(display,eglconfig,EGL_SAMPLES,&numSamples);
-    eglGetConfigAttrib(display,eglconfig,EGL_COVERAGE_BUFFERS_NV,&numSamplesNV);
-    eglGetConfigAttrib(display,eglconfig,EGL_SAMPLE_BUFFERS,&numMBuffers);
-    eglGetConfigAttrib(display,eglconfig,EGL_RED_SIZE,&numRed);
-    eglGetConfigAttrib(display,eglconfig,EGL_GREEN_SIZE,&numGreen);
-    eglGetConfigAttrib(display,eglconfig,EGL_BLUE_SIZE,&numBlue);
-    eglGetConfigAttrib(display,eglconfig,EGL_ALPHA_SIZE,&numAlpha);
-    eglGetConfigAttrib(display,eglconfig,EGL_DEPTH_SIZE,&numDepth);
-    eglGetConfigAttrib(display,eglconfig,EGL_STENCIL_SIZE,&numStencil);
-    eglGetConfigAttrib(display,eglconfig,EGL_BUFFER_SIZE,&numBuffer);
-    eglGetConfigAttrib(display,eglconfig,EGL_COVERAGE_BUFFERS_NV,&numBuffersNV);
-    eglGetConfigAttrib(display,eglconfig,EGL_GL_COLORSPACE,&colorSpace);
-    eglGetConfigAttrib(display,eglconfig,EGL_COLOR_FORMAT_HI,&colorFormat);
-    static EGLint ctx_att[]={
-            EGL_CONTEXT_CLIENT_TYPE,EGL_OPENGL_ES_API,
-            EGL_CONTEXT_CLIENT_VERSION,3,
-            EGL_CONTEXT_MAJOR_VERSION_KHR,3,
-            EGL_CONTEXT_MINOR_VERSION_KHR,0,
+if (pm) return 0;
+// initialize WebGL context attributes
+// https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes
+EmscriptenWebGLContextAttributes webgl_attrs;
+emscripten_webgl_init_context_attributes(&webgl_attrs);
+webgl_attrs.majorVersion = 2;
+webgl_attrs.minorVersion = 0;
+webgl_attrs.alpha = EM_TRUE;
+webgl_attrs.stencil = EM_TRUE;
+webgl_attrs.depth = EM_TRUE;
+webgl_attrs.antialias = EM_TRUE;
+webgl_attrs.premultipliedAlpha=EM_TRUE;
+webgl_attrs.preserveDrawingBuffer=EM_FALSE;
+webgl_attrs.enableExtensionsByDefault=EM_TRUE;
+webgl_attrs.powerPreference=EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE;
+display=eglGetDisplay(EGL_DEFAULT_DISPLAY);
+PFNEGLGETCONFIGATTRIBPROC eglGetConfigAttribHI = reinterpret_cast<PFNEGLGETCONFIGATTRIBPROC>(eglGetProcAddress("eglGetConfigAttribHI"));
+eglInitialize(display,&major,&minor);
+eglGetConfigAttrib(display,eglconfig,EGL_SAMPLES,&numSamples);
+eglGetConfigAttrib(display,eglconfig,EGL_COVERAGE_BUFFERS_NV,&numSamplesNV);
+eglGetConfigAttrib(display,eglconfig,EGL_SAMPLE_BUFFERS,&numMBuffers);
+eglGetConfigAttrib(display,eglconfig,EGL_RED_SIZE,&numRed);
+eglGetConfigAttrib(display,eglconfig,EGL_GREEN_SIZE,&numGreen);
+eglGetConfigAttrib(display,eglconfig,EGL_BLUE_SIZE,&numBlue);
+eglGetConfigAttrib(display,eglconfig,EGL_ALPHA_SIZE,&numAlpha);
+eglGetConfigAttrib(display,eglconfig,EGL_DEPTH_SIZE,&numDepth);
+eglGetConfigAttrib(display,eglconfig,EGL_STENCIL_SIZE,&numStencil);
+eglGetConfigAttrib(display,eglconfig,EGL_BUFFER_SIZE,&numBuffer);
+eglGetConfigAttrib(display,eglconfig,EGL_COVERAGE_BUFFERS_NV,&numBuffersNV);
+eglGetConfigAttrib(display,eglconfig,EGL_GL_COLORSPACE,&colorSpace);
+eglGetConfigAttrib(display,eglconfig,EGL_COLOR_FORMAT_HI,&colorFormat);
+static EGLint ctx_att[]={
+EGL_CONTEXT_CLIENT_TYPE,EGL_OPENGL_ES_API,
+EGL_CONTEXT_CLIENT_VERSION,3,
+EGL_CONTEXT_MAJOR_VERSION_KHR,3,
+EGL_CONTEXT_MINOR_VERSION_KHR,0,
 // EGL_CONTEXT_FLAGS_KHR,EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR,
-            EGL_CONTEXT_PRIORITY_LEVEL_IMG,EGL_CONTEXT_PRIORITY_REALTIME_NV,
+EGL_CONTEXT_PRIORITY_LEVEL_IMG,EGL_CONTEXT_PRIORITY_REALTIME_NV,
 // EGL_CONTEXT_PRIORITY_LEVEL_IMG,EGL_CONTEXT_PRIORITY_HIGH_IMG,
-            EGL_NONE
-    };
-    static EGLint att_lst2[]={
-            EGL_GL_COLORSPACE_KHR,colorSpace,
-            EGL_NONE
-    };
-    static EGLint att_lst[]={
-            EGL_COLOR_COMPONENT_TYPE_EXT,EGL_COLOR_COMPONENT_TYPE_FLOAT_EXT,
+EGL_NONE
+};
+static EGLint att_lst2[]={
+EGL_GL_COLORSPACE_KHR,colorSpace,
+EGL_NONE
+};
+static EGLint att_lst[]={
+EGL_COLOR_COMPONENT_TYPE_EXT,EGL_COLOR_COMPONENT_TYPE_FLOAT_EXT,
 // EGL_COLOR_COMPONENT_TYPE_EXT,EGL_COLOR_COMPONENT_TYPE_FIXED_EXT,
 // EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR,EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR,
 // EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR,EGL_CONTEXT_OPENGL_COMPATIBILITY_PROFILE_BIT_KHR,
-            EGL_RENDERABLE_TYPE,EGL_OPENGL_ES3_BIT,
+EGL_RENDERABLE_TYPE,EGL_OPENGL_ES3_BIT,
 // EGL_RENDERABLE_TYPE,EGL_OPENGL_BIT,  // EGL 1.5 needed  (WASM cannot Window surface)
 // EGL_RENDERABLE_TYPE,EGL_NONE,
 // EGL_CONFORMANT,EGL_OPENGL_BIT,
 // EGL_CONFORMANT,EGL_NONE,
 //  EGL_CONFIG_CAVEAT,EGL_NONE,
-            EGL_CONTEXT_OPENGL_ROBUST_ACCESS_EXT,EGL_TRUE,
-            EGL_CONTEXT_OPENGL_NO_ERROR_KHR,EGL_TRUE,
+EGL_CONTEXT_OPENGL_ROBUST_ACCESS_EXT,EGL_TRUE,
+EGL_CONTEXT_OPENGL_NO_ERROR_KHR,EGL_TRUE,
 // EGL_DEPTH_ENCODING_NV,EGL_DEPTH_ENCODING_NONLINEAR_NV,
 // EGL_RENDER_BUFFER,EGL_TRIPLE_BUFFER_NV,
-            EGL_RENDER_BUFFER,EGL_QUADRUPLE_BUFFER_NV, //   available in OpenGL
+EGL_RENDER_BUFFER,EGL_QUADRUPLE_BUFFER_NV, //   available in OpenGL
 // EGL_SURFACE_TYPE,EGL_MULTISAMPLE_RESOLVE_BOX_BIT,
-            EGL_SURFACE_TYPE,EGL_SWAP_BEHAVIOR_PRESERVED_BIT|EGL_MULTISAMPLE_RESOLVE_BOX_BIT,
-            EGL_MULTISAMPLE_RESOLVE,EGL_MULTISAMPLE_RESOLVE_BOX,
+EGL_SURFACE_TYPE,EGL_SWAP_BEHAVIOR_PRESERVED_BIT|EGL_MULTISAMPLE_RESOLVE_BOX_BIT,
+EGL_MULTISAMPLE_RESOLVE,EGL_MULTISAMPLE_RESOLVE_BOX,
 //  EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE,EGL_TRUE, // EGL 1.5 "...the context will only support OpenGL ES 3.0 and later features."
-            EGL_COLOR_FORMAT_HI,colorFormat, //  available in OpenGL
+EGL_COLOR_FORMAT_HI,colorFormat, //  available in OpenGL
 // EGL_CONTEXT_OPENGL_RESET_NOTIFICATION_STRATEGY,EGL_NO_RESET_NOTIFICATION,
 // EGL_NATIVE_RENDERABLE,EGL_TRUE,
-            EGL_COLOR_BUFFER_TYPE,EGL_RGB_BUFFER,
-            EGL_LUMINANCE_SIZE,0, // available in OpenGL
-            EGL_RED_SIZE,numRed,
-            EGL_GREEN_SIZE,numGreen,
-            EGL_BLUE_SIZE,numBlue,
-            EGL_ALPHA_SIZE,numAlpha,
-            EGL_DEPTH_SIZE,numDepth,
-            EGL_STENCIL_SIZE,numStencil,
-            EGL_BUFFER_SIZE,numBuffer,
-            EGL_COVERAGE_BUFFERS_NV,numBuffersNV, // available in GLES 3.1
-            EGL_COVERAGE_SAMPLES_NV,numSamplesNV,
-            EGL_SAMPLE_BUFFERS,numMBuffers,
-            EGL_SAMPLES,numSamples,
-            EGL_NONE
-    };
-    eglChooseConfig(display,att_lst,&eglconfig,1,&config_size);
-    ctxegl=eglCreateContext(display,eglconfig,EGL_NO_CONTEXT,ctx_att);
-    surface=eglCreateWindowSurface(display,eglconfig,(NativeWindowType)0,att_lst2);
+EGL_COLOR_BUFFER_TYPE,EGL_RGB_BUFFER,
+EGL_LUMINANCE_SIZE,0, // available in OpenGL
+EGL_RED_SIZE,numRed,
+EGL_GREEN_SIZE,numGreen,
+EGL_BLUE_SIZE,numBlue,
+EGL_ALPHA_SIZE,numAlpha,
+EGL_DEPTH_SIZE,numDepth,
+EGL_STENCIL_SIZE,numStencil,
+EGL_BUFFER_SIZE,numBuffer,
+EGL_COVERAGE_BUFFERS_NV,numBuffersNV, // available in GLES 3.1
+EGL_COVERAGE_SAMPLES_NV,numSamplesNV,
+EGL_SAMPLE_BUFFERS,numMBuffers,
+EGL_SAMPLES,numSamples,
+EGL_NONE
+};
+eglChooseConfig(display,att_lst,&eglconfig,1,&config_size);
+ctxegl=eglCreateContext(display,eglconfig,EGL_NO_CONTEXT,ctx_att);
+surface=eglCreateWindowSurface(display,eglconfig,(NativeWindowType)0,att_lst2);
 // eglBindAPI(EGL_OPENGL_ES_API);
-    eglBindAPI(EGL_OPENGL_API);
-    gl_ctx = emscripten_webgl_create_context("#mcanvas", &webgl_attrs);
-    if (!gl_ctx) {
-        fprintf(stderr, "Failed to create WebGL context\n");
-        return 1;
-    }
-    EMSCRIPTEN_RESULT em_res = emscripten_webgl_make_context_current(gl_ctx);
-    eglMakeCurrent(display,surface,surface,ctxegl);
-    emscripten_webgl_make_context_current(gl_ctx);
-    glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT,GL_NICEST);
-    glHint(GL_GENERATE_MIPMAP_HINT,GL_NICEST);
-    if (em_res != EMSCRIPTEN_RESULT_SUCCESS) {
-        fprintf(stderr, "Failed to activate the WebGL context for rendering\n");
-        return 1;
-    }
-    // These are probably redundant since all GL extensions are enabled by default
-    // https://github.com/emscripten-core/emscripten/blob/1b01a9ef2b60184eb70616bbb294cf33d011bbb2/src/settings.js#L481
-    // https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.enableExtensionsByDefault
-    //
-    // enable floating-point texture support for motion vector grid
-    // https://github.com/projectM-visualizer/projectm/blob/master/docs/emscripten.rst#initializing-emscriptens-opengl-context
-    // https://emscripten.org/docs/api_reference/html5.h.html#c.emscripten_webgl_enable_extension
-    emscripten_webgl_enable_extension(gl_ctx, "OES_texture_float");
-    // projectM uses half-float textures for the motion vector grid to store
-    // the displacement of the previous frame's warp mesh. WebGL 2.0 sadly
-    // doesn't support this texture format by default (while OpenGL ES 3 does)
-    // so we have to enable the following WebGL extensions.
-    emscripten_webgl_enable_extension(gl_ctx, "OES_texture_half_float");
-    emscripten_webgl_enable_extension(gl_ctx, "OES_texture_half_float_linear");
-    emscripten_webgl_enable_extension(gl_ctx,"EXT_color_buffer_float"); // GLES float
-    emscripten_webgl_enable_extension(gl_ctx,"EXT_float_blend"); // GLES float
+eglBindAPI(EGL_OPENGL_API);
+gl_ctx = emscripten_webgl_create_context("#mcanvas", &webgl_attrs);
+if (!gl_ctx) {
+fprintf(stderr, "Failed to create WebGL context\n");
+return 1;
+}
+EMSCRIPTEN_RESULT em_res = emscripten_webgl_make_context_current(gl_ctx);
+eglMakeCurrent(display,surface,surface,ctxegl);
+emscripten_webgl_make_context_current(gl_ctx);
+glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT,GL_NICEST);
+glHint(GL_GENERATE_MIPMAP_HINT,GL_NICEST);
+if (em_res != EMSCRIPTEN_RESULT_SUCCESS) {
+fprintf(stderr, "Failed to activate the WebGL context for rendering\n");
+return 1;
+}
+// These are probably redundant since all GL extensions are enabled by default
+// https://github.com/emscripten-core/emscripten/blob/1b01a9ef2b60184eb70616bbb294cf33d011bbb2/src/settings.js#L481
+// https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.enableExtensionsByDefault
+//
+// enable floating-point texture support for motion vector grid
+// https://github.com/projectM-visualizer/projectm/blob/master/docs/emscripten.rst#initializing-emscriptens-opengl-context
+// https://emscripten.org/docs/api_reference/html5.h.html#c.emscripten_webgl_enable_extension
+emscripten_webgl_enable_extension(gl_ctx, "OES_texture_float");
+// projectM uses half-float textures for the motion vector grid to store
+// the displacement of the previous frame's warp mesh. WebGL 2.0 sadly
+// doesn't support this texture format by default (while OpenGL ES 3 does)
+// so we have to enable the following WebGL extensions.
+emscripten_webgl_enable_extension(gl_ctx, "OES_texture_half_float");
+emscripten_webgl_enable_extension(gl_ctx, "OES_texture_half_float_linear");
+emscripten_webgl_enable_extension(gl_ctx,"EXT_color_buffer_float"); // GLES float
+emscripten_webgl_enable_extension(gl_ctx,"EXT_float_blend"); // GLES float
 
 pm = projectm_create();
 
@@ -744,9 +719,9 @@ app_data.projectm_engine = pm;
 // memset(&playlist_settings, 0, sizeof(projectm_playlist_settings)); // Initialize to zero
 // playlist_settings.load_preset_callback = load_preset_callback_example;
 // playlist_settings.user_data_load_preset = &app_data; // Pass our AppData to the callback
-    printf("Playlist settings configured.\n");
+printf("Playlist settings configured.\n");
 
-    // --- 3. Create a Playlist ---
+// --- 3. Create a Playlist ---
 
 playlist = projectm_playlist_create(pm);
 
@@ -764,26 +739,29 @@ projectm_playlist_set_preset_switched_event_callback(playlist,&load_preset_callb
 //                                                          projectm_playlist_preset_switched_event callback,
 //                                                          void* user_data)
 
-    if (!pm) {
-        fprintf(stderr, "Failed to create projectM handle\n");
-        return 1;
-    }
-    // configure projectM
-    const char* texture_search_paths[] = {"textures"};
-    projectm_set_texture_search_paths(pm, texture_search_paths, 1);
-    projectm_set_fps(pm, 60);
-    projectm_set_soft_cut_duration(pm, 17);
-    projectm_playlist_set_shuffle(playlist,true);
-    projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, nullptr);
-    projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, &app_data);
+if (!pm) {
+fprintf(stderr, "Failed to create projectM handle\n");
+return 1;
+}
+// configure projectM
+const char* texture_search_paths[] = {"textures"};
+projectm_set_texture_search_paths(pm, texture_search_paths, 1);
+projectm_set_fps(pm, 60);
+projectm_set_preset_duration(pm, 24.0);
+projectm_set_soft_cut_duration(pm, 7.0);
+projectm_set_hard_cut_duration(pm, 23.0);
+projectm_set_hard_cut_enabled(pm, true);
+projectm_set_beat_sensitivity(pm, 2.0);
+projectm_playlist_set_shuffle(playlist,true);
+projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, nullptr);
+projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, &app_data);
 // projectm_playlist_connect(app_data.playlist,app_data.projectm_engine);
-
-    printf("projectM initialized\n");
-    return 0;
+printf("projectM initialized\n");
+return 0;
 }
 
 void add_preset_path(){
-const char * loc="/presets/";    
+const char * loc="/presets/";
 char preset_file[64]; // Buffer for the generated filename
 for (int i = 0; i <= 25; ++i) {
 snprintf(preset_file, sizeof(preset_file), "/presets/preset_%d.milk", i);
@@ -809,8 +787,7 @@ gl_ctx = NULL;
 void load_preset_file(std::string filename) {
 if (!pm) return;
     // XXX: smooth_transition true does not work
-    //projectm_load_preset_file(pm, filename.c_str(), true);
-projectm_load_preset_file(pm, filename.c_str(), false);
+projectm_load_preset_file(pm, filename.c_str(), true);
 }
 
 void render_frame() {
@@ -821,30 +798,26 @@ projectm_opengl_render_frame(pm);
 void set_window_size(int width, int height) {
 if (!pm) return;
 glViewport(0,0,height,height);  //  viewport/scissor after UsePrg runs at full resolution
-    // glEnable(GL_SCISSOR_TEST);
-    // glScissor(0,0,height,height);
+// glEnable(GL_SCISSOR_TEST);
+// glScissor(0,0,height,height);
 projectm_set_window_size(pm, height, height);
 }
 
 EMSCRIPTEN_BINDINGS(projectm_bindings) {
-    function("destruct", &destruct);
-    function("init", &init);
-    function("loadPresetFile", &load_preset_file);
-    function("renderFrame", &render_frame);
-    function("startRender", &start_render); // Ensure this uses this module's pm
-    function("setWindowSize", &set_window_size);
-    function("setMesh", &set_mesh);
-    function("getShader", &getShader);
-    function("addPath", &add_preset_path);
-
-    // The function JS calls to send PCM data TO this C++ module
-    function("projectm_pcm_add_float", &projectm_pcm_add_float_from_js_array_wrapper);
-
-    // C++ functions to be called from JS to control audio
-    function("initializeAudioAndLoadSong", &cpp_initialize_audio_and_load_song);
-    function("playAudio", &cpp_play_audio);
-    function("stopAudio", &cpp_stop_audio);
-    function("pl", &pl); // For compatibility if your JS already calls this
+function("destruct", &destruct);
+function("init", &init);
+function("loadPresetFile", &load_preset_file);
+function("renderFrame", &render_frame);
+function("startRender", &start_render); // Ensure this uses this module's pm
+function("setWindowSize", &set_window_size);
+function("setMesh", &set_mesh);
+function("getShader", &getShader);
+function("addPath", &add_preset_path);
+function("projectm_pcm_add_float", &projectm_pcm_add_float_from_js_array_wrapper);
+function("initializeAudioAndLoadSong", &cpp_initialize_audio_and_load_song);
+function("playAudio", &cpp_play_audio);
+function("stopAudio", &cpp_stop_audio);
+function("pl", &pl); // For compatibility if your JS already calls this
 }
 
 int main(){
