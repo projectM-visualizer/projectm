@@ -719,8 +719,6 @@ pm = projectm_create();
 
 app_data.projectm_engine = pm;
 
-js_initialize_audio_system_and_worklet_cpp(reinterpret_cast<uintptr_t>(pm));
-
 // projectm_playlist_settings playlist_settings;
 // memset(&playlist_settings, 0, sizeof(projectm_playlist_settings)); // Initialize to zero
 // playlist_settings.load_preset_callback = load_preset_callback_example;
