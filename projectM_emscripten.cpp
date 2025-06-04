@@ -52,8 +52,8 @@ return;
 
 void load_preset_callback_done(bool is_hard_cut, unsigned int index,void* user_data) {
 // AppData* app_data = (AppData*)user_data;
-emscripten_resume_main_loop();
-app_data.loading=EM_FALSE;
+// emscripten_resume_main_loop();
+// app_data.loading=EM_FALSE;
 return;
 }
 
@@ -292,7 +292,7 @@ extern "C" {
 } // extern "C"
 
 void renderLoop(){
-if(app_data.loading==EM_TRUE){return;}
+// if(app_data.loading==EM_TRUE){return;}
 // glClearColor( 1.0, 1.0, 1.0, 0.0 );
 glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 projectm_opengl_render_frame(pm);
@@ -344,8 +344,8 @@ printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ?
 // const randIndex = Math.floor(Math.random()*25);
 // Module.loadPresetFile('/presets/preset_'+randIndex+'.milk');
 // });
-    emscripten_pause_main_loop();
-app_data.loading=EM_TRUE;
+ //   emscripten_pause_main_loop();
+// app_data.loading=EM_TRUE;
 char *str = (char*)EM_ASM_PTR({
 const randIndex = Math.floor(Math.random()*25);
 var jsString = '/presets/preset_'+randIndex+'.milk';
