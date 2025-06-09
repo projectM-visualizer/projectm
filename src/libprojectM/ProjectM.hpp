@@ -259,13 +259,13 @@ private:
     uint32_t m_targetFps{60};        //!< Target frames per second.
     uint32_t m_windowWidth{0};       //!< EvaluateFrameData window width. If 0, nothing is rendered.
     uint32_t m_windowHeight{0};      //!< EvaluateFrameData window height. If 0, nothing is rendered.
-    double m_presetDuration{17.0};   //!< Preset duration in seconds.
-    double m_softCutDuration{7.0};   //!< Soft cut transition time.
+    double m_presetDuration{27.0};   //!< Preset duration in seconds.
+    double m_softCutDuration{17.0};   //!< Soft cut transition time.
     double m_hardCutDuration{4.0};  //!< Time after which a hard cut can happen at the earliest.
     bool m_hardCutEnabled{false};    //!< If true, hard cuts based on beat detection are enabled.
     float m_hardCutSensitivity{2.0}; //!< Loudness sensitivity value for hard cuts.
     float m_beatSensitivity{1.0};    //!< General beat sensitivity modifier for presets.
-    bool m_aspectCorrection{true};   //!< If true, corrects aspect ratio for non-rectangular windows.
+    bool m_aspectCorrection{false};   //!< If true, corrects aspect ratio for non-rectangular windows.
     float m_easterEgg{1.0};          //!< Random preset duration modifier. See TimeKeeper class.
     float m_previousFrameVolume{};   //!< Volume in previous frame, used for hard cuts.
 
