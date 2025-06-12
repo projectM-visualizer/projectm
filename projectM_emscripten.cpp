@@ -398,16 +398,13 @@ const fll = new BroadcastChannel('file');
 fll.addEventListener('message', ea => {
     const uniqueFileName = `/snd/song_${Date.now()}.wav`;
     console.log(`JS Event: Received new song. Writing to unique path: ${uniqueFileName}`);
-
     const fill = new Uint8Array(ea.data.data);
     FS.writeFile(uniqueFileName, fill);
-
     if (lastSongFileName && FS.analyzePath(lastSongFileName).exists) {
         FS.unlink(lastSongFileName);
         console.log(`JS Event: Cleaned up previous song file: ${lastSongFileName}`);
     }
     lastSongFileName = uniqueFileName;
-
     setTimeout(function() {
         Module.ccall(
             'pl',                   // C function name
@@ -647,27 +644,16 @@ emscripten_webgl_enable_extension(gl_ctx,"EXT_color_buffer_float"); // GLES floa
 emscripten_webgl_enable_extension(gl_ctx,"EXT_float_blend"); // GLES float
 
 pm = projectm_create();
-
 app_data.projectm_engine = pm;
-
-// --- 3. Create a Playlist ---
 playlist = projectm_playlist_create(pm);
-
-printf("Playlist created successfully.\n");
-
 app_data.playlist = playlist;
-
 const char * loc="/presets/";
 projectm_playlist_add_path(playlist,loc,true,true);
-// printf("Added /presets/ to playlist successfully.\n");
-
 projectm_playlist_set_preset_switched_event_callback(playlist,&load_preset_callback_done,&app_data);
-
 if (!pm) {
 fprintf(stderr, "Failed to create projectM handle\n");
 return 1;
 }
-// configure projectM
 const char* texture_search_paths[] = {"textures"};
 projectm_set_texture_search_paths(pm, texture_search_paths, 1);
 projectm_set_fps(pm, 60);
@@ -680,23 +666,18 @@ projectm_playlist_set_shuffle(playlist,true);
 projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, nullptr);
 projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, &app_data);
 // projectm_playlist_connect(app_data.playlist,app_data.projectm_engine);
-printf("projectM initialized\n");
-
+printf("  --==  projectM initialized!  ==--\n");
 js_initialize_worklet_system_once(reinterpret_cast<uintptr_t>(app_data.projectm_engine));
-
 return 0;
 }
 
 void add_preset_path(){
 const char * loc="/presets/";
-char preset_file[256]; // Buffer for the generated filename
+char preset_file[256];
 for (int i = 0; i <= 100; ++i) {
 snprintf(preset_file, sizeof(preset_file), "/presets/preset_%d.milk", i);
 projectm_playlist_add_preset(app_data.playlist, preset_file, false);
 }
-// projectm_playlist_add_path(app_data.playlist,loc,true,true);
-// projectm_set_preset_switch_requested_event_callback(app_data.projectm_engine, &on_preset_switch_requested, &app_data);
-printf("Added /presets/ to playlist successfully.\n");
 }
 
 void set_mesh(int w,int h){
@@ -724,7 +705,7 @@ projectm_opengl_render_frame(pm);
 
 void set_window_size(int width, int height) {
 if (!pm) return;
-glViewport(0,0,height,height);  //  viewport/scissor after UsePrg runs at full resolution
+glViewport(0,0,height,height);
 // glEnable(GL_SCISSOR_TEST);
 // glScissor(0,0,height,height);
 projectm_set_window_size(pm, height, height);
@@ -735,13 +716,13 @@ function("destruct", &destruct);
 function("init", &init);
 function("loadPresetFile", &load_preset_file);
 function("renderFrame", &render_frame);
-function("startRender", &start_render); // Ensure this uses this module's pm
+function("startRender", &start_render);
 function("setWindowSize", &set_window_size);
 function("setMesh", &set_mesh);
 function("getShader", &getShader);
 function("addPath", &add_preset_path);
 function("projectm_pcm_add_float", &projectm_pcm_add_float_from_js_array_wrapper);
-function("pl", &pl); // For compatibility if your JS already calls this
+function("pl", &pl);
 }
 
 int main(){
