@@ -57,6 +57,7 @@ void create_sprite() {
 
     // Correct: Use the name of the sprite defined in the .milk file
     projectm_sprite_create(app_data.projectm_engine, "milkdrop", new_sprite_code);
+    projectm_sprite_create(app_data.projectm_engine, "basic_sparkle", new_sprite_code);
 
 return;
 }
