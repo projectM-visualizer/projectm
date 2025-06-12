@@ -54,7 +54,7 @@ void create_sprite() {
         "a = 1.0;"         // Fully opaque
         "r = 1.0;"         // Bright Red
         "g = 0.0;"
-        "b = 0.0;";
+        "b = 1.0;";
 
     // Correct: Use the name of the sprite defined in the .milk file
     projectm_sprite_create(app_data.projectm_engine, "milkdrop", new_sprite_code);
