@@ -49,6 +49,7 @@ void create_sprite() {
     const char* new_sprite_code =
         "x = 0.5;"         // Center X
         "y = 0.5;"         // Center Y
+        "z = 0.0;"         // Center Y
         "scaling = 2.0;"   // Make it huge (twice the screen height)
         "a = 1.0;"         // Fully opaque
         "r = 1.0;"         // Bright Red
