@@ -43,6 +43,8 @@ projectm_handle pm;
 AppData app_data;
 projectm_playlist_handle playlist={};
 
+bool g_is_streaming_audio = false;
+
 void create_sprite() {
 const char* new_sprite_code = 
     "x = 0.25;"
@@ -59,6 +61,41 @@ return;
 uintptr_t get_projectm_handle() { 
 return reinterpret_cast<uintptr_t>(app_data.projectm_engine);
 }
+
+EM_JS(void, js_feed_stream_data_to_projectm, (uintptr_t pm_handle, int buffer_size), {
+    const analyser = window.projectMStreamAnalyser;
+    const pcmBuffer = window.projectMStreamBuffer;
+    if (!analyser || !pcmBuffer || pcmBuffer.length !== buffer_size) {
+        return;
+    }
+    // This is the magic: fill the buffer with the current waveform data
+    analyser.getFloatTimeDomainData(pcmBuffer);
+    // Feed this PCM data to projectM
+    // We can call the existing C++ wrapper we already have
+    Module.projectm_pcm_add_float(pm_handle, pcmBuffer, pcmBuffer.length, 1); // Assuming mono for simplicity
+});
+
+EM_JS(void, js_initialize_stream_analyser, (), {
+    const audioContext = window.projectMAudioContext_Global_Cpp;
+    const audioElement = document.getElementById('audio-stream-element');
+    if (!audioContext || !audioElement) {
+        console.error("JS Stream Init: AudioContext or audio element not found.");
+        return;
+    }
+    // Create an AnalyserNode to get PCM data for visualization
+    const analyser = audioContext.createAnalyser();
+    analyser.fftSize = 2048; // A common size for detailed analysis
+    // Create a source node from the HTML <audio> element
+    const source = audioContext.createMediaElementSource(audioElement);
+    // Connect the graph: Audio Element -> Analyser -> Speakers
+    source.connect(analyser);
+    analyser.connect(audioContext.destination);
+    // Store the analyser and a buffer for later use
+    window.projectMStreamAnalyser = analyser;
+    // Create a buffer to hold the raw PCM data
+    window.projectMStreamBuffer = new Float32Array(analyser.fftSize);
+    console.log("JS Stream Init: Media element and analyser connected.");
+});
 
 void load_preset_callback_example(bool is_hard_cut, unsigned int index,void* user_data) {
 // AppData* app_data = (AppData*)user_data;
@@ -198,11 +235,34 @@ void pl(const std::string& song_path_in_vfs) {
     return;
 }
 
+EMSCRIPTEN_KEEPALIVE
+void set_audio_source_to_stream(bool is_streaming) {
+        g_is_streaming_audio = is_streaming;
+        printf("C++: Audio source set to stream: %s\n", is_streaming ? "true" : "false");
+}
+
+EMSCRIPTEN_KEEPALIVE
+void stop_worklet_playback() {
+        // We need a JS function to tell the worklet to stop
+        EM_ASM({
+            const workletNode = window.projectMWorkletNode_Global_Cpp;
+            if (workletNode) {
+                workletNode.port.postMessage({ type: 'stopPlayback' });
+            }
+        });
+}
+
 } // extern "C"
 
 void renderLoop(){
 if(app_data.loading==EM_TRUE){
 return;
+}
+if (g_is_streaming_audio) {
+js_feed_stream_data_to_projectm(
+            reinterpret_cast<uintptr_t>(app_data.projectm_engine),
+            2048 // This MUST match the analyser.fftSize
+        );
 }
 // glClearColor( 1.0, 1.0, 1.0, 0.0 );
 // glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
@@ -689,6 +749,7 @@ projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_reques
 // projectm_playlist_connect(app_data.playlist,app_data.projectm_engine);
 printf("  --==  projectM initialized!  ==--\n");
 js_initialize_worklet_system_once(reinterpret_cast<uintptr_t>(app_data.projectm_engine));
+js_initialize_stream_analyser();
 return 0;
 }
 
