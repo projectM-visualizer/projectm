@@ -55,7 +55,7 @@ void create_sprite() {
         "r = 0.1;"
         "g = 0.5;"
         "b = 1.0;";
-"""
+
     // Correct: Use the name of the sprite defined in the .milk file
     projectm_sprite_create(app_data.projectm_engine, "basic_sparkle", new_sprite_code);
 
