@@ -211,27 +211,6 @@ EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool
     decodeAndSend();
 });
 
-EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const char* path_in_vfs, bool loop, bool start_playing, uintptr_t pm_handle_for_addpcm), {
-    let filePath = UTF8ToString(path_in_vfs);
-    const engineHandleForPM = pm_handle_for_addpcm;
-    let audioContext; // Use 'let' to allow reassignment after initialization check
-    // 1. Initialize or get AudioContext
-    if (typeof window.projectMAudioContext_Global_Cpp === 'undefined' || !window.projectMAudioContext_Global_Cpp) {
-        try {
-            window.projectMAudioContext_Global_Cpp = new (window.AudioContext || window.webkitAudioContext)();
-            console.log("JS: Web Audio context created (from Cpp module).");
-        } catch (e) {
-            console.error("JS: Web Audio API (from Cpp module) not supported or failed to init:", e);
-            return; // Cannot proceed if context creation fails
-        }
-    }
-    // Assign to local audioContext AFTER it's guaranteed to be initialized on the window object
-    audioContext = window.projectMAudioContext_Global_Cpp;
-    if (!audioContext) { // Double check if it's still null/undefined after attempt
-        console.error("JS: AudioContext is not available after initialization attempt.");
-        return;
-}
-
 async function setupWorkletAndLoadWavInternal() { // Renamed to avoid conflict if you have other setupWorkletAndLoadWav
         try {
             if (window.projectMWorkletNode_Global_Cpp) {
@@ -311,58 +290,7 @@ function resumeAndProceedInternal() {
     resumeAndProceedInternal(); // Start the chain
 });
 
-EM_JS(void, js_control_worklet_playback_cpp, (bool playCommand, double playheadPositionIfExists), {
-    // playheadPositionIfExists is optional, in seconds.
-    if (!window.projectMAudioContext_Global_Cpp || !window.projectMWorkletNode_Global_Cpp) {
-        console.warn("JS: Worklet or AudioContext not ready for playback control.");
-        return;
-    }
-    const audioContext = window.projectMAudioContext_Global_Cpp;
-    const workletNode = window.projectMWorkletNode_Global_Cpp;
-    if (playCommand) {
-        if (audioContext.state === 'suspended') {
-            audioContext.resume().then(() => {
-                console.log("JS: Audio context resumed, sending startPlayback to worklet.");
-                workletNode.port.postMessage({ type: 'startPlayback', playheadPosition: playheadPositionIfExists * audioContext.sampleRate });
-            }).catch(e => console.error("JS: Failed to resume context for playback start:", e));
-        } else if (audioContext.state === 'running') {
-            workletNode.port.postMessage({ type: 'startPlayback', playheadPosition: playheadPositionIfExists * audioContext.sampleRate });
-        } else {
-            console.warn(`JS: AudioContext in unhandled state ('${audioContext.state}') for starting playback.`);
-        }
-    } else {
-        workletNode.port.postMessage({ type: 'stopPlayback' });
-    }
-});
-
 extern "C" {
-
-EMSCRIPTEN_KEEPALIVE
-void cpp_initialize_audio_and_load_song(const std::string& song_path_in_vfs, bool should_loop, bool should_start_playing) {
-        if (!app_data.projectm_engine) {
-            fprintf(stderr, "C++: ProjectM engine not initialized before audio setup!\n");
-            return;
-        }
-        printf("C++: Requesting Web Audio system setup and song load: %s\n", song_path_in_vfs.c_str());
-        js_setup_webaudio_and_load_wav_for_worklet_cpp(
-            song_path_in_vfs.c_str(),
-            should_loop,
-            should_start_playing,
-            reinterpret_cast<uintptr_t>(app_data.projectm_engine)
-        );
-}
-
-EMSCRIPTEN_KEEPALIVE
-void cpp_play_audio() { // Assumes audio system and song are already loaded via above
-        printf("C++: Requesting Web Audio play.\n");
-        js_control_worklet_playback_cpp(true, 0.0); // Start from beginning
-}
-
-EMSCRIPTEN_KEEPALIVE
-void cpp_stop_audio() {
-        printf("C++: Requesting Web Audio stop.\n");
-        js_control_worklet_playback_cpp(false, 0.0); // Second param (playhead) irrelevant for stop
-}
 
 EMSCRIPTEN_KEEPALIVE
 void pl() {
@@ -379,7 +307,7 @@ if(app_data.loading==EM_TRUE){
 return;
 }
 // glClearColor( 1.0, 1.0, 1.0, 0.0 );
-glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+// glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 projectm_opengl_render_frame(pm);
 eglSwapBuffers(display,surface);
 return;
