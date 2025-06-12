@@ -47,14 +47,17 @@ bool g_is_streaming_audio = false;
 
 void create_sprite() {
     const char* new_sprite_code =
-        "x = 0.5;"         // Center X
-        "y = 0.5;"         // Center Y
-        "z = 0.0;"         // Center Y
-        "scaling = 2.0;"   // Make it huge (twice the screen height)
-        "a = 1.0;"         // Fully opaque
-        "r = 1.0;"         // Bright Red
-        "g = 0.0;"
-        "b = 1.0;";
+        "[img00]"
+        "img='textures/rv_IP_20250421_060250.png';"
+        "init_1=blendmode=1;"
+        "init_2=x = 0.5;"         // Center X
+        "init_3=y = 0.5;"         // Center Y
+        "init_4=z = 0.0;"         // Center Y
+        "init_5=scaling = 2.0;"   // Make it huge (twice the screen height)
+        "code_1=a = 1;"         // Fully opaque
+        "code_2=r = 1.0;"         // Bright Red
+        "code_3=g = 0.0;"
+        "code_4=b = 1.0;";
 
     // Correct: Use the name of the sprite defined in the .milk file
     projectm_sprite_create(app_data.projectm_engine, "milkdrop", new_sprite_code);
