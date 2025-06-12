@@ -267,7 +267,7 @@ uint32_t indx = projectm_playlist_play_next(app_data.playlist,true);
 return;
 }
 
-EM_JS(void,getCustomShader,(int num),{
+EM_JS(void,getCustomShader,(),{
 var pth=document.querySelector('#milkPath2').innerHTML;
 console.log('Getting preset: '+pth);
 const ff=new XMLHttpRequest();
