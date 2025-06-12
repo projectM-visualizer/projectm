@@ -138,7 +138,14 @@ EM_JS(void, js_initialize_worklet_system_once, (uintptr_t pm_handle_for_addpcm),
                         event.data.samplesPerChannel,
                         event.data.channelsForPM
                     );
+                } else if (type === 'progressUpdate') {
+                // Hook into our new JS Player UI
+                if (window.Player && window.Player.updateProgress) {
+                    window.Player.updateProgress(event.data.currentFrame, event.data.totalFrames);
                 }
+            }
+
+                    
             };
 
             workletNode.connect(audioContext.destination);
@@ -214,6 +221,12 @@ EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool
 });
 
 extern "C" {
+
+EMSCRIPTEN_KEEPALIVE
+void load_song_from_vfs(const char* path_in_vfs, bool loop, bool start_playing) {
+        printf("C++: Requesting song '%s' to be loaded into worklet.\n", path_in_vfs);
+        js_load_song_into_worklet(path_in_vfs, loop, start_playing);
+}
 
 EMSCRIPTEN_KEEPALIVE
 void pl() {
