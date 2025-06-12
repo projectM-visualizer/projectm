@@ -257,6 +257,29 @@ uint32_t indx = projectm_playlist_play_next(app_data.playlist,true);
 return;
 }
 
+EM_JS(void,getCustomShader,(int num),{
+var pth=document.querySelector('#milkPath2').innerHTML;
+console.log('Getting preset: '+pth);
+const ff=new XMLHttpRequest();
+ff.open('GET',pth,true);
+ff.responseType='arraybuffer';
+document.querySelector('#stat').innerHTML='Downloading Shader';
+document.querySelector('#stat').style.backgroundColor='yellow';
+ff.addEventListener("load",function(){
+let sarrayBuffer=ff.response;
+if(sarrayBuffer){
+let sfil=new Uint8ClampedArray(sarrayBuffer);
+FS.writeFile("/presets/preset_custom.milk",sfil);
+setTimeout(function(){
+Module.loadPresetFile("/presets/preset_custom.milk");
+document.querySelector('#stat').innerHTML='Downloaded Shader';
+document.querySelector('#stat').style.backgroundColor='blue';
+},20);
+}
+});
+ff.send(null);
+});
+
 EM_JS(void,getShader,(int num),{
 var pth=document.querySelector('#milkPath').innerHTML;
 console.log('Getting preset: '+pth);
@@ -471,25 +494,7 @@ snd();
 });
 
 document.querySelector('#milkBtn').addEventListener('click',function(){
-for (var i=0;i<25;i++){
-var randShd=Math.floor(($shds[0]-5)*Math.random());
-var milkSrc=$shds[randShd+5];
-document.querySelector('#milkPath').innerHTML=milkSrc;
-Module.getShader(i);
-   // Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
-console.log('Got '+'/presets/preset_'+i+'.milk from '+milkSrc+'.');
-}
-/*
-Module.setWindowSize(window.innerHeight,window.innerHeight);
-const randShd=Math.floor(($shds[0]-5)*Math.random());
-const milkSrc=$shds[randShd+5];
-console.log('Got shader: '+milkSrc);
-document.querySelector('#milkPath').innerHTML=milkSrc;
-Module.getShader();
-// var randShd=Math.floor(25*Math.random());
-// Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
-// Module.loadPresetFile("/presets/preset.milk");
-*/
+getCustomShader();
 });
 
 function getShaders(){
