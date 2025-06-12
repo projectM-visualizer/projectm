@@ -760,9 +760,6 @@ function("setMesh", &set_mesh);
 function("getShader", &getShader);
 function("addPath", &add_preset_path);
 function("projectm_pcm_add_float", &projectm_pcm_add_float_from_js_array_wrapper);
-function("initializeAudioAndLoadSong", &cpp_initialize_audio_and_load_song);
-function("playAudio", &cpp_play_audio);
-function("stopAudio", &cpp_stop_audio);
 function("pl", &pl); // For compatibility if your JS already calls this
 }
 
