@@ -325,7 +325,7 @@ printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ?
  //   emscripten_pause_main_loop();
 // app_data.loading=EM_TRUE;
 char *str = (char*)EM_ASM_PTR({
-const randIndex = Math.floor(Math.random()*25);
+const randIndex = Math.floor(Math.random()*100);
 var jsString = '/presets/preset_'+randIndex+'.milk';
 var lengthBytes = lengthBytesUTF8(jsString)+1;
 return stringToNewUTF8(jsString);
@@ -355,7 +355,7 @@ setTimeout(function(){
    // Module.loadPresetFile("/presets/preset.milk");
 document.querySelector('#stat').innerHTML='Downloaded Shader';
 document.querySelector('#stat').style.backgroundColor='blue';
-},50);
+},20);
 }
 });
 ff.send(null);
@@ -571,7 +571,7 @@ console.log('Got '+'/presets/preset_'+i+'.milk from '+milkSrc+'.');
 Module.addPath();
 setTimeout(function(){
 Module.startRender(window.innerHeight);
-},500);
+},1000);
 }
 var pth=document.querySelector('#milkPath').innerHTML;
 // Module.getShader();
@@ -718,14 +718,7 @@ pm = projectm_create();
 
 app_data.projectm_engine = pm;
 
-// projectm_playlist_settings playlist_settings;
-// memset(&playlist_settings, 0, sizeof(projectm_playlist_settings)); // Initialize to zero
-// playlist_settings.load_preset_callback = load_preset_callback_example;
-// playlist_settings.user_data_load_preset = &app_data; // Pass our AppData to the callback
-printf("Playlist settings configured.\n");
-
 // --- 3. Create a Playlist ---
-
 playlist = projectm_playlist_create(pm);
 
 printf("Playlist created successfully.\n");
@@ -737,10 +730,6 @@ projectm_playlist_add_path(playlist,loc,true,true);
 // printf("Added /presets/ to playlist successfully.\n");
 
 projectm_playlist_set_preset_switched_event_callback(playlist,&load_preset_callback_done,&app_data);
-
-// projectm_playlist_set_preset_switched_event_callback(projectm_playlist_handle instance,
-//                                                          projectm_playlist_preset_switched_event callback,
-//                                                          void* user_data)
 
 if (!pm) {
 fprintf(stderr, "Failed to create projectM handle\n");
@@ -754,7 +743,7 @@ projectm_set_preset_duration(pm, 24.0);
 projectm_set_soft_cut_duration(pm, 17.0);
 // projectm_set_hard_cut_duration(pm, 48.0);
 // projectm_set_hard_cut_enabled(pm, true);
-projectm_set_beat_sensitivity(pm, 1.0);
+projectm_set_beat_sensitivity(pm, 1.50);
 projectm_playlist_set_shuffle(playlist,true);
 projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, nullptr);
 projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, &app_data);
@@ -765,8 +754,8 @@ return 0;
 
 void add_preset_path(){
 const char * loc="/presets/";
-char preset_file[64]; // Buffer for the generated filename
-for (int i = 0; i <= 25; ++i) {
+char preset_file[256]; // Buffer for the generated filename
+for (int i = 0; i <= 100; ++i) {
 snprintf(preset_file, sizeof(preset_file), "/presets/preset_%d.milk", i);
 projectm_playlist_add_preset(app_data.playlist, preset_file, false);
 }
