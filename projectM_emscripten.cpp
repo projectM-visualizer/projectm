@@ -743,6 +743,7 @@ EMSCRIPTEN_BINDINGS(projectm_bindings) {
 function("destruct", &destruct);
 function("getProjectmHandle", &get_projectm_handle);
 function("init", &init);
+function("getCustomShader", &getCustomShader);
 function("loadPresetFile", &load_preset_file);
 function("renderFrame", &render_frame);
 function("startRender", &start_render);
