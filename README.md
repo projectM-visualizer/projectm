@@ -38,7 +38,7 @@ developers.
 ##### Windows
 
 - Standalone (currently only available as
-  a [development preview](https://github.com/kblaschke/frontend-sdl2/releases/tag/2.0-windows-pre1))
+  a [development preview](https://github.com/kblaschke/frontend-sdl2/releases/tag/2.0-windows-pre3))
 - [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/) (Same as standalone development
   preview)
 - [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN) (Old 3.1.12 release )
@@ -55,7 +55,7 @@ developers.
 #### Linux
 
 - Standalone (currently only available as
-  a [development preview](https://github.com/kblaschke/frontend-sdl2/releases/tag/2.0-linux-pre1) for Ubuntu 22.04 and
+  a [development preview](https://github.com/kblaschke/frontend-sdl2/releases/tag/2.0-linux-pre2) for Ubuntu 22.04 and
   compatible distributions)
 - [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/) (Same as standalone development
   preview)
