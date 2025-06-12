@@ -109,6 +109,108 @@ EGLint colorSpace;
 EGLint colorFormat;
 EMSCRIPTEN_WEBGL_CONTEXT_HANDLE gl_ctx;
 
+// =========================================================================
+// 1. ADD THIS NEW EM_JS FUNCTION FOR ONE-TIME WORKLET SETUP
+// =========================================================================
+EM_JS(void, js_initialize_worklet_system_once, (uintptr_t pm_handle_for_addpcm), {
+    if (window.projectMAudioContext_Global_Cpp) {
+        console.log("JS: Audio system already initialized.");
+        return;
+    }
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        window.projectMAudioContext_Global_Cpp = audioContext;
+        console.log("JS: Web Audio context created.");
+
+        // Add the module only once.
+        await audioContext.audioWorklet.addModule('projectm_audio_processor.js');
+        console.log("JS: AudioWorklet 'projectm_audio_processor.js' module added.");
+
+        const workletNode = new AudioWorkletNode(audioContext, 'projectm-audio-processor');
+        window.projectMWorkletNode_Global_Cpp = workletNode;
+        
+        // Setup the message handler to feed PCM data to projectM
+        workletNode.port.onmessage = (event) => {
+            if (event.data.type === 'pcmData' && Module.projectm_pcm_add_float) {
+                Module.projectm_pcm_add_float(
+                    pm_handle_for_addpcm,
+                    event.data.audioData,
+                    event.data.samplesPerChannel,
+                    event.data.channelsForPM
+                );
+            }
+        };
+
+        workletNode.connect(audioContext.destination);
+        console.log("JS: AudioWorkletNode created and connected permanently.");
+
+    } catch(e) {
+        console.error("JS: Failed to initialize worklet system:", e);
+    }
+});
+
+
+// =========================================================================
+// 2. ADD THIS NEW EM_JS FUNCTION TO LOAD A SONG INTO THE EXISTING WORKLET
+// =========================================================================
+EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool start_playing), {
+    const filePath = UTF8ToString(path_in_vfs);
+    const audioContext = window.projectMAudioContext_Global_Cpp;
+    const workletNode = window.projectMWorkletNode_Global_Cpp;
+
+    if (!audioContext || !workletNode) {
+        console.error("JS: Worklet system not initialized. Cannot load song.");
+        return;
+    }
+
+    async function decodeAndSend() {
+        try {
+            if (!FS.analyzePath(filePath).exists) {
+                console.error("JS: File not found in VFS: " + filePath);
+                return;
+            }
+            let fileDataUint8Array = FS.readFile(filePath);
+            // Verify file was read
+            if(fileDataUint8Array.length === 0) {
+                 console.error("JS: Read 0 bytes from " + filePath + ". File might be empty or write failed.");
+                 return;
+            }
+            console.log(`JS: Read ${fileDataUint8Array.length} bytes from ${filePath}. Decoding...`);
+
+            let audioDataArrayBuffer = fileDataUint8Array.buffer.slice(
+                fileDataUint8Array.byteOffset, fileDataUint8Array.byteOffset + fileDataUint8Array.byteLength
+            );
+
+            // Resume context if suspended (required for user interaction)
+            if (audioContext.state === 'suspended') {
+                await audioContext.resume();
+            }
+
+            let decodedBuffer = await audioContext.decodeAudioData(audioDataArrayBuffer);
+            console.log(`JS: Audio decoded. Duration: ${decodedBuffer.duration.toFixed(2)}s. Sending to existing worklet.`);
+            
+            let numberOfChannels = decodedBuffer.numberOfChannels;
+            let rawChannelData = [];
+            for (let i = 0; i < numberOfChannels; i++) {
+                rawChannelData.push(decodedBuffer.getChannelData(i));
+            }
+
+            // Send the new song data to the same, persistent worklet node
+            workletNode.port.postMessage({
+                type: 'loadWavData',
+                channelData: rawChannelData,
+                sampleRate: decodedBuffer.sampleRate,
+                loop: loop,
+                startPlaying: start_playing
+            });
+        } catch(e) {
+            console.error("JS: Error during decode and send:", e);
+        }
+    }
+
+    decodeAndSend();
+});
+
 EM_JS(void, js_setup_webaudio_and_load_wav_for_worklet_cpp, (const char* path_in_vfs, bool loop, bool start_playing, uintptr_t pm_handle_for_addpcm), {
     let filePath = UTF8ToString(path_in_vfs);
     const engineHandleForPM = pm_handle_for_addpcm;
@@ -267,7 +369,7 @@ void pl() {
         printf("C++: pl() called, initializing and loading default song via Web Audio.\n");
         // You might want to ensure AudioContext is resumable by user gesture before this auto-plays.
         // For now, js_setup_webaudio_and_load_wav_for_worklet_cpp handles resume attempt.
-        cpp_initialize_audio_and_load_song("/snd/sample.wav", true, true);
+        js_load_song_into_worklet("/snd/sample.wav", true, true);
 }
 
 } // extern "C"
@@ -749,6 +851,9 @@ projectm_set_preset_switch_failed_event_callback(pm, &_on_preset_switch_failed, 
 projectm_set_preset_switch_requested_event_callback(pm, &on_preset_switch_requested, &app_data);
 // projectm_playlist_connect(app_data.playlist,app_data.projectm_engine);
 printf("projectM initialized\n");
+
+js_initialize_worklet_system_once(reinterpret_cast<uintptr_t>(app_data.projectm_engine));
+
 return 0;
 }
 
