@@ -47,6 +47,7 @@ bool g_is_streaming_audio = false;
 
 void create_sprite() {
     const char* new_sprite_code =
+        "[img00]"
         "x = 0.25;"
         "y = 0.75;"
         "scaling = 0.1 + 0.1*bass;"
@@ -54,7 +55,7 @@ void create_sprite() {
         "r = 0.1;"
         "g = 0.5;"
         "b = 1.0;";
-
+"""
     // Correct: Use the name of the sprite defined in the .milk file
     projectm_sprite_create(app_data.projectm_engine, "basic_sparkle", new_sprite_code);
 
