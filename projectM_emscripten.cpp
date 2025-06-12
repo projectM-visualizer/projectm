@@ -46,15 +46,18 @@ projectm_playlist_handle playlist={};
 bool g_is_streaming_audio = false;
 
 void create_sprite() {
-const char* new_sprite_code = 
-    "x = 0.25;"
-    "y = 0.75;"
-    "scaling = 0.1 + 0.1*bass;"
-    "a = 1.0;"
-    "r = 0.1;"
-    "g = 0.5;"
-    "b = 1.0;";
-projectm_sprite_create(app_data.projectm_engine, "milkdrop", new_sprite_code);
+    const char* new_sprite_code =
+        "x = 0.25;"
+        "y = 0.75;"
+        "scaling = 0.1 + 0.1*bass;"
+        "a = 1.0;"
+        "r = 0.1;"
+        "g = 0.5;"
+        "b = 1.0;";
+
+    // Correct: Use the name of the sprite defined in the .milk file
+    projectm_sprite_create(app_data.projectm_engine, "basic_sparkle", new_sprite_code);
+
 return;
 }
 
