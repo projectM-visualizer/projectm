@@ -108,9 +108,8 @@ EGLint numMBuffers;
 EGLint colorSpace;
 EGLint colorFormat;
 EMSCRIPTEN_WEBGL_CONTEXT_HANDLE gl_ctx;
-
 // =========================================================================
-// 1. ADD THIS NEW EM_JS FUNCTION FOR ONE-TIME WORKLET SETUP
+// ONE-TIME WORKLET SETUP FUNCTION (Put this in your .cpp file)
 // =========================================================================
 EM_JS(void, js_initialize_worklet_system_once, (uintptr_t pm_handle_for_addpcm), {
     if (window.projectMAudioContext_Global_Cpp) {
@@ -122,27 +121,29 @@ EM_JS(void, js_initialize_worklet_system_once, (uintptr_t pm_handle_for_addpcm),
         window.projectMAudioContext_Global_Cpp = audioContext;
         console.log("JS: Web Audio context created.");
 
-        // Add the module only once.
-        await audioContext.audioWorklet.addModule('projectm_audio_processor.js');
-        console.log("JS: AudioWorklet 'projectm_audio_processor.js' module added.");
+        // NOTE: The 'await' here is at the top level of an 'async' IIFE (Immediately Invoked Function Expression)
+        // This is a common pattern to allow top-level await inside a non-async module.
+        (async () => {
+            await audioContext.audioWorklet.addModule('projectm_audio_processor.js');
+            console.log("JS: AudioWorklet 'projectm_audio_processor.js' module added.");
 
-        const workletNode = new AudioWorkletNode(audioContext, 'projectm-audio-processor');
-        window.projectMWorkletNode_Global_Cpp = workletNode;
-        
-        // Setup the message handler to feed PCM data to projectM
-        workletNode.port.onmessage = (event) => {
-            if (event.data.type === 'pcmData' && Module.projectm_pcm_add_float) {
-                Module.projectm_pcm_add_float(
-                    pm_handle_for_addpcm,
-                    event.data.audioData,
-                    event.data.samplesPerChannel,
-                    event.data.channelsForPM
-                );
-            }
-        };
+            const workletNode = new AudioWorkletNode(audioContext, 'projectm-audio-processor');
+            window.projectMWorkletNode_Global_Cpp = workletNode;
+            
+            workletNode.port.onmessage = (event) => {
+                if (event.data.type === 'pcmData' && Module.projectm_pcm_add_float) {
+                    Module.projectm_pcm_add_float(
+                        pm_handle_for_addpcm,
+                        event.data.audioData,
+                        event.data.samplesPerChannel,
+                        event.data.channelsForPM
+                    );
+                }
+            };
 
-        workletNode.connect(audioContext.destination);
-        console.log("JS: AudioWorkletNode created and connected permanently.");
+            workletNode.connect(audioContext.destination);
+            console.log("JS: AudioWorkletNode created and connected permanently.");
+        })();
 
     } catch(e) {
         console.error("JS: Failed to initialize worklet system:", e);
@@ -151,7 +152,7 @@ EM_JS(void, js_initialize_worklet_system_once, (uintptr_t pm_handle_for_addpcm),
 
 
 // =========================================================================
-// 2. ADD THIS NEW EM_JS FUNCTION TO LOAD A SONG INTO THE EXISTING WORKLET
+// FUNCTION TO LOAD A SONG INTO THE EXISTING WORKLET (Put this in your .cpp file)
 // =========================================================================
 EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool start_playing), {
     const filePath = UTF8ToString(path_in_vfs);
@@ -163,6 +164,7 @@ EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool
         return;
     }
 
+    // This is our async helper function. All 'await' calls MUST be inside it.
     async function decodeAndSend() {
         try {
             if (!FS.analyzePath(filePath).exists) {
@@ -170,9 +172,8 @@ EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool
                 return;
             }
             let fileDataUint8Array = FS.readFile(filePath);
-            // Verify file was read
             if(fileDataUint8Array.length === 0) {
-                 console.error("JS: Read 0 bytes from " + filePath + ". File might be empty or write failed.");
+                 console.error("JS: Read 0 bytes from " + filePath + ".");
                  return;
             }
             console.log(`JS: Read ${fileDataUint8Array.length} bytes from ${filePath}. Decoding...`);
@@ -181,11 +182,12 @@ EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool
                 fileDataUint8Array.byteOffset, fileDataUint8Array.byteOffset + fileDataUint8Array.byteLength
             );
 
-            // Resume context if suspended (required for user interaction)
+            // CORRECT: 'await' is safely inside our 'async' function
             if (audioContext.state === 'suspended') {
                 await audioContext.resume();
             }
 
+            // CORRECT: 'await' is safely inside our 'async' function
             let decodedBuffer = await audioContext.decodeAudioData(audioDataArrayBuffer);
             console.log(`JS: Audio decoded. Duration: ${decodedBuffer.duration.toFixed(2)}s. Sending to existing worklet.`);
             
@@ -195,7 +197,6 @@ EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool
                 rawChannelData.push(decodedBuffer.getChannelData(i));
             }
 
-            // Send the new song data to the same, persistent worklet node
             workletNode.port.postMessage({
                 type: 'loadWavData',
                 channelData: rawChannelData,
@@ -208,6 +209,7 @@ EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool
         }
     }
 
+    // Call the async helper function to start the process.
     decodeAndSend();
 });
 
