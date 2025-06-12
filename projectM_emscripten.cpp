@@ -179,7 +179,10 @@ EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool
                 return;
             }
             let fileDataUint8Array = FS.readFile(filePath);
-            if(fileDataUint8Array.length === 0) {
+                
+          console.log(`%c[STEP 2] Read file from VFS. Size: ${fileDataUint8Array.length} bytes.`, 'color: #009968; font-weight: bold;');
+           
+        if(fileDataUint8Array.length === 0) {
                  console.error("JS: Read 0 bytes from " + filePath + ".");
                  return;
             }
@@ -196,7 +199,7 @@ EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool
 
             // CORRECT: 'await' is safely inside our 'async' function
             let decodedBuffer = await audioContext.decodeAudioData(audioDataArrayBuffer);
-            console.log(`JS: Audio decoded. Duration: ${decodedBuffer.duration.toFixed(2)}s. Sending to existing worklet.`);
+            console.log(`%c[STEP 3] Decoded audio buffer. Duration: ${decodedBuffer.duration.toFixed(2)}s.`, 'color: #d9534f; font-weight: bold;');
             
             let numberOfChannels = decodedBuffer.numberOfChannels;
             let rawChannelData = [];
