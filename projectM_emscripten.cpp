@@ -47,13 +47,13 @@ bool g_is_streaming_audio = false;
 
 void create_sprite() {
     const char* new_sprite_code =
-        "x = 0.25;"
-        "y = 0.75;"
-        "scaling = 0.1 + 0.1*bass;"
-        "a = 1.0;"
-        "r = 0.1;"
-        "g = 0.5;"
-        "b = 1.0;";
+        "x = 0.5;"         // Center X
+        "y = 0.5;"         // Center Y
+        "scaling = 2.0;"   // Make it huge (twice the screen height)
+        "a = 1.0;"         // Fully opaque
+        "r = 1.0;"         // Bright Red
+        "g = 0.0;"
+        "b = 0.0;";
 
     // Correct: Use the name of the sprite defined in the .milk file
     projectm_sprite_create(app_data.projectm_engine, "milkdrop", new_sprite_code);
