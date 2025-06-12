@@ -43,6 +43,7 @@ projectm_handle pm;
 AppData app_data;
 projectm_playlist_handle playlist={};
 
+void create_sprite() {
 const char* new_sprite_code = 
     "x = 0.25;"
     "y = 0.75;"
@@ -51,9 +52,8 @@ const char* new_sprite_code =
     "r = 0.1;"
     "g = 0.5;"
     "b = 1.0;";
-
-void create_sprite() {
-projectm_sprite_create(app_data.projectm_engine, "mysprite", new_sprite_code);
+projectm_sprite_create(app_data.projectm_engine, "milkdrop", new_sprite_code);
+return;
 }
 
 uintptr_t get_projectm_handle() { 
@@ -104,6 +104,7 @@ if (!current_pm_handle) {
     }
     // Call the original projectM function with data from the C++ vector
     projectm_pcm_add_float(current_pm_handle, cpp_audio_buffer.data(), num_samples_per_channel, static_cast<projectm_channels>(channels_enum_value));
+return;
 }
 
 EGLDisplay display;
@@ -132,12 +133,10 @@ EM_JS(void, js_initialize_worklet_system_once, (uintptr_t pm_handle_for_addpcm),
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         window.projectMAudioContext_Global_Cpp = audioContext;
         console.log("JS Audio Init: Web Audio context created.");
-
         (async () => {
             await audioContext.audioWorklet.addModule('projectm_audio_processor.js');
             const workletNode = new AudioWorkletNode(audioContext, 'projectm-audio-processor');
             window.projectMWorkletNode_Global_Cpp = workletNode;
-            
             workletNode.port.onmessage = (event) => {
                 if (event.data.type === 'pcmData' && Module.projectm_pcm_add_float) {
                     Module.projectm_pcm_add_float(
@@ -154,6 +153,7 @@ EM_JS(void, js_initialize_worklet_system_once, (uintptr_t pm_handle_for_addpcm),
     } catch(e) {
         console.error("JS Audio Init: Failed to initialize worklet system:", e);
     }
+    return;
 });
 
 EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool start_playing), {
@@ -161,23 +161,18 @@ EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool
     const audioContext = window.projectMAudioContext_Global_Cpp;
     const workletNode = window.projectMWorkletNode_Global_Cpp;
     if (!audioContext || !workletNode) { return; }
-
     async function decodeAndSend() {
         try {
             const fileDataUint8Array = FS.readFile(filePath);
             console.log(`JS Load Song: Read ${fileDataUint8Array.length} bytes from ${filePath}.`);
             if (fileDataUint8Array.length === 0) { return; }
-
             const audioDataArrayBuffer = fileDataUint8Array.buffer.slice(
                 fileDataUint8Array.byteOffset, fileDataUint8Array.byteOffset + fileDataUint8Array.byteLength
             );
             if (audioContext.state === 'suspended') { await audioContext.resume(); }
-
             const decodedBuffer = await audioContext.decodeAudioData(audioDataArrayBuffer);
             console.log(`JS Load Song: Decoded buffer. Duration: ${decodedBuffer.duration.toFixed(2)}s. Sending to worklet.`);
-            
             const rawChannelData = Array.from({length: decodedBuffer.numberOfChannels}, (_, i) => decodedBuffer.getChannelData(i));
-
             workletNode.port.postMessage({
                 type: 'loadWavData',
                 channelData: rawChannelData,
@@ -190,6 +185,7 @@ EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool
         }
     }
     decodeAndSend();
+return;
 });
 
 extern "C" {
@@ -197,9 +193,9 @@ extern "C" {
 EMSCRIPTEN_KEEPALIVE
 void pl(const std::string& song_path_in_vfs) {
     printf("C++: pl() called for unique path: %s\n", song_path_in_vfs.c_str());
-    
     // It now ONLY calls the new, simple loader function.
     js_load_song_into_worklet(song_path_in_vfs.c_str(), true, true);
+    return;
 }
 
 } // extern "C"
@@ -232,6 +228,7 @@ app_data.loading=EM_FALSE;
 projectm_set_window_size(pm,size,size);
 emscripten_set_main_loop((void (*)())renderLoop,0,0);
 emscripten_set_main_loop_timing(2,1);
+return;
 }
 
 void _on_preset_switch_failed(const char *preset_filename, const char *message, void *user_data) {
@@ -291,6 +288,7 @@ document.querySelector('#stat').style.backgroundColor='blue';
 }
 });
 ff.send(null);
+return;
 });
 
 EM_JS(void,getShader,(int num),{
@@ -314,6 +312,7 @@ document.querySelector('#stat').style.backgroundColor='blue';
 }
 });
 ff.send(null);
+return;
 });
 
 int init() {
@@ -530,11 +529,9 @@ Module.startRender(window.innerHeight);
 }
 var pth=document.querySelector('#milkPath').innerHTML;
 // Module.getShader();
-
 scanTextures();
 scanSongs();
 scanShaders();
-
 document.querySelector('#meshSize').addEventListener('change', (event) => {
 let meshValue = event.target.value;
 // Split the value into two numbers
@@ -542,7 +539,6 @@ let values = meshValue.split(',').map(Number);
 console.log('Setting Mesh:', values[0], values[1]);
 Module.setMesh(values[0], values[1]);
 });
-
 //  const meshValue = document.querySelector('#meshSize').value;
    // Split the value into two numbers
 // const values = meshValue.split(',').map(Number);
@@ -668,7 +664,6 @@ emscripten_webgl_enable_extension(gl_ctx, "OES_texture_half_float");
 emscripten_webgl_enable_extension(gl_ctx, "OES_texture_half_float_linear");
 emscripten_webgl_enable_extension(gl_ctx,"EXT_color_buffer_float"); // GLES float
 emscripten_webgl_enable_extension(gl_ctx,"EXT_float_blend"); // GLES float
-
 pm = projectm_create();
 app_data.projectm_engine = pm;
 playlist = projectm_playlist_create(pm);
@@ -704,6 +699,7 @@ for (int i = 0; i <= 100; ++i) {
 snprintf(preset_file, sizeof(preset_file), "/presets/preset_%d.milk", i);
 projectm_playlist_add_preset(app_data.playlist, preset_file, false);
 }
+return;
 }
 
 void set_mesh(int w,int h){
@@ -712,21 +708,26 @@ return;
 }
 
 void destruct() {
-if (pm) projectm_destroy(pm);
+if (pm) {
+projectm_destroy(pm);
+}
 pm = NULL;
 if (gl_ctx) emscripten_webgl_destroy_context(gl_ctx);
 gl_ctx = NULL;
+return;
 }
 
 void load_preset_file(std::string filename) {
 if (!pm) return;
     // XXX: smooth_transition true does not work
 projectm_load_preset_file(pm, filename.c_str(), false);
+return;
 }
 
 void render_frame() {
 if (!pm) return;
 projectm_opengl_render_frame(pm);
+return;
 }
 
 void set_window_size(int width, int height) {
@@ -735,6 +736,7 @@ glViewport(0,0,height,height);
 // glEnable(GL_SCISSOR_TEST);
 // glScissor(0,0,height,height);
 projectm_set_window_size(pm, height, height);
+return;
 }
 
 EMSCRIPTEN_BINDINGS(projectm_bindings) {
