@@ -819,6 +819,8 @@ function("addPath", &add_preset_path);
 function("projectm_pcm_add_float", &projectm_pcm_add_float_from_js_array_wrapper);
 function("pl", &pl);
 function("createSprite", &create_sprite);
+function("stop_worklet_playback", &stop_worklet_playback);
+function("set_audio_source_to_stream", &set_audio_source_to_stream);
 }
 
 int main(){
