@@ -415,6 +415,8 @@ fll.addEventListener('message', ea => {
             ['string'],             // argument types
             [uniqueFileName]        // arguments
         );
+const shutDown=new BroadcastChannel('shutDown');
+shutDown.postMessage({data:222});
     }, 250); // Shorter timeout should be fine
 });
 
