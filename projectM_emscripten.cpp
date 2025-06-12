@@ -43,6 +43,10 @@ projectm_handle pm;
 AppData app_data;
 projectm_playlist_handle playlist={};
 
+uintptr_t get_projectm_handle() { 
+return reinterpret_cast<uintptr_t>(app_data.projectm_engine);
+}
+
 void load_preset_callback_example(bool is_hard_cut, unsigned int index,void* user_data) {
 // AppData* app_data = (AppData*)user_data;
 projectm_playlist_handle playlist = app_data.playlist;
@@ -713,6 +717,7 @@ projectm_set_window_size(pm, height, height);
 
 EMSCRIPTEN_BINDINGS(projectm_bindings) {
 function("destruct", &destruct);
+function("getProjectmHandle", &get_projectm_handle);
 function("init", &init);
 function("loadPresetFile", &load_preset_file);
 function("renderFrame", &render_frame);
