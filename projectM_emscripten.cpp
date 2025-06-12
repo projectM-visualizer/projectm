@@ -108,25 +108,16 @@ EGLint numMBuffers;
 EGLint colorSpace;
 EGLint colorFormat;
 EMSCRIPTEN_WEBGL_CONTEXT_HANDLE gl_ctx;
-// =========================================================================
-// ONE-TIME WORKLET SETUP FUNCTION (Put this in your .cpp file)
-// =========================================================================
+
 EM_JS(void, js_initialize_worklet_system_once, (uintptr_t pm_handle_for_addpcm), {
-    if (window.projectMAudioContext_Global_Cpp) {
-        console.log("JS: Audio system already initialized.");
-        return;
-    }
+    if (window.projectMAudioContext_Global_Cpp) { return; }
     try {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         window.projectMAudioContext_Global_Cpp = audioContext;
-        console.log("JS: Web Audio context created.");
+        console.log("JS Audio Init: Web Audio context created.");
 
-        // NOTE: The 'await' here is at the top level of an 'async' IIFE (Immediately Invoked Function Expression)
-        // This is a common pattern to allow top-level await inside a non-async module.
         (async () => {
             await audioContext.audioWorklet.addModule('projectm_audio_processor.js');
-            console.log("JS: AudioWorklet 'projectm_audio_processor.js' module added.");
-
             const workletNode = new AudioWorkletNode(audioContext, 'projectm-audio-processor');
             window.projectMWorkletNode_Global_Cpp = workletNode;
             
@@ -138,74 +129,37 @@ EM_JS(void, js_initialize_worklet_system_once, (uintptr_t pm_handle_for_addpcm),
                         event.data.samplesPerChannel,
                         event.data.channelsForPM
                     );
-                } else if (type === 'progressUpdate') {
-                // Hook into our new JS Player UI
-                if (window.Player && window.Player.updateProgress) {
-                    window.Player.updateProgress(event.data.currentFrame, event.data.totalFrames);
                 }
-            }
-
-                    
             };
-
             workletNode.connect(audioContext.destination);
-            console.log("JS: AudioWorkletNode created and connected permanently.");
+            console.log("JS Audio Init: AudioWorkletNode created and connected permanently.");
         })();
-
     } catch(e) {
-        console.error("JS: Failed to initialize worklet system:", e);
+        console.error("JS Audio Init: Failed to initialize worklet system:", e);
     }
 });
 
-
-// =========================================================================
-// FUNCTION TO LOAD A SONG INTO THE EXISTING WORKLET (Put this in your .cpp file)
-// =========================================================================
 EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool start_playing), {
     const filePath = UTF8ToString(path_in_vfs);
     const audioContext = window.projectMAudioContext_Global_Cpp;
     const workletNode = window.projectMWorkletNode_Global_Cpp;
+    if (!audioContext || !workletNode) { return; }
 
-    if (!audioContext || !workletNode) {
-        console.error("JS: Worklet system not initialized. Cannot load song.");
-        return;
-    }
-
-    // This is our async helper function. All 'await' calls MUST be inside it.
     async function decodeAndSend() {
         try {
-            if (!FS.analyzePath(filePath).exists) {
-                console.error("JS: File not found in VFS: " + filePath);
-                return;
-            }
-            let fileDataUint8Array = FS.readFile(filePath);
-                
-          console.log(`%c[STEP 2] Read file from VFS. Size: ${fileDataUint8Array.length} bytes.`, 'color: #009968; font-weight: bold;');
-           
-        if(fileDataUint8Array.length === 0) {
-                 console.error("JS: Read 0 bytes from " + filePath + ".");
-                 return;
-            }
-            console.log(`JS: Read ${fileDataUint8Array.length} bytes from ${filePath}. Decoding...`);
+            const fileDataUint8Array = FS.readFile(filePath);
+            console.log(`JS Load Song: Read ${fileDataUint8Array.length} bytes from ${filePath}.`);
+            if (fileDataUint8Array.length === 0) { return; }
 
-            let audioDataArrayBuffer = fileDataUint8Array.buffer.slice(
+            const audioDataArrayBuffer = fileDataUint8Array.buffer.slice(
                 fileDataUint8Array.byteOffset, fileDataUint8Array.byteOffset + fileDataUint8Array.byteLength
             );
+            if (audioContext.state === 'suspended') { await audioContext.resume(); }
 
-            // CORRECT: 'await' is safely inside our 'async' function
-            if (audioContext.state === 'suspended') {
-                await audioContext.resume();
-            }
-
-            // CORRECT: 'await' is safely inside our 'async' function
-            let decodedBuffer = await audioContext.decodeAudioData(audioDataArrayBuffer);
-            console.log(`%c[STEP 3] Decoded audio buffer. Duration: ${decodedBuffer.duration.toFixed(2)}s.`, 'color: #d9534f; font-weight: bold;');
+            const decodedBuffer = await audioContext.decodeAudioData(audioDataArrayBuffer);
+            console.log(`JS Load Song: Decoded buffer. Duration: ${decodedBuffer.duration.toFixed(2)}s. Sending to worklet.`);
             
-            let numberOfChannels = decodedBuffer.numberOfChannels;
-            let rawChannelData = [];
-            for (let i = 0; i < numberOfChannels; i++) {
-                rawChannelData.push(decodedBuffer.getChannelData(i));
-            }
+            const rawChannelData = Array.from({length: decodedBuffer.numberOfChannels}, (_, i) => decodedBuffer.getChannelData(i));
 
             workletNode.port.postMessage({
                 type: 'loadWavData',
@@ -215,28 +169,20 @@ EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool
                 startPlaying: start_playing
             });
         } catch(e) {
-            console.error("JS: Error during decode and send:", e);
+            console.error("JS Load Song: Error during decode and send:", e);
         }
     }
-
-    // Call the async helper function to start the process.
     decodeAndSend();
 });
 
 extern "C" {
 
 EMSCRIPTEN_KEEPALIVE
-void load_song_from_vfs(const char* path_in_vfs, bool loop, bool start_playing) {
-        printf("C++: Requesting song '%s' to be loaded into worklet.\n", path_in_vfs);
-        js_load_song_into_worklet(path_in_vfs, loop, start_playing);
-}
-
-EMSCRIPTEN_KEEPALIVE
-void pl() {
-        printf("C++: pl() called, initializing and loading default song via Web Audio.\n");
-        // You might want to ensure AudioContext is resumable by user gesture before this auto-plays.
-        // For now, js_setup_webaudio_and_load_wav_for_worklet_cpp handles resume attempt.
-        js_load_song_into_worklet("/snd/sample.wav", true, true);
+void pl(const std::string& song_path_in_vfs) {
+    printf("C++: pl() called for unique path: %s\n", song_path_in_vfs.c_str());
+    
+    // It now ONLY calls the new, simple loader function.
+    js_load_song_into_worklet(song_path_in_vfs.c_str(), true, true);
 }
 
 } // extern "C"
@@ -446,15 +392,30 @@ nxhttp.open('GET','songs/',true);
 nxhttp.send();
 }
 
-const fll=new BroadcastChannel('file');
-fll.addEventListener('message',ea=>{
-let fill=new Uint8Array(ea.data.data);
-FS.writeFile('/snd/sample.wav',fill);
-setTimeout(function(){
-Module.ccall('pl', null, []);
-},500);
-const shutDown=new BroadcastChannel('shutDown');
-shutDown.postMessage({data:222});
+var lastSongFileName = '';
+
+const fll = new BroadcastChannel('file');
+fll.addEventListener('message', ea => {
+    const uniqueFileName = `/snd/song_${Date.now()}.wav`;
+    console.log(`JS Event: Received new song. Writing to unique path: ${uniqueFileName}`);
+
+    const fill = new Uint8Array(ea.data.data);
+    FS.writeFile(uniqueFileName, fill);
+
+    if (lastSongFileName && FS.analyzePath(lastSongFileName).exists) {
+        FS.unlink(lastSongFileName);
+        console.log(`JS Event: Cleaned up previous song file: ${lastSongFileName}`);
+    }
+    lastSongFileName = uniqueFileName;
+
+    setTimeout(function() {
+        Module.ccall(
+            'pl',                   // C function name
+            null,                   // return type
+            ['string'],             // argument types
+            [uniqueFileName]        // arguments
+        );
+    }, 250); // Shorter timeout should be fine
 });
 
 function getShader(pth,fname){
