@@ -704,7 +704,7 @@ gl_ctx = NULL;
 void load_preset_file(std::string filename) {
 if (!pm) return;
     // XXX: smooth_transition true does not work
-projectm_load_preset_file(pm, filename.c_str(), true);
+projectm_load_preset_file(pm, filename.c_str(), false);
 }
 
 void render_frame() {
