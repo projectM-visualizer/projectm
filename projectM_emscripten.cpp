@@ -43,6 +43,19 @@ projectm_handle pm;
 AppData app_data;
 projectm_playlist_handle playlist={};
 
+const char* new_sprite_code = 
+    "x = 0.25;"
+    "y = 0.75;"
+    "scaling = 0.1 + 0.1*bass;"
+    "a = 1.0;"
+    "r = 0.1;"
+    "g = 0.5;"
+    "b = 1.0;";
+
+void create_sprite() {
+projectm_sprite_create(app_data.projectm_engine, "mysprite", new_sprite_code);
+}
+
 uintptr_t get_projectm_handle() { 
 return reinterpret_cast<uintptr_t>(app_data.projectm_engine);
 }
@@ -494,7 +507,11 @@ snd();
 });
 
 document.querySelector('#milkBtn').addEventListener('click',function(){
-getCustomShader();
+Module.getCustomShader();
+});
+
+document.querySelector('#createSpriteBtn').addEventListener('click',function(){
+Module.createSprite();
 });
 
 function getShaders(){
@@ -733,6 +750,7 @@ function("getShader", &getShader);
 function("addPath", &add_preset_path);
 function("projectm_pcm_add_float", &projectm_pcm_add_float_from_js_array_wrapper);
 function("pl", &pl);
+function("createSprite", &create_sprite);
 }
 
 int main(){
