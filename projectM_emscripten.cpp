@@ -47,7 +47,6 @@ bool g_is_streaming_audio = false;
 
 void create_sprite() {
     const char* new_sprite_code =
-        "[img00]"
         "x = 0.25;"
         "y = 0.75;"
         "scaling = 0.1 + 0.1*bass;"
