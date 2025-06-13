@@ -1,4 +1,5 @@
-precision mediump float;
+precision highp float;
+precision highp int;
 
 in vec4 frag_COLOR;
 in vec4 frag_TEXCOORD0;
