@@ -47,7 +47,7 @@ bool g_is_streaming_audio = false;
 
 void create_sprite() {
     const char* new_sprite_code =
-        "[img00]"
+        "[preset01]"
         "img='textures/rv_IP_20250421_060250.png';"
         "init_1=blendmode=1;"
         "init_2=x = 0.5;"         // Center X
