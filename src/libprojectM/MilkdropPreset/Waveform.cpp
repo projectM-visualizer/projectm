@@ -18,10 +18,9 @@ namespace libprojectM {
 namespace MilkdropPreset {
 
 Waveform::Waveform(PresetState& presetState)
-    : RenderItem()
-    , m_presetState(presetState)
+    : m_presetState(presetState)
 {
-    RenderItem::Init();
+    Init();
 }
 
 void Waveform::InitVertexAttrib()

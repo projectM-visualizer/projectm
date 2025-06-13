@@ -5,7 +5,7 @@
 #include "ShapePerFrameContext.hpp"
 
 #include <Renderer/RenderItem.hpp>
-
+#include <Renderer/Backend/OpenGL/OpenGLRenderItem.hpp>
 #include <projectm-eval.h>
 
 namespace libprojectM {
@@ -19,7 +19,7 @@ class PresetFileParser;
  * The class creates two sets of VBO/VAO as it's only known later (in the Draw() call) whether the shape is textured
  * or not.
  */
-class CustomShape : public Renderer::RenderItem
+class CustomShape : public libprojectM::Renderer::Backend::OpenGL::OpenGLRenderItem
 {
 public:
     CustomShape(PresetState& presetState);

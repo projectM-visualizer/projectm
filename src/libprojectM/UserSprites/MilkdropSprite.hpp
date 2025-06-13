@@ -10,7 +10,9 @@
 namespace libprojectM {
 namespace UserSprites {
 
-class MilkdropSprite : public Sprite
+#include <Renderer/Backend/OpenGL/OpenGLRenderItem.hpp>
+
+class MilkdropSprite : public Sprite, public libprojectM::Renderer::Backend::OpenGL::OpenGLRenderItem
 {
 public:
     MilkdropSprite();

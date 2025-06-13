@@ -21,9 +21,8 @@ namespace MilkdropPreset {
 static constexpr uint32_t VerticesPerDrawCall = 1024 * 3;
 
 PerPixelMesh::PerPixelMesh()
-    : RenderItem()
 {
-    RenderItem::Init();
+    Init();
 }
 
 void PerPixelMesh::InitVertexAttrib()

@@ -9,10 +9,9 @@ namespace libprojectM {
 namespace MilkdropPreset {
 
 MotionVectors::MotionVectors(PresetState& presetState)
-    : RenderItem()
-    , m_presetState(presetState)
+    : m_presetState(presetState)
 {
-    RenderItem::Init();
+    Init();
 }
 
 void MotionVectors::InitVertexAttrib()

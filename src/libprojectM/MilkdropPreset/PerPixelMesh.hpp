@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Renderer/RenderItem.hpp>
+#include <Renderer/Backend/OpenGL/OpenGLRenderItem.hpp>
 #include <Renderer/Shader.hpp>
 
 #include <cstdint>
@@ -27,7 +27,7 @@ class MilkdropShader;
  *
  * The mesh size can be changed between frames, the class will reallocate the buffers if needed.
  */
-class PerPixelMesh : public Renderer::RenderItem
+class PerPixelMesh : public libprojectM::Renderer::Backend::OpenGL::OpenGLRenderItem
 {
 public:
     PerPixelMesh();
