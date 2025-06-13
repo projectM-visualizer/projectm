@@ -46,23 +46,19 @@ projectm_playlist_handle playlist={};
 bool g_is_streaming_audio = false;
 
 void create_sprite() {
-    const char* new_sprite_code =
+const char* new_sprite_code =
         "[preset01]"
         "img='textures/rv_IP_20250421_060250.png';"
-        "init_1=blendmode=1;"
-        "init_2=x = 0.5;"         // Center X
-        "init_3=y = 0.5;"         // Center Y
-        "init_4=z = 0.0;"         // Center Y
-        "init_5=scaling = 2.0;"   // Make it huge (twice the screen height)
-        "code_1=a = 1;"         // Fully opaque
-        "code_2=r = 1.0;"         // Bright Red
-        "code_3=g = 0.0;"
-        "code_4=b = 1.0;";
-
-    // Correct: Use the name of the sprite defined in the .milk file
-    projectm_sprite_create(app_data.projectm_engine, "milkdrop", new_sprite_code);
-    projectm_sprite_create(app_data.projectm_engine, "basic_sparkle", new_sprite_code);
-
+        "per_frame_1=blendmode=1;"
+        "per_frame_2=x = 0.5;"         // Center X
+        "per_frame_3=y = 0.5;"         // Center Y
+        "per_frame_4=z = 0.0;"         // Center Y
+        "per_frame_5=scaling = 1.0;"   // Make it huge (twice the screen height)
+        "per_pixel_2=a = 1;"         // Fully opaque
+        "per_pixel_3=r = 1.0;"         // Bright Red
+        "per_pixel_4=g = 0.0;"
+        "per_pixel_5=b = 1.0;";
+projectm_sprite_create(app_data.projectm_engine, "milkdrop", new_sprite_code);
 return;
 }
 
