@@ -1,4 +1,5 @@
-precision mediump float;
+precision highp float;
+precision highp int;
 
 #define pos vertex_position
 #define radius rad_ang.x
