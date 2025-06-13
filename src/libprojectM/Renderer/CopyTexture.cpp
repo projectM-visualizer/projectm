@@ -38,7 +38,8 @@ void main() {
 )";
 
 static constexpr char CopyTextureFragmentShader[] = R"(
-precision mediump float;
+precision highp float;
+precision highp int;
 
 in vec2 fragment_tex_coord;
 
