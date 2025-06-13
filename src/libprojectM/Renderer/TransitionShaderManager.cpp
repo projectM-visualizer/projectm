@@ -32,7 +32,7 @@ auto TransitionShaderManager::CompileTransitionShader(const std::string& shaderB
 {
 #ifdef USE_GLES
     // GLES also requires a precision specifier for variables and 3D samplers
-    constexpr char versionHeader[] = "#version 300 es\n\nprecision mediump float;\nprecision mediump sampler3D;\n";
+    constexpr char versionHeader[] = "#version 300 es\n\nprecision highp int;\nprecision highp float;\nprecision highp sampler2D;\nprecision highp sampler3D;\n";
 #else
     constexpr char versionHeader[] = "#version 330\n\n";
 #endif
