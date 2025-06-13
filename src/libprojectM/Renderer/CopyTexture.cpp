@@ -13,7 +13,8 @@ static constexpr char ShaderVersion[] = "#version 330\n\n";
 #endif
 
 static constexpr char CopyTextureVertexShader[] = R"(
-precision mediump float;
+precision highp float;
+precision highp int;
 
 layout(location = 0) in vec2 position;
 layout(location = 1) in vec2 tex_coord;
