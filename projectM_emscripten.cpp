@@ -276,7 +276,7 @@ return;
 }
 
 void start_render(int size){
-glClearColor( 1.0, 1.0, 1.0, 0.0 );
+// glClearColor( 1.0, 1.0, 1.0, 0.0 );
 glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 //printf("Setting window size: %i\n", size);
 glViewport(0,0,8192,8192);  //  viewport/scissor after UsePrg runs at full resolution
