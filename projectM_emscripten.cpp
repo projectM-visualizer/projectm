@@ -94,6 +94,10 @@ EM_JS(void, js_initialize_stream_analyser, (), {
     // Connect the graph: Audio Element -> Analyser -> Speakers
     source.connect(analyser);
     analyser.connect(audioContext.destination);
+source.onended = function() {
+    console.log("Audio track finished!");
+   document.querySelector('#musicBtn').click();
+};
     // Store the analyser and a buffer for later use
     window.projectMStreamAnalyser = analyser;
     // Create a buffer to hold the raw PCM data
