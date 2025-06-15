@@ -21,6 +21,8 @@ namespace UserSprites {
 class Sprite : public Renderer::RenderItem
 {
 public:
+    ~Sprite() = default;
+
     using Ptr = std::unique_ptr<Sprite>;
     using PresetList = std::vector<std::reference_wrapper<const std::unique_ptr<Preset>>>;
 

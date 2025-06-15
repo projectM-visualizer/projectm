@@ -73,10 +73,11 @@ void PlaylistCWrapper::OnPresetSwitchFailed(const char* presetFilename, const ch
     // Preset switch may fail due to broken presets, retry a few times before giving up.
     if (playlist->m_presetSwitchFailedCount >= playlist->m_presetSwitchRetryCount)
     {
-        if (playlist->m_presetSwitchFailedEventCallback != nullptr)
+    if (playlist->m_onPlaylistPresetSwitchFailed)
         {
-            playlist->m_presetSwitchFailedEventCallback(presetFilename, message,
-                                                        playlist->m_presetSwitchFailedEventUserData);
+        // Note: The lambda stored in m_onPlaylistPresetSwitchFailed already captures the C callback and user_data.
+        // It expects std::string arguments.
+        playlist->m_onPlaylistPresetSwitchFailed(presetFilename ? std::string(presetFilename) : "", message ? std::string(message) : "");
         }
 
         return;
@@ -118,15 +119,25 @@ auto PlaylistCWrapper::RetryCount() -> uint32_t
 
 void PlaylistCWrapper::SetPresetSwitchedCallback(projectm_playlist_preset_switched_event callback, void* userData)
 {
-    m_presetSwitchedEventCallback = callback;
-    m_presetSwitchedEventUserData = userData;
+    if (callback) {
+        m_onPresetSwitched = [callback, userData](bool isHardCut, uint32_t playlist_index) {
+            callback(isHardCut, playlist_index, userData);
+        };
+    } else {
+        m_onPresetSwitched = nullptr;
+    }
 }
 
 
 void PlaylistCWrapper::SetPresetSwitchFailedCallback(projectm_playlist_preset_switch_failed_event callback, void* userData)
 {
-    m_presetSwitchFailedEventCallback = callback;
-    m_presetSwitchFailedEventUserData = userData;
+    if (callback) {
+        m_onPlaylistPresetSwitchFailed = [callback, userData](const std::string& presetFilename, const std::string& failureMessage) {
+            callback(presetFilename.c_str(), failureMessage.c_str(), userData);
+        };
+    } else {
+        m_onPlaylistPresetSwitchFailed = nullptr;
+    }
 }
 
 
@@ -149,9 +160,9 @@ void PlaylistCWrapper::PlayPresetIndex(uint32_t index, bool hardCut, bool resetF
     projectm_load_preset_file(m_projectMInstance,
                               playlistItems.at(index).Filename().c_str(), !hardCut);
 
-    if (m_presetSwitchedEventCallback != nullptr)
+    if (m_onPresetSwitched)
     {
-        m_presetSwitchedEventCallback(hardCut, index, m_presetSwitchedEventUserData);
+        m_onPresetSwitched(hardCut, index);
     }
 }
 

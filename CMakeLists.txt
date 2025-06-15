@@ -7,7 +7,7 @@ include(CheckSymbolExists)
 set(PROJECTM_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(PROJECTM_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
-set(CMAKE_CXX_STANDARD 26)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_POSITION_INDEPENDENT_CODE YES)
 
@@ -135,7 +135,7 @@ if(ENABLE_EMSCRIPTEN)
             )
 
     add_link_options(
-            "SHELL:-std=c++26 -O3 -rtlib=compiler-rt-mt -mtune=wasm32 -s SHARED_MEMORY=1 -s WASM_WORKERS=1 "
+            "SHELL:-std=c++17 -O3 -rtlib=compiler-rt-mt -mtune=wasm32 -s SHARED_MEMORY=1 -s WASM_WORKERS=1 "
             "SHELL:-s MIN_WEBGL_VERSION=2 "
             "SHELL:-s MAX_WEBGL_VERSION=2 "
             "SHELL:-s USE_WEBGL2=1 -s FULL_ES2=0 -s FULL_ES3=1 -s GL_POOL_TEMP_BUFFERS=0 -s GL_MAX_TEMP_BUFFER_SIZE=33177600 -s GL_TRACK_ERRORS=0 "

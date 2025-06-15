@@ -32,6 +32,12 @@ TextureManager::TextureManager(const std::vector<std::string>& textureSearchPath
     Preload();
 }
 
+// Destructor can be removed if it becomes empty, or kept if other cleanup is added later.
+// For now, let's leave it commented out or remove it if it was only for IMG_Quit().
+// TextureManager::~TextureManager()
+// {
+// }
+
 void TextureManager::SetCurrentPresetPath(const std::string&)
 {
 }
