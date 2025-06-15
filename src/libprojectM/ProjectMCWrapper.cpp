@@ -14,19 +14,18 @@ namespace libprojectM {
 
 void projectMWrapper::PresetSwitchRequestedEvent(bool isHardCut) const
 {
-    if (m_presetSwitchRequestedEventCallback)
+    if (m_onPresetSwitchRequested)
     {
-        m_presetSwitchRequestedEventCallback(isHardCut, m_presetSwitchRequestedEventUserData);
+        m_onPresetSwitchRequested(isHardCut);
     }
 }
 
 void projectMWrapper::PresetSwitchFailedEvent(const std::string& presetFilename,
                                               const std::string& failureMessage) const
 {
-    if (m_presetSwitchFailedEventCallback)
+    if (m_onPresetSwitchFailed)
     {
-        m_presetSwitchFailedEventCallback(presetFilename.c_str(),
-                                          failureMessage.c_str(), m_presetSwitchFailedEventUserData);
+        m_onPresetSwitchFailed(presetFilename, failureMessage);
     }
 }
 
@@ -102,16 +101,28 @@ void projectm_set_preset_switch_requested_event_callback(projectm_handle instanc
                                                          projectm_preset_switch_requested_event callback, void* user_data)
 {
     auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->m_presetSwitchRequestedEventCallback = callback;
-    projectMInstance->m_presetSwitchRequestedEventUserData = user_data;
+    if (callback) {
+        projectMInstance->m_onPresetSwitchRequested =
+            [callback, user_data](bool isHardCut) {
+                callback(isHardCut, user_data);
+            };
+    } else {
+        projectMInstance->m_onPresetSwitchRequested = nullptr;
+    }
 }
 
 void projectm_set_preset_switch_failed_event_callback(projectm_handle instance,
                                                       projectm_preset_switch_failed_event callback, void* user_data)
 {
     auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->m_presetSwitchFailedEventCallback = callback;
-    projectMInstance->m_presetSwitchFailedEventUserData = user_data;
+    if (callback) {
+        projectMInstance->m_onPresetSwitchFailed =
+            [callback, user_data](const std::string& presetFilename, const std::string& failureMessage) {
+                callback(presetFilename.c_str(), failureMessage.c_str(), user_data);
+            };
+    } else {
+        projectMInstance->m_onPresetSwitchFailed = nullptr;
+    }
 }
 
 void projectm_set_texture_search_paths(projectm_handle instance,

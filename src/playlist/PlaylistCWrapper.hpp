@@ -5,6 +5,7 @@
 #include "Playlist.hpp"
 
 #include <cstdint>
+#include <functional>
 
 namespace libprojectM {
 namespace Playlist {
@@ -103,11 +104,8 @@ private:
 
     bool m_hardCutRequested{false}; //!< Stores the type of the last requested switch attempt.
 
-    projectm_playlist_preset_switched_event m_presetSwitchedEventCallback{nullptr}; //!< Preset switched callback pointer set by the application.
-    void* m_presetSwitchedEventUserData{nullptr};                                   //!< Context data pointer set by the application.
-
-    projectm_playlist_preset_switch_failed_event m_presetSwitchFailedEventCallback{nullptr}; //!< Preset switch failed callback pointer set by the application.
-    void* m_presetSwitchFailedEventUserData{nullptr};                                        //!< Context data pointer set by the application.
+    std::function<void(bool isHardCut, uint32_t playlist_index)> m_onPresetSwitched;
+    std::function<void(const std::string& presetFilename, const std::string& failureMessage)> m_onPlaylistPresetSwitchFailed;
 
     NavigationDirection m_lastNavigationDirection{NavigationDirection::Next}; //!< Last direction used to switch a preset.
 };
