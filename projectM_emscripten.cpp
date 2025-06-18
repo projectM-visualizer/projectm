@@ -30,6 +30,7 @@
 #include <vector>
 #include <limits>
 #include <cmath>
+#include <functional>
 
 using namespace emscripten;
 
