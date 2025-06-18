@@ -263,7 +263,7 @@ void stop_worklet_playback() {
 
 } // extern "C"
 
-void renderLoop(){
+void renderLoopF(){
 if(app_data.loading==EM_TRUE){
 return;
 }
@@ -277,6 +277,13 @@ js_feed_stream_data_to_projectm(
 // glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 projectm_opengl_render_frame(pm);
 eglSwapBuffers(display,surface);
+return;
+}
+
+std::function<void()> renderLoopBF = renderLoopF;
+
+void renderLoop(){
+renderLoopBF();
 return;
 }
 
