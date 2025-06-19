@@ -10,7 +10,7 @@
 
 #include <algorithm>
 #include <cmath>
-#include <omp.h>
+// #include <omp.h>
 
 #ifdef MILKDROP_PRESET_DEBUG
 #include <iostream>
