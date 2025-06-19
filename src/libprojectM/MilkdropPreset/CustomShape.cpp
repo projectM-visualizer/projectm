@@ -6,7 +6,7 @@
 #include <Renderer/RenderItem.hpp>
 
 #include <vector>
-#include <omp.h>
+// #include <omp.h>
 
 namespace libprojectM {
 namespace MilkdropPreset {
