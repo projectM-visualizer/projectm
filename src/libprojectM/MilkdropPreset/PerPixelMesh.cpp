@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <omp.h>
 
 #ifdef MILKDROP_PRESET_DEBUG
 #include <iostream>
@@ -154,12 +155,14 @@ void PerPixelMesh::InitializeMesh(const PresetState& presetState)
     float aspectY = static_cast<float>(presetState.renderContext.aspectY);
 
     // Either viewport size or mesh size changed, reinitialize the vertices.
-    int vertexIndex{0};
+    // int vertexIndex{0}; // Original sequential index
+    #pragma omp parallel for default(none) shared(m_vertices, m_gridSizeX, m_gridSizeY, aspectX, aspectY) schedule(static) if(m_gridSizeY > 10 && m_gridSizeX > 10)
     for (int gridY = 0; gridY <= m_gridSizeY; gridY++)
     {
         for (int gridX = 0; gridX <= m_gridSizeX; gridX++)
         {
-            auto& vertex = m_vertices.at(vertexIndex);
+            int vertexIndex = gridY * (m_gridSizeX + 1) + gridX; // Calculate index
+            auto& vertex = m_vertices.at(vertexIndex); // Safe access
 
             vertex.x = static_cast<float>(gridX) / static_cast<float>(m_gridSizeX) * 2.0f - 1.0f;
             vertex.y = static_cast<float>(gridY) / static_cast<float>(m_gridSizeY) * 2.0f - 1.0f;
@@ -174,8 +177,7 @@ void PerPixelMesh::InitializeMesh(const PresetState& presetState)
             {
                 vertex.angle = atan2f(vertex.y * aspectY, vertex.x * aspectX);
             }
-
-            vertexIndex++;
+            // vertexIndex++; // No longer needed due to direct calculation
         }
     }
 
