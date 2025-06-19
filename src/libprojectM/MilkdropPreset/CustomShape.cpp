@@ -6,6 +6,7 @@
 #include <Renderer/RenderItem.hpp>
 
 #include <vector>
+#include <omp.h>
 
 namespace libprojectM {
 namespace MilkdropPreset {
@@ -172,19 +173,29 @@ void CustomShape::Draw()
         vertexData[1].b = Renderer::color_modulo(*m_perFrameContext.b2);
         vertexData[1].a = Renderer::color_modulo(*m_perFrameContext.a2);
 
+        const float const_ang_pos = static_cast<float>(*m_perFrameContext.ang);
+        const float const_rad_pos = static_cast<float>(*m_perFrameContext.rad);
+        const float center_x = vertexData[0].x;
+        const float center_y = vertexData[0].y;
+        const float outer_r = vertexData[1].r;
+        const float outer_g = vertexData[1].g;
+        const float outer_b = vertexData[1].b;
+        const float outer_a = vertexData[1].a;
+
+        #pragma omp parallel for default(none) shared(vertexData, sides, pi, const_ang_pos, const_rad_pos, m_presetState, center_x, center_y, outer_r, outer_g, outer_b, outer_a) schedule(static) if(sides > 30)
         for (int i = 1; i < sides + 1; i++)
         {
             const float cornerProgress = static_cast<float>(i - 1) / static_cast<float>(sides);
-            const float angle = cornerProgress * pi * 2.0f + static_cast<float>(*m_perFrameContext.ang) + pi * 0.25f;
+            const float angle = cornerProgress * pi * 2.0f + const_ang_pos + pi * 0.25f;
 
             // Todo: There's still some issue with aspect ratio here, as everything gets squashed horizontally if Y > x.
-            vertexData[i].x = vertexData[0].x + static_cast<float>(*m_perFrameContext.rad) * cosf(angle) * m_presetState.renderContext.aspectY;
-            vertexData[i].y = vertexData[0].y + static_cast<float>(*m_perFrameContext.rad) * sinf(angle);
+            vertexData[i].x = center_x + const_rad_pos * cosf(angle) * m_presetState.renderContext.aspectY;
+            vertexData[i].y = center_y + const_rad_pos * sinf(angle);
 
-            vertexData[i].r = vertexData[1].r;
-            vertexData[i].g = vertexData[1].g;
-            vertexData[i].b = vertexData[1].b;
-            vertexData[i].a = vertexData[1].a;
+            vertexData[i].r = outer_r;
+            vertexData[i].g = outer_g;
+            vertexData[i].b = outer_b;
+            vertexData[i].a = outer_a;
         }
 
         // Duplicate last vertex.
@@ -223,13 +234,20 @@ void CustomShape::Draw()
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+            const float const_tex_ang = static_cast<float>(*m_perFrameContext.tex_ang);
+            const float const_tex_zoom = static_cast<float>(*m_perFrameContext.tex_zoom);
+            // textureAspectY is defined above this block and its value is determined before this pragma.
+            // It's crucial that textureAspectY is final here.
+
+            #pragma omp parallel for default(none) shared(vertexData, sides, pi, const_tex_ang, const_tex_zoom, textureAspectY) schedule(static) if(sides > 30)
             for (int i = 1; i < sides + 1; i++)
             {
                 const float cornerProgress = static_cast<float>(i - 1) / static_cast<float>(sides);
-                const float angle = cornerProgress * pi * 2.0f + static_cast<float>(*m_perFrameContext.tex_ang) + pi * 0.25f;
+                const float angle = cornerProgress * pi * 2.0f + const_tex_ang + pi * 0.25f;
+                float inv_tex_zoom = (const_tex_zoom == 0.0f) ? 1.0f : 1.0f / const_tex_zoom;
 
-                vertexData[i].u = 0.5f + 0.5f * cosf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom) * textureAspectY;
-                vertexData[i].v = 1.0f - (0.5f - 0.5f * sinf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom)); // Vertical flip required!
+                vertexData[i].u = 0.5f + 0.5f * cosf(angle) * inv_tex_zoom * textureAspectY;
+                vertexData[i].v = 1.0f - (0.5f - 0.5f * sinf(angle) * inv_tex_zoom); // Vertical flip required!
             }
 
             vertexData[sides + 1] = vertexData[1];

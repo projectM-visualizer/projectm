@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <omp.h>
 
 namespace libprojectM {
 namespace MilkdropPreset {
@@ -138,6 +139,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     }
 
     // Scale waveform to final size
+    #pragma omp parallel for default(none) shared(sampleDataL, sampleDataR, sampleCount, mult) schedule(static) if(sampleCount > 512)
     for (int sample = 0; sample < sampleCount; sample++)
     {
         sampleDataL[sample] *= mult;
