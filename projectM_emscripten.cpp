@@ -309,6 +309,7 @@ return;
 
 }
 
+#pragma omp parallel
 void on_preset_switch_requested(bool is_hard_cut, void* user_data) {
 printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ? "true" : "false");
 // EM_ASM({
