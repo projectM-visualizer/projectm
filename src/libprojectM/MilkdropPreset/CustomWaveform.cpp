@@ -5,7 +5,7 @@
 
 #include <algorithm>
 #include <cmath>
-// #include <omp.h>
+#include <omp.h>
 
 namespace libprojectM {
 namespace MilkdropPreset {
