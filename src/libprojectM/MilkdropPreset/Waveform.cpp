@@ -33,7 +33,7 @@ void Waveform::InitVertexAttrib()
 
     std::vector<Point> vertexData;
     vertexData.resize(std::max(libprojectM::Audio::SpectrumSamples, libprojectM::Audio::WaveformSamples) * 2 + 2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * vertexData.size(), vertexData.data(), GL_DYNAMIC_DRAW);
 }
 
 void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
