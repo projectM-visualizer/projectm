@@ -35,7 +35,7 @@ CustomShape::CustomShape(PresetState& presetState)
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r))); // Color
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, u))); // Texture coordinate
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * vertexData.size(), vertexData.data(), GL_DYNAMIC_DRAW);
 
     glBindVertexArray(m_vaoIdUntextured);
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIdUntextured);
@@ -46,7 +46,7 @@ CustomShape::CustomShape(PresetState& presetState)
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x))); // Position
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r))); // Color
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * vertexData.size(), vertexData.data(), GL_DYNAMIC_DRAW);
 
     RenderItem::Init();
 
@@ -70,7 +70,7 @@ void CustomShape::InitVertexAttrib()
 
     std::vector<Point> vertexData;
     vertexData.resize(100);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * vertexData.size(), vertexData.data(), GL_DYNAMIC_DRAW);
 }
 
 void CustomShape::Initialize(::libprojectM::PresetFileParser& parsedFile, int index)
