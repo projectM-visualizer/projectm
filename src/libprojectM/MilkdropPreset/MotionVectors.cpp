@@ -142,7 +142,7 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
             }
             else
             {
-                glBufferData(GL_ARRAY_BUFFER, sizeof(MotionVectorVertex) * vertex, lineVertices.data(), GL_STREAM_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, sizeof(MotionVectorVertex) * vertex, lineVertices.data(), GL_DYNAMIC_DRAW);
                 m_lastVertexCount = vertex;
             }
             glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(vertex));
