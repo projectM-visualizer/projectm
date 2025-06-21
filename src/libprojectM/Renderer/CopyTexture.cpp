@@ -95,7 +95,7 @@ void CopyTexture::InitVertexAttrib()
     points[3].u = 1.0;
     points[3].v = 0.0;
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points.data(), GL_DYNAMIC_DRAW);
 }
 
 void CopyTexture::Draw(const std::shared_ptr<class Texture>& originalTexture, bool flipVertical, bool flipHorizontal)
