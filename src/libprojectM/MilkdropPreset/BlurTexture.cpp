@@ -30,7 +30,7 @@ BlurTexture::BlurTexture()
     glBindVertexArray(m_vaoBlur);
     glBindBuffer(GL_ARRAY_BUFFER, m_vboBlur);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * pointsBlur.size(), pointsBlur.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * pointsBlur.size(), pointsBlur.data(), GL_DYNAMIC_DRAW);
 
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
