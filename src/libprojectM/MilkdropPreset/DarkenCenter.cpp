@@ -37,7 +37,7 @@ void DarkenCenter::Draw()
                                                  {0.0f - halfSize * m_aspectY, 0.0, 0.0f, 0.0f, 0.0f, 0.0f}}};
 
         glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * vertices.size(), vertices.data(), GL_DYNAMIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
