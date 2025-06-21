@@ -34,7 +34,7 @@ void CustomWaveform::InitVertexAttrib()
 
     std::vector<ColoredPoint> vertexData;
     vertexData.resize(std::max(libprojectM::Audio::SpectrumSamples, libprojectM::Audio::WaveformSamples) * 2 + 2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * vertexData.size(), vertexData.data(), GL_DYNAMIC_DRAW);
 }
 
 void CustomWaveform::Initialize(::libprojectM::PresetFileParser& parsedFile, int index)
