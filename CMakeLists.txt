@@ -131,7 +131,7 @@ if(ENABLE_EMSCRIPTEN)
     add_compile_options(
             "SHELL:-O3 -mtune=wasm32 "
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING -s SHARED_MEMORY=1 -s WASM_WORKERS=1 "
-            "SHELL:-msimd128 -mrelaxed-simd -openmp -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing -fno-math-errno -pthread"
+            "SHELL:-msimd128 -mrelaxed-simd -fopenmp -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing -fno-math-errno -pthread"
             )
 
     add_link_options(
