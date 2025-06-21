@@ -17,7 +17,7 @@ void Border::InitVertexAttrib()
     glDisableVertexAttribArray(1);
 
     std::array<Point, 4> vertices{};
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * 4, vertices.data(), GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * 4, vertices.data(), GL_DYNAMIC_DRAW);
 }
 
 void Border::Draw(const PerFrameContext& presetPerFrameContext)
