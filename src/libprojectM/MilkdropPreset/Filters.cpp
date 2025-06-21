@@ -117,7 +117,7 @@ void Filters::UpdateMesh()
 
     glBindVertexArray(m_vaoID);
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points.data(), GL_DYNAMIC_DRAW);
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
