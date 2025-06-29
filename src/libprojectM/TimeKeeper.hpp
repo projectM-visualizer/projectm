@@ -1,6 +1,6 @@
 #pragma once
 
-#include <chrono>
+#include <boost/chrono.hpp>
 #include <random>
 
 namespace libprojectM {
@@ -107,7 +107,7 @@ public:
 
 private:
     /* The first ticks value of the application */
-    std::chrono::high_resolution_clock::time_point m_startTime{std::chrono::high_resolution_clock::now()};
+    boost::chrono::high_resolution_clock::time_point m_startTime{boost::chrono::high_resolution_clock::now()};
 
     std::random_device m_randomDevice{};
     std::mt19937 m_randomGenerator{m_randomDevice()};
