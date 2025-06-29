@@ -75,7 +75,7 @@ public:
      * @param presetData an already initialized input stream to read the MilkdropPreset file from
      * @param presetOutputs initialized and filled with data parsed from a MilkdropPreset
      */
-    MilkdropPreset(std::istream& presetData);
+    MilkdropPreset(boost::iostreams::filtering_istream& presetData);
 
     /**
      * @brief Initializes the preset with rendering-related data.
