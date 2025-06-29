@@ -16,6 +16,8 @@
 #include <regex>
 #include <set>
 
+#include <omp.h>
+
 namespace libprojectM {
 namespace MilkdropPreset {
 
@@ -30,6 +32,7 @@ MilkdropShader::MilkdropShader(ShaderType type)
     unsigned int index = 0;
     do
     {
+        #pragma omp simd
         for (int i = 0; i < 4; i++)
         {
             float const m_randTranslationMult = 1;
