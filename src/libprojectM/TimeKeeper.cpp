@@ -30,8 +30,8 @@ void TimeKeeper::UpdateTimers()
 
     if (m_userSpecifiedTime < 0.0)
     {
-        auto currentTime = std::chrono::high_resolution_clock::now();
-        currentFrameTime = std::chrono::duration<double>(currentTime - m_startTime).count();
+        auto currentTime = boost::chrono::high_resolution_clock::now();
+        currentFrameTime = boost::chrono::duration<double>(currentTime - m_startTime).count();
     }
 
     m_secondsSinceLastFrame = currentFrameTime - m_currentTime;
