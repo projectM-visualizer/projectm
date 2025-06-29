@@ -258,6 +258,7 @@ void stop_worklet_playback() {
 
 } // extern "C"
 
+#pragma omp parallel
 void renderLoop(){
 if(app_data.loading==EM_TRUE){
 return;
