@@ -44,6 +44,14 @@
 #include <memory>
 #include <string>
 
+#ifdef MILKDROP_PRESET_DEBUG
+#include <boost/iostreams/stream.hpp>
+#include <boost/iostreams/device/file_descriptor.hpp>
+#endif
+
+#include <boost/iostreams/filtering_stream.hpp>
+#include <boost/iostreams/device/file.hpp>
+
 namespace libprojectM {
 class PresetFileParser;
 
@@ -94,7 +102,7 @@ private:
 
     void Load(const std::string& pathname);
 
-    void Load(std::istream& stream);
+    void Load(boost::iostreams::filtering_istream& stream);
 
     void InitializePreset(::libprojectM::PresetFileParser& parsedFile);
 
