@@ -26,13 +26,8 @@
 #include "PresetFileParser.hpp"
 
 #ifdef MILKDROP_PRESET_DEBUG
-#include <boost/iostreams/stream.hpp>
-#include <boost/iostreams/device/file_descriptor.hpp>
+#include <iostream>
 #endif
-
-#include <boost/iostreams/filtering_stream.hpp>
-#include <boost/iostreams/device/file.hpp>
-
 
 namespace libprojectM {
 namespace MilkdropPreset {
@@ -49,7 +44,7 @@ MilkdropPreset::MilkdropPreset(const std::string& absoluteFilePath)
     Load(absoluteFilePath);
 }
 
-MilkdropPreset::MilkdropPreset(boost::iostreams::filtering_istream& presetData)
+MilkdropPreset::MilkdropPreset(std::istream& presetData)
     : m_perFrameContext(m_state.globalMemory, &m_state.globalRegisters)
     , m_perPixelContext(m_state.globalMemory, &m_state.globalRegisters)
     , m_motionVectors(m_state)
@@ -82,7 +77,6 @@ void MilkdropPreset::Initialize(const Renderer::RenderContext& renderContext)
     m_finalComposite.CompileCompositeShader(m_state);
 }
 
-#pragma omp parallel
 void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audioData, const Renderer::RenderContext& renderContext)
 {
     m_state.audioData = audioData;
@@ -212,30 +206,28 @@ void MilkdropPreset::PerFrameUpdate()
 void MilkdropPreset::Load(const std::string& pathname)
 {
 #ifdef MILKDROP_PRESET_DEBUG
-    boost::iostreams::stream<boost::iostreams::file_descriptor_sink> berr(fileno(stderr));
-    berr << "[Preset] Loading preset from file \"" << pathname << "\"." << std::endl;
+    std::cerr << "[Preset] Loading preset from file \"" << pathname << "\"." << std::endl;
 #endif
 
     SetFilename(ParseFilename(pathname));
 
-    try {
-        boost::iostreams::filtering_istream file_stream;
-        file_stream.push(boost::iostreams::file_source(pathname, std::ios_base::in | std::ios_base::binary));
-        Load(file_stream);
-    } catch (const std::exception& e) {
+    ::libprojectM::PresetFileParser parser;
+
+    if (!parser.Read(pathname))
+    {
 #ifdef MILKDROP_PRESET_DEBUG
-        boost::iostreams::stream<boost::iostreams::file_descriptor_sink> berr(fileno(stderr));
-        berr << "[Preset] Could not open or read preset file: " << e.what() << std::endl;
+        std::cerr << "[Preset] Could not parse preset file." << std::endl;
 #endif
-        throw MilkdropPresetLoadException("Could not open or read preset file \"" + pathname + "\"");
+        throw MilkdropPresetLoadException("Could not parse preset file \"" + pathname + "\"");
     }
+
+    InitializePreset(parser);
 }
 
-void MilkdropPreset::Load(boost::iostreams::filtering_istream& stream)
+void MilkdropPreset::Load(std::istream& stream)
 {
 #ifdef MILKDROP_PRESET_DEBUG
-    boost::iostreams::stream<boost::iostreams::file_descriptor_sink> berr(fileno(stderr));
-    berr << "[Preset] Loading preset from stream." << std::endl;
+    std::cerr << "[Preset] Loading preset from stream." << std::endl;
 #endif
 
     ::libprojectM::PresetFileParser parser;
@@ -243,8 +235,7 @@ void MilkdropPreset::Load(boost::iostreams::filtering_istream& stream)
     if (!parser.Read(stream))
     {
 #ifdef MILKDROP_PRESET_DEBUG
-        boost::iostreams::stream<boost::iostreams::file_descriptor_sink> berr(fileno(stderr));
-        berr << "[Preset] Could not parse preset data." << std::endl;
+        std::cerr << "[Preset] Could not parse preset data." << std::endl;
 #endif
         throw MilkdropPresetLoadException("Could not parse preset data.");
     }
