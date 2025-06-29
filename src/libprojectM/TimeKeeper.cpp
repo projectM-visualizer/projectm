@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <random>
-#include <boost/chrono.hpp>
 
 namespace libprojectM {
 
