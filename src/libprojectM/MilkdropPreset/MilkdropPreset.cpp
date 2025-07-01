@@ -77,6 +77,7 @@ void MilkdropPreset::Initialize(const Renderer::RenderContext& renderContext)
     m_finalComposite.CompileCompositeShader(m_state);
 }
 
+#pragma omp parallel
 void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audioData, const Renderer::RenderContext& renderContext)
 {
     m_state.audioData = audioData;
