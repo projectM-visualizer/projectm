@@ -82,7 +82,7 @@ auto PresetFileParser::GetCode(const std::string& keyPrefix) const -> std::strin
 
     key.replace(0, lowerKey.length(), lowerKey);
 
-    for (int index{1}; index <= 99999; ++index)
+    for (int index{1}; index <= 9999; ++index)
     {
         key.replace(lowerKey.length(), 5, std::to_string(index));
         if (m_presetValues.find(key) == m_presetValues.end())
