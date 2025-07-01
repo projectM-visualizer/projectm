@@ -110,6 +110,7 @@ void PerPixelMesh::CompileWarpShader(PresetState& presetState)
     }
 }
 
+#pragma omp parallel
 void PerPixelMesh::Draw(const PresetState& presetState,
                         const PerFrameContext& perFrameContext,
                         PerPixelContext& perPixelContext)
