@@ -85,7 +85,7 @@ void TextureAttachment::ReplaceTexture(int width, int height)
             }
             break;
         case AttachmentType::Depth:
-            internalFormat = GL_DEPTH_COMPONENT16;
+            internalFormat = GL_DEPTH_COMPONENT32F;
             textureFormat = GL_DEPTH_COMPONENT;
             pixelFormat = GL_FLOAT;
             break;
@@ -95,9 +95,9 @@ void TextureAttachment::ReplaceTexture(int width, int height)
             pixelFormat = GL_UNSIGNED_BYTE;
             break;
         case AttachmentType::DepthStencil:
-            internalFormat = GL_DEPTH24_STENCIL8;
+            internalFormat = GL_DEPTH32F_STENCIL8;
             textureFormat = GL_DEPTH_STENCIL;
-            pixelFormat = GL_UNSIGNED_INT_24_8;
+            pixelFormat = GL_FLOAT_32_UNSIGNED_INT_24_8_REV;
             break;
 
         default:
@@ -111,8 +111,8 @@ void TextureAttachment::ReplaceTexture(int width, int height)
     glBindTexture(GL_TEXTURE_2D, textureId);
     glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, textureFormat, pixelFormat, nullptr);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
