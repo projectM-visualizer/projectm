@@ -1,4 +1,4 @@
-// #include <omp.h>
+#include <omp.h>
 #include <unistd.h>
 #include <emscripten.h>
 #include <emscripten/bind.h>
