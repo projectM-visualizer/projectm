@@ -15,6 +15,8 @@ static constexpr char ShaderVersion[] = "#version 330\n\n";
 static constexpr char CopyTextureVertexShader[] = R"(
 precision highp float;
 precision highp int;
+precision highp sampler3D;
+precision highp sampler2D;
 
 layout(location = 0) in vec2 position;
 layout(location = 1) in vec2 tex_coord;
@@ -40,6 +42,8 @@ void main() {
 static constexpr char CopyTextureFragmentShader[] = R"(
 precision highp float;
 precision highp int;
+precision highp sampler3D;
+precision highp sampler2D;
 
 in vec2 fragment_tex_coord;
 
