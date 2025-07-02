@@ -75,6 +75,11 @@ void Shader::Bind() const
 {
     if (m_shaderProgram > 0)
     {
+        GLsizei * binLength;
+        GLenum * binaryFormat;
+        void * GLbin;
+        glGetProgramBinary(m_shaderProgram,sizeof(GLbin),binLength,binaryFormat,&GLbin);
+        glProgramBinary(m_shaderProgram,*binaryFormat,GLbin,*binLength);
         glUseProgram(m_shaderProgram);
     }
 }
