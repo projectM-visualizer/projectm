@@ -33,6 +33,26 @@
 
 using namespace emscripten;
 
+EGLDisplay display;
+EGLSurface surface;
+EGLConfig eglconfig=NULL;
+EGLContext ctxegl;
+EGLint config_size,major,minor,atb_pos;
+EGLint numSamples;
+EGLint numSamplesNV;
+EGLint numBuffersNV;
+EGLint numGreen;
+EGLint numRed;
+EGLint numBlue;
+EGLint numAlpha;
+EGLint numDepth;
+EGLint numStencil;
+EGLint numBuffer;
+EGLint numMBuffers;
+EGLint colorSpace;
+EGLint colorFormat;
+EMSCRIPTEN_WEBGL_CONTEXT_HANDLE gl_ctx;
+
 typedef struct {
 projectm_handle projectm_engine;
 projectm_playlist_handle playlist;
@@ -58,6 +78,7 @@ const char* new_sprite_code =
         "per_pixel_3=r = 1.0;"         // Bright Red
         "per_pixel_4=g = 0.0;"
         "per_pixel_5=b = 1.0;";
+        
 projectm_sprite_create(app_data.projectm_engine, "milkdrop", new_sprite_code);
 return;
 }
@@ -72,10 +93,7 @@ EM_JS(void, js_feed_stream_data_to_projectm, (uintptr_t pm_handle, int buffer_si
     if (!analyser || !pcmBuffer || pcmBuffer.length !== buffer_size) {
         return;
     }
-    // This is the magic: fill the buffer with the current waveform data
     analyser.getFloatTimeDomainData(pcmBuffer);
-    // Feed this PCM data to projectM
-    // We can call the existing C++ wrapper we already have
     Module.projectm_pcm_add_float(pm_handle, pcmBuffer, pcmBuffer.length, 1); // Assuming mono for simplicity
 });
 
@@ -86,17 +104,16 @@ EM_JS(void, js_initialize_stream_analyser, (), {
         console.error("JS Stream Init: AudioContext or audio element not found.");
         return;
     }
-    // Create an AnalyserNode to get PCM data for visualization
     const analyser = audioContext.createAnalyser();
+
+
     analyser.fftSize = 2048; // A common size for detailed analysis
-    // Create a source node from the HTML <audio> element
+
+
     const source = audioContext.createMediaElementSource(audioElement);
-    // Connect the graph: Audio Element -> Analyser -> Speakers
     source.connect(analyser);
     analyser.connect(audioContext.destination);
-    // Store the analyser and a buffer for later use
     window.projectMStreamAnalyser = analyser;
-    // Create a buffer to hold the raw PCM data
     window.projectMStreamBuffer = new Float32Array(analyser.fftSize);
     console.log("JS Stream Init: Media element and analyser connected.");
 });
@@ -122,51 +139,26 @@ uintptr_t pm_handle_value,
 emscripten::val js_audio_array_val,
 unsigned int num_samples_per_channel,
 int channels_enum_value) {
-// projectm_handle current_pm_handle = reinterpret_cast<projectm_handle>(pm_handle_value);
 projectm_handle current_pm_handle = app_data.projectm_engine;
 if (!current_pm_handle) {
-        fprintf(stderr, "Error: projectM handle is null in from_js_array_wrapper.\n");
-        return;
-    }
-    // Convert the JavaScript array (expected to be Float32Array) to std::vector<float>
-    // This performs a copy of the data.
-    std::vector<float> cpp_audio_buffer = emscripten::vecFromJSArray<float>(js_audio_array_val);
-    // Optional: Sanity checks
-    if (channels_enum_value <= 0 || num_samples_per_channel == 0) {
-        fprintf(stderr, "Error: Invalid channel count (%d) or samples_per_channel (%u).\n",
-                channels_enum_value, num_samples_per_channel);
-        return;
-    }
-        size_t expected_total_elements = static_cast<size_t>(num_samples_per_channel) * static_cast<size_t>(channels_enum_value);
-    if (cpp_audio_buffer.size() != expected_total_elements) {
-        fprintf(stderr, "Error: Audio data size mismatch. Expected %zu elements, got %zu elements from JS array.\n",
-                expected_total_elements, cpp_audio_buffer.size());
-        return;
-    }
-    // Call the original projectM function with data from the C++ vector
-    projectm_pcm_add_float(current_pm_handle, cpp_audio_buffer.data(), num_samples_per_channel, static_cast<projectm_channels>(channels_enum_value));
+fprintf(stderr, "Error: projectM handle is null in from_js_array_wrapper.\n");
 return;
 }
-
-EGLDisplay display;
-EGLSurface surface;
-EGLConfig eglconfig=NULL;
-EGLContext ctxegl;
-EGLint config_size,major,minor,atb_pos;
-EGLint numSamples;
-EGLint numSamplesNV;
-EGLint numBuffersNV;
-EGLint numGreen;
-EGLint numRed;
-EGLint numBlue;
-EGLint numAlpha;
-EGLint numDepth;
-EGLint numStencil;
-EGLint numBuffer;
-EGLint numMBuffers;
-EGLint colorSpace;
-EGLint colorFormat;
-EMSCRIPTEN_WEBGL_CONTEXT_HANDLE gl_ctx;
+std::vector<float> cpp_audio_buffer = emscripten::vecFromJSArray<float>(js_audio_array_val);
+if (channels_enum_value <= 0 || num_samples_per_channel == 0) {
+fprintf(stderr, "Error: Invalid channel count (%d) or samples_per_channel (%u).\n",
+channels_enum_value, num_samples_per_channel);
+return;
+}
+size_t expected_total_elements = static_cast<size_t>(num_samples_per_channel) * static_cast<size_t>(channels_enum_value);
+if (cpp_audio_buffer.size() != expected_total_elements) {
+fprintf(stderr, "Error: Audio data size mismatch. Expected %zu elements, got %zu elements from JS array.\n",
+expected_total_elements, cpp_audio_buffer.size());
+return;
+}
+projectm_pcm_add_float(current_pm_handle, cpp_audio_buffer.data(), num_samples_per_channel, static_cast<projectm_channels>(channels_enum_value));
+return;
+}
 
 EM_JS(void, js_initialize_worklet_system_once, (uintptr_t pm_handle_for_addpcm), {
     if (window.projectMAudioContext_Global_Cpp) { return; }
@@ -233,27 +225,25 @@ extern "C" {
 
 EMSCRIPTEN_KEEPALIVE
 void pl(const std::string& song_path_in_vfs) {
-    printf("C++: pl() called for unique path: %s\n", song_path_in_vfs.c_str());
-    // It now ONLY calls the new, simple loader function.
-    js_load_song_into_worklet(song_path_in_vfs.c_str(), true, true);
-    return;
+printf("C++: pl() called for unique path: %s\n", song_path_in_vfs.c_str());
+js_load_song_into_worklet(song_path_in_vfs.c_str(), true, true);
+return;
 }
 
 EMSCRIPTEN_KEEPALIVE
 void set_audio_source_to_stream(bool is_streaming) {
-        g_is_streaming_audio = is_streaming;
-        printf("C++: Audio source set to stream: %s\n", is_streaming ? "true" : "false");
+g_is_streaming_audio = is_streaming;
+printf("C++: Audio source set to stream: %s\n", is_streaming ? "true" : "false");
 }
 
 EMSCRIPTEN_KEEPALIVE
 void stop_worklet_playback() {
-        // We need a JS function to tell the worklet to stop
-        EM_ASM({
-            const workletNode = window.projectMWorkletNode_Global_Cpp;
-            if (workletNode) {
-                workletNode.port.postMessage({ type: 'stopPlayback' });
-            }
-        });
+EM_ASM({
+const workletNode = window.projectMWorkletNode_Global_Cpp;
+if (workletNode) {
+workletNode.port.postMessage({ type: 'stopPlayback' });
+}
+});
 }
 
 } // extern "C"
@@ -265,9 +255,13 @@ return;
 }
 if (g_is_streaming_audio) {
 js_feed_stream_data_to_projectm(
-            reinterpret_cast<uintptr_t>(app_data.projectm_engine),
+reinterpret_cast<uintptr_t>(app_data.projectm_engine),
+
+
             2048 // This MUST match the analyser.fftSize
-        );
+
+
+);
 }
 // glClearColor( 1.0, 1.0, 1.0, 0.0 );
 // glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
@@ -279,7 +273,7 @@ return;
 void start_render(int size){
 // glClearColor( 1.0, 1.0, 1.0, 0.0 );
 glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
-//printf("Setting window size: %i\n", size);
+printf("Setting window size: %i\n", size);
 glViewport(0,0,8192,8192);  //  viewport/scissor after UsePrg runs at full resolution
 glViewport(0,0,size,size);  //  viewport/scissor after UsePrg runs at full resolution
 glEnable(GL_SCISSOR_TEST);
@@ -292,7 +286,11 @@ glCullFace(GL_BACK);
 app_data.loading=EM_FALSE;
 projectm_set_window_size(pm,size,size);
 emscripten_set_main_loop((void (*)())renderLoop,0,0);
+
+
 emscripten_set_main_loop_timing(2,1);
+
+
 return;
 }
 
@@ -317,18 +315,20 @@ printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ?
 // const randIndex = Math.floor(Math.random()*25);
 // Module.loadPresetFile('/presets/preset_'+randIndex+'.milk');
 // });
+
+
  //   emscripten_pause_main_loop();
 // app_data.loading=EM_TRUE;
+
+
 char *str = (char*)EM_ASM_PTR({
 const randIndex = Math.floor(Math.random()*100);
 var jsString = '/presets/preset_'+randIndex+'.milk';
 var lengthBytes = lengthBytesUTF8(jsString)+1;
 return stringToNewUTF8(jsString);
 });
-// projectm_load_preset_file(pm, str, false);
 AppData* app_datas = (AppData*)user_data;
 projectm_playlist_add_preset(app_datas->playlist,str,false);
-// projectm_playlist_handle playlist = app_data.playlist;
 uint32_t indx = projectm_playlist_play_next(app_data.playlist,true);
 return;
 }
@@ -371,7 +371,6 @@ if(sarrayBuffer){
 let sfil=new Uint8ClampedArray(sarrayBuffer);
 FS.writeFile("/presets/preset_"+num+".milk",sfil);
 setTimeout(function(){
-   // Module.loadPresetFile("/presets/preset.milk");
 document.querySelector('#stat').innerHTML='Downloaded Shader';
 document.querySelector('#stat').style.backgroundColor='blue';
 },20);
@@ -384,6 +383,7 @@ return;
 int init() {
 
 EM_ASM({
+
 FS.mkdir('/presets');
 FS.mkdir('/textures');
 FS.mkdir('/snd');
@@ -484,7 +484,6 @@ let lastSlashIndex = pathName.lastIndexOf('/');
 let basePath = pathName.substring(0, lastSlashIndex + 1);
 txxt=txxt.replace(currentOrigin,'');
 $sngs[i]=basePath+'songs'+txxt;
-// $sngs[i]=currentOrigin+txxt;
 }};
 
 function scanSongs(){
@@ -534,7 +533,6 @@ if(sarrayBuffer){
 let sfil=new Uint8ClampedArray(sarrayBuffer);
 FS.writeFile(fname,sfil);
 console.log('got preset: '+fname);
-        // Module.loadPresetFile(fname);
 document.querySelector('#stat').innerHTML='Downloaded Shader';
 document.querySelector('#stat').style.backgroundColor='blue';
 const presetFileNameToLoad = fname;
@@ -547,7 +545,6 @@ console.error("JS: File " + presetFileNameToLoad + " is EMPTY!");
 }
 } catch (e) {
 console.error("JS: Failed to read file " + presetFileNameToLoad + " from FS:", e);
-    // Don't proceed to Module.loadPresetFile if it can't be read or is empty
 return;
 }
 }
@@ -594,7 +591,6 @@ Module.startRender(window.innerHeight);
 },1000);
 }
 var pth=document.querySelector('#milkPath').innerHTML;
-// Module.getShader();
 scanTextures();
 scanSongs();
 scanShaders();
@@ -605,16 +601,18 @@ let values = meshValue.split(',').map(Number);
 console.log('Setting Mesh:', values[0], values[1]);
 Module.setMesh(values[0], values[1]);
 });
+
+
 //  const meshValue = document.querySelector('#meshSize').value;
    // Split the value into two numbers
 // const values = meshValue.split(',').map(Number);
 // console.log('Setting Mesh:', values[0], values[1]);
 // Module.setMesh(values[0], values[1]);
+
+
 });
 
 if (pm) return 0;
-// initialize WebGL context attributes
-// https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes
 EmscriptenWebGLContextAttributes webgl_attrs;
 emscripten_webgl_init_context_attributes(&webgl_attrs);
 webgl_attrs.majorVersion = 2;
@@ -643,6 +641,7 @@ eglGetConfigAttrib(display,eglconfig,EGL_BUFFER_SIZE,&numBuffer);
 eglGetConfigAttrib(display,eglconfig,EGL_COVERAGE_BUFFERS_NV,&numBuffersNV);
 eglGetConfigAttrib(display,eglconfig,EGL_GL_COLORSPACE,&colorSpace);
 eglGetConfigAttrib(display,eglconfig,EGL_COLOR_FORMAT_HI,&colorFormat);
+
 static EGLint ctx_att[]={
 EGL_CONTEXT_CLIENT_TYPE,EGL_OPENGL_ES_API,
 EGL_CONTEXT_CLIENT_VERSION,3,
@@ -653,10 +652,12 @@ EGL_CONTEXT_PRIORITY_LEVEL_IMG,EGL_CONTEXT_PRIORITY_REALTIME_NV,
 // EGL_CONTEXT_PRIORITY_LEVEL_IMG,EGL_CONTEXT_PRIORITY_HIGH_IMG,
 EGL_NONE
 };
+
 static EGLint att_lst2[]={
 EGL_GL_COLORSPACE_KHR,colorSpace,
 EGL_NONE
 };
+
 static EGLint att_lst[]={
 EGL_COLOR_COMPONENT_TYPE_EXT,EGL_COLOR_COMPONENT_TYPE_FLOAT_EXT,
 // EGL_COLOR_COMPONENT_TYPE_EXT,EGL_COLOR_COMPONENT_TYPE_FIXED_EXT,
@@ -695,6 +696,7 @@ EGL_SAMPLE_BUFFERS,numMBuffers,
 EGL_SAMPLES,numSamples,
 EGL_NONE
 };
+
 eglChooseConfig(display,att_lst,&eglconfig,1,&config_size);
 ctxegl=eglCreateContext(display,eglconfig,EGL_NO_CONTEXT,ctx_att);
 surface=eglCreateWindowSurface(display,eglconfig,(NativeWindowType)0,att_lst2);
@@ -714,6 +716,7 @@ if (em_res != EMSCRIPTEN_RESULT_SUCCESS) {
 fprintf(stderr, "Failed to activate the WebGL context for rendering\n");
 return 1;
 }
+
 // These are probably redundant since all GL extensions are enabled by default
 // https://github.com/emscripten-core/emscripten/blob/1b01a9ef2b60184eb70616bbb294cf33d011bbb2/src/settings.js#L481
 // https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.enableExtensionsByDefault
@@ -721,15 +724,18 @@ return 1;
 // enable floating-point texture support for motion vector grid
 // https://github.com/projectM-visualizer/projectm/blob/master/docs/emscripten.rst#initializing-emscriptens-opengl-context
 // https://emscripten.org/docs/api_reference/html5.h.html#c.emscripten_webgl_enable_extension
+
 emscripten_webgl_enable_extension(gl_ctx, "OES_texture_float");
 // projectM uses half-float textures for the motion vector grid to store
 // the displacement of the previous frame's warp mesh. WebGL 2.0 sadly
 // doesn't support this texture format by default (while OpenGL ES 3 does)
 // so we have to enable the following WebGL extensions.
+
 emscripten_webgl_enable_extension(gl_ctx, "OES_texture_half_float");
 emscripten_webgl_enable_extension(gl_ctx, "OES_texture_half_float_linear");
 emscripten_webgl_enable_extension(gl_ctx,"EXT_color_buffer_float"); // GLES float
 emscripten_webgl_enable_extension(gl_ctx,"EXT_float_blend"); // GLES float
+
 pm = projectm_create();
 app_data.projectm_engine = pm;
 playlist = projectm_playlist_create(pm);
@@ -800,7 +806,6 @@ return;
 void set_window_size(int width, int height) {
 if (!pm) return;
 glViewport(0,0,height,height);
-// glEnable(GL_SCISSOR_TEST);
 // glScissor(0,0,height,height);
 projectm_set_window_size(pm, height, height);
 return;
