@@ -114,8 +114,7 @@ separate repositories in the projectM repository list:
 Included with projectM are the bltc201, Milkdrop 1 and 2, projectM, tryptonaut and yin collections. You can grab these
 presets [here](http://spiegelmc.com/pub/projectm_presets.zip).
 
-You can also download an enormous 41,000 preset pack of
-presets [here](https://mischa.lol/projectM/presets_community.zip) (123MB zipped).
+You can also download an enormous 130k+ presets from the MegaPack [here](https://drive.google.com/file/d/1DlszoqMG-pc5v1Bo9x4NhemGPiwT-0pv/view) (4.08GB zipped, incl. textures).
 
 ### Also Featured In
 
