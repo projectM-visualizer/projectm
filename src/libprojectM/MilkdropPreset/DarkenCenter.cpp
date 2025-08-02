@@ -4,10 +4,9 @@ namespace libprojectM {
 namespace MilkdropPreset {
 
 DarkenCenter::DarkenCenter(PresetState& presetState)
-    : RenderItem()
-    , m_presetState(presetState)
+    : m_presetState(presetState)
 {
-    RenderItem::Init();
+    Init();
 }
 
 void DarkenCenter::InitVertexAttrib()

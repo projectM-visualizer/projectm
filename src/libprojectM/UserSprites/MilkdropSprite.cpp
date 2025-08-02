@@ -25,7 +25,7 @@ namespace UserSprites {
 
 MilkdropSprite::MilkdropSprite()
 {
-    RenderItem::Init();
+    // Do not call Init() here; OpenGLRenderItem::Init() will be called by the rendering system when needed.
 }
 
 void MilkdropSprite::InitVertexAttrib()
