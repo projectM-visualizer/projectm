@@ -17,6 +17,7 @@ generate_shader_resources(${CMAKE_CURRENT_BINARY_DIR}/BuiltInTransitionsResource
 
 add_library(Renderer OBJECT
         ${CMAKE_CURRENT_BINARY_DIR}/BuiltInTransitionsResources.hpp
+        Color.hpp
         CopyTexture.cpp
         CopyTexture.hpp
         FileScanner.cpp
@@ -24,8 +25,11 @@ add_library(Renderer OBJECT
         Framebuffer.cpp
         Framebuffer.hpp
         IdleTextures.hpp
+        Mesh.cpp
+        Mesh.hpp
         MilkdropNoise.cpp
         MilkdropNoise.hpp
+        Point.hpp
         PresetTransition.cpp
         PresetTransition.hpp
         RenderContext.hpp
@@ -45,8 +49,15 @@ add_library(Renderer OBJECT
         TextureManager.hpp
         TextureSamplerDescriptor.cpp
         TextureSamplerDescriptor.hpp
+        TextureUV.hpp
         TransitionShaderManager.cpp
         TransitionShaderManager.hpp
+        VertexBuffer.hpp
+        VertexBufferUsage.cpp
+        VertexBufferUsage.hpp
+        VertexIndexArray.cpp
+        VertexIndexArray.hpp
+        VertexArray.hpp
         )
 
 target_include_directories(Renderer
