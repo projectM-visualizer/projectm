@@ -71,6 +71,10 @@ maintainer, as the projectM development team does not maintain any of the distri
 If you have technical troubles or other inquiries, please contact the app author via the means provided in the Play
 Store. Any bug reports in the projectM issue tracker regarding the apps will be closed immediately.
 
+- [ProjectM TV w/ Cream of the Crop](https://github.com/johnneerdael/projectm-android-tv)
+
+**Note**: Fully free and open source implenmentation based on the original source code including Cream of the Pack is not made by projectM but is made available for your pleasure, later versions publisher to the play store might ask a small fee (that's definitely going to be cheaper then the current offerings)
+
 #### Xbox / Windows Phone
 
 - [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN) (Old 3.1.12 release)
