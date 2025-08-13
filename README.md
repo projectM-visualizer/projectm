@@ -71,6 +71,10 @@ maintainer, as the projectM development team does not maintain any of the distri
 If you have technical troubles or other inquiries, please contact the app author via the means provided in the Play
 Store. Any bug reports in the projectM issue tracker regarding the apps will be closed immediately.
 
+- [ProjectM TV w/ Cream of the Crop](https://github.com/johnneerdael/projectm-android-tv)
+
+**Note**: ProjectM TV with Cream of the Crop is a fully free and open-source implementation based on the original ProjectM source code, including the massive "Cream of the Crop" preset collection. This app has been carefully developed to provide a seamless visualization experience on Android TV. It also introduces an intelligent, device-tier performance system that automatically adjusts quality settings based on your hardware, from high-end NVIDIA Shields to more budget-friendly Android TV boxes. This ensures smooth and beautiful visualizations on all compatible devices without sacrificing visual fidelity, making it the ideal solution for both casual users and enthusiasts. (This project is currently the only open-source and free Android TV implementation using the original projectM compiled binaries, but is not created or maintained by the projectM team).
+
 #### Xbox / Windows Phone
 
 - [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN) (Old 3.1.12 release)
