@@ -128,7 +128,7 @@ return;
 void load_preset_callback_done(bool is_hard_cut, unsigned int index,void* user_data) {
 // AppData* app_data = (AppData*)user_data;
 // emscripten_resume_main_loop();
-float randomDelay=(emscripten_random()*10.0)+27.0;
+float randomDelay=(emscripten_random()*30.0)+27.0;
 projectm_set_preset_duration(app_data.projectm_engine, randomDelay);
 app_data.loading=EM_FALSE;
 return;
