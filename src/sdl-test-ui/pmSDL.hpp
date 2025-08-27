@@ -1,48 +1,23 @@
-/**
-* projectM -- Milkdrop-esque visualisation SDK
-* Copyright (C)2003-2019 projectM Team
-*
-* This library is free software; you can redistribute it and/or
-* modify it under the terms of the GNU Lesser General Public
-* License as published by the Free Software Foundation; either
-* version 2.1 of the License, or (at your option) any later version.
-*
-* This library is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-* Lesser General Public License for more details.
-*
-* You should have received a copy of the GNU Lesser General Public
-* License along with this library; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-* See 'LICENSE.txt' included within this release
-*
-* projectM-sdl
-* This is an implementation of projectM using libSDL2
-* 
-* pmSDL.hpp 
-* Authors: Created by Mischa Spiegelmock on 2017-09-18.
-*
-*/
+
 
 #pragma once
 
 #include <SDL2/SDL.h>
 
-// Disable LOOPBACK and FAKE audio to enable microphone input
+
 #ifdef _WIN32
 #define WASAPI_LOOPBACK 1
-#endif /** _WIN32 */
+#endif
 #define FAKE_AUDIO 0
-// ----------------------------
+
 #define TEST_ALL_PRESETS 0
 #define STEREOSCOPIC_SBS 0
 
-// projectM
+
 #include <projectM-4/playlist.h>
 #include <projectM-4/projectM.h>
 
-// projectM SDL
+
 #include "audioCapture.hpp"
 #include "loopback.hpp"
 #include "opengl.h"
@@ -61,12 +36,12 @@
 #include <sys/stat.h>
 
 #ifdef WASAPI_LOOPBACK
-#include <windows.h>
-#include <mmdeviceapi.h>
 #include <audioclient.h>
+#include <mmdeviceapi.h>
+#include <windows.h>
 
-#include <functiondiscoverykeys_devpkey.h>
 #include <avrt.h>
+#include <functiondiscoverykeys_devpkey.h>
 
 #include <mmsystem.h>
 #include <stdio.h>
@@ -75,18 +50,18 @@
 #define LOG(format, ...) wprintf(format L"\n", __VA_ARGS__)
 #define ERR(format, ...) LOG(L"Error: " format, __VA_ARGS__)
 
-#endif /** WASAPI_LOOPBACK */
+#endif
 
 #ifdef _WIN32
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
 #else
 #include <SDL2/SDL.h>
-#endif /** _WIN32 */
+#endif
 
 
-// DATADIR_PATH should be set by the root Makefile if this is being
-// built with autotools.
+
+
 #ifndef DATADIR_PATH
 #ifdef DEBUG
 #define DATADIR_PATH "."
@@ -94,12 +69,12 @@
 #warning "DATADIR_PATH is not defined - falling back to ./"
 #else
 #pragma warning "DATADIR_PATH is not defined - falling back to ./"
-#endif /** _WIN32 */
+#endif
 #else
 #define DATADIR_PATH "/usr/local/share/projectM"
 #ifndef _WIN32
 #warning "DATADIR_PATH is not defined - falling back to /usr/local/share/projectM"
-#endif /** _WIN32 */
+#endif
 #endif
 #endif
 
@@ -136,9 +111,9 @@ public:
 
     bool done{false};
     bool mouseDown{false};
-    bool wasapi{false};    // Used to track if wasapi is currently active. This bool will allow us to run a WASAPI app and still toggle to microphone inputs.
-    bool fakeAudio{false}; // Used to track fake audio, so we can turn it off and on.
-    bool stretch{false};   // used for toggling stretch mode
+    bool wasapi{false};
+    bool fakeAudio{false};
+    bool stretch{false};
 
     SDL_GLContext _openGlContext{nullptr};
 
@@ -163,12 +138,12 @@ private:
 
     bool _shuffle{true};
 
-    // audio input device characteristics
+
     unsigned int _numAudioDevices{0};
-    int _curAudioDevice{0}; // SDL's device indexes are 0-based, -1 means "system default"
+    int _curAudioDevice{0};
     unsigned short _audioChannelsCount{0};
     SDL_AudioDeviceID _audioDeviceId{0};
     int _selectedAudioDevice{0};
 
-    std::string _presetName; //!< Current preset name
+    std::string _presetName;
 };

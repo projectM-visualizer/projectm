@@ -70,8 +70,8 @@ void CopyTexture::InitVertexAttrib()
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x))); // Position
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, u))); // Texture coordinate
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, u)));
 
     std::array<RenderItem::TexturedPoint, 4> points;
 
@@ -103,7 +103,7 @@ void CopyTexture::Draw(const std::shared_ptr<class Texture>& originalTexture, bo
         return;
     }
 
-    // Just bind the texture and draw it to the currently bound buffer.
+
     originalTexture->Bind(0);
     Copy(flipVertical, flipHorizontal);
 }
@@ -137,7 +137,7 @@ void CopyTexture::Draw(const std::shared_ptr<class Texture>& originalTexture, co
 
     m_framebuffer.Bind(0);
 
-    // Draw from unflipped texture
+
     originalTexture->Bind(0);
 
     if (targetTexture)
@@ -148,7 +148,7 @@ void CopyTexture::Draw(const std::shared_ptr<class Texture>& originalTexture, co
 
     Copy(flipVertical, flipHorizontal);
 
-    // Rebind our internal texture.
+
     if (targetTexture)
     {
         m_framebuffer.GetAttachment(0, TextureAttachment::AttachmentType::Color, 0)->Texture(internalTexture);
@@ -160,10 +160,7 @@ void CopyTexture::Draw(const std::shared_ptr<class Texture>& originalTexture, co
 void CopyTexture::Draw(const std::shared_ptr<class Texture>& originalTexture, Framebuffer& framebuffer, int framebufferIndex,
                        bool flipVertical, bool flipHorizontal)
 {
-    if (originalTexture == nullptr
-        || originalTexture->Empty()
-        || framebuffer.GetColorAttachmentTexture(framebufferIndex, 0) == nullptr
-        || framebuffer.GetColorAttachmentTexture(framebufferIndex, 0)->Empty())
+    if (originalTexture == nullptr || originalTexture->Empty() || framebuffer.GetColorAttachmentTexture(framebufferIndex, 0) == nullptr || framebuffer.GetColorAttachmentTexture(framebufferIndex, 0)->Empty())
     {
         return;
     }
@@ -177,12 +174,12 @@ void CopyTexture::Draw(const std::shared_ptr<class Texture>& originalTexture, Fr
 
     m_framebuffer.Bind(0);
 
-    // Draw from unflipped texture
+
     originalTexture->Bind(0);
 
     Copy(flipVertical, flipHorizontal);
 
-    // Swap texture attachments
+
     auto tempAttachment = framebuffer.GetAttachment(framebufferIndex, TextureAttachment::AttachmentType::Color, 0);
     framebuffer.RemoveColorAttachment(framebufferIndex, 0);
     framebuffer.SetAttachment(framebufferIndex, 0, m_framebuffer.GetAttachment(0, TextureAttachment::AttachmentType::Color, 0));
@@ -228,5 +225,5 @@ void CopyTexture::Copy(bool flipVertical, bool flipHorizontal) const
     Shader::Unbind();
 }
 
-} // namespace Renderer
-} // namespace libprojectM
+}
+}

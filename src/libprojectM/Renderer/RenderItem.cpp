@@ -23,5 +23,5 @@ RenderItem::~RenderItem()
     glDeleteVertexArrays(1, &m_vaoID);
 }
 
-} // namespace Renderer
-} // namespace libprojectM
+}
+}

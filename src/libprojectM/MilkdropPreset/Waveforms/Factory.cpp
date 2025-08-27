@@ -32,7 +32,7 @@ auto Factory::Create(WaveformMode mode) -> std::unique_ptr<WaveformMath>
 
         case WaveformMode::CenteredSpiro:
         case WaveformMode::CenteredSpiroVolume:
-            // Both "centered spiro" waveforms are identical. Only difference is the alpha value.
+
             return std::make_unique<CenteredSpiro>();
 
         case WaveformMode::DerivativeLine:
@@ -78,6 +78,6 @@ auto Factory::Create(WaveformMode mode) -> std::unique_ptr<WaveformMath>
     return {};
 }
 
-} // namespace Waveforms
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}
+}

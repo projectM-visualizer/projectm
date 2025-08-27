@@ -195,5 +195,5 @@ void ShapePerFrameContext::ExecutePerFrameCode()
     }
 }
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

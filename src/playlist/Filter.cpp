@@ -22,7 +22,7 @@ auto Filter::Passes(const std::string& filename) -> bool
     {
         if (!filterExpression.empty() && ApplyExpression(filename, filterExpression))
         {
-            // Default action is "remove if filename matches".
+
             return filterExpression.at(0) == '+';
         }
     }
@@ -33,8 +33,8 @@ auto Filter::Passes(const std::string& filename) -> bool
 
 auto Filter::ApplyExpression(const std::string& filename, const std::string& filterExpression) -> bool
 {
-    // Implementation idea thanks to Robert van Engelen
-    // https://www.codeproject.com/Articles/5163931/Fast-String-Matching-with-Wildcards-Globs-and-Giti
+
+
 
     if (filename.empty() || filterExpression.empty())
     {
@@ -47,7 +47,7 @@ auto Filter::ApplyExpression(const std::string& filename, const std::string& fil
     const char* previousFilenameChar{nullptr};
     const char* previousFilterChar{nullptr};
 
-    bool inPathglob{false}; //!< True if the glob has a '**' pattern
+    bool inPathglob{false};
 
     auto isPathSep = [](const char* character) {
         return *character == '/' || *character == '\\';
@@ -72,8 +72,8 @@ auto Filter::ApplyExpression(const std::string& filename, const std::string& fil
     }
     else if (strchr(currentFilterChar, '/') == nullptr && strchr(currentFilterChar, '\\') == nullptr)
     {
-        const auto *separatorUnix = strrchr(currentFilenameChar, '/');
-        const auto *separatorwindows = strrchr(currentFilenameChar, '\\');
+        const auto* separatorUnix = strrchr(currentFilenameChar, '/');
+        const auto* separatorwindows = strrchr(currentFilenameChar, '\\');
         if (separatorUnix != nullptr && separatorwindows != nullptr)
         {
             currentFilenameChar = std::min(separatorUnix, separatorwindows) + 1;
@@ -156,5 +156,5 @@ auto Filter::ApplyExpression(const std::string& filename, const std::string& fil
 }
 
 
-} // namespace Playlist
-} // namespace libprojectM
+}
+}

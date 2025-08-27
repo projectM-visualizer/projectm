@@ -29,18 +29,18 @@ private:
     void MaximizeColors(const PerFrameContext& presetPerFrameContext);
     void ModulateOpacityByVolume(const PerFrameContext& presetPerFrameContext);
 
-    PresetState& m_presetState; //!< The preset state.
+    PresetState& m_presetState;
 
-    WaveformMode m_mode{WaveformMode::Circle}; //!< Line drawing mode.
+    WaveformMode m_mode{WaveformMode::Circle};
 
-    std::unique_ptr<Waveforms::WaveformMath> m_waveformMath; //!< The waveform vertex math implementation.
+    std::unique_ptr<Waveforms::WaveformMath> m_waveformMath;
 
-    float m_tempAlpha{0.0f}; //!< Calculated alpha value.
-    int m_samples{};         //!< Number of samples in the current waveform. Depends on the mode.
+    float m_tempAlpha{0.0f};
+    int m_samples{};
 
     std::vector<Point> m_wave1Vertices;
     std::vector<Point> m_wave2Vertices;
 };
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

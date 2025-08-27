@@ -262,5 +262,5 @@ void PerFrameContext::ExecutePerFrameCode()
     }
 }
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

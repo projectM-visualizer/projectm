@@ -1,14 +1,14 @@
-//
-// C++ Interface: MilkdropPresetFactory
-//
-// Description:
-//
-//
-// Author: Carmelo Piccione <carmelo.piccione@gmail.com>, (C) 2008
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
+
+
+
+
+
+
+
+
+
+
+
 
 #pragma once
 
@@ -31,8 +31,7 @@ public:
     {
         return ".milk .prjm";
     }
-
 };
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

@@ -8,9 +8,10 @@
 namespace libprojectM {
 namespace MilkdropPreset {
 
-// Original preset name: "Geiss & Sperl - Feedback (projectM idle HDR mix).milk"
+
 std::string IdlePresets::presetText()
-{    return R"([preset00]
+{
+    return R"([preset00]
 fRating=2.000000
 fGammaAdj=1.700000
 fDecay=0.940000
@@ -186,8 +187,8 @@ per_frame_29=q3 = if(above(frame,60),1, frame/60.0);
 per_frame_30=oldq8 = if(above(oldq8,1000),0,oldq8);
 per_frame_31=cx = cx + 0.3 * (0.6 * sin(0.245 * time) + 0.4 * sin(0.123 * time));
 per_frame_31=cy = cy + 0.3 * (0.6 * sin(0.263 * time) + 0.4 * sin(0.117 * time));
-per_frame_32=q9 = -0.12; // Headphones Y offset
-per_frame_33=q10 = 0.5 * sin(time * 0.5623); // Logo tilt
+per_frame_32=q9 = -0.12;
+per_frame_33=q10 = 0.5 * sin(time * 0.5623);
 per_pixel_1=zoom = log(sqrt(sin(time * .5) * 0.5 + 2.5) - .5 * rad) + 0.4;
 )";
 }
@@ -199,5 +200,5 @@ IdlePresets::allocate()
     return std::unique_ptr<Preset>(new MilkdropPreset(in));
 }
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

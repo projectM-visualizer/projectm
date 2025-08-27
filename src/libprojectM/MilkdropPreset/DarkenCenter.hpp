@@ -7,9 +7,7 @@
 namespace libprojectM {
 namespace MilkdropPreset {
 
-/**
- * @brief Darkens the screen center a bit on each frame.
- */
+
 class DarkenCenter : public Renderer::RenderItem
 {
 public:
@@ -19,15 +17,13 @@ public:
 
     void InitVertexAttrib();
 
-    /**
-     * Applies the darkening area.
-     */
+
     void Draw();
 
 private:
-    PresetState& m_presetState; //!< The global preset state.
-    float m_aspectY{}; //!< Previous Y aspect ration.
+    PresetState& m_presetState;
+    float m_aspectY{};
 };
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

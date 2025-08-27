@@ -13,7 +13,7 @@ auto SpriteManager::Spawn(const std::string& type,
                           const std::string& spriteData,
                           const Renderer::RenderContext& renderContext) -> uint32_t
 {
-    // If user set the limit to zero, don't bother.
+
     if (m_spriteSlots == 0)
     {
         return 0;
@@ -45,7 +45,7 @@ auto SpriteManager::Spawn(const std::string& type,
 
     auto spriteIdentifier = GetLowestFreeIdentifier();
 
-    // Already at max sprites, destroy the oldest sprite to make room.
+
     if (m_sprites.size() == m_spriteSlots)
     {
         Destroy(m_sprites.front().first);
@@ -62,7 +62,8 @@ void SpriteManager::Draw(const Audio::FrameAudioData& audioData,
                          uint32_t outputFramebufferObject,
                          Sprite::PresetList presets)
 {
-    for (auto& idAndSprite : m_sprites) {
+    for (auto& idAndSprite : m_sprites)
+    {
         idAndSprite.second->Draw(audioData, renderContext, outputFramebufferObject, presets);
 
         if (idAndSprite.second->Done())
@@ -99,7 +100,8 @@ auto SpriteManager::ActiveSpriteCount() const -> uint32_t
 auto SpriteManager::ActiveSpriteIdentifiers() const -> std::vector<SpriteIdentifier>
 {
     std::vector<SpriteIdentifier> identifierList;
-    for (auto& idAndSprite : m_sprites) {
+    for (auto& idAndSprite : m_sprites)
+    {
         identifierList.emplace_back(idAndSprite.first);
     }
 
@@ -110,7 +112,7 @@ void SpriteManager::SpriteSlots(uint32_t slots)
 {
     m_spriteSlots = slots;
 
-    // Remove excess sprites if limit was lowered
+
     while (m_sprites.size() > slots)
     {
         m_spriteIdentifiers.erase(m_sprites.front().first);
@@ -140,5 +142,5 @@ auto SpriteManager::GetLowestFreeIdentifier() -> SpriteIdentifier
     return lowestId + 1;
 }
 
-} // namespace UserSprites
-} // namespace libprojectM
+}
+}

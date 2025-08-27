@@ -1,32 +1,4 @@
-/**
-* projectM -- Milkdrop-esque visualisation SDK
-* Copyright (C)2003-2019 projectM Team
-*
-* This library is free software; you can redistribute it and/or
-* modify it under the terms of the GNU Lesser General Public
-* License as published by the Free Software Foundation; either
-* version 2.1 of the License, or (at your option) any later version.
-*
-* This library is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-* Lesser General Public License for more details.
-*
-* You should have received a copy of the GNU Lesser General Public
-* License along with this library; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-* See 'LICENSE.txt' included within this release
-*
-* projectM-sdl
-* This is an implementation of projectM using libSDL2
-*
-* pmSDL.cpp
-* Authors: Created by Mischa Spiegelmock on 2017-09-18.
-*
-*
-* experimental Stereoscopic SBS driver functionality by
-*	RobertPancoast77@gmail.com
-*/
+
 
 #include "pmSDL.hpp"
 
@@ -51,7 +23,7 @@ projectMSDL::~projectMSDL()
     _projectM = nullptr;
 }
 
-/* Stretch projectM across multiple monitors */
+
 void projectMSDL::stretchMonitors()
 {
     int displayCount = SDL_GetNumVideoDisplays();
@@ -100,7 +72,7 @@ void projectMSDL::stretchMonitors()
     }
 }
 
-/* Moves projectM to the next monitor */
+
 void projectMSDL::nextMonitor()
 {
     int displayCount = SDL_GetNumVideoDisplays();
@@ -142,12 +114,12 @@ void projectMSDL::toggleFullScreen()
 
 void projectMSDL::scrollHandler(SDL_Event* sdl_evt)
 {
-    // handle mouse scroll wheel - up++
+
     if (sdl_evt->wheel.y > 0)
     {
         projectm_playlist_play_previous(_playlist, true);
     }
-    // handle mouse scroll wheel - down--
+
     if (sdl_evt->wheel.y < 0)
     {
         projectm_playlist_play_next(_playlist, true);
@@ -159,13 +131,13 @@ void projectMSDL::keyHandler(SDL_Event* sdl_evt)
     SDL_Keymod sdl_mod = (SDL_Keymod) sdl_evt->key.keysym.mod;
     SDL_Keycode sdl_keycode = sdl_evt->key.keysym.sym;
 
-    // Left or Right Gui or Left Ctrl
+
     if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
     {
         keymod = true;
     }
 
-    // handle keyboard input (for our app first, then projectM)
+
     switch (sdl_keycode)
     {
         case SDLK_a:
@@ -175,7 +147,7 @@ void projectMSDL::keyHandler(SDL_Event* sdl_evt)
         case SDLK_q:
             if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
             {
-                // cmd/ctrl-q = quit
+
                 done = 1;
                 return;
             }
@@ -185,57 +157,57 @@ void projectMSDL::keyHandler(SDL_Event* sdl_evt)
             if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
             {
                 toggleAudioInput();
-                return; // handled
+                return;
             }
             break;
 
         case SDLK_s:
             if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
             {
-                // command-s: [s]tretch monitors
-                // Stereo requires fullscreen
+
+
 #if !STEREOSCOPIC_SBS
                 if (!this->stretch)
-                { // if stretching is not already enabled, enable it.
+                {
                     stretchMonitors();
                     this->stretch = true;
                 }
                 else
                 {
-                    toggleFullScreen(); // else, just toggle full screen so we leave stretch mode.
+                    toggleFullScreen();
                     this->stretch = false;
                 }
 #endif
-                return; // handled
+                return;
             }
 
         case SDLK_m:
             if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
             {
-                // command-m: change [m]onitor
-                // Stereo requires fullscreen
+
+
 #if !STEREOSCOPIC_SBS
                 nextMonitor();
 #endif
-                this->stretch = false; // if we are switching monitors, ensure we disable monitor stretching.
-                return;                // handled
+                this->stretch = false;
+                return;
             }
 
         case SDLK_f:
             if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
             {
-                // command-f: fullscreen
-                // Stereo requires fullscreen
+
+
 #if !STEREOSCOPIC_SBS
                 toggleFullScreen();
 #endif
-                this->stretch = false; // if we are toggling fullscreen, ensure we disable monitor stretching.
-                return;                // handled
+                this->stretch = false;
+                return;
             }
             break;
 
         case SDLK_r:
-            // Use playlist shuffle to randomize.
+
             projectm_playlist_set_shuffle(_playlist, true);
             projectm_playlist_play_next(_playlist, true);
             projectm_playlist_set_shuffle(_playlist, _shuffle);
@@ -266,7 +238,6 @@ void projectMSDL::keyHandler(SDL_Event* sdl_evt)
             projectm_set_preset_locked(_projectM, !projectm_get_preset_locked(_projectM));
             UpdateWindowTitle();
             break;
-
     }
 }
 
@@ -274,7 +245,7 @@ void projectMSDL::addFakePCM()
 {
     int i;
     int16_t pcm_data[2 * 512];
-    /** Produce some fake PCM data to stuff into projectM */
+
     for (i = 0; i < 512; i++)
     {
         if (i % 2 == 0)
@@ -294,7 +265,7 @@ void projectMSDL::addFakePCM()
         }
     }
 
-    /** Add the waveform data */
+
     projectm_pcm_add_int16(_projectM, pcm_data, 512, PROJECTM_STEREO);
 }
 
@@ -303,7 +274,7 @@ void projectMSDL::resize(unsigned int width_, unsigned int height_)
     _width = width_;
     _height = height_;
 
-    // Hide cursor if window size equals desktop size
+
     SDL_DisplayMode dm;
     if (SDL_GetDesktopDisplayMode(0, &dm) == 0)
     {
@@ -349,15 +320,15 @@ void projectMSDL::pollEvent()
             case SDL_MOUSEBUTTONDOWN:
                 if (evt.button.button == SDL_BUTTON_LEFT)
                 {
-                    // if it's the first mouse down event (since mouse up or since SDL was launched)
+
                     if (!mouseDown)
                     {
-                        // Get mouse coorindates when you click.
+
                         SDL_GetMouseState(&mousex, &mousey);
-                        // Scale those coordinates. libProjectM supports a scale of 0.1 instead of absolute pixel coordinates.
+
                         mousexscale = (mousex / (float) _width);
                         mouseyscale = ((_height - mousey) / (float) _height);
-                        // Touch. By not supplying a touch type, we will default to random.
+
                         touch(mousexscale, mouseyscale, mousepressure);
                         mouseDown = true;
                     }
@@ -366,7 +337,7 @@ void projectMSDL::pollEvent()
                 {
                     mouseDown = false;
 
-                    // Keymod = Left or Right Gui or Left Ctrl. This is a shortcut to remove all waveforms.
+
                     if (keymod)
                     {
                         touchDestroyAll();
@@ -374,14 +345,14 @@ void projectMSDL::pollEvent()
                         break;
                     }
 
-                    // Right Click
+
                     SDL_GetMouseState(&mousex, &mousey);
 
-                    // Scale those coordinates. libProjectM supports a scale of 0.1 instead of absolute pixel coordinates.
+
                     mousexscale = (mousex / (float) _width);
                     mouseyscale = ((_height - mousey) / (float) _height);
 
-                    // Destroy at the coordinates we clicked.
+
                     touchDestroy(mousexscale, mouseyscale);
                 }
                 break;
@@ -396,20 +367,20 @@ void projectMSDL::pollEvent()
         }
     }
 
-    // Handle dragging your waveform when mouse is down.
+
     if (mouseDown)
     {
-        // Get mouse coordinates when you click.
+
         SDL_GetMouseState(&mousex, &mousey);
-        // Scale those coordinates. libProjectM supports a scale of 0.1 instead of absolute pixel coordinates.
+
         mousexscale = (mousex / (float) _width);
         mouseyscale = ((_height - mousey) / (float) _height);
-        // Drag Touch.
+
         touchDrag(mousexscale, mouseyscale, mousepressure);
     }
 }
 
-// This touches the screen to generate a waveform at X / Y.
+
 void projectMSDL::touch(float x, float y, int pressure, int touchtype)
 {
 #ifdef PROJECTM_TOUCH_ENABLED
@@ -417,19 +388,19 @@ void projectMSDL::touch(float x, float y, int pressure, int touchtype)
 #endif
 }
 
-// This moves the X Y of your existing waveform that was generated by a touch (only if you held down your click and dragged your mouse around).
+
 void projectMSDL::touchDrag(float x, float y, int pressure)
 {
     projectm_touch_drag(_projectM, x, y, pressure);
 }
 
-// Remove waveform at X Y
+
 void projectMSDL::touchDestroy(float x, float y)
 {
     projectm_touch_destroy(_projectM, x, y);
 }
 
-// Remove all waveforms
+
 void projectMSDL::touchDestroyAll()
 {
     projectm_touch_destroy_all(_projectM);

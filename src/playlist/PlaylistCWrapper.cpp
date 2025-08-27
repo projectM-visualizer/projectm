@@ -66,11 +66,11 @@ void PlaylistCWrapper::OnPresetSwitchFailed(const char* presetFilename, const ch
 
     if (lastDirection != NavigationDirection::Last)
     {
-        // Don't let the user go back to a broken preset.
+
         playlist->RemoveLastHistoryEntry();
     }
 
-    // Preset switch may fail due to broken presets, retry a few times before giving up.
+
     if (playlist->m_presetSwitchFailedCount >= playlist->m_presetSwitchRetryCount)
     {
         if (playlist->m_presetSwitchFailedEventCallback != nullptr)
@@ -167,8 +167,8 @@ auto PlaylistCWrapper::GetLastNavigationDirection() const -> PlaylistCWrapper::N
     return m_lastNavigationDirection;
 }
 
-} // namespace Playlist
-} // namespace libprojectM
+}
+}
 
 auto playlist_handle_to_instance(projectm_playlist_handle instance) -> libprojectM::Playlist::PlaylistCWrapper*
 {
@@ -263,7 +263,7 @@ auto projectm_playlist_items(projectm_playlist_handle instance, uint32_t start, 
 
     if (start >= items.size())
     {
-        auto* array = new char* [1] {};
+        auto* array = new char*[1]{};
         return array;
     }
 
@@ -411,7 +411,7 @@ uint32_t projectm_playlist_remove_presets(projectm_playlist_handle instance, uin
     {
         if (!playlist->RemoveItem(index))
         {
-            // No need to iterate further, as the end of the playlist was reached.
+
             break;
         }
 

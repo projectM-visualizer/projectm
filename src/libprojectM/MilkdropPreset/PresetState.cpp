@@ -36,7 +36,7 @@ PresetState::~PresetState()
 void PresetState::Initialize(::libprojectM::PresetFileParser& parsedFile)
 {
 
-    // General:
+
     decay = parsedFile.GetFloat("fDecay", decay);
     gammaAdj = parsedFile.GetFloat("fGammaAdj", gammaAdj);
     videoEchoZoom = parsedFile.GetFloat("fVideoEchoZoom", videoEchoZoom);
@@ -56,7 +56,7 @@ void PresetState::Initialize(::libprojectM::PresetFileParser& parsedFile)
     blur3Max = parsedFile.GetFloat("b3x", blur3Max);
     blur1EdgeDarken = parsedFile.GetFloat("b1ed", blur1EdgeDarken);
 
-    // Wave:
+
     waveMode = parsedFile.GetInt("nWaveMode", waveMode);
     additiveWaves = parsedFile.GetBool("bAdditiveWaves", additiveWaves);
     waveDots = parsedFile.GetBool("bWaveDots", waveDots);
@@ -82,10 +82,10 @@ void PresetState::Initialize(::libprojectM::PresetFileParser& parsedFile)
     mvR = parsedFile.GetFloat("mv_r", mvR);
     mvG = parsedFile.GetFloat("mv_g", mvG);
     mvB = parsedFile.GetFloat("mv_b", mvB);
-    mvA = parsedFile.GetBool("bMotionVectorsOn", false) ? 1.0f : 0.0f; // for backwards compatibility
+    mvA = parsedFile.GetBool("bMotionVectorsOn", false) ? 1.0f : 0.0f;
     mvA = parsedFile.GetFloat("mv_a", mvA);
 
-    // Motion:
+
     zoom = parsedFile.GetFloat("zoom", zoom);
     rot = parsedFile.GetFloat("rot", rot);
     rotCX = parsedFile.GetFloat("cx", rotCX);
@@ -101,7 +101,7 @@ void PresetState::Initialize(::libprojectM::PresetFileParser& parsedFile)
     warpScale = parsedFile.GetFloat("fWarpScale", warpScale);
     zoomExponent = parsedFile.GetFloat("fZoomExponent", zoomExponent);
 
-    // Borders:
+
     outerBorderSize = parsedFile.GetFloat("ob_size", outerBorderSize);
     outerBorderR = parsedFile.GetFloat("ob_r", outerBorderR);
     outerBorderG = parsedFile.GetFloat("ob_g", outerBorderG);
@@ -113,17 +113,17 @@ void PresetState::Initialize(::libprojectM::PresetFileParser& parsedFile)
     innerBorderB = parsedFile.GetFloat("ib_b", innerBorderB);
     innerBorderA = parsedFile.GetFloat("ib_a", innerBorderA);
 
-    // Versions:
+
     presetVersion = parsedFile.GetInt("MILKDROP_PRESET_VERSION", presetVersion);
     if (presetVersion < 200)
     {
-        // Milkdrop 1.x did not use shaders.
+
         warpShaderVersion = 0;
         compositeShaderVersion = 0;
     }
     else if (presetVersion == 200)
     {
-        // Milkdrop 2.0 only supported a single shader language level variable.
+
         warpShaderVersion = parsedFile.GetInt("PSVERSION", warpShaderVersion);
         compositeShaderVersion = parsedFile.GetInt("PSVERSION", compositeShaderVersion);
     }
@@ -133,12 +133,12 @@ void PresetState::Initialize(::libprojectM::PresetFileParser& parsedFile)
         compositeShaderVersion = parsedFile.GetInt("PSVERSION_COMP", compositeShaderVersion);
     }
 
-    // Code:
+
     perFrameInitCode = parsedFile.GetCode("per_frame_init_");
     perFrameCode = parsedFile.GetCode("per_frame_");
     perPixelCode = parsedFile.GetCode("per_pixel_");
 
-    // Custom waveform code:
+
     for (int i = 0; i < CustomWaveformCount; i++)
     {
         std::string const wavePrefix = "wave_" + std::to_string(i) + "_";
@@ -147,7 +147,7 @@ void PresetState::Initialize(::libprojectM::PresetFileParser& parsedFile)
         customWavePerPointCode[i] = parsedFile.GetCode(wavePrefix + "per_point");
     }
 
-    // Custom shape code:
+
     for (int i = 0; i < CustomShapeCount; i++)
     {
         std::string const shapePrefix = "shape_" + std::to_string(i) + "_";
@@ -155,7 +155,7 @@ void PresetState::Initialize(::libprojectM::PresetFileParser& parsedFile)
         customShapePerFrameCode[i] = parsedFile.GetCode(shapePrefix + "per_frame");
     }
 
-    // Shader code:
+
     warpShader = parsedFile.GetCode("warp_");
     compositeShader = parsedFile.GetCode("comp_");
 }
@@ -169,7 +169,7 @@ void PresetState::LoadShaders()
     {
         untexturedShaderShared = std::make_shared<Renderer::Shader>();
         untexturedShaderShared->CompileProgram(staticShaders->GetUntexturedDrawVertexShader(),
-                                        staticShaders->GetUntexturedDrawFragmentShader());
+                                               staticShaders->GetUntexturedDrawFragmentShader());
         renderContext.shaderCache->Insert("milkdrop_generic_untextured", untexturedShaderShared);
     }
     untexturedShader = untexturedShaderShared;
@@ -179,11 +179,11 @@ void PresetState::LoadShaders()
     {
         texturedShaderShared = std::make_shared<Renderer::Shader>();
         texturedShaderShared->CompileProgram(staticShaders->GetTexturedDrawVertexShader(),
-                                      staticShaders->GetTexturedDrawFragmentShader());
+                                             staticShaders->GetTexturedDrawFragmentShader());
         renderContext.shaderCache->Insert("milkdrop_generic_textured", texturedShaderShared);
     }
     texturedShader = texturedShaderShared;
 }
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

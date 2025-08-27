@@ -1,8 +1,4 @@
-/**
- * @file PresetState.hpp
- *
- * Declares a class that hold the variable states for a single preset.
- */
+
 #pragma once
 
 #include "Constants.hpp"
@@ -26,14 +22,9 @@ class PresetFileParser;
 namespace MilkdropPreset {
 
 
-using BlendableFloat = float; //!< Currently a placeholder to mark blendable values.
+using BlendableFloat = float;
 
-/**
- * @brief Hold the current preset state and initial values.
- *
- * This is the base state class which is filled on preset load and updated between frames
- * to reflect the current state of rendering.
- */
+
 class PresetState
 {
 public:
@@ -41,16 +32,10 @@ public:
 
     ~PresetState();
 
-    /**
-     * @brief Loads the initial values and code from the preset file.
-     * @param parsedFile The file parser with the preset data.
-     */
+
     void Initialize(::libprojectM::PresetFileParser& parsedFile);
 
-    /**
-     * @brief Loads or compiles the generic shaders.
-     * Call after setting renderContext.
-     */
+
     void LoadShaders();
 
     BlendableFloat gammaAdj{2.0f};
@@ -128,44 +113,44 @@ public:
     BlendableFloat blur3Max{1.0f};
     BlendableFloat blur1EdgeDarken{0.25f};
 
-    int presetVersion{100};        //!< Value of MILKDROP_PRESET_VERSION in preset files.
-    int warpShaderVersion{2};      //!< PSVERSION or PSVERSION_WARP.
-    int compositeShaderVersion{2}; //!< PSVERSION or PSVERSION_COMP.
+    int presetVersion{100};
+    int warpShaderVersion{2};
+    int compositeShaderVersion{2};
 
-    std::array<float, 4> hueRandomOffsets; //!< Per-preset constant offsets for the hue animation
+    std::array<float, 4> hueRandomOffsets;
 
-    projectm_eval_mem_buffer globalMemory{nullptr};  //!< gmegabuf data. Using per-frame buffers in projectM to reduce interference.
-    double globalRegisters[100]{};                   //!< Global reg00-reg99 variables.
-    std::array<double, QVarCount> frameQVariables{}; //!< Q variables after per-frame code evaluation.
+    projectm_eval_mem_buffer globalMemory{nullptr};
+    double globalRegisters[100]{};
+    std::array<double, QVarCount> frameQVariables{};
 
-    libprojectM::Audio::FrameAudioData audioData; //!< Holds audio/spectrum data and values for beat detection.
-    Renderer::RenderContext renderContext;        //!< Current renderer state data like viewport size and generic shaders.
+    libprojectM::Audio::FrameAudioData audioData;
+    Renderer::RenderContext renderContext;
 
-    std::string perFrameInitCode; //!< Preset init code, run once on load.
-    std::string perFrameCode;     //!< Preset per-frame code, run once at the start of each frame.
-    std::string perPixelCode;     //!< Preset per-pixel/per-vertex code, run once per warp mesh vertex.
+    std::string perFrameInitCode;
+    std::string perFrameCode;
+    std::string perPixelCode;
 
-    std::array<std::string, CustomWaveformCount> customWaveInitCode;     //!< Custom wave init code, run once on load.
-    std::array<std::string, CustomWaveformCount> customWavePerFrameCode; //!< Custom wave per-frame code, run once after the per-frame code.
-    std::array<std::string, CustomWaveformCount> customWavePerPointCode; //!< Custom wave per-point code, run once per waveform vertex.
+    std::array<std::string, CustomWaveformCount> customWaveInitCode;
+    std::array<std::string, CustomWaveformCount> customWavePerFrameCode;
+    std::array<std::string, CustomWaveformCount> customWavePerPointCode;
 
-    std::array<std::string, CustomShapeCount> customShapeInitCode;     //!< Custom shape init code, run once on load.
-    std::array<std::string, CustomShapeCount> customShapePerFrameCode; //!< Custom shape per-frame code, run once per shape instance.
+    std::array<std::string, CustomShapeCount> customShapeInitCode;
+    std::array<std::string, CustomShapeCount> customShapePerFrameCode;
 
-    std::string warpShader;      //!< Warp shader code.
-    std::string compositeShader; //!< Composite shader code.
+    std::string warpShader;
+    std::string compositeShader;
 
-    std::weak_ptr<Renderer::Shader> untexturedShader; //!< Shader used to draw untextured primitives, e.g. waveforms.
-    std::weak_ptr<Renderer::Shader> texturedShader;   //!< Shader used to draw textured primitives, e.g. textured shapes and the warp mesh.
+    std::weak_ptr<Renderer::Shader> untexturedShader;
+    std::weak_ptr<Renderer::Shader> texturedShader;
 
-    std::weak_ptr<Renderer::Texture> mainTexture; //!< A weak reference to the main texture in the preset framebuffer.
-    BlurTexture blurTexture;                      //!< The blur textures used in this preset. Contents depend on the shader code using GetBlurX().
+    std::weak_ptr<Renderer::Texture> mainTexture;
+    BlurTexture blurTexture;
 
-    std::map<int, Renderer::TextureSamplerDescriptor> randomTextureDescriptors; //!< Descriptors for random texture IDs. Should be the same across both warp and comp shaders.
+    std::map<int, Renderer::TextureSamplerDescriptor> randomTextureDescriptors;
 
-    static const glm::mat4 orthogonalProjection;        //!< Projection matrix that transforms DirectX screen-space coordinates into the OpenGL coordinate frame.
-    static const glm::mat4 orthogonalProjectionFlipped; //!< Projection matrix that transforms DirectX screen-space coordinates into the OpenGL coordinate frame.
+    static const glm::mat4 orthogonalProjection;
+    static const glm::mat4 orthogonalProjectionFlipped;
 };
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

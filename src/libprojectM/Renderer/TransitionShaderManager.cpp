@@ -31,7 +31,7 @@ auto TransitionShaderManager::RandomTransition() -> std::shared_ptr<Shader>
 auto TransitionShaderManager::CompileTransitionShader(const std::string& shaderBodyCode) -> std::shared_ptr<Shader>
 {
 #ifdef USE_GLES
-    // GLES also requires a precision specifier for variables and 3D samplers
+
     constexpr char versionHeader[] = "#version 300 es\n\nprecision mediump float;\nprecision mediump sampler3D;\n";
 #else
     constexpr char versionHeader[] = "#version 330\n\n";
@@ -52,10 +52,10 @@ auto TransitionShaderManager::CompileTransitionShader(const std::string& shaderB
     }
     catch (const ShaderException&)
     {
-        // ToDo: Log proper shader compile error once logging API is in place
+
         return {};
     }
 }
 
-} // namespace Renderer
-} // namespace libprojectM
+}
+}

@@ -46,6 +46,6 @@ void Circle::GenerateVertices(const PresetState& presetState,
     }
 }
 
-} // namespace Waveforms
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}
+}

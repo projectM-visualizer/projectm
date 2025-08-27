@@ -9,9 +9,7 @@ namespace libprojectM {
 namespace MilkdropPreset {
 
 
-/**
- * @brief Renders a border around the screen.
- */
+
 class Border : public Renderer::RenderItem
 {
 public:
@@ -21,15 +19,12 @@ public:
 
     void InitVertexAttrib() override;
 
-    /**
-     * Draws the border.
-     * @param presetPerFrameContext The per-frame context variables.
-     */
+
     void Draw(const PerFrameContext& presetPerFrameContext);
 
 private:
-    PresetState& m_presetState; //!< The global preset state.
+    PresetState& m_presetState;
 };
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

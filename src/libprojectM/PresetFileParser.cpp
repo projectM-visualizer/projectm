@@ -37,8 +37,8 @@ auto PresetFileParser::Read(std::istream& presetStream) -> bool
         return false;
     }
 
-    size_t startPos{0}; //!< Starting position of current line
-    size_t pos{0};      //!< Current read position
+    size_t startPos{0};
+    size_t pos{0};
 
     auto parseLineIfDataAvailable = [this, &pos, &startPos, &presetFileContents]() {
         if (pos > startPos)
@@ -55,13 +55,13 @@ auto PresetFileParser::Read(std::istream& presetStream) -> bool
         {
             case '\r':
             case '\n':
-                // EOL, skip over CRLF
+
                 parseLineIfDataAvailable();
                 startPos = pos + 1;
                 break;
 
             case '\0':
-                // Null char is not expected. Could be a random binary file.
+
                 return false;
         }
 
@@ -77,8 +77,8 @@ auto PresetFileParser::GetCode(const std::string& keyPrefix) const -> std::strin
 {
     auto lowerKey = ToLower(keyPrefix);
 
-    std::stringstream code;                        //!< The parsed code
-    std::string key(lowerKey.length() + 5, '\0'); //!< Allocate a string that can hold up to 5 digits.
+    std::stringstream code;
+    std::string key(lowerKey.length() + 5, '\0');
 
     key.replace(0, lowerKey.length(), lowerKey);
 
@@ -92,7 +92,7 @@ auto PresetFileParser::GetCode(const std::string& keyPrefix) const -> std::strin
 
         auto line = m_presetValues.at(key);
 
-        // Remove backtick char in shader code
+
         if (!line.empty() && line.at(0) == '`')
         {
             line.erase(0, 1);
@@ -162,20 +162,20 @@ const std::map<std::string, std::string>& PresetFileParser::PresetValues() const
 
 void PresetFileParser::ParseLine(const std::string& line)
 {
-    // Search for first delimiter, either space or equal
+
     auto varNameDelimiterPos = line.find_first_of(" =");
 
     if (varNameDelimiterPos == std::string::npos || varNameDelimiterPos == 0)
     {
-        // Empty line, delimiter at start of line or no delimiter found, skip.
+
         return;
     }
 
-    // Convert key to lower case, as INI functions are not case-sensitive.
+
     std::string varName(ToLower(std::string(line.begin(), line.begin() + varNameDelimiterPos)));
     std::string value(line.begin() + varNameDelimiterPos + 1, line.end());
 
-    // Only add first occurrence to mimic Milkdrop behaviour
+
     if (!varName.empty() && m_presetValues.find(varName) == m_presetValues.end())
     {
         m_presetValues.emplace(std::move(varName), std::move(value));
@@ -185,10 +185,9 @@ void PresetFileParser::ParseLine(const std::string& line)
 auto PresetFileParser::ToLower(std::string str) -> std::string
 {
     std::transform(str.begin(), str.end(), str.begin(),
-                   [](unsigned char c){ return std::tolower(c); }
-    );
+                   [](unsigned char c) { return std::tolower(c); });
 
     return str;
 }
 
-} // namespace libprojectM
+}

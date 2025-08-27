@@ -1,23 +1,4 @@
-/**
-* projectM -- Milkdrop-esque visualisation SDK
-* Copyright (C)2003-2004 projectM Team
-*
-* This library is free software; you can redistribute it and/or
-* modify it under the terms of the GNU Lesser General Public
-* License as published by the Free Software Foundation; either
-* version 2.1 of the License, or (at your option) any later version.
-*
-* This library is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-* Lesser General Public License for more details.
-*
-* You should have received a copy of the GNU Lesser General Public
-* License along with this library; if not, write to the Free Software
-* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-* See 'LICENSE.txt' included within this release
-*
-*/
+
 
 #include "ProjectM.hpp"
 
@@ -29,8 +10,8 @@
 
 #include <Renderer/CopyTexture.hpp>
 #include <Renderer/PresetTransition.hpp>
-#include <Renderer/TextureManager.hpp>
 #include <Renderer/ShaderCache.hpp>
+#include <Renderer/TextureManager.hpp>
 #include <Renderer/TransitionShaderManager.hpp>
 
 #include <UserSprites/SpriteManager.hpp>
@@ -45,7 +26,7 @@ ProjectM::ProjectM()
 
 ProjectM::~ProjectM()
 {
-    // Can't use "=default" in the header due to unique_ptr requiring the actual type declarations.
+
 }
 
 void ProjectM::PresetSwitchRequestedEvent(bool) const
@@ -93,25 +74,25 @@ void ProjectM::ResetTextures()
     m_textureManager = std::make_unique<Renderer::TextureManager>(m_textureSearchPaths);
 }
 
-void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
+void ProjectM::RenderFrame(uint32_t targetFramebufferObject )
 {
-    // Don't render if window area is zero.
+
     if (m_windowWidth == 0 || m_windowHeight == 0)
     {
         return;
     }
 
-    // Update FPS and other timer values.
+
     m_timeKeeper->UpdateTimers();
 
-    // Update and retrieve audio data
+
     m_audioStorage.UpdateFrameAudioData(m_timeKeeper->SecondsSinceLastFrame(), m_frameCount);
     auto audioData = m_audioStorage.GetFrameAudioData();
 
-    // Check if the preset isn't locked, and we've not already notified the user
+
     if (!m_presetChangeNotified)
     {
-        // If preset is done and we're not already switching
+
         if (m_timeKeeper->PresetProgressA() >= 1.0 && !m_timeKeeper->IsSmoothing())
         {
             m_presetChangeNotified = true;
@@ -127,7 +108,7 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
         }
     }
 
-    // If no preset is active, load the idle preset.
+
     if (!m_activePreset)
     {
         LoadIdlePreset();
@@ -141,7 +122,7 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
 
     if (m_timeKeeper->IsSmoothing() && m_transitioningPreset != nullptr)
     {
-        // ToDo: check if new preset is loaded.
+
 
         if (m_timeKeeper->SmoothRatio() >= 1.0)
         {
@@ -166,7 +147,7 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
     }
 
 
-    // ToDo: Call the to-be-implemented render method in Renderer
+
     m_activePreset->RenderFrame(audioData, renderContext);
 
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(targetFramebufferObject));
@@ -180,8 +161,8 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
         m_textureCopier->Draw(m_activePreset->OutputTexture(), false, false);
     }
 
-    // Draw user sprites
-    m_spriteManager->Draw(audioData, renderContext, targetFramebufferObject, { m_activePreset, m_transitioningPreset });
+
+    m_spriteManager->Draw(audioData, renderContext, targetFramebufferObject, {m_activePreset, m_transitioningPreset});
 
     m_frameCount++;
     m_previousFrameVolume = audioData.vol;
@@ -189,16 +170,16 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
 
 void ProjectM::Initialize()
 {
-    /** Initialise start time */
+
     m_timeKeeper = std::make_unique<TimeKeeper>(m_presetDuration,
                                                 m_softCutDuration,
                                                 m_hardCutDuration,
                                                 m_easterEgg);
 
-    /** Nullify frame stash */
 
-    /** Initialise per-pixel matrix calculations */
-    /** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
+
+
+
     m_textureManager = std::make_unique<Renderer::TextureManager>(m_textureSearchPaths);
     m_shaderCache = std::make_unique<Renderer::ShaderCache>();
 
@@ -210,7 +191,7 @@ void ProjectM::Initialize()
 
     m_presetFactoryManager->initialize();
 
-    /* Set the seed to the current time in seconds */
+
     srand(time(nullptr));
 
     LoadIdlePreset();
@@ -220,13 +201,13 @@ void ProjectM::Initialize()
 
 void ProjectM::LoadIdlePreset()
 {
-    LoadPresetFile("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk", false);
+    LoadPresetFile("idle:
     assert(m_activePreset);
 }
 
 void ProjectM::SetWindowSize(uint32_t width, uint32_t height)
 {
-    /** Stash the new dimensions */
+
     m_windowWidth = width;
     m_windowHeight = height;
 }
@@ -242,7 +223,7 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
 
     preset->Initialize(GetRenderContext());
 
-    // If already in a transition, force immediate completion.
+
     if (m_transitioningPreset != nullptr)
     {
         m_activePreset = std::move(m_transitioningPreset);
@@ -314,8 +295,8 @@ auto ProjectM::UserSpriteIdentifiers() const -> std::vector<uint32_t>
 
 void ProjectM::SetPresetLocked(bool locked)
 {
-    // ToDo: Add a preset switch timer separate from the display timer and reset to 0 when
-    //       disabling the preset switch lock.
+
+
     m_presetLocked = locked;
     m_presetChangeNotified = locked;
 }
@@ -439,7 +420,7 @@ void ProjectM::SetMeshSize(uint32_t meshResolutionX, uint32_t meshResolutionY)
     m_meshX = meshResolutionX;
     m_meshY = meshResolutionY;
 
-    // Need multiples of two, otherwise will not render a horizontal and/or vertical bar in the center of the warp mesh.
+
     if (m_meshX % 2 == 1)
     {
         m_meshX++;
@@ -450,7 +431,7 @@ void ProjectM::SetMeshSize(uint32_t meshResolutionX, uint32_t meshResolutionY)
         m_meshY++;
     }
 
-    // Constrain per-pixel mesh size to sensible limits
+
     m_meshX = std::max(8u, std::min(400u, m_meshX));
     m_meshY = std::max(8u, std::min(400u, m_meshY));
 }
@@ -462,22 +443,22 @@ auto ProjectM::PCM() -> libprojectM::Audio::PCM&
 
 void ProjectM::Touch(float, float, int, int)
 {
-    // UNIMPLEMENTED
+
 }
 
 void ProjectM::TouchDrag(float, float, int)
 {
-    // UNIMPLEMENTED
+
 }
 
 void ProjectM::TouchDestroy(float, float)
 {
-    // UNIMPLEMENTED
+
 }
 
 void ProjectM::TouchDestroyAll()
 {
-    // UNIMPLEMENTED
+
 }
 
 auto ProjectM::GetRenderContext() -> Renderer::RenderContext
@@ -510,4 +491,4 @@ auto ProjectM::GetRenderContext() -> Renderer::RenderContext
     return ctx;
 }
 
-} // namespace libprojectM
+}

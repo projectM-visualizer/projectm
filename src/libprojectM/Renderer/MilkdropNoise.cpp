@@ -98,10 +98,10 @@ auto MilkdropNoise::HighQualityVolume() -> std::shared_ptr<Texture>
 auto MilkdropNoise::GetPreferredInternalFormat() -> int
 {
 #ifndef USE_GLES
-    // We use GL_BGRA, as this is the best general-use format according to Khronos.
+
     return GL_BGRA;
 #else
-    // GLES only supports GL_RGB and GL_RGBA, so we always use the latter.
+
     return GL_RGBA;
 #endif
 }
@@ -115,7 +115,7 @@ auto MilkdropNoise::generate2D(int size, int zoomFactor) -> std::vector<uint32_t
     std::vector<uint32_t> textureData;
     textureData.resize(size * size);
 
-    // write to the bits...
+
     auto dst = textureData.data();
     auto RANGE = (zoomFactor > 1) ? 216 : 256;
     for (auto y = 0; y < size; y++)
@@ -127,7 +127,7 @@ auto MilkdropNoise::generate2D(int size, int zoomFactor) -> std::vector<uint32_t
                      (static_cast<uint32_t>((randomDistribution(randomGenerator) % RANGE) + RANGE / 2) << 8) |
                      (static_cast<uint32_t>((randomDistribution(randomGenerator) % RANGE) + RANGE / 2));
         }
-        // swap some pixels randomly, to improve 'randomness'
+
         for (auto x = 0; x < size; x++)
         {
             auto x1 = randomDistribution(randomGenerator) % size;
@@ -139,12 +139,12 @@ auto MilkdropNoise::generate2D(int size, int zoomFactor) -> std::vector<uint32_t
         dst += size;
     }
 
-    // smoothing
+
     if (zoomFactor > 1)
     {
         dst = textureData.data();
 
-        // first go ACROSS, blending cubically on X, but only on the main lines.
+
         for (auto y = 0; y < size; y += zoomFactor)
         {
             for (auto x = 0; x < size; x++)
@@ -167,7 +167,7 @@ auto MilkdropNoise::generate2D(int size, int zoomFactor) -> std::vector<uint32_t
             }
         }
 
-        // next go down, doing cubic interp along Y, on every line.
+
         for (auto x = 0; x < size; x++)
         {
             for (auto y = 0; y < size; y++)
@@ -203,7 +203,7 @@ auto MilkdropNoise::generate3D(int size, int zoomFactor) -> std::vector<uint32_t
     std::vector<uint32_t> textureData;
     textureData.resize(size * size * size);
 
-    // write to the bits...
+
     int RANGE = (zoomFactor > 1) ? 216 : 256;
     for (auto z = 0; z < size; z++)
     {
@@ -217,7 +217,7 @@ auto MilkdropNoise::generate3D(int size, int zoomFactor) -> std::vector<uint32_t
                          ((static_cast<uint32_t>(randomDistribution(randomGenerator) % RANGE) + RANGE / 2) << 8) |
                          ((static_cast<uint32_t>(randomDistribution(randomGenerator) % RANGE) + RANGE / 2));
             }
-            // swap some pixels randomly, to improve 'randomness'
+
             for (auto x = 0; x < size; x++)
             {
                 auto x1 = randomDistribution(randomGenerator) % size;
@@ -230,10 +230,10 @@ auto MilkdropNoise::generate3D(int size, int zoomFactor) -> std::vector<uint32_t
         }
     }
 
-    // smoothing
+
     if (zoomFactor > 1)
     {
-        // first go ACROSS, blending cubically on X, but only on the main lines.
+
         auto dst = textureData.data();
         for (auto z = 0; z < size; z += zoomFactor)
         {
@@ -260,7 +260,7 @@ auto MilkdropNoise::generate3D(int size, int zoomFactor) -> std::vector<uint32_t
             }
         }
 
-        // next go down, doing cubic interp along Y, on the main slices.
+
         for (auto z = 0; z < size; z += zoomFactor)
         {
             for (auto x = 0; x < size; x++)
@@ -286,7 +286,7 @@ auto MilkdropNoise::generate3D(int size, int zoomFactor) -> std::vector<uint32_t
             }
         }
 
-        // next go through, doing cubic interp along Z, everywhere.
+
         for (auto x = 0; x < size; x++)
         {
             for (auto y = 0; y < size; y++)
@@ -353,5 +353,5 @@ uint32_t MilkdropNoise::dwCubicInterpolate(uint32_t y0, uint32_t y1, uint32_t y2
     return ret;
 }
 
-} // namespace Renderer
-} // namespace libprojectM
+}
+}

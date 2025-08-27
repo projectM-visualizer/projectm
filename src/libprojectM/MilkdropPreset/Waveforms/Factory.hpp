@@ -18,6 +18,6 @@ public:
     static auto Create(WaveformMode mode) -> std::unique_ptr<WaveformMath>;
 };
 
-} // namespace Waveforms
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}
+}

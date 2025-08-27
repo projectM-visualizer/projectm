@@ -33,12 +33,12 @@ void TextureSamplerDescriptor::Bind(GLint unit, const Shader& shader) const
         texture->Bind(unit, sampler);
 
         shader.SetUniformInt(std::string("sampler_" + m_samplerName).c_str(), unit);
-        // Might be setting this more than once if the texture is used with different wrap/filter modes, but this rarely happens.
+
         shader.SetUniformFloat4(std::string("texsize_" + m_sizeName).c_str(), {texture->Width(),
                                                                                texture->Height(),
                                                                                1.0f / static_cast<float>(texture->Width()),
                                                                                1.0f / static_cast<float>(texture->Height())});
-        // Bind shorthand random texture size uniform
+
         if (m_sizeName.substr(0, 4) == "rand" && m_sizeName.length() > 7 && m_sizeName.at(6) == '_')
         {
             shader.SetUniformFloat4(std::string("texsize_" + m_sizeName.substr(0, 6)).c_str(), {texture->Width(),
@@ -95,8 +95,8 @@ auto TextureSamplerDescriptor::SamplerDeclaration() const -> std::string
     declaration.append(m_samplerName);
     declaration.append(";\n");
 
-    // Add short sampler name for prefixed random textures.
-    // E.g. "sampler_rand00" if a sampler "sampler_rand00_smalltiled" was declared
+
+
     if (m_samplerName.substr(0, 4) == "rand" && m_samplerName.length() > 7 && m_samplerName.at(6) == '_')
     {
         declaration.append("uniform sampler2D sampler_");
@@ -123,8 +123,8 @@ auto TextureSamplerDescriptor::TexSizeDeclaration() const -> std::string
         declaration.append(m_sizeName);
         declaration.append(";\n");
 
-        // Add short texsize uniform for prefixed random textures.
-        // E.g. "texsize_rand00" if a sampler "sampler_rand00_smalltiled" was declared
+
+
         if (m_sizeName.substr(0, 4) == "rand" && m_sizeName.length() > 7 && m_sizeName.at(6) == '_')
         {
             declaration.append("uniform float4 texsize_");
@@ -146,7 +146,7 @@ void TextureSamplerDescriptor::TryUpdate(TextureManager& textureManager)
     auto desc = textureManager.GetTexture(m_samplerName);
     if (desc.Empty())
     {
-        // Only try once, then give up.
+
         m_updateFailed = true;
         return;
     }
@@ -155,5 +155,5 @@ void TextureSamplerDescriptor::TryUpdate(TextureManager& textureManager)
     m_sampler = desc.m_sampler;
 }
 
-} // namespace Renderer
-} // namespace libprojectM
+}
+}

@@ -8,7 +8,7 @@ namespace libprojectM {
 
 std::string PresetFactory::Protocol(const std::string& url, std::string& path)
 {
-    auto pos = url.find("://");
+    auto pos = url.find(":
 
     if (pos == std::string::npos)
     {
@@ -23,4 +23,4 @@ std::string PresetFactory::Protocol(const std::string& url, std::string& path)
     return url.substr(0, pos);
 }
 
-} // namespace libprojectM
+}

@@ -61,7 +61,7 @@ void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
 {
     std::locale loc;
 
-    // Now request the textures and descriptors from the texture manager.
+
     for (const auto& name : m_samplerNames)
     {
         std::string baseName = name;
@@ -72,7 +72,7 @@ void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
 
         std::string lowerCaseName = Utils::ToLower(baseName);
 
-        // The "main" and "blurX" textures are preset-specific and are not managed by TextureManager.
+
         if (lowerCaseName == "main")
         {
             Renderer::TextureSamplerDescriptor desc(presetState.mainTexture.lock(),
@@ -83,7 +83,7 @@ void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
             continue;
         }
 
-        // A few presets directly use the (undocumented) sampler name.
+
         if (lowerCaseName == "blur1")
         {
             UpdateMaxBlurLevel(BlurTexture::BlurLevel::Blur1);
@@ -100,17 +100,17 @@ void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
             continue;
         }
 
-        // Random textures need special treatment.
+
         if (lowerCaseName.length() >= 6 &&
             lowerCaseName.substr(0, 4) == "rand" && std::isdigit(lowerCaseName.at(4), loc) && std::isdigit(lowerCaseName.at(5), loc))
         {
-            // First look up the random texture index in the preset state so the texture matches between warp and composite shaders
+
             int randomSlot = -1;
             try
             {
                 randomSlot = std::stoi(lowerCaseName.substr(4, 2));
             }
-            catch (...) // Ignore any conversion errors.
+            catch (...)
             {
             }
 
@@ -118,38 +118,38 @@ void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
             {
                 if (presetState.randomTextureDescriptors.find(randomSlot) != presetState.randomTextureDescriptors.end())
                 {
-                    // Use existing texture descriptor.
+
                     m_textureSamplerDescriptors.push_back(presetState.randomTextureDescriptors.at(randomSlot));
                     continue;
                 }
 
-                // Slot empty, request a new random texture.
+
                 auto desc = presetState.renderContext.textureManager->GetRandomTexture(name);
 
-                // Also store a copy in preset state!
+
                 presetState.randomTextureDescriptors.insert({randomSlot, desc});
 
                 m_textureSamplerDescriptors.push_back(std::move(desc));
                 continue;
             }
 
-            // Fall through if slot number is out of range and treat as normal texture.
+
         }
 
         auto desc = presetState.renderContext.textureManager->GetTexture(name);
         m_textureSamplerDescriptors.push_back(std::move(desc));
     }
 
-    // Now that we have the textures, transpile the code.
+
     TranspileHLSLShader(presetState, m_preprocessedCode);
 
-    // Update blur texture level if shader was compiled successfully.
+
     presetState.blurTexture.SetRequiredBlurLevel(m_maxBlurLevelRequired);
 }
 
 void MilkdropShader::LoadVariables(const PresetState& presetState, const PerFrameContext& perFrameContext)
 {
-    // These are the inputs: http://www.geisswerks.com/milkdrop/milkdrop_preset_authoring.html#3f6
+
 
     auto floatTime = static_cast<float>(presetState.renderContext.time);
     auto timeSincePresetStartWrapped = floatTime - static_cast<int>(floatTime / 10000.0) * 10000;
@@ -239,7 +239,7 @@ void MilkdropShader::LoadVariables(const PresetState& presetState, const PerFram
 
     std::array<glm::mat4, 24> tempMatrices{};
 
-    // write matrices
+
     for (int i = 0; i < 20; i++)
     {
         glm::mat4 const rotationX = glm::rotate(glm::mat4(1.0f), m_randRotationCenters[i].x + m_randRotationSpeeds[i].x * floatTime, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -253,7 +253,7 @@ void MilkdropShader::LoadVariables(const PresetState& presetState, const PerFram
         tempMatrices[i] = rotationY * tempMatrices[i];
     }
 
-    // the last 4 are totally random, each frame
+
     for (int i = 20; i < 24; i++)
     {
         glm::mat4 const rotationX = glm::rotate(glm::mat4(1.0f), floatRand() * 6.28f, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -292,7 +292,7 @@ void MilkdropShader::LoadVariables(const PresetState& presetState, const PerFram
     m_shader.SetUniformMat3x4("rot_rand3", tempMatrices[22]);
     m_shader.SetUniformMat3x4("rot_rand4", tempMatrices[23]);
 
-    // set program uniform "_q[a-h]" values (_qa.x, _qa.y, _qa.z, _qa.w, _qb.x, _qb.y ... ) alias q[1-32]
+
     for (int i = 0; i < QVarCount; i += 4)
     {
         std::string varName = "_q";
@@ -303,11 +303,11 @@ void MilkdropShader::LoadVariables(const PresetState& presetState, const PerFram
                                                     presetState.frameQVariables[i + 3]});
     }
 
-    // Bind all texture and sampler descriptors. This includes the main and blur textures.
+
     GLint textureUnit{0};
     for (auto& desc : m_mainTextureDescriptors)
     {
-        // Update main texture, swaps every frame.
+
         desc.Texture(presetState.mainTexture);
         desc.Bind(textureUnit, m_shader);
         textureUnit++;
@@ -339,16 +339,16 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
 
     size_t found;
 
-    // Find "sampler_state" overrides and remove them first, as they're not supported by GLSL.
-    // The logic isn't totally fool-proof, but should work in general.
+
+
     found = program.find("sampler_state");
     while (found != std::string::npos)
     {
-        // Now go backwards and find the assignment
+
         found = program.rfind('=', found);
         auto startPos = found;
 
-        // Find closing brace and semicolon
+
         found = program.find('}', found);
         found = program.find(';', found);
 
@@ -358,14 +358,14 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
         }
         else
         {
-            // No closing brace and semicolon.
+
             break;
         }
 
         found = program.find("sampler_state");
     }
 
-    // replace shader_body with entry point function
+
     found = program.find("shader_body");
     if (found != std::string::npos)
     {
@@ -383,7 +383,7 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
         throw Renderer::ShaderException("Preset shader is missing \"shader_body\" entry point.");
     }
 
-    // replace the "{" immediately following shader_body with some variable declarations
+
     found = program.find('{', found);
     if (found != std::string::npos)
     {
@@ -399,7 +399,7 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
         throw Renderer::ShaderException("Preset shader has no opening braces.");
     }
 
-    // replace "}" with return statement (this can probably be optimized for the GLSL conversion...)
+
     found = program.rfind('}');
     if (found != std::string::npos)
     {
@@ -411,7 +411,7 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
         throw Renderer::ShaderException("Preset shader has no closing brace.");
     }
 
-    // Find matching closing brace and cut off excess text after shader's main function
+
     int bracesOpen = 1;
     size_t pos = found + 1;
     for (; pos < program.length() && bracesOpen > 0; ++pos)
@@ -419,7 +419,7 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
         switch (program.at(pos))
         {
             case '/':
-                // Skip comments until EoL to prevent false counting
+
                 if (pos < program.length() - 1 && program.at(pos + 1) == '/')
                 {
                     for (; pos < program.length(); ++pos)
@@ -446,10 +446,10 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
         program.resize(pos);
     }
 
-    std::string fullSource; //!< Full shader source before translation, includes all uniforms etc.
+    std::string fullSource;
 
-    // First copy the generic "header" into the shader. Includes uniforms and some defines
-    // to unwrap the packed 4-element uniforms into single values.
+
+
     fullSource.append(MilkdropStaticShaders::Get()->GetPresetShaderHeader());
 
     if (m_type == ShaderType::WarpShader)
@@ -475,13 +475,13 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
 
 void MilkdropShader::GetReferencedSamplers(const std::string& program)
 {
-    // Look up samplers referenced in the shader program
+
     m_samplerNames.clear();
 
-    // "main" should always be present.
+
     m_samplerNames.insert("main");
 
-    // Search for sampler usage
+
     auto found = program.find("sampler_", 0);
     while (found != std::string::npos)
     {
@@ -491,7 +491,7 @@ void MilkdropShader::GetReferencedSamplers(const std::string& program)
         if (end != std::string::npos)
         {
             std::string const sampler = program.substr(static_cast<int>(found), static_cast<int>(end - found));
-            // Skip "sampler_state", as it's a reserved word and not a sampler.
+
             if (sampler != "state")
             {
                 m_samplerNames.insert(sampler);
@@ -501,7 +501,7 @@ void MilkdropShader::GetReferencedSamplers(const std::string& program)
         found = program.find("sampler_", found);
     }
 
-    // Also search for texsize usage, some presets don't reference the sampler.
+
     found = program.find("texsize_", 0);
     while (found != std::string::npos)
     {
@@ -518,7 +518,7 @@ void MilkdropShader::GetReferencedSamplers(const std::string& program)
     }
 
     {
-        // Remove duplicate mentions or "randXX" names, keeping the long forms only (first one will determine the actual texture loaded).
+
         auto samplerName = m_samplerNames.begin();
         std::locale loc;
         while (samplerName != m_samplerNames.end())
@@ -576,31 +576,31 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
     M4::HLSLTree tree(&allocator);
     M4::HLSLParser parser(&allocator, &tree);
 
-    // Preprocess define macros
+
     std::string sourcePreprocessed;
     if (!parser.ApplyPreprocessor("", program.c_str(), program.size(), sourcePreprocessed))
     {
         throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: Preprocessing failed.\nSource:\n" + program);
     }
 
-    // Remove previous shader declarations
-    // ToDo: Quite some presets declare a sampler_state{} struct to change the wrap mode.
-    //       The below code causes invalid syntax as it leaves part of the expression.
-    //       Leaving it in causes HLSLParser to add "sampler_XYZ = sampler2D( <unknown expression> );"
-    //       in the main() function, which is also bad...
+
+
+
+
+
     std::smatch matches;
     while (std::regex_search(sourcePreprocessed, matches, std::regex("sampler(2D|3D|)(\\s+|\\().*")))
     {
         sourcePreprocessed.replace(matches.position(), matches.length(), "");
     }
 
-    // Remove previous texsize declarations
+
     while (std::regex_search(sourcePreprocessed, matches, std::regex("float4\\s+texsize_.*")))
     {
         sourcePreprocessed.replace(matches.position(), matches.length(), "");
     }
 
-    // Collect unique samplers and texsize uniforms
+
     std::set<std::string> samplerDeclarations;
     std::set<std::string> texSizeDeclarations;
     for (const auto& desc : m_mainTextureDescriptors)
@@ -611,7 +611,7 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
     for (const auto& desc : presetState.blurTexture.GetDescriptorsForBlurLevel(m_maxBlurLevelRequired))
     {
         samplerDeclarations.insert(desc.SamplerDeclaration());
-        // No texsize_blur1 etc.
+
     }
     for (const auto& desc : m_textureSamplerDescriptors)
     {
@@ -619,7 +619,7 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
         texSizeDeclarations.insert(desc.TexSizeDeclaration());
     }
 
-    // Now insert them on top.
+
     for (const auto& texSizeDeclaration : texSizeDeclarations)
     {
         sourcePreprocessed.insert(0, texSizeDeclaration);
@@ -629,14 +629,14 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
         sourcePreprocessed.insert(0, samplerDeclaration);
     }
 
-    // Transpile from HLSL (aka preset shader aka DirectX shader) to GLSL (aka OpenGL shader lang)
-    // First, parse HLSL into a tree
+
+
     if (!parser.Parse("", sourcePreprocessed.c_str(), sourcePreprocessed.size()))
     {
         throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: HLSL parsing failed.\nSource:\n" + sourcePreprocessed);
     }
 
-    // Then generate GLSL from the resulting parser tree
+
     if (!generator.Generate(&tree, M4::GLSLGenerator::Target_FragmentShader,
                             MilkdropStaticShaders::Get()->GetGlslGeneratorVersion(),
                             "PS", M4::GLSLGenerator::Options(M4::GLSLGenerator::Flag_AlternateNanPropagation)))
@@ -644,8 +644,8 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
         throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: GLSL generating failed.\nSource:\n" + sourcePreprocessed);
     }
 
-    // Now we have GLSL source for the preset shader program (hopefully it's valid!)
-    // Compile the preset shader fragment shader with the standard vertex shader and cross our fingers.
+
+
     if (m_type == ShaderType::WarpShader)
     {
         m_shader.CompileProgram(MilkdropStaticShaders::Get()->GetPresetWarpVertexShader(), generator.GetResult());
@@ -682,5 +682,5 @@ void MilkdropShader::UpdateMaxBlurLevel(BlurTexture::BlurLevel requestedLevel)
     }
 }
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

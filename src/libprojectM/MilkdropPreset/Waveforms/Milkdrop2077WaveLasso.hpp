@@ -13,6 +13,6 @@ protected:
                           const PerFrameContext& presetPerFrameContext) override;
 };
 
-} // namespace Waveforms
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}
+}

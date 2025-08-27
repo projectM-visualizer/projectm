@@ -17,7 +17,7 @@
 #include <iostream>
 #endif
 
-// Missing in macOS SDK. Query will most certainly fail, but then use the default format.
+
 #ifndef GL_TEXTURE_IMAGE_FORMAT
 #define GL_TEXTURE_IMAGE_FORMAT 0x828F
 #endif
@@ -64,7 +64,7 @@ auto TextureManager::GetSampler(const std::string& fullName) -> std::shared_ptr<
 
 void TextureManager::Preload()
 {
-    // Create samplers
+
     m_samplers.emplace(std::pair<GLint, GLint>(GL_CLAMP_TO_EDGE, GL_LINEAR), std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR));
     m_samplers.emplace(std::pair<GLint, GLint>(GL_CLAMP_TO_EDGE, GL_NEAREST), std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_NEAREST));
     m_samplers.emplace(std::pair<GLint, GLint>(GL_REPEAT, GL_LINEAR), std::make_shared<Sampler>(GL_REPEAT, GL_LINEAR));
@@ -80,7 +80,8 @@ void TextureManager::Preload()
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
 
-    m_textures["idlem"] = std::make_shared<Texture>("idlem", tex, GL_TEXTURE_2D, width, height, false);;
+    m_textures["idlem"] = std::make_shared<Texture>("idlem", tex, GL_TEXTURE_2D, width, height, false);
+    ;
 
     tex = SOIL_load_OGL_texture_from_memory(
         headphones_data,
@@ -89,9 +90,10 @@ void TextureManager::Preload()
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
 
-    m_textures["idleheadphones"] = std::make_shared<Texture>("idleheadphones", tex, GL_TEXTURE_2D, width, height, false);;
+    m_textures["idleheadphones"] = std::make_shared<Texture>("idleheadphones", tex, GL_TEXTURE_2D, width, height, false);
+    ;
 
-    // Noise textures
+
     m_textures["noise_lq_lite"] = MilkdropNoise::LowQualityLite();
     m_textures["noise_lq"] = MilkdropNoise::LowQuality();
     m_textures["noise_mq"] = MilkdropNoise::MediumQuality();
@@ -102,7 +104,7 @@ void TextureManager::Preload()
 
 void TextureManager::PurgeTextures()
 {
-    // Increment age of all textures
+
     for (auto& texture : m_textures)
     {
         if (texture.second->IsUserTexture())
@@ -111,11 +113,11 @@ void TextureManager::PurgeTextures()
         }
     }
 
-    // Clear file cache
+
     m_scannedTextureFiles.clear();
     m_filesScanned = false;
 
-    // Only purge textures with an age of 2 or higher, so we don't evict textures used by the preset being blended out
+
     uint32_t newest = 99999999;
     uint32_t oldest = 0;
     bool foundTextureToEvict = false;
@@ -154,8 +156,8 @@ void TextureManager::PurgeTextures()
     {
         return;
     }
-    // Purge one texture. No need to inform presets, as the texture shouldn't be in use anymore.
-    // If this really happens for some reason, it'll simply be reloaded on the next frame.
+
+
     m_textures.erase(m_textures.find(biggestName));
     m_textureStats.erase(m_textureStats.find(biggestName));
 
@@ -189,7 +191,8 @@ auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSample
 #ifdef DEBUG
             std::cerr << "Loaded texture " << unqualifiedName << std::endl;
 #endif
-            return {texture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};;
+            return {texture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
+            ;
         }
     }
 
@@ -197,7 +200,7 @@ auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSample
     std::cerr << "Failed to find texture " << unqualifiedName << std::endl;
 #endif
 
-    // Return a placeholder.
+
     return {m_placeholderTexture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
 }
 
@@ -224,7 +227,7 @@ auto TextureManager::LoadTexture(const ScannedFile& file) -> std::shared_ptr<Tex
         return {};
     }
 
-    uint32_t memoryBytes = width * height * 4; // RGBA, unsigned byte color channels.
+    uint32_t memoryBytes = width * height * 4;
     auto newTexture = std::make_shared<Texture>(unqualifiedName, tex, GL_TEXTURE_2D, width, height, true);
     m_textures[file.lowerCaseBaseName] = newTexture;
     m_textureStats.insert({file.lowerCaseBaseName, {memoryBytes}});
@@ -256,7 +259,7 @@ auto TextureManager::GetRandomTexture(const std::string& randomName) -> TextureS
 
     if (prefix.empty())
     {
-        // Just pick a random index.
+
         std::uniform_int_distribution<size_t> distribution(0, m_scannedTextureFiles.size() - 1);
         selectedFilename = m_scannedTextureFiles.at(distribution(rndEngine)).lowerCaseBaseName;
     }
@@ -278,16 +281,16 @@ auto TextureManager::GetRandomTexture(const std::string& randomName) -> TextureS
         }
     }
 
-    // If a prefix was set and no file matched, filename can be empty.
+
     if (selectedFilename.empty())
     {
         return {};
     }
 
-    // Use selected filename to load the texture.
+
     auto desc = GetTexture(selectedFilename);
 
-    // Create new descriptor with the original "rand00[_prefix]" name.
+
     return {desc.Texture(), desc.Sampler(), randomName, randomName};
 }
 
@@ -314,7 +317,7 @@ void TextureManager::ExtractTextureSettings(const std::string& qualifiedName, GL
 
     std::string lowerQualifiedName = Utils::ToLower(qualifiedName);
 
-    // Default mode for user textures is "fw" (bilinear filtering + wrap).
+
     wrapMode = GL_REPEAT;
     filterMode = GL_LINEAR;
 
@@ -344,7 +347,7 @@ void TextureManager::ExtractTextureSettings(const std::string& qualifiedName, GL
     }
     else
     {
-        name = qualifiedName.substr(3); // Milkdrop also removes the XY_ prefix in the case nothing matches.
+        name = qualifiedName.substr(3);
         filterMode = GL_LINEAR;
         wrapMode = GL_REPEAT;
     }
@@ -362,5 +365,5 @@ void TextureManager::ScanTextures()
     }
 }
 
-} // namespace Renderer
-} // namespace libprojectM
+}
+}

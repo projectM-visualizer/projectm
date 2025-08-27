@@ -20,5 +20,5 @@ auto Item::operator==(const std::string& other) const -> bool
     return m_filename == other;
 }
 
-} // namespace Playlist
-} // namespace libprojectM
+}
+}

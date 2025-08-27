@@ -58,5 +58,5 @@ auto Loudness::AdjustRateToFps(float rate, double secondsSinceLastFrame) -> floa
     return perFrameDecayRateAtFps2;
 }
 
-} // namespace Audio
-} // namespace libprojectM
+}
+}

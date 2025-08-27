@@ -28,12 +28,12 @@ void FinalComposite::InitVertexAttrib()
     glEnableVertexAttribArray(2);
     glEnableVertexAttribArray(3);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), nullptr);                                               // Positions
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, r)));      // Colors
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, u)));      // Textures
-    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, radius))); // Radius/Angle
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), nullptr);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, r)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, u)));
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, radius)));
 
-    // Pre-allocate vertex and index buffers
+
     glBufferData(GL_ARRAY_BUFFER, sizeof(MeshVertex) * vertexCount, m_vertices.data(), GL_STREAM_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * m_indices.size(), m_indices.data(), GL_STREAM_DRAW);
 }
@@ -58,9 +58,9 @@ void FinalComposite::LoadCompositeShader(const PresetState& presetState)
                 std::cerr << "[Composite Shader] Error loading composite warp shader code:" << ex.message() << std::endl;
                 std::cerr << "[Composite Shader] Using fallback shader." << std::endl;
 #else
-                (void)ex; // silence unused parameter warning
+                (void) ex;
 #endif
-                // Fall back to default shader
+
                 m_compositeShader = std::make_unique<MilkdropShader>(MilkdropShader::ShaderType::CompositeShader);
                 m_compositeShader->LoadCode(defaultCompositeShader);
             }
@@ -75,7 +75,7 @@ void FinalComposite::LoadCompositeShader(const PresetState& presetState)
     }
     else
     {
-        // Video echo OR gamma adjustment with random hue.
+
         m_videoEcho = std::make_unique<VideoEcho>(presetState);
         if (presetState.brighten ||
             presetState.darken ||
@@ -104,9 +104,9 @@ void FinalComposite::CompileCompositeShader(PresetState& presetState)
             std::cerr << "[Composite Shader] Error compiling composite warp shader code:" << ex.message() << std::endl;
             std::cerr << "[Composite Shader] Using fallback shader." << std::endl;
 #else
-                (void)ex; // silence unused parameter warning
+            (void) ex;
 #endif
-            // Fall back to default shader
+
             m_compositeShader = std::make_unique<MilkdropShader>(MilkdropShader::ShaderType::CompositeShader);
             m_compositeShader->LoadCode(defaultCompositeShader);
             m_compositeShader->LoadTexturesAndCompile(presetState);
@@ -121,7 +121,7 @@ void FinalComposite::Draw(const PresetState& presetState, const PerFrameContext&
         InitializeMesh(presetState);
         ApplyHueShaderColors(presetState);
 
-        // Render the grid
+
         glDisable(GL_BLEND);
         glBindVertexArray(m_vaoID);
         glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
@@ -134,7 +134,7 @@ void FinalComposite::Draw(const PresetState& presetState, const PerFrameContext&
     }
     else
     {
-        // Apply old-school filters
+
         m_videoEcho->Draw();
         if (m_filters)
         {
@@ -190,7 +190,7 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
                           presetState.renderContext.aspectY,
                           u, v, rad, ang);
 
-            // fix-ups:
+
             if (gridX == compositeGridWidth / 2 - 1)
             {
                 if (gridY < compositeGridHeight / 2 - 1)
@@ -259,8 +259,8 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
         }
     }
 
-    // build index list for final composite blit -
-    // order should be friendly for interpolation of 'ang' value!
+
+
     int currentIndex = 0;
     for (int gridY = 0; gridY < compositeGridHeight - 1; gridY++)
     {
@@ -304,8 +304,8 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
         }
     }
 
-    // Store indices.
-    // ToDo: Probably don't need to store m_indices
+
+
     glBindVertexArray(m_vaoID);
     glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(int) * m_indices.size(), m_indices.data());
     glBindVertexArray(0);
@@ -324,15 +324,15 @@ float FinalComposite::SquishToCenter(float x, float exponent)
 void FinalComposite::UvToMathSpace(float aspectX, float aspectY,
                                    float u, float v, float& rad, float& ang)
 {
-    // (screen space = -1..1 on both axes; corresponds to UV space)
-    // uv space = [0..1] on both axes
-    // "math" space = what the preset authors are used to:
-    //      upper left = [0,0]
-    //      bottom right = [1,1]
-    //      rad == 1 at corners of screen
-    //      ang == 0 at three o'clock, and increases counter-clockwise (to 6.28).
-    float const px = (u * 2.0f - 1.0f) * aspectX; // probably 1.0
-    float const py = (v * 2.0f - 1.0f) * aspectY; // probably <1
+
+
+
+
+
+
+
+    float const px = (u * 2.0f - 1.0f) * aspectX;
+    float const py = (v * 2.0f - 1.0f) * aspectY;
 
     rad = sqrtf(px * px + py * py) / sqrtf(aspectX * aspectX + aspectY * aspectY);
     ang = atan2f(py, px);
@@ -365,7 +365,7 @@ void FinalComposite::ApplyHueShaderColors(const PresetState& presetState)
         }
     }
 
-    // Interpolate and apply to all grid vertices.
+
     for (int gridY = 0; gridY < compositeGridHeight; gridY++)
     {
         for (int gridX = 0; gridX < compositeGridWidth; gridX++)
@@ -391,5 +391,5 @@ void FinalComposite::ApplyHueShaderColors(const PresetState& presetState)
     }
 }
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

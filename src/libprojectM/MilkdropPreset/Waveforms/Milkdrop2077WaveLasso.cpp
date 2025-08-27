@@ -24,6 +24,6 @@ void Milkdrop2077WaveLasso::GenerateVertices(const PresetState& presetState,
     }
 }
 
-} // namespace Waveforms
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}
+}

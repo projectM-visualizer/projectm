@@ -30,7 +30,7 @@ void projectMWrapper::PresetSwitchFailedEvent(const std::string& presetFilename,
     }
 }
 
-} // namespace libprojectM
+}
 
 libprojectM::projectMWrapper* handle_to_instance(projectm_handle instance)
 {
@@ -394,7 +394,7 @@ auto projectm_pcm_add_uint8(projectm_handle instance, const uint8_t* samples, un
 
 auto projectm_write_debug_image_on_next_frame(projectm_handle, const char*) -> void
 {
-    // UNIMPLEMENTED
+
 }
 
 uint32_t projectm_sprite_create(projectm_handle instance, const char* type, const char* code)

@@ -15,8 +15,8 @@ void DarkenCenter::InitVertexAttrib()
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(ColoredPoint), nullptr);                                            // points
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(ColoredPoint), reinterpret_cast<void*>(offsetof(ColoredPoint, r))); // colors
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(ColoredPoint), nullptr);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(ColoredPoint), reinterpret_cast<void*>(offsetof(ColoredPoint, r)));
 }
 
 void DarkenCenter::Draw()
@@ -27,7 +27,7 @@ void DarkenCenter::Draw()
     {
         m_aspectY = m_presetState.renderContext.aspectY;
 
-        // Update mesh with new aspect ratio if needed
+
         float const halfSize = 0.05f;
         std::array<ColoredPoint, 6> vertices = {{{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 3.0f / 32.0f},
                                                  {0.0f - halfSize * m_aspectY, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f},
@@ -55,5 +55,5 @@ void DarkenCenter::Draw()
     Renderer::Shader::Unbind();
 }
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

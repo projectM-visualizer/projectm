@@ -1,14 +1,12 @@
 #pragma once
 
-#include <string>
 #include <exception>
+#include <string>
 
 namespace libprojectM {
 namespace UserSprites {
 
-/**
- * @brief Exception for sprite loading errors.
- */
+
 class SpriteException : public std::exception
 {
 public:
@@ -29,5 +27,5 @@ private:
 };
 
 
-} // namespace UserSprites
-} // namespace libprojectM
+}
+}

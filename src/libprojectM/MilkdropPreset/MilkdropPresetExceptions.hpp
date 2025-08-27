@@ -1,14 +1,12 @@
 #pragma once
 
-#include <string>
 #include <exception>
+#include <string>
 
 namespace libprojectM {
 namespace MilkdropPreset {
 
-/**
- * @brief Exception for preset loading errors.
- */
+
 class MilkdropPresetLoadException : public std::exception
 {
 public:
@@ -29,9 +27,7 @@ private:
 };
 
 
-/**
- * @brief Exception for code compilation errors.
- */
+
 class MilkdropCompileException : public std::exception
 {
 public:
@@ -51,5 +47,5 @@ private:
     std::string m_message;
 };
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

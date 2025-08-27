@@ -86,6 +86,6 @@ void LineBase::ClipWaveformEdges(const float angle)
     m_perpetualDY = sinf(angle2 + 1.57f);
 }
 
-} // namespace Waveforms
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}
+}

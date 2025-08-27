@@ -36,7 +36,7 @@ void PresetFactoryManager::initialize()
     registerFactory(milkdropFactory->supportedExtensions(), milkdropFactory);
 }
 
-// Current behavior if a conflict is occurs is to override the previous request
+
 
 void PresetFactoryManager::registerFactory(const std::string& extensions, PresetFactory* factory)
 {
@@ -129,16 +129,17 @@ std::vector<std::string> PresetFactoryManager::extensionsHandled() const
     return retval;
 }
 
-//CPP17: std::filesystem::path::extension
+
 auto PresetFactoryManager::ParseExtension(const std::string& filename) -> std::string
 {
     const auto start = filename.find_last_of('.');
 
-    if (start == std::string::npos || start >= (filename.length() - 1)) {
+    if (start == std::string::npos || start >= (filename.length() - 1))
+    {
         return "";
     }
 
     return Utils::ToLower(filename.substr(start + 1, filename.length()));
 }
 
-} // namespace libprojectM
+}

@@ -28,7 +28,7 @@ PerPixelMesh::PerPixelMesh()
 
 void PerPixelMesh::InitVertexAttrib()
 {
-    m_drawVertices.resize(VerticesPerDrawCall); // Fixed size, may scale it later depending on GPU caps.
+    m_drawVertices.resize(VerticesPerDrawCall);
 
     glGenVertexArrays(1, &m_vaoID);
     glGenBuffers(1, &m_vboID);
@@ -43,15 +43,15 @@ void PerPixelMesh::InitVertexAttrib()
     glEnableVertexAttribArray(4);
     glEnableVertexAttribArray(5);
 
-    // Only position & texture coordinates are per-vertex, colors are equal all over the grid (used for decay).
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, x)));         // Position, radius & angle
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, radius)));    // Position, radius & angle
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, zoom)));      // zoom, zoom exponent, rotation & warp
-    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, centerX)));   // Center coord
-    glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, distanceX))); // Distance
-    glVertexAttribPointer(5, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, stretchX)));  // Stretch
 
-    // Pre-allocate vertex buffer
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, x)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, radius)));
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, zoom)));
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, centerX)));
+    glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, distanceX)));
+    glVertexAttribPointer(5, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, stretchX)));
+
+
     glBufferData(GL_ARRAY_BUFFER, sizeof(MeshVertex) * m_drawVertices.size(), m_drawVertices.data(), GL_STREAM_DRAW);
 
     glBindVertexArray(0);
@@ -60,7 +60,7 @@ void PerPixelMesh::InitVertexAttrib()
 
 void PerPixelMesh::LoadWarpShader(const PresetState& presetState)
 {
-    // Compile warp shader if preset specifies one.
+
     if (presetState.warpShaderVersion > 0)
     {
         if (!presetState.warpShader.empty())
@@ -78,7 +78,7 @@ void PerPixelMesh::LoadWarpShader(const PresetState& presetState)
 #ifdef MILKDROP_PRESET_DEBUG
                 std::cerr << "[Warp Shader] Error loading warp shader code:" << ex.message() << std::endl;
 #else
-                (void) ex; // silence unused parameter warning
+                (void) ex;
 #endif
                 m_warpShader.reset();
             }
@@ -102,7 +102,7 @@ void PerPixelMesh::CompileWarpShader(PresetState& presetState)
 #ifdef MILKDROP_PRESET_DEBUG
             std::cerr << "[Warp Shader] Error compiling warp shader code:" << ex.message() << std::endl;
 #else
-            (void) ex; // silence unused parameter warning
+            (void) ex;
 #endif
             m_warpShader.reset();
         }
@@ -121,13 +121,13 @@ void PerPixelMesh::Draw(const PresetState& presetState,
         return;
     }
 
-    // Initialize or recreate the mesh (if grid size changed)
+
     InitializeMesh(presetState);
 
-    // Calculate the dynamic movement values
+
     CalculateMesh(presetState, perFrameContext, perPixelContext);
 
-    // Render the resulting mesh.
+
     WarpedBlit(presetState, perFrameContext);
 }
 
@@ -139,21 +139,21 @@ void PerPixelMesh::InitializeMesh(const PresetState& presetState)
         m_gridSizeX = presetState.renderContext.perPixelMeshX;
         m_gridSizeY = presetState.renderContext.perPixelMeshY;
 
-        // Grid size has changed, reallocate vertex buffers
+
         m_vertices.resize((m_gridSizeX + 1) * (m_gridSizeY + 1));
         m_listIndices.resize(m_gridSizeX * m_gridSizeY * 6);
     }
     else if (m_viewportWidth == presetState.renderContext.viewportSizeX &&
              m_viewportHeight == presetState.renderContext.viewportSizeY)
     {
-        // Nothing changed, just go on to the dynamic calculation.
+
         return;
     }
 
     float aspectX = static_cast<float>(presetState.renderContext.aspectX);
     float aspectY = static_cast<float>(presetState.renderContext.aspectY);
 
-    // Either viewport size or mesh size changed, reinitialize the vertices.
+
     int vertexIndex{0};
     for (int gridY = 0; gridY <= m_gridSizeY; gridY++)
     {
@@ -164,7 +164,7 @@ void PerPixelMesh::InitializeMesh(const PresetState& presetState)
             vertex.x = static_cast<float>(gridX) / static_cast<float>(m_gridSizeX) * 2.0f - 1.0f;
             vertex.y = static_cast<float>(gridY) / static_cast<float>(m_gridSizeY) * 2.0f - 1.0f;
 
-            // Milkdrop uses sqrtf, but hypotf is probably safer.
+
             vertex.radius = hypotf(vertex.x * aspectX, vertex.y * aspectY);
             if (gridY == m_gridSizeY / 2 && gridX == m_gridSizeX / 2)
             {
@@ -179,7 +179,7 @@ void PerPixelMesh::InitializeMesh(const PresetState& presetState)
         }
     }
 
-    // Generate triangle lists for drawing the main warp mesh
+
     int vertexListIndex{0};
     for (int quadrant = 0; quadrant < 4; quadrant++)
     {
@@ -201,9 +201,9 @@ void PerPixelMesh::InitializeMesh(const PresetState& presetState)
 
                 int const vertex = xReference + yReference * (m_gridSizeX + 1);
 
-                // 0 - 1      3
-                //   /      /
-                // 2      4 - 5
+
+
+
                 m_listIndices.at(vertexListIndex++) = vertex;
                 m_listIndices.at(vertexListIndex++) = vertex + 1;
                 m_listIndices.at(vertexListIndex++) = vertex + m_gridSizeX + 1;
@@ -217,7 +217,7 @@ void PerPixelMesh::InitializeMesh(const PresetState& presetState)
 
 void PerPixelMesh::CalculateMesh(const PresetState& presetState, const PerFrameContext& perFrameContext, PerPixelContext& perPixelContext)
 {
-    // Cache some per-frame values as floats
+
     float zoom = static_cast<float>(*perFrameContext.zoom);
     float zoomExp = static_cast<float>(*perFrameContext.zoomexp);
     float rot = static_cast<float>(*perFrameContext.rot);
@@ -231,14 +231,14 @@ void PerPixelMesh::CalculateMesh(const PresetState& presetState, const PerFrameC
 
     int vertex = 0;
 
-    // Can't make this multithreaded as per-pixel code may use gmegabuf or regXX vars.
+
     for (int y = 0; y <= m_gridSizeY; y++)
     {
         for (int x = 0; x <= m_gridSizeX; x++)
         {
             auto& curVertex = m_vertices[vertex];
 
-            // Execute per-vertex/per-pixel code if the preset uses it.
+
             if (perPixelContext.perPixelCodeHandle)
             {
                 *perPixelContext.x = static_cast<double>(curVertex.x * 0.5f * presetState.renderContext.aspectX + 0.5f);
@@ -291,7 +291,7 @@ void PerPixelMesh::CalculateMesh(const PresetState& presetState, const PerFrameC
 void PerPixelMesh::WarpedBlit(const PresetState& presetState,
                               const PerFrameContext& perFrameContext)
 {
-    // Warp stuff
+
     float const warpTime = presetState.renderContext.time * presetState.warpAnimSpeed;
     float const warpScaleInverse = 1.0f / presetState.warpScale;
     glm::vec4 const warpFactors{
@@ -301,20 +301,20 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
         11.49f + 4.0f * cosf(warpTime * 0.933f + 5),
     };
 
-    // Texel alignment
+
     glm::vec2 const texelOffsets{0.5f / static_cast<float>(presetState.renderContext.viewportSizeX),
                                  0.5f / static_cast<float>(presetState.renderContext.viewportSizeY)};
 
-    // Decay
+
     float decay = static_cast<float>(*perFrameContext.decay);
     if (decay < 0.9999f)
     {
-        // Milkdrop uses a GPU-specific value, either 0.0 or 2.0.
-        // We'll simply assume 2, as it's the default value.
+
+
         decay = std::min(decay, (32.0f - 2.0f) / 32.0f);
     }
 
-    // No blending between presets here, so we make sure blending is disabled.
+
     glDisable(GL_BLEND);
 
     if (!m_warpShader)
@@ -351,7 +351,7 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
     assert(!presetState.mainTexture.expired());
     presetState.mainTexture.lock()->Bind(0);
 
-    // Set wrap mode and bind the sampler to get interpolation right.
+
     if (*perFrameContext.wrap > 0.0001f)
     {
         m_perPixelSampler.WrapMode(GL_REPEAT);
@@ -366,7 +366,7 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
     int trianglesPerBatch = static_cast<int>(m_drawVertices.size() / 3 - 4);
-    int triangleCount = m_gridSizeX * m_gridSizeY * 2; // Two triangles per quad/grid cell.
+    int triangleCount = m_gridSizeX * m_gridSizeY * 2;
     int sourceIndex = 0;
 
     while (sourceIndex < triangleCount * 3)
@@ -375,7 +375,7 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
         int vertex = 0;
         while (trianglesQueued < trianglesPerBatch && sourceIndex < triangleCount * 3)
         {
-            // Copy one triangle/3 vertices
+
             for (int i = 0; i < 3; i++)
             {
                 m_drawVertices[vertex++] = m_vertices[m_listIndices[sourceIndex++]];
@@ -424,5 +424,5 @@ auto PerPixelMesh::GetDefaultWarpShader(const PresetState& presetState) -> std::
     return perPixelMeshShader;
 }
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

@@ -20,7 +20,7 @@ std::unique_ptr<::libprojectM::Preset> Factory::LoadPresetFromFile(const std::st
     }
     else
     {
-        // ToDO: Throw unsupported protocol exception instead to provide more information.
+
         return nullptr;
     }
 }
@@ -30,5 +30,5 @@ std::unique_ptr<Preset> Factory::LoadPresetFromStream(std::istream& data)
     return std::make_unique<MilkdropPreset>(data);
 }
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

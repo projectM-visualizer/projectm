@@ -1,6 +1,6 @@
 #include "TextureAttachment.hpp"
 
-// OpenGL ES might not define this constant in its headers, e.g. in the iOS and Emscripten SDKs.
+
 #ifndef GL_STENCIL_INDEX
 #define GL_STENCIL_INDEX 0x1901
 #endif
@@ -62,13 +62,13 @@ void TextureAttachment::ReplaceTexture(int width, int height)
     GLint textureFormat;
     GLenum pixelFormat;
 
-    // Don't replace if size hasn't changed
+
     if (m_texture->Width() == width && m_texture->Height() == height)
     {
         return;
     }
 
-    switch(m_attachmentType)
+    switch (m_attachmentType)
     {
         case AttachmentType::Color:
             if (m_internalFormat == 0)
@@ -121,5 +121,5 @@ void TextureAttachment::ReplaceTexture(int width, int height)
     m_texture = std::make_shared<class Texture>("", textureId, GL_TEXTURE_2D, width, height, false);
 }
 
-} // namespace Renderer
-} // namespace libprojectM
+}
+}

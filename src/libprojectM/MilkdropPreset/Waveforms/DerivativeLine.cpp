@@ -38,7 +38,7 @@ void DerivativeLine::GenerateVertices(const PresetState& presetState, const PerF
         m_wave1Vertices[i].y = m_pcmDataL[i + sampleOffset] * 0.47f + m_waveY;
         m_wave1Vertices[i].x += m_pcmDataR[i + 25 + sampleOffset] * 0.44f;
 
-        // Momentum
+
         if (i > 1)
         {
             m_wave1Vertices[i].x = m_wave1Vertices[i].x * w2 + w1 * (m_wave1Vertices[i - 1].x * 2.0f - m_wave1Vertices[i - 2].x);
@@ -47,6 +47,6 @@ void DerivativeLine::GenerateVertices(const PresetState& presetState, const PerF
     }
 }
 
-} // namespace Waveforms
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}
+}

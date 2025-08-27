@@ -22,14 +22,14 @@ void Border::InitVertexAttrib()
 
 void Border::Draw(const PerFrameContext& presetPerFrameContext)
 {
-    // Draw Borders
+
     float const outerBorderSize = static_cast<float>(*presetPerFrameContext.ob_size);
     float const innerBorderSize = static_cast<float>(*presetPerFrameContext.ib_size);
 
     glBindVertexArray(m_vaoID);
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
-    // No additive drawing for borders
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -66,15 +66,15 @@ void Border::Draw(const PerFrameContext& presetPerFrameContext)
                 glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Point) * 4, vertices.data());
                 glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-                // Rotate 90 degrees
-                // Milkdrop code calculates cos(PI/2) and sin(PI/2), which is 0 and 1 respectively.
-                // Our code here simplifies the expressions accordingly.
+
+
+
                 for (int vertex = 0; vertex < 4; vertex++)
                 {
                     float const x = vertices[vertex].x;
                     float const y = vertices[vertex].y;
-                    vertices[vertex].x = -y; // x * cos(PI/2) - y * sin(PI/2) == x * 0 - y * 1
-                    vertices[vertex].y = x;  // x * sin(PI/2) + y * cos(PI/2) == x * 1 + y * 0
+                    vertices[vertex].x = -y;
+                    vertices[vertex].y = x;
                 }
             }
         }
@@ -87,5 +87,5 @@ void Border::Draw(const PerFrameContext& presetPerFrameContext)
     glBindVertexArray(0);
 }
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

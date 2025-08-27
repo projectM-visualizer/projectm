@@ -135,7 +135,7 @@ void WaveformPerFrameContext::CompilePerFrameCode(const std::string& perFrameCod
     if (perFrameCodeHandle == nullptr)
     {
 #ifdef MILKDROP_PRESET_DEBUG
-            int line;
+        int line;
         int col;
         auto* errmsg = projectm_eval_get_error(perFrameCodeContext, &line, &col);
         if (errmsg)
@@ -155,5 +155,5 @@ void WaveformPerFrameContext::ExecutePerFrameCode()
     }
 }
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

@@ -11,5 +11,5 @@ auto ToUpper(const std::string& str) -> std::string;
 void ToLowerInPlace(std::string& str);
 void ToUpperInPlace(std::string& str);
 
-} // namespace Utils
-} // namespace libprojectM
+}
+}

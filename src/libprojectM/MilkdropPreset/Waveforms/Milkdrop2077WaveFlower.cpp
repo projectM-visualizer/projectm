@@ -32,9 +32,9 @@ void Milkdrop2077WaveFlower::GenerateVertices(const PresetState& presetState,
         if (static_cast<float>(sample) < static_cast<float>(m_samples) / radius)
         {
             float mix = static_cast<float>(sample) / tenthSamples;
-            // Flower
+
             mix = 0.7f - 0.7f * cosf(mix * 3.1416f);
-            // Subtracting the sample offset here instead of adding it, as the original Milkdrop2077 code accessed out-of-range data.
+
             float const radius2 = 0.7f + 0.7f * m_pcmDataR[sample + m_samples - sampleOffset] + m_mysteryWaveParam;
             radius = radius2 * (1.0f - mix) + radius * mix * .25f;
         }
@@ -44,6 +44,6 @@ void Milkdrop2077WaveFlower::GenerateVertices(const PresetState& presetState,
     }
 }
 
-} // namespace Waveforms
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}
+}

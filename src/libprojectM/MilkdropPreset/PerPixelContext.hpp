@@ -11,55 +11,29 @@ namespace MilkdropPreset {
 class PerPixelContext
 {
 public:
-    /**
-     * @brief Constructor. Creates a new per-frame state object.
-     * @param gmegabuf The global memory buffer to use in the code context.
-     * @param globalRegisters The global variables to use in the code context.
-     */
+
     PerPixelContext(projectm_eval_mem_buffer gmegabuf, PRJM_EVAL_F (*globalRegisters)[100]);
 
-    /**
-     * @brief Destructor.
-     */
+
     ~PerPixelContext();
 
-    /**
-     * @brief Registers the state variables in the expression evaluator context.
-     */
+
     void RegisterBuiltinVariables();
 
-    /**
-     * @brief Loads the current state read-only values into the expression evaluator variables.
-     *
-     * All non-RO variables are loaded once per vertex. There's no real read-only flag, which means
-     * preset authors may use this fact to change these values from vertex to vertex. Even if this
-     * is an undocumented feature, we should do the same as some presets may depend on it.
-     *
-     * @param state The preset state container.
-     */
+
     void LoadStateReadOnlyVariables(PresetState& state, PerFrameContext& perFrameState);
 
-    /**
-     * @brief Copies the current per-frame Q variable values into the per-pixel state.
-     * @param state The preset state container.
-     * @param perFrameState The per-frame execution context.
-     */
+
     void LoadPerFrameQVariables(PresetState& state, PerFrameContext& perFrameState);
 
-    /**
-     * @brief Compiles the per-pixel code and stores the code handle in the class.
-     * @throws MilkdropCompileException Thrown if the per-pixel code couldn't be compiled.
-     * @param perPixelCode The code to compile.
-     */
+
     void CompilePerPixelCode(const std::string& perPixelCode);
 
-    /**
-     * @brief Executes the per-pixel code with the current state.
-     */
+
     void ExecutePerPixelCode();
 
-    projectm_eval_context* perPixelCodeContext{nullptr}; //!< The code runtime context, holds memory buffers and variables.
-    projectm_eval_code* perPixelCodeHandle{nullptr};     //!< The compiled per-pixel code handle.
+    projectm_eval_context* perPixelCodeContext{nullptr};
+    projectm_eval_code* perPixelCodeHandle{nullptr};
 
     PRJM_EVAL_F* zoom{};
     PRJM_EVAL_F* zoomexp{};
@@ -94,5 +68,5 @@ public:
     PRJM_EVAL_F* aspecty{};
 };
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

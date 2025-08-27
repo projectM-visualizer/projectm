@@ -26,6 +26,6 @@ void SpectrumLine::GenerateVertices(const PresetState&, const PerFrameContext&)
     }
 }
 
-} // namespace Waveforms
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}
+}

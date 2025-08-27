@@ -11,42 +11,25 @@ class PerFrameContext;
 class WaveformPerPointContext
 {
 public:
-    /**
-     * @brief Constructor. Creates a new waveform per-point state object.
-     * @param gmegabuf The global memory buffer to use in the code context.
-     * @param globalRegisters The global variables to use in the code context.
-     */
+
     WaveformPerPointContext(projectm_eval_mem_buffer gmegabuf, PRJM_EVAL_F (*globalRegisters)[100]);
 
     ~WaveformPerPointContext();
 
-    /**
-     * @brief Registers the state variables in the expression evaluator context.
-     */
+
     void RegisterBuiltinVariables();
 
-    /**
-     * @brief Loads the current read-only state values into the expression evaluator variables.
-     * This is done once per frame/waveform for a subset of the per-point variables, specifically
-     * those marked as "read-only". All other variables are assigned/reset for each rendered point.
-     * @param presetPerFrameContext The preset per-frame context.
-     */
+
     void LoadReadOnlyStateVariables(const PerFrameContext& presetPerFrameContext);
 
-    /**
-     * @brief Compiles the per-point code and stores the code handle in the class.
-     * @param perPointCode The code to compile.
-     * @param waveform The waveform this context belongs to.
-     */
+
     void CompilePerPointCode(const std::string& perPointCode, const CustomWaveform& waveform);
 
-    /**
-     * @brief Executes the per-point code with the current state.
-     */
+
     void ExecutePerPointCode();
 
-    projectm_eval_context* perPointCodeContext{nullptr}; //!< The code runtime context, holds memory buffers and variables.
-    projectm_eval_code* perPointCodeHandle{nullptr}; //!< The compiled waveform per-point code handle.
+    projectm_eval_context* perPointCodeContext{nullptr};
+    projectm_eval_code* perPointCodeHandle{nullptr};
 
     PRJM_EVAL_F* time{};
     PRJM_EVAL_F* fps{};
@@ -71,5 +54,5 @@ public:
     PRJM_EVAL_F* a{};
 };
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

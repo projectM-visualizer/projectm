@@ -61,7 +61,7 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
     glBindVertexArray(m_vaoID);
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
-    // Additive wave drawing (vice overwrite)
+
     glEnable(GL_BLEND);
     if (m_presetState.additiveWaves)
     {
@@ -84,7 +84,7 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
         m_tempAlpha = static_cast<float>(*presetPerFrameContext.wave_a);
         MaximizeColors(presetPerFrameContext);
 
-        // Always draw "thick" dots.
+
         const auto iterations = m_presetState.waveThick || m_presetState.waveDots ? 4 : 1;
 
         const auto incrementX = 2.0f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
@@ -92,8 +92,8 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
 
         GLuint drawType = m_presetState.waveDots ? GL_POINTS : (m_waveformMath->IsLoop() ? GL_LINE_LOOP : GL_LINE_STRIP);
 
-        // If thick outline is used, draw the shape four times with slight offsets
-        // (top left, top right, bottom right, bottom left).
+
+
         for (auto iteration = 0; iteration < iterations; iteration++)
         {
             switch (iteration)
@@ -138,11 +138,11 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
 
 void Waveform::ModulateOpacityByVolume(const PerFrameContext& presetPerFrameContext)
 {
-    //modulate volume by opacity
-    //
-    //set an upper and lower bound and linearly
-    //calculate the opacity from 0=lower to 1=upper
-    //based on current volume
+
+
+
+
+
     if (m_presetState.audioData.vol <= m_presetState.modWaveAlphaStart)
     {
         m_tempAlpha = 0.0;
@@ -159,10 +159,10 @@ void Waveform::ModulateOpacityByVolume(const PerFrameContext& presetPerFrameCont
 
 void Waveform::MaximizeColors(const PerFrameContext& presetPerFrameContext)
 {
-    //wave color brightening
-    //
-    //forces max color value to 1.0 and scales
-    // the rest accordingly
+
+
+
+
     int texsize = std::max(m_presetState.renderContext.viewportSizeX, m_presetState.renderContext.viewportSizeY);
 
     if (m_mode == WaveformMode::CenteredSpiro || m_mode == WaveformMode::ExplosiveHash)
@@ -185,7 +185,7 @@ void Waveform::MaximizeColors(const PerFrameContext& presetPerFrameContext)
         }
         else
         {
-            // For larger screens, e.g. 4K
+
             m_tempAlpha *= 0.15f;
         }
     }
@@ -209,7 +209,7 @@ void Waveform::MaximizeColors(const PerFrameContext& presetPerFrameContext)
         }
         else
         {
-            // For larger screens, e.g. 4K
+
             m_tempAlpha *= 0.44f;
         }
         m_tempAlpha *= 1.3f;
@@ -259,5 +259,5 @@ void Waveform::MaximizeColors(const PerFrameContext& presetPerFrameContext)
     glVertexAttrib4f(1, waveR, waveG, waveB, m_tempAlpha);
 }
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

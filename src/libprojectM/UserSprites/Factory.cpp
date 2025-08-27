@@ -20,5 +20,5 @@ auto Factory::CreateSprite(const std::string& type) -> Sprite::Ptr
 }
 
 
-} // namespace UserSprites
-} // namespace libprojectM
+}
+}

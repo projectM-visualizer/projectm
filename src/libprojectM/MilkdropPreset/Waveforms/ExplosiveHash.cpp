@@ -26,6 +26,6 @@ void ExplosiveHash::GenerateVertices(const PresetState& presetState, const PerFr
     }
 }
 
-} // namespace Waveforms
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}
+}

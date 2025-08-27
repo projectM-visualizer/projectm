@@ -12,6 +12,6 @@ protected:
     void GenerateVertices(const PresetState& presetState, const PerFrameContext& presetPerFrameContext) override;
 };
 
-} // namespace Waveforms
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}
+}

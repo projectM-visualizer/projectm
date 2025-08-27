@@ -31,7 +31,7 @@ void PresetTransition::InitVertexAttrib()
                                                           {1.0f, -1.0f}}};
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Point), reinterpret_cast<void*>(offsetof(Point, x))); // Position
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Point), reinterpret_cast<void*>(offsetof(Point, x)));
     glBufferData(GL_ARRAY_BUFFER, sizeof(points), points.data(), GL_STATIC_DRAW);
 }
 
@@ -59,10 +59,10 @@ void PresetTransition::Draw(const Preset& oldPreset,
 
     std::mt19937 rand32(m_randomDevice());
 
-    // Calculate progress values
+
     const auto secondsSinceStart = currentFrameTime - m_transitionStartTime;
 
-    // If duration is zero,
+
     double linearProgress{1.0};
     double cosineProgress{1.0};
     double bicubicProgress{1.0};
@@ -76,7 +76,7 @@ void PresetTransition::Draw(const Preset& oldPreset,
 
     m_transitionShader->Bind();
 
-    // Numerical parameters
+
     m_transitionShader->SetUniformFloat3("iResolution", {static_cast<float>(context.viewportSizeX),
                                                          static_cast<float>(context.viewportSizeY),
                                                          0.0f});
@@ -104,7 +104,7 @@ void PresetTransition::Draw(const Preset& oldPreset,
                                                             audioData.midAtt,
                                                             audioData.trebAtt});
 
-    // Texture samplers
+
     m_transitionShader->SetUniformInt("iChannel0", 0);
     oldPreset.OutputTexture()->Bind(0, m_presetSampler);
     m_transitionShader->SetUniformInt("iChannel1", 1);
@@ -119,12 +119,12 @@ void PresetTransition::Draw(const Preset& oldPreset,
         textureUnit++;
     }
 
-    // Render the transition quad
+
     glBindVertexArray(m_vaoID);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glBindVertexArray(0);
 
-    // Clean up
+
     oldPreset.OutputTexture()->Unbind(0);
     newPreset.OutputTexture()->Unbind(1);
 
@@ -135,9 +135,9 @@ void PresetTransition::Draw(const Preset& oldPreset,
 
     Shader::Unbind();
 
-    // Update last frame time.
+
     m_lastFrameTime = currentFrameTime;
 }
 
-} // namespace Renderer
-} // namespace libprojectM
+}
+}

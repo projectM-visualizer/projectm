@@ -24,7 +24,7 @@ Framebuffer::~Framebuffer()
 {
     if (!m_framebufferIds.empty())
     {
-        // Delete attached textures first
+
         m_attachments.clear();
 
         glDeleteFramebuffers(static_cast<int>(m_framebufferIds.size()), m_framebufferIds.data());
@@ -139,7 +139,8 @@ auto Framebuffer::GetAttachment(int framebufferIndex, TextureAttachment::Attachm
             break;
     }
 
-    if (framebufferAttachments.find(textureType) == framebufferAttachments.end()) {
+    if (framebufferAttachments.find(textureType) == framebufferAttachments.end())
+    {
         return {};
     }
 
@@ -185,7 +186,7 @@ void Framebuffer::SetAttachment(int framebufferIndex, int attachmentIndex, const
     }
     UpdateDrawBuffers(framebufferIndex);
 
-    // Reset to previous read/draw buffers
+
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_framebufferIds.at(m_readFramebuffer));
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_framebufferIds.at(m_drawFramebuffer));
 }
@@ -217,7 +218,7 @@ void Framebuffer::CreateColorAttachment(int framebufferIndex, int attachmentInde
 
 void Framebuffer::RemoveColorAttachment(int framebufferIndex, int attachmentIndex)
 {
-    RemoveAttachment(framebufferIndex,  GL_COLOR_ATTACHMENT0 + attachmentIndex);
+    RemoveAttachment(framebufferIndex, GL_COLOR_ATTACHMENT0 + attachmentIndex);
 }
 
 auto Framebuffer::GetColorAttachmentTexture(int framebufferIndex, int attachmentIndex) const -> std::shared_ptr<class Texture>
@@ -313,7 +314,7 @@ void Framebuffer::RemoveDepthStencilAttachment(int framebufferIndex)
 
 void Framebuffer::MaskDrawBuffer(int bufferIndex, bool masked)
 {
-    // Invert the flag, as "true" means the color channel *will* be written.
+
     auto glMasked = static_cast<GLboolean>(!masked);
 #ifdef USE_GLES
     glColorMask(glMasked, glMasked, glMasked, glMasked);
@@ -394,10 +395,10 @@ void Framebuffer::RemoveAttachment(int framebufferIndex, GLenum attachmentType)
 
     m_attachments.at(framebufferIndex).erase(attachmentType);
 
-    // Reset to previous read/draw buffers
+
     glBindFramebuffer(GL_READ_FRAMEBUFFER, m_framebufferIds.at(m_readFramebuffer));
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_framebufferIds.at(m_drawFramebuffer));
 }
 
-} // namespace Renderer
-} // namespace libprojectM
+}
+}

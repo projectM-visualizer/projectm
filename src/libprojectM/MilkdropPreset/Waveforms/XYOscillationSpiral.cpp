@@ -33,6 +33,6 @@ void XYOscillationSpiral::GenerateVertices(const PresetState& presetState,
     }
 }
 
-} // namespace Waveforms
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}
+}

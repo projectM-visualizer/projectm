@@ -26,6 +26,6 @@ void Line::GenerateVertices(const PresetState& presetState, const PerFrameContex
     }
 }
 
-} // namespace Waveforms
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}
+}

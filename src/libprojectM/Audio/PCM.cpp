@@ -48,23 +48,22 @@ void PCM::Add(int16_t const* const samples, uint32_t channels, size_t const coun
 
 void PCM::UpdateFrameAudioData(double secondsSinceLastFrame, uint32_t frame)
 {
-    // 1. Copy audio data from input buffer
+
     CopyNewWaveformData(m_inputBufferL, m_waveformL);
     CopyNewWaveformData(m_inputBufferR, m_waveformR);
 
-    // 2. Update spectrum analyzer data for both channels
+
     UpdateSpectrum(m_waveformL, m_spectrumL);
     UpdateSpectrum(m_waveformR, m_spectrumR);
 
-    // 3. Align waveforms
+
     m_alignL.Align(m_waveformL);
     m_alignR.Align(m_waveformR);
 
-    // 4. Update beat detection values
+
     m_bass.Update(m_spectrumL, secondsSinceLastFrame, frame);
     m_middles.Update(m_spectrumL, secondsSinceLastFrame, frame);
     m_treble.Update(m_spectrumL, secondsSinceLastFrame, frame);
-
 }
 
 auto PCM::GetFrameAudioData() const -> FrameAudioData
@@ -98,7 +97,7 @@ void PCM::UpdateSpectrum(const WaveformBuffer& waveformData, SpectrumBuffer& spe
     size_t oldI{0};
     for (size_t i = 0; i < AudioBufferSamples; i++)
     {
-        // Damp the input into the FFT a bit, to reduce high-frequency noise:
+
         waveformSamples[i] = 0.5f * (waveformData[i] + waveformData[oldI]);
         oldI = i;
     }
@@ -119,5 +118,5 @@ void PCM::CopyNewWaveformData(const WaveformBuffer& source, WaveformBuffer& dest
 }
 
 
-} // namespace Audio
-} // namespace libprojectM
+}
+}

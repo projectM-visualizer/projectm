@@ -130,4 +130,4 @@ double TimeKeeper::sampledPresetDuration()
     return std::max<double>(1.0, gaussianDistribution(m_randomGenerator));
 }
 
-} // namespace libprojectM
+}

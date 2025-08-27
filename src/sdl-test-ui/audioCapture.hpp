@@ -3,4 +3,4 @@
 
 #include "pmSDL.hpp"
 
-#endif /* audioCapture_hpp */
+#endif

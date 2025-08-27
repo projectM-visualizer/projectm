@@ -116,5 +116,5 @@ void WaveformPerPointContext::ExecutePerPointCode()
     }
 }
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

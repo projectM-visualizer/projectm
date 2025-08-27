@@ -27,7 +27,7 @@ void MotionVectors::InitVertexAttrib()
 
 void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shared_ptr<Renderer::Texture> motionTexture)
 {
-    // Don't draw if invisible.
+
     if (*presetPerFrameContext.mv_a < 0.0001f)
     {
         return;
@@ -58,7 +58,7 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
     auto const divertX2 = static_cast<float>(*presetPerFrameContext.mv_dx);
     auto const divertY2 = static_cast<float>(*presetPerFrameContext.mv_dy);
 
-    // Clamp X/Y diversions to 0..1
+
     if (divertX < 0.0f)
     {
         divertX = 0.0f;
@@ -76,13 +76,13 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
         divertY = 1.0f;
     }
 
-    // Tweaked this a bit to ensure lines are always at least a bit more than 1px long.
-    // Line smoothing makes some of them disappear otherwise.
+
+
     float const inverseWidth = 1.25f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
     float const inverseHeight = 1.25f / static_cast<float>(m_presetState.renderContext.viewportSizeY);
     float const minimumLength = sqrtf(inverseWidth * inverseWidth + inverseHeight * inverseHeight);
 
-    std::vector<MotionVectorVertex> lineVertices(static_cast<std::size_t>(countX + 1) * 2); // countX + 1 lines for each grid row, 2 vertices each.
+    std::vector<MotionVectorVertex> lineVertices(static_cast<std::size_t>(countX + 1) * 2);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -135,7 +135,7 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
                 }
             }
 
-            // Draw a row of lines.
+
             if (m_lastVertexCount >= vertex)
             {
                 glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(MotionVectorVertex) * vertex, lineVertices.data());
@@ -170,7 +170,7 @@ std::shared_ptr<Renderer::Shader> MotionVectors::GetShader()
     }
     if (!shader)
     {
-        // First use, compile and cache.
+
         auto staticShaders = libprojectM::MilkdropPreset::MilkdropStaticShaders::Get();
 
         shader = std::make_shared<Renderer::Shader>();
@@ -185,5 +185,5 @@ std::shared_ptr<Renderer::Shader> MotionVectors::GetShader()
     return shader;
 }
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

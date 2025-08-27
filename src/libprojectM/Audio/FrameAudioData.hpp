@@ -1,13 +1,8 @@
-/**
- * @file FrameAudioData.hpp
- * @brief Holds all audio data to be used to render a single frame.
- *
- * This includes the actual waveform data, spectrum and beat detection values.
- */
+
 #pragma once
 
-#include "projectM-4/projectM_export.h"
 #include "AudioConstants.hpp"
+#include "projectM-4/projectM_export.h"
 
 #include <array>
 
@@ -34,5 +29,5 @@ public:
     std::array<float, SpectrumSamples> spectrumRight;
 };
 
-} // namespace Audio
-} // namespace libprojectM
+}
+}

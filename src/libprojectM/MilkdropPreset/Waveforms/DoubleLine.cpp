@@ -37,6 +37,6 @@ void DoubleLine::GenerateVertices(const PresetState& presetState, const PerFrame
     }
 }
 
-} // namespace Waveforms
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}
+}

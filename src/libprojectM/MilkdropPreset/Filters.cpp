@@ -122,5 +122,5 @@ void Filters::UpdateMesh()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

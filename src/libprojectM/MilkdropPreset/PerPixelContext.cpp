@@ -128,5 +128,5 @@ void PerPixelContext::ExecutePerPixelCode()
     }
 }
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

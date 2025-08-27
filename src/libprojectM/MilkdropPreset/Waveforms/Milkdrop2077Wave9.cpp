@@ -27,6 +27,6 @@ void Milkdrop2077Wave9::GenerateVertices(const PresetState& presetState, const P
     }
 }
 
-} // namespace Waveforms
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}
+}

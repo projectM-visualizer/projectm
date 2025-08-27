@@ -1,31 +1,4 @@
-/*
-  LICENSE
-  -------
-Copyright 2005-2013 Nullsoft, Inc.
-All rights reserved.
 
-Redistribution and use in source and binary forms, with or without modification, 
-are permitted provided that the following conditions are met:
-
-  * Redistributions of source code must retain the above copyright notice,
-    this list of conditions and the following disclaimer. 
-
-  * Redistributions in binary form must reproduce the above copyright notice,
-    this list of conditions and the following disclaimer in the documentation
-    and/or other materials provided with the distribution. 
-
-  * Neither the name of Nullsoft nor the names of its contributors may be used to 
-    endorse or promote products derived from this software without specific prior written permission. 
- 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR 
-IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND 
-FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR 
-CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
-IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT 
-OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
 
 #include "MilkdropFFT.hpp"
 
@@ -48,7 +21,7 @@ void MilkdropFFT::InitEnvelopeTable(float power)
 {
     if (power < 0.0f)
     {
-        // Keep all values as-is.
+
         m_envelope = std::vector<float>(m_samplesIn, 1.0f);
         return;
     }
@@ -141,7 +114,7 @@ void MilkdropFFT::InitCosSinTable()
     while (dftsize <= m_numFrequencies)
     {
         auto const theta{-2.0f * PI / static_cast<float>(dftsize)};
-        m_cosSinTable[index] = std::polar(1.0f, theta); // Radius 1 is the unity circle.
+        m_cosSinTable[index] = std::polar(1.0f, theta);
         index++;
         dftsize <<= 1;
     }
@@ -155,7 +128,7 @@ void MilkdropFFT::TimeToFrequencyDomain(const std::vector<float>& waveformData, 
         return;
     }
 
-    // 1. Set up input to the FFT
+
     std::vector<std::complex<float>> spectrumData(m_numFrequencies, std::complex<float>());
     for (size_t i = 0; i < m_numFrequencies; i++)
     {
@@ -166,7 +139,7 @@ void MilkdropFFT::TimeToFrequencyDomain(const std::vector<float>& waveformData, 
         }
     }
 
-    // 2. Perform FFT
+
     size_t dftSize{2};
     size_t octave{0};
 
@@ -194,7 +167,7 @@ void MilkdropFFT::TimeToFrequencyDomain(const std::vector<float>& waveformData, 
         octave++;
     }
 
-    // 3. Take the magnitude & eventually equalize it (on a log10 scale) for output
+
     spectralData.resize(m_numFrequencies / 2);
     for (size_t i = 0; i < m_numFrequencies / 2; i++)
     {
@@ -202,5 +175,5 @@ void MilkdropFFT::TimeToFrequencyDomain(const std::vector<float>& waveformData, 
     }
 }
 
-} // namespace Audio
-} // namespace libprojectM
+}
+}

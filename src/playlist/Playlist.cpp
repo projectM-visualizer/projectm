@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-// Fall back to boost if compiler doesn't support C++17
+
 #include PROJECTM_FILESYSTEM_INCLUDE
 using namespace PROJECTM_FILESYSTEM_NAMESPACE::filesystem;
 
@@ -106,7 +106,7 @@ auto Playlist::AddPath(const std::string& path, uint32_t index, bool recursive, 
         }
         catch (std::exception&)
         {
-            // Todo: Add failure feedback
+
             return presetsAdded;
         }
     }
@@ -280,7 +280,7 @@ auto Playlist::LastPresetIndex() -> uint32_t
     else
     {
         m_currentPosition = PreviousPresetIndex();
-        // Remove added history item again to prevent ping-pong behavior
+
         m_presetHistory.pop_back();
     }
 
@@ -367,7 +367,7 @@ auto Playlist::ApplyFilter() -> uint32_t
 
 void Playlist::AddCurrentPresetIndexToHistory()
 {
-    // No duplicate entries.
+
     if (!m_presetHistory.empty() && m_currentPosition == m_presetHistory.back())
     {
         return;
@@ -381,5 +381,5 @@ void Playlist::AddCurrentPresetIndexToHistory()
 }
 
 
-} // namespace Playlist
-} // namespace libprojectM
+}
+}

@@ -2,8 +2,8 @@
 
 #include "PresetFileParser.hpp"
 
-#include <Renderer/TextureManager.hpp>
 #include <Renderer/RenderItem.hpp>
+#include <Renderer/TextureManager.hpp>
 
 #include <vector>
 
@@ -30,9 +30,9 @@ CustomShape::CustomShape(PresetState& presetState)
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x))); // Position
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r))); // Color
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, u))); // Texture coordinate
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x)));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, u)));
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
 
@@ -42,8 +42,8 @@ CustomShape::CustomShape(PresetState& presetState)
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x))); // Position
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r))); // Color
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x)));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r)));
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
 
@@ -64,7 +64,7 @@ CustomShape::~CustomShape()
 void CustomShape::InitVertexAttrib()
 {
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr); // points
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
     glDisableVertexAttribArray(1);
 
     std::vector<Point> vertexData;
@@ -102,7 +102,7 @@ void CustomShape::Initialize(::libprojectM::PresetFileParser& parsedFile, int in
     m_border_b = parsedFile.GetFloat(shapecodePrefix + "border_b", m_border_b);
     m_border_a = parsedFile.GetFloat(shapecodePrefix + "border_a", m_border_a);
 
-    // projectM addition: texture name to use for rendering the shape
+
     m_image = parsedFile.GetString(shapecodePrefix + "image", "");
 }
 
@@ -145,7 +145,7 @@ void CustomShape::Draw()
             sides = 100;
         }
 
-        // Additive Drawing or Overwrite
+
         glBlendFunc(GL_SRC_ALPHA, static_cast<int>(*m_perFrameContext.additive) != 0 ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
 
         std::vector<TexturedPoint> vertexData(sides + 2);
@@ -156,11 +156,11 @@ void CustomShape::Draw()
         vertexData[0].u = 0.5f;
         vertexData[0].v = 0.5f;
 
-        // x = f*255.0 & 0xFF = (f*255.0) % 256
-        // f' = x/255.0 = f % (256/255)
-        // 1.0 -> 255 (0xFF)
-        // 2.0 -> 254 (0xFE)
-        // -1.0 -> 0x01
+
+
+
+
+
 
         vertexData[0].r = Renderer::color_modulo(*m_perFrameContext.r);
         vertexData[0].g = Renderer::color_modulo(*m_perFrameContext.g);
@@ -177,7 +177,7 @@ void CustomShape::Draw()
             const float cornerProgress = static_cast<float>(i - 1) / static_cast<float>(sides);
             const float angle = cornerProgress * pi * 2.0f + static_cast<float>(*m_perFrameContext.ang) + pi * 0.25f;
 
-            // Todo: There's still some issue with aspect ratio here, as everything gets squashed horizontally if Y > x.
+
             vertexData[i].x = vertexData[0].x + static_cast<float>(*m_perFrameContext.rad) * cosf(angle) * m_presetState.renderContext.aspectY;
             vertexData[i].y = vertexData[0].y + static_cast<float>(*m_perFrameContext.rad) * sinf(angle);
 
@@ -187,7 +187,7 @@ void CustomShape::Draw()
             vertexData[i].a = vertexData[1].a;
         }
 
-        // Duplicate last vertex.
+
         vertexData[sides + 1] = vertexData[1];
 
         if (static_cast<int>(*m_perFrameContext.textured) != 0)
@@ -197,7 +197,7 @@ void CustomShape::Draw()
             shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
             shader->SetUniformInt("texture_sampler", 0);
 
-            // Textured shape, either main texture or texture from "image" key
+
             auto textureAspectY = m_presetState.renderContext.aspectY;
             if (m_image.empty())
             {
@@ -214,7 +214,7 @@ void CustomShape::Draw()
                 }
                 else
                 {
-                    // No texture found, fall back to main texture.
+
                     assert(!m_presetState.mainTexture.expired());
                     m_presetState.mainTexture.lock()->Bind(0);
                 }
@@ -229,7 +229,7 @@ void CustomShape::Draw()
                 const float angle = cornerProgress * pi * 2.0f + static_cast<float>(*m_perFrameContext.tex_ang) + pi * 0.25f;
 
                 vertexData[i].u = 0.5f + 0.5f * cosf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom) * textureAspectY;
-                vertexData[i].v = 1.0f - (0.5f - 0.5f * sinf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom)); // Vertical flip required!
+                vertexData[i].v = 1.0f - (0.5f - 0.5f * sinf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom));
             }
 
             vertexData[sides + 1] = vertexData[1];
@@ -247,7 +247,7 @@ void CustomShape::Draw()
         }
         else
         {
-            // Untextured (creates a color gradient: center=r/g/b/a to border=r2/b2/g2/a2)
+
             glBindBuffer(GL_ARRAY_BUFFER, m_vboIdUntextured);
 
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(TexturedPoint) * (sides + 2), vertexData.data());
@@ -290,12 +290,12 @@ void CustomShape::Draw()
 
             const auto iterations = m_thickOutline ? 4 : 1;
 
-            // Need to use +/- 1.0 here instead of 2.0 used in Milkdrop to achieve the same rendering result.
+
             const auto incrementX = 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
             const auto incrementY = 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeY);
 
-            // If thick outline is used, draw the shape four times with slight offsets
-            // (top left, top right, bottom right, bottom left).
+
+
             for (auto iteration = 0; iteration < iterations; iteration++)
             {
                 switch (iteration)
@@ -342,5 +342,5 @@ void CustomShape::Draw()
     Renderer::Shader::Unbind();
 }
 
-} // namespace MilkdropPreset
-} // namespace libprojectM
+}
+}

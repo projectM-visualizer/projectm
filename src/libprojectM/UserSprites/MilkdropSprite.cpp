@@ -34,9 +34,9 @@ void MilkdropSprite::InitVertexAttrib()
     glDisableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x))); // Position
-    // Color (index 1) is passed as a 4-float constant vertex attribute.
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, u))); // Texture coordinate
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x)));
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, u)));
 }
 
 void MilkdropSprite::Init(const std::string& spriteData, const Renderer::RenderContext& renderContext)
@@ -48,13 +48,13 @@ void MilkdropSprite::Init(const std::string& spriteData, const Renderer::RenderC
         throw SpriteException("Error reading sprite data.");
     }
 
-    // Load/compile shader
+
     auto spriteShader = renderContext.shaderCache->Get("milkdrop_user_sprite");
     if (!spriteShader)
     {
-        // ToDo: Better handle this in the shader class to reduce duplicate code.
+
 #ifdef USE_GLES
-        // GLES also requires a precision specifier for variables and 3D samplers
+
         constexpr char versionHeader[] = "#version 300 es\n\nprecision mediump float;\nprecision mediump sampler3D;\n";
 #else
         constexpr char versionHeader[] = "#version 330\n\n";
@@ -68,12 +68,12 @@ void MilkdropSprite::Init(const std::string& spriteData, const Renderer::RenderC
 
     m_spriteShader = spriteShader;
 
-    // We ignore the color key value here because OpenGL doesn't support those (DirectX has a specific texture
-    // render state for this, which replaces the given color value with transparent texels).
-    // Since sprites are user-supplied, we can just make blend mode 4 based on the texture's alpha channel,
-    // which gives way better results and users can easily convert any image to PNG.
 
-    // Load and compile code
+
+
+
+
+
     auto initCode = parser.GetCode("init_");
     m_codeContext.RunInitCode(initCode, renderContext);
 
@@ -93,7 +93,7 @@ void MilkdropSprite::Init(const std::string& spriteData, const Renderer::RenderC
 
     auto imageName = Utils::ToLower(parser.GetString("img", ""));
 
-    // Store texture as a shared_ptr to make sure TextureManager doesn't delete it.
+
     std::locale const loc;
     if (imageName.length() >= 6 &&
         imageName.substr(0, 4) == "rand" && std::isdigit(imageName.at(4), loc) && std::isdigit(imageName.at(5), loc))
@@ -121,13 +121,13 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
 
     Quad vertices{};
 
-    // Get values from expression code and clamp them where necessary.
+
     float x = std::min(1000.0f, std::max(-1000.0f, static_cast<float>(*m_codeContext.x) * 2.0f - 1.0f));
     float y = std::min(1000.0f, std::max(-1000.0f, static_cast<float>(*m_codeContext.y) * 2.0f - 1.0f));
     float sx = std::min(1000.0f, std::max(-1000.0f, static_cast<float>(*m_codeContext.sx)));
     float sy = std::min(1000.0f, std::max(-1000.0f, static_cast<float>(*m_codeContext.sy)));
     float rot = static_cast<float>(*m_codeContext.rot);
-    int flipx = (*m_codeContext.flipx == 0.0) ? 0 : 1; // Comparing float to 0.0 isn't actually a good idea...
+    int flipx = (*m_codeContext.flipx == 0.0) ? 0 : 1;
     int flipy = (*m_codeContext.flipy == 0.0) ? 0 : 1;
     float repeatx = std::min(100.0f, std::max(0.01f, static_cast<float>(*m_codeContext.repeatx)));
     float repeaty = std::min(100.0f, std::max(0.01f, static_cast<float>(*m_codeContext.repeaty)));
@@ -138,7 +138,7 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
     float b = std::min(1.0f, std::max(0.0f, (static_cast<float>(*m_codeContext.b))));
     float a = std::min(1.0f, std::max(0.0f, (static_cast<float>(*m_codeContext.a))));
 
-    // ToDo: Move all translations to vertex shader
+
     vertices[0 + flipx].x = -sx;
     vertices[1 - flipx].x = sx;
     vertices[2 + flipx].x = -sx;
@@ -148,13 +148,13 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
     vertices[2 - flipy * 2].y = sy;
     vertices[3 - flipy * 2].y = sy;
 
-    // First aspect ratio: adjust for non-1:1 images
+
     {
         auto aspect = m_texture->Height() / static_cast<float>(m_texture->Width());
 
         if (aspect < 1.0f)
         {
-            // Landscape image
+
             for (auto& vertex : vertices)
             {
                 vertex.y *= aspect;
@@ -162,7 +162,7 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
         }
         else
         {
-            // Portrait image
+
             for (auto& vertex : vertices)
             {
                 vertex.x /= aspect;
@@ -170,7 +170,7 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
         }
     }
 
-    // 2D rotation
+
     {
         auto cos_rot = std::cos(rot);
         auto sin_rot = std::sin(rot);
@@ -184,14 +184,14 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
         }
     }
 
-    // Translation
+
     for (auto& vertex : vertices)
     {
         vertex.x += x;
         vertex.y += y;
     }
 
-    // Second aspect ratio: normalize to width of screen
+
     {
         float aspect = renderContext.viewportSizeX / static_cast<float>(renderContext.viewportSizeY);
 
@@ -211,10 +211,10 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
         }
     }
 
-    // Third aspect ratio: adjust for burn-in
-    // -> Not required in projectM, as we always render at viewport size, not a fixed 4:3 ratio
 
-    // Set u,v coords
+
+
+
     {
         float dtu = 0.5f;
         float dtv = 0.5f;
@@ -268,18 +268,18 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
             glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
             break;
         case 4:
-            // Milkdrop actually changed color keying to using texture alpha. The color key is ignored.
+
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             break;
     }
 
-    // Draw to current output buffer
+
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     if (burnIn)
     {
-        // Also draw into all active preset main textures for next-frame burn-in effect
+
         for (const auto preset : presets)
         {
             if (!preset.get())
@@ -291,7 +291,7 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         }
 
-        // Reset to original FBO
+
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(outputFramebufferObject));
     }
 
@@ -325,7 +325,7 @@ void MilkdropSprite::CodeContext::RegisterBuiltinVariables()
 {
     projectm_eval_context_reset_variables(spriteCodeContext);
 
-    // Input variables
+
     REG_VAR(time);
     REG_VAR(frame);
     REG_VAR(fps);
@@ -337,7 +337,7 @@ void MilkdropSprite::CodeContext::RegisterBuiltinVariables()
     REG_VAR(mid_att);
     REG_VAR(treb_att);
 
-    // Output variables
+
     REG_VAR(done);
     REG_VAR(burn);
     REG_VAR(x);
@@ -360,8 +360,8 @@ void MilkdropSprite::CodeContext::RunInitCode(const std::string& initCode, const
 {
     RegisterBuiltinVariables();
 
-    // Set default values of output variables:
-    // (by not setting these every frame, we allow the values to persist from frame-to-frame.)
+
+
     *x = 0.5;
     *y = 0.5;
     *sx = 1.0;
@@ -384,7 +384,7 @@ void MilkdropSprite::CodeContext::RunInitCode(const std::string& initCode, const
         return;
     }
 
-    // Only time and frame values are passed to the init code.
+
     *time = renderContext.time;
     *frame = renderContext.frame;
 
@@ -404,13 +404,13 @@ void MilkdropSprite::CodeContext::RunInitCode(const std::string& initCode, const
 
 void MilkdropSprite::CodeContext::RunPerFrameCode(const Audio::FrameAudioData& audioData, const Renderer::RenderContext& renderContext)
 {
-    // If there's no per-frame code, e.g. with static sprites, just skip it.
+
     if (perFrameCodeHandle == nullptr)
     {
         return;
     }
 
-    // Fill in input variables
+
     *time = renderContext.time;
     *frame = renderContext.frame;
     *fps = renderContext.fps;
@@ -422,9 +422,9 @@ void MilkdropSprite::CodeContext::RunPerFrameCode(const Audio::FrameAudioData& a
     *mid_att = audioData.midAtt;
     *treb_att = audioData.trebAtt;
 
-    // Run the code
+
     projectm_eval_code_execute(perFrameCodeHandle);
 }
 
-} // namespace UserSprites
-} // namespace libprojectM
+}
+}

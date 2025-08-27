@@ -8,7 +8,7 @@
 class projectMSDL;
 
 bool initLoopback();
-void configureLoopback(projectMSDL *app);
-bool processLoopbackFrame(projectMSDL *app);
+void configureLoopback(projectMSDL* app);
+bool processLoopbackFrame(projectMSDL* app);
 
-#endif /* loopback_hpp */
+#endif

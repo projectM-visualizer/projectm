@@ -66,5 +66,5 @@ void Sampler::FilterMode(GLint filterMode)
     glSamplerParameteri(m_samplerId, GL_TEXTURE_MAG_FILTER, filterMode);
 }
 
-} // namespace Renderer
-} // namespace libprojectM
+}
+}

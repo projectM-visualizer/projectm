@@ -31,7 +31,7 @@ void Shader::CompileProgram(const std::string& vertexShaderSource,
 
     glLinkProgram(m_shaderProgram);
 
-    // Shader objects are no longer needed after linking, free the memory.
+
     glDetachShader(m_shaderProgram, vertexShader);
     glDetachShader(m_shaderProgram, fragmentShader);
     glDeleteShader(vertexShader);
@@ -220,15 +220,15 @@ auto Shader::GetShaderLanguageVersion() -> Shader::GlslVersion
 
     std::string shaderLanguageVersionString(shaderLanguageVersion);
 
-    // Some OpenGL implementations add non-standard-conforming text in front, e.g. WebGL, which returns "OpenGL ES GLSL ES 3.00 ..."
-    // Find the first digit and start there.
+
+
     auto firstDigit = shaderLanguageVersionString.find_first_of("0123456789");
     if (firstDigit != std::string::npos && firstDigit != 0)
     {
         shaderLanguageVersionString = shaderLanguageVersionString.substr(firstDigit);
     }
 
-    // Cut off the vendor-specific information, if any
+
     auto spacePos = shaderLanguageVersionString.find(' ');
     if (spacePos != std::string::npos)
     {
@@ -247,5 +247,5 @@ auto Shader::GetShaderLanguageVersion() -> Shader::GlslVersion
     return {versionMajor, versionMinor};
 }
 
-} // namespace Renderer
-} // namespace libprojectM
+}
+}

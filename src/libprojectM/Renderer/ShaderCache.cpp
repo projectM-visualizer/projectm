@@ -30,5 +30,5 @@ auto ShaderCache::Get(const std::string& key) const -> std::shared_ptr<Shader>
     return {};
 }
 
-} // namespace Renderer
-} // namespace libprojectM
+}
+}

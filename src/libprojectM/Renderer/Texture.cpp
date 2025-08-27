@@ -112,5 +112,5 @@ void Texture::CreateNewTexture()
     glBindTexture(m_target, 0);
 }
 
-} // namespace Renderer
-} // namespace libprojectM
+}
+}
