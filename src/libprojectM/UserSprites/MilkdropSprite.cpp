@@ -210,10 +210,10 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
         float dtu = 0.5f;
         float dtv = 0.5f;
 
-        m_mesh.UVs().Set({{-dtu, -dtv},
-                          {dtu, -dtv},
-                          {-dtu, dtv},
-                          {dtu, dtv}});
+        m_mesh.UVs().Set({{-dtu, dtv},
+                          {dtu, dtv},
+                          {-dtu, -dtv},
+                          {dtu, -dtv}});
 
         for (auto& uv : m_mesh.UVs().Get())
         {
