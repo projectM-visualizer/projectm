@@ -223,10 +223,10 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
         vertices[1].u = dtu;
         vertices[2].u = -dtu;
         vertices[3].u = dtu;
-        vertices[0].v = -dtv;
-        vertices[1].v = -dtv;
-        vertices[2].v = dtv;
-        vertices[3].v = dtv;
+        vertices[0].v = dtv;
+        vertices[1].v = dtv;
+        vertices[2].v = -dtv;
+        vertices[3].v = -dtv;
 
         for (auto& vertex : vertices)
         {
