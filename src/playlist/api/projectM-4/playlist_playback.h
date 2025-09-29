@@ -28,8 +28,8 @@
 
 #include "projectM-4/playlist_types.h"
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,9 +53,10 @@ PROJECTM_PLAYLIST_EXPORT bool projectm_playlist_get_shuffle(projectm_playlist_ha
 
 /**
  * @brief Sets the number of retries after failed preset switches.
- * @note Don't set this value too high, as each retry is done recursively.
+ * @note Retry behavior changed in v4.2, using a loop. Default retry count is now 500. Failed items
+ *       are also being removed from the playlist, so they're not tried again.
  * @param instance The playlist manager instance.
- * @param retry_count The number of retries after failed preset switches. Default is 5. Set to 0
+ * @param retry_count The number of retries after failed preset switches. Default is 500. Set to 0
  *                    to simply forward the failure event from projectM.
  * @since 4.0.0
  */
