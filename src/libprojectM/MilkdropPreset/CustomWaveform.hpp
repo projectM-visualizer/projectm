@@ -3,7 +3,9 @@
 #include "WaveformPerFrameContext.hpp"
 #include "WaveformPerPointContext.hpp"
 
-#include <Renderer/RenderItem.hpp>
+#include <Renderer/Color.hpp>
+#include <Renderer/Mesh.hpp>
+#include "Renderer/Point.hpp"
 
 #include <vector>
 
@@ -13,7 +15,7 @@ class PresetFileParser;
 
 namespace MilkdropPreset {
 
-class CustomWaveform : public Renderer::RenderItem
+class CustomWaveform
 {
 public:
 
@@ -22,11 +24,6 @@ public:
      * @param presetState The preset state container.
      */
     explicit CustomWaveform(PresetState& presetState);
-
-    /**
-     * @brief Initializes the waveform's vertex buffer and attribute data.
-     */
-    void InitVertexAttrib() override;
 
     /**
      * @brief Loads the initial values and code from the preset file.
@@ -73,15 +70,13 @@ private:
      *
      * Roughly doubles the number of points.
      *
-     * @param inputVertices Pointer to an array of vertices to be smoothed.
-     * @param vertexCount Number of vertices/points in the input data.
-     * @param outputVertices Pointer to a buffer that will receive the smoothed data. Must be able to hold 2 * vertexCount vertices.
-     * @return The number of vertices in outputVertices after smoothing.
+     * @param points A vector of points to be smoothed.
+     * @param colors A vector of colors for the points.
      */
-    static int SmoothWave(const ColoredPoint* inputVertices, int vertexCount, ColoredPoint* outputVertices);
+    void SmoothWave(const std::vector<Renderer::Point>& points, const std::vector<Renderer::Color>& colors);
 
     int m_index{0}; //!< Custom waveform index in the preset.
-    int m_enabled{0}; //!< Render waveform if non-zero.
+    bool m_enabled{false}; //!< Render waveform if non-zero.
     int m_samples{WaveformMaxPoints}; //!< Number of samples/vertices in the waveform.
     int m_sep{0}; //!< Separation distance of dual waveforms.
     float m_scaling{1.0f}; //!< Scale factor of waveform.
@@ -103,7 +98,7 @@ private:
     WaveformPerFrameContext m_perFrameContext; //!< Holds the code execution context for per-frame expressions
     WaveformPerPointContext m_perPointContext; //!< Holds the code execution context for per-point expressions
 
-    std::vector<ColoredPoint> m_points; //!< Points in this waveform.
+    Renderer::Mesh m_mesh; //!< Points in this waveform.
 
     friend class WaveformPerFrameContext;
     friend class WaveformPerPointContext;
