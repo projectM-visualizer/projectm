@@ -4,9 +4,8 @@
 #include "MilkdropShader.hpp"
 #include "VideoEcho.hpp"
 
-#include <Renderer/RenderItem.hpp>
+#include <Renderer/Mesh.hpp>
 
-#include <array>
 #include <memory>
 
 namespace libprojectM {
@@ -15,12 +14,10 @@ namespace MilkdropPreset {
 /**
  * @brief Draws the final composite effect, either a shader or Milkdrop 1 effects.
  */
-class FinalComposite : public Renderer::RenderItem
+class FinalComposite
 {
 public:
     FinalComposite();
-
-    void InitVertexAttrib() override;
 
     /**
      * @brief Loads the composite shader, if the preset uses one.
@@ -90,9 +87,8 @@ private:
     static constexpr int vertexCount{compositeGridWidth * compositeGridHeight};
     static constexpr int indexCount{(compositeGridWidth - 2) * (compositeGridHeight - 2) * 6};
 
-    GLuint m_elementBuffer{}; //!< Element buffer holding the draw indices.
-    std::array<MeshVertex, vertexCount> m_vertices{}; //!< Composite grid vertices
-    std::array<int, indexCount> m_indices{}; //!< Composite grid draw indices
+    Renderer::Mesh m_compositeMesh; //!< The composite shader mesh.
+    Renderer::VertexBuffer<Renderer::Point> m_radiusAngle; //!< Additional vertex attribute array for radius and angle.
 
     int m_viewportWidth{};  //!< Last known viewport width.
     int m_viewportHeight{}; //!< Last known viewport height.

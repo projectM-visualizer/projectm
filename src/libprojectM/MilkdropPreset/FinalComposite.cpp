@@ -14,28 +14,23 @@ namespace MilkdropPreset {
 static std::string const defaultCompositeShader = "shader_body\n{\nret = tex2D(sampler_main, uv).xyz;\n}";
 
 FinalComposite::FinalComposite()
+    : m_compositeMesh(Renderer::VertexBufferUsage::StreamDraw, true, true)
 {
-    RenderItem::Init();
-}
+    m_compositeMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::Triangles);
 
-void FinalComposite::InitVertexAttrib()
-{
-    glGenBuffers(1, &m_elementBuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_elementBuffer);
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-    glEnableVertexAttribArray(3);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), nullptr);                                               // Positions
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, r)));      // Colors
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, u)));      // Textures
-    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(MeshVertex), reinterpret_cast<void*>(offsetof(MeshVertex, radius))); // Radius/Angle
+    // Add attribute array for radius and angle information to the mesh.
+    m_compositeMesh.Bind();
+    m_radiusAngle.Bind();
+    m_radiusAngle.Resize(vertexCount);
+    m_radiusAngle.InitializeAttributePointer(3);
+    Renderer::VertexBuffer<Renderer::Point>::SetEnableAttributeArray(3, true);
 
     // Pre-allocate vertex and index buffers
-    glBufferData(GL_ARRAY_BUFFER, sizeof(MeshVertex) * vertexCount, m_vertices.data(), GL_STREAM_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * m_indices.size(), m_indices.data(), GL_STREAM_DRAW);
+    m_compositeMesh.SetVertexCount(vertexCount);
+    m_compositeMesh.Indices().Resize(indexCount);
+    m_compositeMesh.Update();
+
+    Renderer::Mesh::Unbind();
 }
 
 void FinalComposite::LoadCompositeShader(const PresetState& presetState)
@@ -58,7 +53,7 @@ void FinalComposite::LoadCompositeShader(const PresetState& presetState)
                 std::cerr << "[Composite Shader] Error loading composite warp shader code:" << ex.message() << std::endl;
                 std::cerr << "[Composite Shader] Using fallback shader." << std::endl;
 #else
-                (void)ex; // silence unused parameter warning
+                (void) ex; // silence unused parameter warning
 #endif
                 // Fall back to default shader
                 m_compositeShader = std::make_unique<MilkdropShader>(MilkdropShader::ShaderType::CompositeShader);
@@ -104,7 +99,7 @@ void FinalComposite::CompileCompositeShader(PresetState& presetState)
             std::cerr << "[Composite Shader] Error compiling composite warp shader code:" << ex.message() << std::endl;
             std::cerr << "[Composite Shader] Using fallback shader." << std::endl;
 #else
-                (void)ex; // silence unused parameter warning
+            (void) ex; // silence unused parameter warning
 #endif
             // Fall back to default shader
             m_compositeShader = std::make_unique<MilkdropShader>(MilkdropShader::ShaderType::CompositeShader);
@@ -123,14 +118,10 @@ void FinalComposite::Draw(const PresetState& presetState, const PerFrameContext&
 
         // Render the grid
         glDisable(GL_BLEND);
-        glBindVertexArray(m_vaoID);
-        glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(MeshVertex) * vertexCount, m_vertices.data());
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
         m_compositeShader->LoadVariables(presetState, perFrameContext);
 
-        glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
+        m_compositeMesh.Draw();
+        Renderer::Mesh::Unbind();
     }
     else
     {
@@ -142,7 +133,6 @@ void FinalComposite::Draw(const PresetState& presetState, const PerFrameContext&
         }
     }
 
-    glBindVertexArray(0);
     Renderer::Shader::Unbind();
 }
 
@@ -167,6 +157,9 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
 
     constexpr float PI = 3.1415926535898f;
 
+    auto& vertices = m_compositeMesh.Vertices();
+    auto& uvs = m_compositeMesh.UVs();
+
     for (int gridY = 0; gridY < compositeGridHeight; gridY++)
     {
         int const gridY2 = gridY - gridY / (compositeGridHeight / 2);
@@ -179,13 +172,12 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
             float const u = SquishToCenter(gridX2 * dividedByX, 3.0f);
             float const sx = u * 2.0f - 1.0f;
 
-            auto& vertex = m_vertices.at(gridX + gridY * compositeGridWidth);
+            const size_t vertexIndex = gridX + gridY * compositeGridWidth;
 
-            vertex.x = sx;
-            vertex.y = sy;
+            vertices[vertexIndex] = {sx, sy};
 
-            float rad;
-            float ang;
+            float rad{};
+            float ang{};
             UvToMathSpace(presetState.renderContext.aspectX,
                           presetState.renderContext.aspectY,
                           u, v, rad, ang);
@@ -251,16 +243,16 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
                     ang = PI * 0.0f;
                 }
             }
-            vertex.u = u + halfTexelWidth;
-            vertex.v = v + halfTexelHeight;
+            uvs[vertexIndex] = {u + halfTexelWidth,
+                                v + halfTexelHeight};
 
-            vertex.radius = rad;
-            vertex.angle = ang;
+            m_radiusAngle[vertexIndex] = {rad, ang};
         }
     }
 
     // build index list for final composite blit -
     // order should be friendly for interpolation of 'ang' value!
+    auto& indices = m_compositeMesh.Indices();
     int currentIndex = 0;
     for (int gridY = 0; gridY < compositeGridHeight - 1; gridY++)
     {
@@ -283,32 +275,30 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
 
             if ((static_cast<int>(leftHalf) + static_cast<int>(topHalf) + static_cast<int>(center4)) % 2 == 1)
             {
-                m_indices[currentIndex + 0] = gridY * compositeGridWidth + gridX;
-                m_indices[currentIndex + 1] = gridY * compositeGridWidth + gridX + 1;
-                m_indices[currentIndex + 2] = (gridY + 1) * compositeGridWidth + gridX + 1;
-                m_indices[currentIndex + 3] = (gridY + 1) * compositeGridWidth + gridX + 1;
-                m_indices[currentIndex + 4] = (gridY + 1) * compositeGridWidth + gridX;
-                m_indices[currentIndex + 5] = gridY * compositeGridWidth + gridX;
+                indices[currentIndex + 0] = gridY * compositeGridWidth + gridX;
+                indices[currentIndex + 1] = gridY * compositeGridWidth + gridX + 1;
+                indices[currentIndex + 2] = (gridY + 1) * compositeGridWidth + gridX + 1;
+                indices[currentIndex + 3] = (gridY + 1) * compositeGridWidth + gridX + 1;
+                indices[currentIndex + 4] = (gridY + 1) * compositeGridWidth + gridX;
+                indices[currentIndex + 5] = gridY * compositeGridWidth + gridX;
             }
             else
             {
-                m_indices[currentIndex + 0] = (gridY + 1) * compositeGridWidth + (gridX);
-                m_indices[currentIndex + 1] = (gridY) *compositeGridWidth + (gridX);
-                m_indices[currentIndex + 2] = (gridY) *compositeGridWidth + (gridX + 1);
-                m_indices[currentIndex + 3] = (gridY) *compositeGridWidth + (gridX + 1);
-                m_indices[currentIndex + 4] = (gridY + 1) * compositeGridWidth + (gridX + 1);
-                m_indices[currentIndex + 5] = (gridY + 1) * compositeGridWidth + (gridX);
+                indices[currentIndex + 0] = (gridY + 1) * compositeGridWidth + (gridX);
+                indices[currentIndex + 1] = (gridY) *compositeGridWidth + (gridX);
+                indices[currentIndex + 2] = (gridY) *compositeGridWidth + (gridX + 1);
+                indices[currentIndex + 3] = (gridY) *compositeGridWidth + (gridX + 1);
+                indices[currentIndex + 4] = (gridY + 1) * compositeGridWidth + (gridX + 1);
+                indices[currentIndex + 5] = (gridY + 1) * compositeGridWidth + (gridX);
             }
 
             currentIndex += 6;
         }
     }
 
-    // Store indices.
-    // ToDo: Probably don't need to store m_indices
-    glBindVertexArray(m_vaoID);
-    glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(int) * m_indices.size(), m_indices.data());
-    glBindVertexArray(0);
+    // Update mesh geometry and indices.
+    m_compositeMesh.Update();
+    m_radiusAngle.Update();
 }
 
 float FinalComposite::SquishToCenter(float x, float exponent)
@@ -366,13 +356,16 @@ void FinalComposite::ApplyHueShaderColors(const PresetState& presetState)
     }
 
     // Interpolate and apply to all grid vertices.
+    auto& vertices = m_compositeMesh.Vertices();
+    auto& colors = m_compositeMesh.Colors();
+
     for (int gridY = 0; gridY < compositeGridHeight; gridY++)
     {
         for (int gridX = 0; gridX < compositeGridWidth; gridX++)
         {
-            auto& vertex = m_vertices[gridX + gridY * compositeGridWidth];
-            float x = vertex.x * 0.5f + 0.5f;
-            float y = vertex.y * 0.5f + 0.5f;
+            auto vertexIndex = gridX + gridY * compositeGridWidth;
+            float x = vertices[vertexIndex].X() * 0.5f + 0.5f;
+            float y = vertices[vertexIndex].Y() * 0.5f + 0.5f;
 
             std::array<float, 3> color{{1.0f, 1.0f, 1.0f}};
             for (int col = 0; col < 3; col++)
@@ -383,12 +376,16 @@ void FinalComposite::ApplyHueShaderColors(const PresetState& presetState)
                              shade[3][col] * (1 - x) * (1 - y);
             }
 
-            vertex.r = color[0];
-            vertex.g = color[1];
-            vertex.b = color[2];
-            vertex.a = 1.0f;
+            colors[vertexIndex] = {color[0],
+                                   color[1],
+                                   color[2],
+                                   1.0f};
         }
     }
+
+    // Only update color buffer.
+    m_compositeMesh.Bind();
+    m_compositeMesh.Colors().Update();
 }
 
 } // namespace MilkdropPreset
