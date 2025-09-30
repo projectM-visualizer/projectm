@@ -1,8 +1,7 @@
 #pragma once
 
-#include "Renderer/RenderItem.hpp"
+#include "Renderer/Mesh.hpp"
 #include "Renderer/Shader.hpp"
-#include "Renderer/TextureSamplerDescriptor.hpp"
 
 #include <Preset.hpp>
 
@@ -16,7 +15,7 @@ namespace Renderer {
 /**
  * @brief Implements the shader and rendering logic to blend two presets into each other.
  */
-class PresetTransition : public RenderItem
+class PresetTransition
 {
 public:
     PresetTransition() = delete;
@@ -30,8 +29,6 @@ public:
     explicit PresetTransition(const std::shared_ptr<Shader>& transitionShader,
                               double durationSeconds,
                               double transitionStartTime);
-
-    void InitVertexAttrib() override;
 
     /**
      * @brief Returns true if the transition is done.
@@ -58,7 +55,7 @@ public:
     void Draw(const Preset& oldPreset,
               const Preset& newPreset,
               const RenderContext& context,
-              const libprojectM::Audio::FrameAudioData& audioData,
+              const Audio::FrameAudioData& audioData,
               double currentFrameTime);
 
 private:
@@ -73,6 +70,7 @@ private:
                                                  "noisevol_hq",
                                                  "pw_noisevol_hq"}; //!< Names of noise textures to retrieve from TextureManager.
 
+    Mesh m_mesh;                                                                                      //!< The mesh used to draw the transition effect.
     std::shared_ptr<Shader> m_transitionShader;                                                       //!< The compiled shader used for this transition.
     std::shared_ptr<Sampler> m_presetSampler{std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR)}; //!< Sampler for preset textures. Uses bilinear interpolation and no repeat.
 
