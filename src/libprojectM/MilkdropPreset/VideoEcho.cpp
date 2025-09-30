@@ -4,21 +4,11 @@ namespace libprojectM {
 namespace MilkdropPreset {
 
 VideoEcho::VideoEcho(const PresetState& presetState)
-    : RenderItem()
-    , m_presetState(presetState)
+    : m_presetState(presetState)
+    , m_echoMesh(Renderer::VertexBufferUsage::DynamicDraw, true, true)
 {
-    RenderItem::Init();
-}
-
-void VideoEcho::InitVertexAttrib()
-{
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x))); // Position
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r))); // Color
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, u))); // Texture coordinates
+    m_echoMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::TriangleStrip);
+    m_echoMesh.SetVertexCount(4);
 }
 
 void VideoEcho::Draw()
@@ -38,15 +28,12 @@ void VideoEcho::Draw()
 
     float const fOnePlusInvWidth = 1.0f + 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
     float const fOnePlusInvHeight = 1.0f + 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeY);
-    m_vertices[0].x = -fOnePlusInvWidth * aspectMultX;
-    m_vertices[1].x = fOnePlusInvWidth * aspectMultX;
-    m_vertices[2].x = -fOnePlusInvWidth * aspectMultX;
-    m_vertices[3].x = fOnePlusInvWidth * aspectMultX;
-    m_vertices[0].y = fOnePlusInvHeight * aspectMultY;
-    m_vertices[1].y = fOnePlusInvHeight * aspectMultY;
-    m_vertices[2].y = -fOnePlusInvHeight * aspectMultY;
-    m_vertices[3].y = -fOnePlusInvHeight * aspectMultY;
+    m_echoMesh.Vertices().Set({{-fOnePlusInvWidth * aspectMultX, fOnePlusInvHeight * aspectMultY},
+                               {fOnePlusInvWidth * aspectMultX, fOnePlusInvHeight * aspectMultY},
+                               {-fOnePlusInvWidth * aspectMultX, -fOnePlusInvHeight * aspectMultY},
+                               {fOnePlusInvWidth * aspectMultX, -fOnePlusInvHeight * aspectMultY}});
 
+    auto& colors = m_echoMesh.Colors();
     for (int i = 0; i < 4; i++)
     {
         auto const indexFloat = static_cast<float>(i);
@@ -62,10 +49,10 @@ void VideoEcho::Draw()
             m_shade[i][k] = 0.5f + 0.5f * m_shade[i][k];
         }
 
-        m_vertices[i].r = m_shade[i][0];
-        m_vertices[i].g = m_shade[i][1];
-        m_vertices[i].b = m_shade[i][2];
-        m_vertices[i].a = 1.0f;
+        colors[i] = {m_shade[i][0],
+                     m_shade[i][1],
+                     m_shade[i][2],
+                     1.0f};
     }
 
     auto shader = m_presetState.texturedShader.lock();
@@ -80,9 +67,6 @@ void VideoEcho::Draw()
         m_sampler.Bind(0);
     }
 
-    glBindVertexArray(m_vaoID);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
-
     if (m_presetState.videoEchoAlpha > 0.001f)
     {
         DrawVideoEcho();
@@ -92,11 +76,9 @@ void VideoEcho::Draw()
         DrawGammaAdjustment();
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
     glDisable(GL_BLEND);
 
+    Renderer::Mesh::Unbind();
     Renderer::Shader::Unbind();
 
     if (mainTexture)
@@ -121,15 +103,12 @@ void VideoEcho::DrawVideoEcho()
         float const zoom = (pass == 0) ? 1.0f : videoEchoZoom;
 
         float const tempLow = 0.5f - 0.5f / zoom;
-        float const temphigh = 0.5f + 0.5f / zoom;
-        m_vertices[0].u = tempLow;
-        m_vertices[0].v = tempLow;
-        m_vertices[1].u = temphigh;
-        m_vertices[1].v = tempLow;
-        m_vertices[2].u = tempLow;
-        m_vertices[2].v = temphigh;
-        m_vertices[3].u = temphigh;
-        m_vertices[3].v = temphigh;
+        float const tempHigh = 0.5f + 0.5f / zoom;
+
+        m_echoMesh.UVs().Set({{tempLow, tempLow},
+                              {tempHigh, tempLow},
+                              {tempLow, tempHigh},
+                              {tempHigh, tempHigh}});
 
         // Flipping
         if (pass == 1)
@@ -138,11 +117,11 @@ void VideoEcho::DrawVideoEcho()
             {
                 if (videoEchoOrientation % 2 == 1)
                 {
-                    m_vertices[vertex].u = 1.0f - m_vertices[vertex].u;
+                    m_echoMesh.UVs()[vertex].SetU(1.0f - m_echoMesh.UVs()[vertex].U());
                 }
                 if (videoEchoOrientation >= 2)
                 {
-                    m_vertices[vertex].v = 1.0f - m_vertices[vertex].v;
+                    m_echoMesh.UVs()[vertex].SetV(1.0f - m_echoMesh.UVs()[vertex].V());
                 }
             }
         }
@@ -150,14 +129,15 @@ void VideoEcho::DrawVideoEcho()
         float const mix = (pass == 1) ? videoEchoAlpha : 1.0f - videoEchoAlpha;
         for (int vertex = 0; vertex < 4; vertex++)
         {
-            m_vertices[vertex].r = mix * m_shade[vertex][0];
-            m_vertices[vertex].g = mix * m_shade[vertex][1];
-            m_vertices[vertex].b = mix * m_shade[vertex][2];
-            m_vertices[vertex].a = 1.0f;
+            m_echoMesh.Colors()[vertex] = {
+                mix * m_shade[vertex][0],
+                mix * m_shade[vertex][1],
+                mix * m_shade[vertex][2],
+                1.0f};
         }
 
-        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(sizeof(TexturedPoint) * m_vertices.size()), m_vertices.data(), GL_DYNAMIC_DRAW);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, static_cast<GLsizei>(m_vertices.size()));
+        m_echoMesh.Update();
+        m_echoMesh.Draw();
 
         if (pass == 0)
         {
@@ -182,14 +162,15 @@ void VideoEcho::DrawVideoEcho()
 
                 for (int vertex = 0; vertex < 4; vertex++)
                 {
-                    m_vertices[vertex].r = gamma * mix * m_shade[vertex][0];
-                    m_vertices[vertex].g = gamma * mix * m_shade[vertex][1];
-                    m_vertices[vertex].b = gamma * mix * m_shade[vertex][2];
-                    m_vertices[vertex].a = 1.0f;
+                    m_echoMesh.Colors()[vertex] = {
+                        gamma * mix * m_shade[vertex][0],
+                        gamma * mix * m_shade[vertex][1],
+                        gamma * mix * m_shade[vertex][2],
+                        1.0f};
                 }
 
-                glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(sizeof(TexturedPoint) * m_vertices.size()), m_vertices.data(), GL_DYNAMIC_DRAW);
-                glDrawArrays(GL_TRIANGLE_STRIP, 0, static_cast<GLsizei>(m_vertices.size()));
+                m_echoMesh.Colors().Update();
+                m_echoMesh.Draw();
             }
         }
     }
@@ -197,14 +178,10 @@ void VideoEcho::DrawVideoEcho()
 
 void VideoEcho::DrawGammaAdjustment()
 {
-    m_vertices[0].u = 0.0f;
-    m_vertices[0].v = 0.0f;
-    m_vertices[1].u = 1.0f;
-    m_vertices[1].v = 0.0f;
-    m_vertices[2].u = 0.0f;
-    m_vertices[2].v = 1.0f;
-    m_vertices[3].u = 1.0f;
-    m_vertices[3].v = 1.0f;
+    m_echoMesh.UVs().Set({{0.0f, 0.0f},
+                          {1.0f, 0.0f},
+                          {0.0f, 1.0f},
+                          {1.0f, 1.0f}});
 
     glDisable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ZERO);
@@ -226,14 +203,15 @@ void VideoEcho::DrawGammaAdjustment()
 
         for (int vertex = 0; vertex < 4; vertex++)
         {
-            m_vertices[vertex].r = gamma * m_shade[vertex][0];
-            m_vertices[vertex].g = gamma * m_shade[vertex][1];
-            m_vertices[vertex].b = gamma * m_shade[vertex][2];
-            m_vertices[vertex].a = 1.0f;
+            m_echoMesh.Colors()[vertex] = {
+                gamma * m_shade[vertex][0],
+                gamma * m_shade[vertex][1],
+                gamma * m_shade[vertex][2],
+                1.0f};
         }
 
-        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(sizeof(TexturedPoint) * m_vertices.size()), m_vertices.data(), GL_DYNAMIC_DRAW);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, static_cast<GLsizei>(m_vertices.size()));
+        m_echoMesh.Update();
+        m_echoMesh.Draw();
 
         if (redraw == 0)
         {
