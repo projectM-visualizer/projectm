@@ -5,7 +5,8 @@
 
 #include "MilkdropStaticShaders.hpp"
 
-#include "Renderer/ShaderCache.hpp"
+#include <Renderer/Point.hpp>
+#include <Renderer/ShaderCache.hpp>
 
 #include <array>
 
@@ -13,33 +14,25 @@ namespace libprojectM {
 namespace MilkdropPreset {
 
 BlurTexture::BlurTexture()
-    : m_blurSampler(std::make_shared<Renderer::Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR))
+    : m_blurMesh(Renderer::VertexBufferUsage::StaticDraw, false, true)
+    , m_blurSampler(std::make_shared<Renderer::Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR))
 {
     m_blurFramebuffer.CreateColorAttachment(0, 0);
 
-    // Initialize Blur VAO/VBO with a single fullscreen quad.
-    static constexpr std::array<float, 16> pointsBlur{
-        -1.0, -1.0, 0.0, 0.0,
-        1.0, -1.0, 1.0, 0.0,
-        -1.0, 1.0, 0.0, 1.0,
-        1.0, 1.0, 1.0, 1.0};
+    // Initialize blur mesh with a single fullscreen quad.
+    m_blurMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::TriangleStrip);
 
-    glGenBuffers(1, &m_vboBlur);
-    glGenVertexArrays(1, &m_vaoBlur);
+    m_blurMesh.Vertices().Set({{-1.0f, -1.0f},
+                               {1.0f, -1.0f},
+                               {-1.0f, 1.0f},
+                               {1.0f, 1.0f}});
 
-    glBindVertexArray(m_vaoBlur);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vboBlur);
+    m_blurMesh.UVs().Set({{0.0, 0.0},
+                          {1.0, 0.0},
+                          {0.0, 1.0},
+                          {1.0, 1.0}});
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * pointsBlur.size(), pointsBlur.data(), GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, nullptr);                                    // Position at index 0 and 1
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, reinterpret_cast<void*>(sizeof(float) * 2)); // Texture coord at index 2 and 3
-
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    m_blurMesh.Update();
 
     // Initialize with empty textures.
     for (size_t i = 0; i < m_blurTextures.size(); i++)
@@ -52,12 +45,6 @@ BlurTexture::BlurTexture()
 
         m_blurTextures[i] = std::make_shared<Renderer::Texture>(textureName, 0, GL_TEXTURE_2D, 0, 0, false);
     }
-}
-
-BlurTexture::~BlurTexture()
-{
-    glDeleteBuffers(1, &m_vboBlur);
-    glDeleteVertexArrays(1, &m_vaoBlur);
 }
 
 void BlurTexture::Initialize(const Renderer::RenderContext& renderContext)
@@ -164,7 +151,6 @@ void BlurTexture::Update(const Renderer::Texture& sourceTexture, const PerFrameC
     m_blurFramebuffer.Bind(0);
 
     glBlendFunc(GL_ONE, GL_ZERO);
-    glBindVertexArray(m_vaoBlur);
 
     for (unsigned int pass = 0; pass < passes; pass++)
     {
@@ -268,7 +254,7 @@ void BlurTexture::Update(const Renderer::Texture& sourceTexture, const PerFrameC
         }
 
         // Draw fullscreen quad
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        m_blurMesh.Draw();
 
         // Save to blur texture
         m_blurTextures[pass]->Bind(0);
@@ -276,7 +262,7 @@ void BlurTexture::Update(const Renderer::Texture& sourceTexture, const PerFrameC
         m_blurTextures[pass]->Unbind(0);
     }
 
-    glBindVertexArray(0);
+    Renderer::Mesh::Unbind();
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Bind previous framebuffer and reset viewport size
