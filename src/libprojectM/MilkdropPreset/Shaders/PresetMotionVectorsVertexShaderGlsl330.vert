@@ -2,7 +2,6 @@ precision mediump float;
 
 layout(location = 0) in vec2 vertex_position;
 layout(location = 1) in vec4 vertex_color;
-layout(location = 2) in int vertex_index;
 
 uniform mat4 vertex_transformation;
 uniform float length_multiplier;
@@ -17,7 +16,7 @@ void main() {
     // screen coordinates.
     vec2 pos = vertex_position;
 
-    if (vertex_index % 2 == 1)
+    if (gl_VertexID % 2 == 1)
     {
         // Reverse propagation using the u/v texture written in the previous frame.
         // Milkdrop's original code did a simple bilinear interpolation, but here it was already
