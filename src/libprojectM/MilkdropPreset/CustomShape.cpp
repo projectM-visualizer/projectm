@@ -3,7 +3,6 @@
 #include "PresetFileParser.hpp"
 
 #include <Renderer/TextureManager.hpp>
-#include <Renderer/RenderItem.hpp>
 
 #include <vector>
 
@@ -11,65 +10,18 @@ namespace libprojectM {
 namespace MilkdropPreset {
 
 CustomShape::CustomShape(PresetState& presetState)
-    : m_presetState(presetState)
+    : m_outlineMesh(Renderer::VertexBufferUsage::StreamDraw)
+    , m_fillMesh(Renderer::VertexBufferUsage::StreamDraw, true, false)
+    , m_presetState(presetState)
     , m_perFrameContext(presetState.globalMemory, &presetState.globalRegisters)
 {
-    std::vector<TexturedPoint> vertexData;
-    vertexData.resize(102);
+    m_outlineMesh.SetVertexCount(100);
+    m_outlineMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::LineLoop);
 
-    glGenVertexArrays(1, &m_vaoIdTextured);
-    glGenBuffers(1, &m_vboIdTextured);
-
-    glGenVertexArrays(1, &m_vaoIdUntextured);
-    glGenBuffers(1, &m_vboIdUntextured);
-
-    glBindVertexArray(m_vaoIdTextured);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vboIdTextured);
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x))); // Position
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r))); // Color
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, u))); // Texture coordinate
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
-
-    glBindVertexArray(m_vaoIdUntextured);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vboIdUntextured);
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x))); // Position
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r))); // Color
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
-
-    RenderItem::Init();
+    m_fillMesh.SetVertexCount(102);
+    m_fillMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::TriangleFan);
 
     m_perFrameContext.RegisterBuiltinVariables();
-}
-
-CustomShape::~CustomShape()
-{
-    glDeleteBuffers(1, &m_vboIdTextured);
-    glDeleteVertexArrays(1, &m_vaoIdTextured);
-
-    glDeleteBuffers(1, &m_vboIdUntextured);
-    glDeleteVertexArrays(1, &m_vaoIdUntextured);
-}
-
-void CustomShape::InitVertexAttrib()
-{
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr); // points
-    glDisableVertexAttribArray(1);
-
-    std::vector<Point> vertexData;
-    vertexData.resize(100);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
 }
 
 void CustomShape::Initialize(::libprojectM::PresetFileParser& parsedFile, int index)
@@ -148,13 +100,11 @@ void CustomShape::Draw()
         // Additive Drawing or Overwrite
         glBlendFunc(GL_SRC_ALPHA, static_cast<int>(*m_perFrameContext.additive) != 0 ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
 
-        std::vector<TexturedPoint> vertexData(sides + 2);
+        auto& vertexData = m_fillMesh.Vertices();
+        auto& colorData = m_fillMesh.Colors();
 
-        vertexData[0].x = static_cast<float>(*m_perFrameContext.x * 2.0 - 1.0);
-        vertexData[0].y = static_cast<float>(*m_perFrameContext.y * -2.0 + 1.0);
-
-        vertexData[0].u = 0.5f;
-        vertexData[0].v = 0.5f;
+        vertexData[0] = Renderer::Point(static_cast<float>(*m_perFrameContext.x * 2.0 - 1.0),
+                                        static_cast<float>(*m_perFrameContext.y * -2.0 + 1.0));
 
         // x = f*255.0 & 0xFF = (f*255.0) % 256
         // f' = x/255.0 = f % (256/255)
@@ -162,15 +112,15 @@ void CustomShape::Draw()
         // 2.0 -> 254 (0xFE)
         // -1.0 -> 0x01
 
-        vertexData[0].r = Renderer::color_modulo(*m_perFrameContext.r);
-        vertexData[0].g = Renderer::color_modulo(*m_perFrameContext.g);
-        vertexData[0].b = Renderer::color_modulo(*m_perFrameContext.b);
-        vertexData[0].a = Renderer::color_modulo(*m_perFrameContext.a);
+        colorData[0] = Renderer::Color::Modulo(Renderer::Color(static_cast<float>(*m_perFrameContext.r),
+                                                               static_cast<float>(*m_perFrameContext.g),
+                                                               static_cast<float>(*m_perFrameContext.b),
+                                                               static_cast<float>(*m_perFrameContext.a)));
 
-        vertexData[1].r = Renderer::color_modulo(*m_perFrameContext.r2);
-        vertexData[1].g = Renderer::color_modulo(*m_perFrameContext.g2);
-        vertexData[1].b = Renderer::color_modulo(*m_perFrameContext.b2);
-        vertexData[1].a = Renderer::color_modulo(*m_perFrameContext.a2);
+        colorData[1] = Renderer::Color::Modulo(Renderer::Color(static_cast<float>(*m_perFrameContext.r2),
+                                                               static_cast<float>(*m_perFrameContext.g2),
+                                                               static_cast<float>(*m_perFrameContext.b2),
+                                                               static_cast<float>(*m_perFrameContext.a2)));
 
         for (int i = 1; i < sides + 1; i++)
         {
@@ -178,19 +128,19 @@ void CustomShape::Draw()
             const float angle = cornerProgress * pi * 2.0f + static_cast<float>(*m_perFrameContext.ang) + pi * 0.25f;
 
             // Todo: There's still some issue with aspect ratio here, as everything gets squashed horizontally if Y > x.
-            vertexData[i].x = vertexData[0].x + static_cast<float>(*m_perFrameContext.rad) * cosf(angle) * m_presetState.renderContext.aspectY;
-            vertexData[i].y = vertexData[0].y + static_cast<float>(*m_perFrameContext.rad) * sinf(angle);
+            vertexData[i] = Renderer::Point(vertexData[0].X() + static_cast<float>(*m_perFrameContext.rad) * cosf(angle) * m_presetState.renderContext.aspectY,
+                                            vertexData[0].Y() + static_cast<float>(*m_perFrameContext.rad) * sinf(angle));
 
-            vertexData[i].r = vertexData[1].r;
-            vertexData[i].g = vertexData[1].g;
-            vertexData[i].b = vertexData[1].b;
-            vertexData[i].a = vertexData[1].a;
+            colorData[i] = colorData[1];
         }
 
         // Duplicate last vertex.
         vertexData[sides + 1] = vertexData[1];
+        colorData[sides + 1] = colorData[1];
 
-        if (static_cast<int>(*m_perFrameContext.textured) != 0)
+        m_fillMesh.SetUseUV(static_cast<int>(*m_perFrameContext.textured) != 0);
+
+        if (m_fillMesh.UseUV())
         {
             auto shader = m_presetState.texturedShader.lock();
             shader->Bind();
@@ -223,57 +173,54 @@ void CustomShape::Draw()
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+            auto& uvs = m_fillMesh.UVs();
+
+            uvs[0] = Renderer::TextureUV(0.5f, 0.5f);
+
             for (int i = 1; i < sides + 1; i++)
             {
                 const float cornerProgress = static_cast<float>(i - 1) / static_cast<float>(sides);
                 const float angle = cornerProgress * pi * 2.0f + static_cast<float>(*m_perFrameContext.tex_ang) + pi * 0.25f;
 
-                vertexData[i].u = 0.5f + 0.5f * cosf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom) * textureAspectY;
-                vertexData[i].v = 1.0f - (0.5f - 0.5f * sinf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom)); // Vertical flip required!
+                uvs[i] = Renderer::TextureUV(0.5f + 0.5f * cosf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom) * textureAspectY,
+                                             1.0f - (0.5f - 0.5f * sinf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom))); // Vertical flip required!
             }
 
-            vertexData[sides + 1] = vertexData[1];
-
-            glBindBuffer(GL_ARRAY_BUFFER, m_vboIdTextured);
-
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(TexturedPoint) * (sides + 2), vertexData.data());
-
-            glBindVertexArray(m_vaoIdTextured);
-            glDrawArrays(GL_TRIANGLE_FAN, 0, sides + 2);
-            glBindVertexArray(0);
-
-            glBindTexture(GL_TEXTURE_2D, 0);
-            Renderer::Sampler::Unbind(0);
+            uvs[sides + 1] = uvs[1];
         }
         else
         {
             // Untextured (creates a color gradient: center=r/g/b/a to border=r2/b2/g2/a2)
-            glBindBuffer(GL_ARRAY_BUFFER, m_vboIdUntextured);
-
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(TexturedPoint) * (sides + 2), vertexData.data());
-
             auto shader = m_presetState.untexturedShader.lock();
             shader->Bind();
             shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
-
-            glBindVertexArray(m_vaoIdUntextured);
-            glDrawArrays(GL_TRIANGLE_FAN, 0, sides + 2);
-            glBindVertexArray(0);
         }
+
+        m_fillMesh.Indices().Resize(sides + 2);
+        m_fillMesh.Indices().MakeContinuous();
+        m_fillMesh.Update();
+        m_fillMesh.Draw();
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        Renderer::Sampler::Unbind(0);
 
         if (*m_perFrameContext.border_a > 0.0001f)
         {
-            std::vector<ShapeVertex> points(sides);
+            m_outlineMesh.Indices().Resize(sides);
+            m_outlineMesh.Indices().MakeContinuous();
+
+            auto& points = m_outlineMesh.Vertices();
 
             for (int i = 0; i < sides; i++)
             {
-                points[i].x = vertexData[i + 1].x;
-                points[i].y = vertexData[i + 1].y;
+                points[i] = m_fillMesh.Vertex(i + 1);
             }
 
             auto shader = m_presetState.untexturedShader.lock();
             shader->Bind();
             shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+
+            m_outlineMesh.Bind();
 
             glVertexAttrib4f(1,
                              static_cast<float>(*m_perFrameContext.border_r),
@@ -284,9 +231,6 @@ void CustomShape::Draw()
 #ifndef USE_GLES
             glEnable(GL_LINE_SMOOTH);
 #endif
-
-            glBindVertexArray(m_vaoID);
-            glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
             const auto iterations = m_thickOutline ? 4 : 1;
 
@@ -306,40 +250,38 @@ void CustomShape::Draw()
                     case 1:
                         for (auto j = 0; j < sides; j++)
                         {
-                            points[j].x += incrementX;
+                            points[j].SetX(points[j].X() + incrementX);
                         }
                         break;
 
                     case 2:
                         for (auto j = 0; j < sides; j++)
                         {
-                            points[j].y += incrementY;
+                            points[j].SetY(points[j].Y() + incrementY);
                         }
                         break;
 
                     case 3:
                         for (auto j = 0; j < sides; j++)
                         {
-                            points[j].x -= incrementX;
+                            points[j].SetX(points[j].X() - incrementX);
                         }
                         break;
                 }
 
-                glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizei>(sizeof(Point) * sides), points.data());
-                glDrawArrays(GL_LINE_LOOP, 0, sides);
+                m_outlineMesh.Update();
+                m_outlineMesh.Draw();
             }
         }
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    Renderer::Mesh::Unbind();
+    Renderer::Shader::Unbind();
 
 #ifndef USE_GLES
     glDisable(GL_LINE_SMOOTH);
 #endif
     glDisable(GL_BLEND);
-
-    Renderer::Shader::Unbind();
 }
 
 } // namespace MilkdropPreset

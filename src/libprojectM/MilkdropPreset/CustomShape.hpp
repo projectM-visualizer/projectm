@@ -4,7 +4,7 @@
 #include "PresetState.hpp"
 #include "ShapePerFrameContext.hpp"
 
-#include <Renderer/RenderItem.hpp>
+#include <Renderer/Mesh.hpp>
 
 #include <projectm-eval.h>
 
@@ -19,14 +19,12 @@ class PresetFileParser;
  * The class creates two sets of VBO/VAO as it's only known later (in the Draw() call) whether the shape is textured
  * or not.
  */
-class CustomShape : public Renderer::RenderItem
+class CustomShape
 {
 public:
     CustomShape(PresetState& presetState);
 
-    ~CustomShape() override;
-
-    void InitVertexAttrib() override;
+    virtual ~CustomShape() = default;
 
     /**
      * @brief Loads the initial values and code from the preset file.
@@ -47,12 +45,10 @@ public:
     void Draw();
 
 private:
-    struct ShapeVertex {
-        float x{.0f}; //!< The vertex X coordinate.
-        float y{.0f}; //!< The vertex Y coordinate.
-    };
+    Renderer::Mesh m_outlineMesh; //!< The shape's border/outline mesh.
+    Renderer::Mesh m_fillMesh; //!< The shape's color/texture mesh.
 
-    std::string m_image; //!< Texture filename to be rendered on this shape
+    std::string m_image; //!< Texture filename to be rendered on this shape.
 
     int m_index{0};        //!< The custom shape index in the preset.
     bool m_enabled{false};      //!< If false, the shape isn't drawn.
@@ -92,12 +88,6 @@ private:
 
     PresetState& m_presetState; //!< The global preset state.
     ShapePerFrameContext m_perFrameContext;
-
-    GLuint m_vboIdTextured{0}; //!< Vertex buffer object ID for a textured shape.
-    GLuint m_vaoIdTextured{0}; //!< Vertex array object ID for a textured shape.
-
-    GLuint m_vboIdUntextured{0}; //!< Vertex buffer object ID for an untextured shape.
-    GLuint m_vaoIdUntextured{0}; //!< Vertex array object ID for an untextured shape.
 
     friend class ShapePerFrameContext;
 };
