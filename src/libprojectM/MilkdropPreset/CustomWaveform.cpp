@@ -9,40 +9,29 @@
 namespace libprojectM {
 namespace MilkdropPreset {
 
-static constexpr int CustomWaveformMaxSamples = std::max(libprojectM::Audio::WaveformSamples, libprojectM::Audio::SpectrumSamples);
+static constexpr int CustomWaveformMaxSamples = std::max(Audio::WaveformSamples, Audio::SpectrumSamples);
 
 CustomWaveform::CustomWaveform(PresetState& presetState)
-    : RenderItem()
-    , m_presetState(presetState)
+    : m_presetState(presetState)
     , m_perFrameContext(presetState.globalMemory, &presetState.globalRegisters)
     , m_perPointContext(presetState.globalMemory, &presetState.globalRegisters)
+    , m_mesh(Renderer::VertexBufferUsage::StreamDraw, true, false)
 {
-    RenderItem::Init();
-
     m_perFrameContext.RegisterBuiltinVariables();
     m_perPointContext.RegisterBuiltinVariables();
+
+    // Allocate space for max number of vertices possible, so we won't have to resize the vertex
+    // buffers, which may change on each frame.
+    m_mesh.SetVertexCount(std::max(Audio::SpectrumSamples, Audio::WaveformSamples) * 2 + 2);
 }
 
-void CustomWaveform::InitVertexAttrib()
-{
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(ColoredPoint), nullptr);                                    // points
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(ColoredPoint), reinterpret_cast<void*>(sizeof(float) * 2)); // colors
-
-    std::vector<ColoredPoint> vertexData;
-    vertexData.resize(std::max(libprojectM::Audio::SpectrumSamples, libprojectM::Audio::WaveformSamples) * 2 + 2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
-}
-
-void CustomWaveform::Initialize(::libprojectM::PresetFileParser& parsedFile, int index)
+void CustomWaveform::Initialize(PresetFileParser& parsedFile, int index)
 {
     std::string const wavecodePrefix = "wavecode_" + std::to_string(index) + "_";
     std::string const wavePrefix = "wave_" + std::to_string(index) + "_";
 
     m_index = index;
-    m_enabled = parsedFile.GetInt(wavecodePrefix + "enabled", m_enabled);
+    m_enabled = parsedFile.GetBool(wavecodePrefix + "enabled", m_enabled);
     m_samples = parsedFile.GetInt(wavecodePrefix + "samples", m_samples);
     m_sep = parsedFile.GetInt(wavecodePrefix + "sep", m_sep);
     m_spectrum = parsedFile.GetBool(wavecodePrefix + "bSpectrum", m_spectrum);
@@ -56,6 +45,7 @@ void CustomWaveform::Initialize(::libprojectM::PresetFileParser& parsedFile, int
     m_b = parsedFile.GetFloat(wavecodePrefix + "b", m_b);
     m_a = parsedFile.GetFloat(wavecodePrefix + "a", m_a);
 
+    m_mesh.SetRenderPrimitiveType(m_useDots ? Renderer::Mesh::PrimitiveType::Points : Renderer::Mesh::PrimitiveType::LineStrip);
 }
 
 void CustomWaveform::CompileCodeAndRunInitExpressions(const PerFrameContext& presetPerFrameContext)
@@ -74,15 +64,15 @@ void CustomWaveform::CompileCodeAndRunInitExpressions(const PerFrameContext& pre
 
 void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
 {
-    static_assert(libprojectM::Audio::WaveformSamples <= WaveformMaxPoints, "WaveformMaxPoints is larger than WaveformSamples");
-    static_assert(libprojectM::Audio::SpectrumSamples <= WaveformMaxPoints, "WaveformMaxPoints is larger than SpectrumSamples");
+    static_assert(Audio::WaveformSamples <= WaveformMaxPoints, "WaveformMaxPoints is larger than WaveformSamples");
+    static_assert(Audio::SpectrumSamples <= WaveformMaxPoints, "WaveformMaxPoints is larger than SpectrumSamples");
 
     if (!m_enabled)
     {
         return;
     }
 
-    int const maxSampleCount{m_spectrum ? libprojectM::Audio::SpectrumSamples : libprojectM::Audio::WaveformSamples};
+    int const maxSampleCount{m_spectrum ? Audio::SpectrumSamples : Audio::WaveformSamples};
 
     // Initialize and execute per-frame code
     LoadPerFrameEvaluationVariables(presetPerFrameContext);
@@ -108,7 +98,6 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
                            : m_presetState.audioData.waveformRight.data();
 
     const float mult = m_scaling * m_presetState.waveScale * (m_spectrum ? 0.15f : 0.004f);
-    //const float mult = m_scaling * m_presetState.waveScale * (m_spectrum ? 0.05f : 1.0f);
 
     // PCM data smoothing
     const int offset1 = m_spectrum ? 0 : (maxSampleCount - sampleCount) / 2 - m_sep / 2;
@@ -144,7 +133,8 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
         sampleDataR[sample] *= mult;
     }
 
-    std::vector<ColoredPoint> pointsTransformed(sampleCount);
+    std::vector<Renderer::Point> points(sampleCount);
+    std::vector<Renderer::Color> colors(sampleCount);
 
     float const sampleMultiplicator = sampleCount > 1 ? 1.0f / static_cast<float>(sampleCount - 1) : 0.0f;
     for (int sample = 0; sample < sampleCount; sample++)
@@ -154,17 +144,16 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
 
         m_perPointContext.ExecutePerPointCode();
 
-        pointsTransformed[sample].x = static_cast<float>((*m_perPointContext.x * 2.0 - 1.0) * m_presetState.renderContext.invAspectX);
-        pointsTransformed[sample].y = static_cast<float>((*m_perPointContext.y * -2.0 + 1.0) * m_presetState.renderContext.invAspectY);
+        points[sample] = Renderer::Point(static_cast<float>((*m_perPointContext.x * 2.0 - 1.0) * m_presetState.renderContext.invAspectX),
+                                         static_cast<float>((*m_perPointContext.y * -2.0 + 1.0) * m_presetState.renderContext.invAspectY));
 
-        pointsTransformed[sample].r = Renderer::color_modulo(*m_perPointContext.r);
-        pointsTransformed[sample].g = Renderer::color_modulo(*m_perPointContext.g);
-        pointsTransformed[sample].b = Renderer::color_modulo(*m_perPointContext.b);
-        pointsTransformed[sample].a = Renderer::color_modulo(*m_perPointContext.a);
+        colors[sample] = Renderer::Color::Modulo(Renderer::Color(static_cast<float>(*m_perPointContext.r),
+                                                                 static_cast<float>(*m_perPointContext.g),
+                                                                 static_cast<float>(*m_perPointContext.b),
+                                                                 static_cast<float>(*m_perPointContext.a)));
     }
 
-    std::vector<ColoredPoint> pointsSmoothed(sampleCount * 2);
-    auto smoothedVertexCount = SmoothWave(pointsTransformed.data(), sampleCount, pointsSmoothed.data());
+    SmoothWave(points, colors);
 
 #ifndef USE_GLES
     glDisable(GL_LINE_SMOOTH);
@@ -192,10 +181,9 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     auto incrementX = 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
     auto incrementY = 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
 
-    GLuint drawType = m_useDots ? GL_POINTS : GL_LINE_STRIP;
+    size_t smoothedVertexCount = m_mesh.Indices().Size();
 
-    glBindVertexArray(m_vaoID);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
+    auto& vertices = m_mesh.Vertices();
 
     // If thick outline is used, draw the shape four times with slight offsets
     // (top left, top right, bottom right, bottom left).
@@ -208,34 +196,32 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
                 break;
 
             case 1:
-                for (auto j = 0; j < smoothedVertexCount; j++)
+                for (size_t j = 0; j < smoothedVertexCount; j++)
                 {
-                    pointsSmoothed[j].x += incrementX;
+                    vertices[j].SetX(vertices[j].X() + incrementX);
                 }
                 break;
 
             case 2:
-                for (auto j = 0; j < smoothedVertexCount; j++)
+                for (size_t j = 0; j < smoothedVertexCount; j++)
                 {
-                    pointsSmoothed[j].y += incrementY;
+                    vertices[j].SetY(vertices[j].Y() + incrementY);
                 }
                 break;
 
             case 3:
-                for (auto j = 0; j < smoothedVertexCount; j++)
+                for (size_t j = 0; j < smoothedVertexCount; j++)
                 {
-                    pointsSmoothed[j].x -= incrementX;
+                    vertices[j].SetX(vertices[j].X() - incrementX);
                 }
                 break;
         }
 
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(ColoredPoint) * smoothedVertexCount, pointsSmoothed.data());
-        glDrawArrays(drawType, 0, smoothedVertexCount);
+        m_mesh.Update();
+        m_mesh.Draw();
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
+    m_mesh.Unbind();
     Renderer::Shader::Unbind();
 
     glDisable(GL_BLEND);
@@ -272,9 +258,7 @@ void CustomWaveform::LoadPerPointEvaluationVariables(float sample, float value1,
     *m_perPointContext.a = *m_perFrameContext.a;
 }
 
-int CustomWaveform::SmoothWave(const CustomWaveform::ColoredPoint* inputVertices,
-                               int vertexCount,
-                               CustomWaveform::ColoredPoint* outputVertices)
+void CustomWaveform::SmoothWave(const std::vector<Renderer::Point>& points, const std::vector<Renderer::Color>& colors)
 {
     constexpr float c1{-0.15f};
     constexpr float c2{1.15f};
@@ -282,25 +266,36 @@ int CustomWaveform::SmoothWave(const CustomWaveform::ColoredPoint* inputVertices
     constexpr float c4{-0.15f};
     constexpr float inverseSum{1.0f / (c1 + c2 + c3 + c4)};
 
-    int outputIndex = 0;
-    int iBelow = 0;
-    int iAbove2 = 1;
+    size_t outputIndex = 0;
+    size_t iBelow = 0;
+    size_t iAbove2 = 1;
 
-    for (auto inputIndex = 0; inputIndex < vertexCount - 1; inputIndex++)
+    size_t vertexCount = points.size();
+
+    auto& outVertices = m_mesh.Vertices();
+    auto& outColors = m_mesh.Colors();
+
+    for (size_t inputIndex = 0; inputIndex < vertexCount - 1; inputIndex++)
     {
-        int const iAbove = iAbove2;
+        size_t const iAbove = iAbove2;
         iAbove2 = std::min(vertexCount - 1, inputIndex + 2);
-        outputVertices[outputIndex] = inputVertices[inputIndex];
-        outputVertices[outputIndex + 1] = inputVertices[inputIndex];
-        outputVertices[outputIndex + 1].x = (c1 * inputVertices[iBelow].x + c2 * inputVertices[inputIndex].x + c3 * inputVertices[iAbove].x + c4 * inputVertices[iAbove2].x) * inverseSum;
-        outputVertices[outputIndex + 1].y = (c1 * inputVertices[iBelow].y + c2 * inputVertices[inputIndex].y + c3 * inputVertices[iAbove].y + c4 * inputVertices[iAbove2].y) * inverseSum;
+        outVertices[outputIndex] = points[inputIndex];
+        outColors[outputIndex] = colors[inputIndex];
+        outColors[outputIndex + 1] = colors[inputIndex];
+        auto& smoothedPoint = outVertices[outputIndex + 1];
+        smoothedPoint = points[inputIndex];
+        smoothedPoint.SetX((c1 * points[iBelow].X() + c2 * points[inputIndex].X() + c3 * points[iAbove].X() + c4 * points[iAbove2].X()) * inverseSum);
+        smoothedPoint.SetY((c1 * points[iBelow].Y() + c2 * points[inputIndex].Y() + c3 * points[iAbove].Y() + c4 * points[iAbove2].Y()) * inverseSum);
         iBelow = inputIndex;
         outputIndex += 2;
     }
 
-    outputVertices[outputIndex] = inputVertices[vertexCount - 1];
+    outVertices[outputIndex] = points[vertexCount - 1];
+    outColors[outputIndex] = colors[vertexCount - 1];
 
-    return outputIndex + 1;
+    auto& indices = m_mesh.Indices();
+    indices.Resize(outputIndex + 1);
+    indices.MakeContinuous();
 }
 
 } // namespace MilkdropPreset
