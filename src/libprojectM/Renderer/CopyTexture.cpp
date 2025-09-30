@@ -1,8 +1,5 @@
 #include "CopyTexture.hpp"
 
-#include <array>
-#include <iostream>
-
 namespace libprojectM {
 namespace Renderer {
 
@@ -16,7 +13,7 @@ static constexpr char CopyTextureVertexShader[] = R"(
 precision mediump float;
 
 layout(location = 0) in vec2 position;
-layout(location = 1) in vec2 tex_coord;
+layout(location = 2) in vec2 tex_coord;
 
 out vec2 fragment_tex_coord;
 
@@ -52,48 +49,33 @@ void main(){
 )";
 
 CopyTexture::CopyTexture()
+    : m_mesh(VertexBufferUsage::StaticDraw, false, true)
 {
-    RenderItem::Init();
-
     m_framebuffer.CreateColorAttachment(0, 0);
 
-    std::string vertexShader(static_cast<const char*>(ShaderVersion));
-    std::string fragmentShader(static_cast<const char*>(ShaderVersion));
-    vertexShader.append(static_cast<const char*>(CopyTextureVertexShader));
-    fragmentShader.append(static_cast<const char*>(CopyTextureFragmentShader));
+    std::string vertexShader(ShaderVersion);
+    std::string fragmentShader(ShaderVersion);
+    vertexShader.append(CopyTextureVertexShader);
+    fragmentShader.append(CopyTextureFragmentShader);
 
     m_shader.CompileProgram(vertexShader, fragmentShader);
-}
 
-void CopyTexture::InitVertexAttrib()
-{
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
+    m_mesh.SetRenderPrimitiveType(Mesh::PrimitiveType::TriangleStrip);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x))); // Position
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, u))); // Texture coordinate
+    m_mesh.SetVertexCount(4);
+    m_mesh.Vertices().Set({{-1.0, 1.0},
+                           {1.0, 1.0},
+                           {-1.0, -1.0},
+                           {1.0, -1.0}});
 
-    std::array<RenderItem::TexturedPoint, 4> points;
+    m_mesh.UVs().Set({{0.0, 1.0},
+                      {1.0, 1.0},
+                      {0.0, 0.0},
+                      {1.0, 0.0}});
 
-    points[0].x = -1.0;
-    points[0].y = 1.0;
-    points[1].x = 1.0;
-    points[1].y = 1.0;
-    points[2].x = -1.0;
-    points[2].y = -1.0;
-    points[3].x = 1.0;
-    points[3].y = -1.0;
+    m_mesh.Indices().Set({0, 1, 2, 3});
 
-    points[0].u = 0.0;
-    points[0].v = 1.0;
-    points[1].u = 1.0;
-    points[1].v = 1.0;
-    points[2].u = 0.0;
-    points[2].v = 0.0;
-    points[3].u = 1.0;
-    points[3].v = 0.0;
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points.data(), GL_STATIC_DRAW);
+    m_mesh.Update();
 }
 
 void CopyTexture::Draw(const std::shared_ptr<class Texture>& originalTexture, bool flipVertical, bool flipHorizontal)
@@ -160,9 +142,9 @@ void CopyTexture::Draw(const std::shared_ptr<class Texture>& originalTexture, co
 void CopyTexture::Draw(const std::shared_ptr<class Texture>& originalTexture, Framebuffer& framebuffer, int framebufferIndex,
                        bool flipVertical, bool flipHorizontal)
 {
-    if (originalTexture == nullptr
-        || originalTexture->Empty()
-        || framebuffer.GetColorAttachmentTexture(framebufferIndex, 0) == nullptr
+    if (originalTexture == nullptr                                               //
+        || originalTexture->Empty()                                              //
+        || framebuffer.GetColorAttachmentTexture(framebufferIndex, 0) == nullptr //
         || framebuffer.GetColorAttachmentTexture(framebufferIndex, 0)->Empty())
     {
         return;
@@ -211,7 +193,7 @@ void CopyTexture::UpdateTextureSize(int width, int height)
     m_framebuffer.SetSize(m_width, m_height);
 }
 
-void CopyTexture::Copy(bool flipVertical, bool flipHorizontal) const
+void CopyTexture::Copy(bool flipVertical, bool flipHorizontal)
 {
     m_shader.Bind();
     m_shader.SetUniformInt("texture_sampler", 0);
@@ -219,11 +201,10 @@ void CopyTexture::Copy(bool flipVertical, bool flipHorizontal) const
 
     m_sampler.Bind(0);
 
-    glBindVertexArray(m_vaoID);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    glBindVertexArray(0);
+    m_mesh.Draw();
 
     glBindTexture(GL_TEXTURE_2D, 0);
+    Mesh::Unbind();
     Sampler::Unbind(0);
     Shader::Unbind();
 }
