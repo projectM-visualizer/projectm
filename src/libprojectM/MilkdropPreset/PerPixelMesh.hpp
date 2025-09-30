@@ -122,12 +122,12 @@ private:
     int m_viewportWidth{};  //!< Last known viewport width.
     int m_viewportHeight{}; //!< Last known viewport height.
 
-    Renderer::Mesh m_warpMesh;                                //!< The Warp effect mesh
-    Renderer::VertexBuffer<RadiusAngle> m_radiusAngleBuffer;  //!< Vertex attribute buffer for radius and angle values.
-    Renderer::VertexBuffer<ZoomRotWarp> m_zoomRotWarpBuffer;  //!< Vertex attribute buffer for zoom, roation and warp values.
-    Renderer::VertexBuffer<Renderer::Point> m_centerBuffer;   //!< Vertex attribute buffer for center coordinate values.
-    Renderer::VertexBuffer<Renderer::Point> m_distanceBuffer; //!< Vertex attribute buffer for distance values.
-    Renderer::VertexBuffer<Renderer::Point> m_stretchBuffer;  //!< Vertex attribute buffer for stretch values.
+    Renderer::Mesh m_warpMesh;                                                                         //!< The Warp effect mesh
+    Renderer::VertexBuffer<RadiusAngle> m_radiusAngleBuffer{Renderer::VertexBufferUsage::StreamDraw};  //!< Vertex attribute buffer for radius and angle values.
+    Renderer::VertexBuffer<ZoomRotWarp> m_zoomRotWarpBuffer{Renderer::VertexBufferUsage::StreamDraw};  //!< Vertex attribute buffer for zoom, roation and warp values.
+    Renderer::VertexBuffer<Renderer::Point> m_centerBuffer{Renderer::VertexBufferUsage::StreamDraw};   //!< Vertex attribute buffer for center coordinate values.
+    Renderer::VertexBuffer<Renderer::Point> m_distanceBuffer{Renderer::VertexBufferUsage::StreamDraw}; //!< Vertex attribute buffer for distance values.
+    Renderer::VertexBuffer<Renderer::Point> m_stretchBuffer{Renderer::VertexBufferUsage::StreamDraw};  //!< Vertex attribute buffer for stretch values.
 
     std::weak_ptr<Renderer::Shader> m_perPixelMeshShader;             //!< Special shader which calculates the per-pixel UV coordinates.
     std::unique_ptr<MilkdropShader> m_warpShader;                     //!< The warp shader. Either preset-defined or a default shader.

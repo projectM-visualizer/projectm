@@ -12,16 +12,18 @@ Mesh::Mesh(VertexBufferUsage usage)
     : m_vertices(usage)
     , m_colors(usage)
     , m_textureUVs(usage)
+    , m_indices(usage)
 {
     Initialize();
 }
 
 Mesh::Mesh(VertexBufferUsage usage, bool useColor, bool useTextureUVs)
-    : m_vertices(usage)
+    : m_useColorAttributes(useColor)
+    , m_useUVAttributes(useTextureUVs)
+    , m_vertices(usage)
     , m_colors(usage)
     , m_textureUVs(usage)
-    , m_useColorAttributes(useColor)
-    , m_useUVAttributes(useTextureUVs)
+    , m_indices(usage)
 {
     Initialize();
 }

@@ -87,15 +87,15 @@ private:
     static constexpr int vertexCount{compositeGridWidth * compositeGridHeight};
     static constexpr int indexCount{(compositeGridWidth - 2) * (compositeGridHeight - 2) * 6};
 
-    Renderer::Mesh m_compositeMesh; //!< The composite shader mesh.
-    Renderer::VertexBuffer<Renderer::Point> m_radiusAngle; //!< Additional vertex attribute array for radius and angle.
+    Renderer::Mesh m_compositeMesh;                                                                 //!< The composite shader mesh.
+    Renderer::VertexBuffer<Renderer::Point> m_radiusAngle{Renderer::VertexBufferUsage::StreamDraw}; //!< Additional vertex attribute array for radius and angle.
 
     int m_viewportWidth{};  //!< Last known viewport width.
     int m_viewportHeight{}; //!< Last known viewport height.
 
     std::unique_ptr<MilkdropShader> m_compositeShader; //!< The composite shader. Either preset-defined or empty.
-    std::unique_ptr<VideoEcho> m_videoEcho; //!< Video echo effect. Used if no composite shader is loaded and video echo is enabled.
-    std::unique_ptr<Filters> m_filters; //!< Color post-processing filters. Used if no composite shader is loaded.
+    std::unique_ptr<VideoEcho> m_videoEcho;            //!< Video echo effect. Used if no composite shader is loaded and video echo is enabled.
+    std::unique_ptr<Filters> m_filters;                //!< Color post-processing filters. Used if no composite shader is loaded.
 };
 
 } // namespace MilkdropPreset

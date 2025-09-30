@@ -8,6 +8,12 @@ VertexIndexArray::VertexIndexArray()
     glGenBuffers(1, &m_veabID);
 }
 
+VertexIndexArray::VertexIndexArray(VertexBufferUsage usage)
+    : m_vboUsage(usage)
+{
+    glGenBuffers(1, &m_veabID);
+}
+
 VertexIndexArray::~VertexIndexArray()
 {
     glDeleteBuffers(1, &m_veabID);

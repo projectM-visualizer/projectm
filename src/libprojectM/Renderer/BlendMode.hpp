@@ -5,9 +5,16 @@
 namespace libprojectM {
 namespace Renderer {
 
+/**
+ * A simple wrapper class around OpenGL's blend mode functionality.
+ */
 class BlendMode
 {
 public:
+    /**
+     * Available blend functions.
+     * @see https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBlendFunc.xhtml
+     */
     enum class Function : int
     {
         Zero,
@@ -33,67 +40,35 @@ public:
 
     BlendMode() = delete;
 
-    static void Set(bool enable, Function srcFunc, Function dstFunc)
-    {
-        SetBlendActive(enable);
-        SetBlendFunction(srcFunc, dstFunc);
-    }
+    /**
+     * @brief Enables or disables blending and sets the blend functions.
+     * A convenience wrapper around BlendMode::SetBlendActive() and BlendMode::SetBlendFunction().
+     * @param enable If true, blending is enabled, otherwise disabled.
+     * @param srcFunc The blend function to determine the source color.
+     * @param dstFunc the blend function to determine the destination color.
+     */
+    static void Set(bool enable, Function srcFunc, Function dstFunc);
 
-    static void SetBlendActive(bool enable)
-    {
-        if (enable)
-        {
-            glEnable(GL_BLEND);
-        }
-        else
-        {
-            glDisable(GL_BLEND);
-        }
-    }
+    /**
+     * Enables or disables blending.
+     * @param enable If true, blending is enabled, otherwise disabled.
+     */
+    static void SetBlendActive(bool enable);
 
-    static void SetBlendFunction(Function srcFunc, Function dstFunc)
-    {
-        glBlendFunc(FunctionToGL(srcFunc), FunctionToGL(dstFunc));
-    }
+    /**
+     * Sets the blend functions.
+     * @param srcFunc The blend function to determine the source color.
+     * @param dstFunc the blend function to determine the destination color.
+     */
+    static void SetBlendFunction(Function srcFunc, Function dstFunc);
 
 private:
-    static GLuint FunctionToGL(Function func)
-    {
-        switch (func)
-        {
-            case Function::Zero:
-                return GL_ZERO;
-            case Function::One:
-            default:
-                return GL_ONE;
-            case Function::SourceColor:
-                return GL_SRC_COLOR;
-            case Function::OneMinusSourceColor:
-                return GL_ONE_MINUS_SRC_COLOR;
-            case Function::DestinationColor:
-                return GL_DST_COLOR;
-            case Function::OneMinusDestinationColor:
-                return GL_ONE_MINUS_DST_COLOR;
-            case Function::SourceAlpha:
-                return GL_SRC_ALPHA;
-            case Function::OneMinusSourceAlpha:
-                return GL_ONE_MINUS_SRC_ALPHA;
-            case Function::DestinationAlpha:
-                return GL_DST_ALPHA;
-            case Function::OneMinusDestinationAlpha:
-                return GL_ONE_MINUS_DST_ALPHA;
-            case Function::ConstantColor:
-                return GL_CONSTANT_COLOR;
-            case Function::OneMinusConstantColor:
-                return GL_ONE_MINUS_CONSTANT_COLOR;
-            case Function::ConstantAlpha:
-                return GL_CONSTANT_ALPHA;
-            case Function::OneMinusConstantAlpha:
-                return GL_ONE_MINUS_CONSTANT_ALPHA;
-            case Function::SourceAlphaSaturate:
-                return GL_SRC_ALPHA_SATURATE;
-        }
-    }
+    /**
+     * Translates the Function enum values into OpenGL constants.
+     * @param func The blend function to translate.
+     * @return the OpenGL constant for the given blend function.
+     */
+    static GLuint FunctionToGL(Function func);
 };
 
 } // namespace Renderer
