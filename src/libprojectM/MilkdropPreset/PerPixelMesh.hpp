@@ -1,10 +1,8 @@
 #pragma once
 
-#include <Renderer/RenderItem.hpp>
-#include <Renderer/Shader.hpp>
+#include "Renderer/Mesh.hpp"
 
-#include <cstdint>
-#include <vector>
+#include <Renderer/Shader.hpp>
 
 namespace libprojectM {
 namespace MilkdropPreset {
@@ -27,12 +25,10 @@ class MilkdropShader;
  *
  * The mesh size can be changed between frames, the class will reallocate the buffers if needed.
  */
-class PerPixelMesh : public Renderer::RenderItem
+class PerPixelMesh
 {
 public:
     PerPixelMesh();
-
-    void InitVertexAttrib() override;
 
     /**
      * @brief Loads the warp shader, if the preset uses one.
@@ -59,30 +55,32 @@ public:
 
 private:
     /**
-     * Warp mesh vertex with all required attributes.
+     * Vertex attributes for radius and angle.
      */
-    struct MeshVertex {
-        float x{};
-        float y{};
+    struct RadiusAngle {
         float radius{};
         float angle{};
 
+        static void InitializeAttributePointer(uint32_t attributeIndex)
+        {
+            glVertexAttribPointer(attributeIndex, sizeof(RadiusAngle) / sizeof(float), GL_FLOAT, GL_FALSE, sizeof(RadiusAngle), nullptr);
+        }
+    };
+
+    /**
+     * Vertex attributes for zoom, zoom exponent, rotation and warp strength.
+     */
+    struct ZoomRotWarp {
         float zoom{};
         float zoomExp{};
         float rot{};
         float warp{};
 
-        float centerX{};
-        float centerY{};
-
-        float distanceX{};
-        float distanceY{};
-
-        float stretchX{};
-        float stretchY{};
+        static void InitializeAttributePointer(uint32_t attributeIndex)
+        {
+            glVertexAttribPointer(attributeIndex, sizeof(ZoomRotWarp) / sizeof(float), GL_FLOAT, GL_FALSE, sizeof(ZoomRotWarp), nullptr);
+        }
     };
-
-    using VertexList = std::vector<MeshVertex>;
 
     /**
      * @brief Initializes the vertex array and fills in static data if needed.
@@ -124,10 +122,12 @@ private:
     int m_viewportWidth{};  //!< Last known viewport width.
     int m_viewportHeight{}; //!< Last known viewport height.
 
-    VertexList m_vertices; //!< The calculated mesh vertices.
-
-    std::vector<int> m_listIndices; //!< List of vertex indices to render.
-    VertexList m_drawVertices;      //!< Temp data buffer for the vertices to be drawn.
+    Renderer::Mesh m_warpMesh;                                //!< The Warp effect mesh
+    Renderer::VertexBuffer<RadiusAngle> m_radiusAngleBuffer;  //!< Vertex attribute buffer for radius and angle values.
+    Renderer::VertexBuffer<ZoomRotWarp> m_zoomRotWarpBuffer;  //!< Vertex attribute buffer for zoom, roation and warp values.
+    Renderer::VertexBuffer<Renderer::Point> m_centerBuffer;   //!< Vertex attribute buffer for center coordinate values.
+    Renderer::VertexBuffer<Renderer::Point> m_distanceBuffer; //!< Vertex attribute buffer for distance values.
+    Renderer::VertexBuffer<Renderer::Point> m_stretchBuffer;  //!< Vertex attribute buffer for stretch values.
 
     std::weak_ptr<Renderer::Shader> m_perPixelMeshShader;             //!< Special shader which calculates the per-pixel UV coordinates.
     std::unique_ptr<MilkdropShader> m_warpShader;                     //!< The warp shader. Either preset-defined or a default shader.
