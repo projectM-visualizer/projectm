@@ -1,6 +1,7 @@
 #include "UserSprites/SpriteManager.hpp"
 
 #include "UserSprites/Factory.hpp"
+#include "UserSprites/SpriteException.hpp"
 
 #include <Renderer/Shader.hpp>
 
@@ -106,7 +107,8 @@ auto SpriteManager::ActiveSpriteCount() const -> uint32_t
 auto SpriteManager::ActiveSpriteIdentifiers() const -> std::vector<SpriteIdentifier>
 {
     std::vector<SpriteIdentifier> identifierList;
-    for (auto& idAndSprite : m_sprites) {
+    for (auto& idAndSprite : m_sprites)
+    {
         identifierList.emplace_back(idAndSprite.first);
     }
 
