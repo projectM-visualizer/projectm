@@ -5,24 +5,16 @@
 #include <Renderer/ShaderCache.hpp>
 #include <Renderer/TextureManager.hpp>
 
+#include <algorithm>
+
 namespace libprojectM {
 namespace MilkdropPreset {
 
 MotionVectors::MotionVectors(PresetState& presetState)
-    : RenderItem()
-    , m_presetState(presetState)
+    : m_presetState(presetState)
+    , m_motionVectorMesh(Renderer::VertexBufferUsage::StreamDraw)
 {
-    RenderItem::Init();
-}
-
-void MotionVectors::InitVertexAttrib()
-{
-    glEnableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(MotionVectorVertex), reinterpret_cast<void*>(offsetof(MotionVectorVertex, x)));
-    glVertexAttribIPointer(2, 1, GL_INT, sizeof(MotionVectorVertex), reinterpret_cast<void*>(offsetof(MotionVectorVertex, index)));
+    m_motionVectorMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::Lines);
 }
 
 void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shared_ptr<Renderer::Texture> motionTexture)
@@ -59,22 +51,8 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
     auto const divertY2 = static_cast<float>(*presetPerFrameContext.mv_dy);
 
     // Clamp X/Y diversions to 0..1
-    if (divertX < 0.0f)
-    {
-        divertX = 0.0f;
-    }
-    if (divertX > 1.0f)
-    {
-        divertX = 1.0f;
-    }
-    if (divertY < 0.0f)
-    {
-        divertY = 0.0f;
-    }
-    if (divertY > 1.0f)
-    {
-        divertY = 1.0f;
-    }
+    divertX = std::min(1.0f, std::max(0.0f, divertX));
+    divertY = std::min(1.0f, std::max(0.0f, divertY));
 
     // Tweaked this a bit to ensure lines are always at least a bit more than 1px long.
     // Line smoothing makes some of them disappear otherwise.
@@ -82,7 +60,7 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
     float const inverseHeight = 1.25f / static_cast<float>(m_presetState.renderContext.viewportSizeY);
     float const minimumLength = sqrtf(inverseWidth * inverseWidth + inverseHeight * inverseHeight);
 
-    std::vector<MotionVectorVertex> lineVertices(static_cast<std::size_t>(countX + 1) * 2); // countX + 1 lines for each grid row, 2 vertices each.
+    m_motionVectorMesh.SetVertexCount(static_cast<std::size_t>(countX + 1) * 2); // countX + 1 lines for each grid row, 2 vertices each.
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -103,13 +81,12 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
                      static_cast<float>(*presetPerFrameContext.mv_b),
                      static_cast<float>(*presetPerFrameContext.mv_a));
 
-    glBindVertexArray(m_vaoID);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
-
     glLineWidth(1);
 #ifndef USE_GLES
     glEnable(GL_LINE_SMOOTH);
 #endif
+
+    auto& lineVertices = m_motionVectorMesh.Vertices();
 
     for (int y = 0; y < countY; y++)
     {
@@ -124,39 +101,24 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
 
                 if (posX > 0.0001f && posX < 0.9999f)
                 {
-                    lineVertices[vertex].x = posX;
-                    lineVertices[vertex].y = posY;
-                    lineVertices[vertex].index = vertex;
-
-                    lineVertices[vertex + 1] = lineVertices[vertex];
-                    lineVertices[vertex + 1].index++;
+                    lineVertices[vertex + 1] = lineVertices[vertex] = {posX, posY};
 
                     vertex += 2;
                 }
             }
 
             // Draw a row of lines.
-            if (m_lastVertexCount >= vertex)
-            {
-                glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(MotionVectorVertex) * vertex, lineVertices.data());
-            }
-            else
-            {
-                glBufferData(GL_ARRAY_BUFFER, sizeof(MotionVectorVertex) * vertex, lineVertices.data(), GL_STREAM_DRAW);
-                m_lastVertexCount = vertex;
-            }
-            glDrawArrays(GL_LINES, 0, static_cast<GLsizei>(vertex));
+            m_motionVectorMesh.Update();
+            m_motionVectorMesh.Draw();
         }
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    Renderer::Mesh::Unbind();
+    Renderer::Shader::Unbind();
 
 #ifndef USE_GLES
     glDisable(GL_LINE_SMOOTH);
 #endif
-
-    Renderer::Shader::Unbind();
 
     glDisable(GL_BLEND);
 }
