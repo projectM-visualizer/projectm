@@ -1,13 +1,10 @@
 #pragma once
 
-#include "UserSprites/SpriteException.hpp"
-
 #include <Preset.hpp>
 
 #include <Audio/FrameAudioData.hpp>
 
 #include <Renderer/RenderContext.hpp>
-#include <Renderer/RenderItem.hpp>
 
 #include <cstdint>
 #include <functional>
@@ -18,11 +15,13 @@
 namespace libprojectM {
 namespace UserSprites {
 
-class Sprite : public Renderer::RenderItem
+class Sprite
 {
 public:
     using Ptr = std::unique_ptr<Sprite>;
     using PresetList = std::vector<std::reference_wrapper<const std::unique_ptr<Preset>>>;
+
+    virtual ~Sprite() = default;
 
     /**
      * @brief Initializes the sprite instance for rendering.
