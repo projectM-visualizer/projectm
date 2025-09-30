@@ -33,8 +33,6 @@ add_library(Renderer OBJECT
         PresetTransition.cpp
         PresetTransition.hpp
         RenderContext.hpp
-        RenderItem.cpp
-        RenderItem.hpp
         Sampler.cpp
         Sampler.hpp
         Shader.cpp
