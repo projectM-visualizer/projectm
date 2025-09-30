@@ -3,7 +3,7 @@
 #include "PerFrameContext.hpp"
 #include "PresetState.hpp"
 
-#include "Renderer/RenderItem.hpp"
+#include <Renderer/Mesh.hpp>
 
 namespace libprojectM {
 namespace MilkdropPreset {
@@ -12,14 +12,12 @@ namespace MilkdropPreset {
 /**
  * @brief Renders a border around the screen.
  */
-class Border : public Renderer::RenderItem
+class Border
 {
 public:
     Border() = delete;
 
     explicit Border(PresetState& presetState);
-
-    void InitVertexAttrib() override;
 
     /**
      * Draws the border.
@@ -29,6 +27,7 @@ public:
 
 private:
     PresetState& m_presetState; //!< The global preset state.
+    Renderer::Mesh m_borderMesh; //!< The border geometry.
 };
 
 } // namespace MilkdropPreset
