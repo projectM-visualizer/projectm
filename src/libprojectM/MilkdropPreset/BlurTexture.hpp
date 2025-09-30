@@ -4,6 +4,9 @@
  */
 #pragma once
 
+#include "Renderer/Mesh.hpp"
+
+
 #include <Renderer/Framebuffer.hpp>
 #include <Renderer/RenderContext.hpp>
 #include <Renderer/Shader.hpp>
@@ -48,7 +51,7 @@ public:
     /**
      * Destructor.
      */
-    ~BlurTexture();
+    virtual ~BlurTexture() = default;
 
     /**
      * @brief Initializes the blur texture.
@@ -105,8 +108,7 @@ private:
      */
     void AllocateTextures(const Renderer::Texture& sourceTexture);
 
-    GLuint m_vboBlur; //!< Vertex buffer object for the fullscreen blur quad.
-    GLuint m_vaoBlur; //!< Vertex array object for the fullscreen blur quad.
+    Renderer::Mesh m_blurMesh; //!< The blur mesh (a simple quad).
 
     std::weak_ptr<Renderer::Shader> m_blur1Shader; //!< The shader used on the first blur pass.
     std::weak_ptr<Renderer::Shader> m_blur2Shader; //!< The shader used for subsequent blur passes after the initial pass.
