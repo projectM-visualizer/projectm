@@ -5,6 +5,8 @@
 
 #include "Waveforms/Factory.hpp"
 
+#include <Renderer/BlendMode.hpp>
+
 #include <projectM-opengl.h>
 
 #include <algorithm>
@@ -42,14 +44,13 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
     shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
 
     // Additive wave drawing (vice overwrite)
-    glEnable(GL_BLEND);
     if (m_presetState.additiveWaves)
     {
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::One);
     }
     else
     {
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::OneMinusSourceAlpha);
     }
 
     auto smoothedVertices = m_waveformMath->GetVertices(m_presetState, presetPerFrameContext);
@@ -115,8 +116,7 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
         }
     }
 
-    glDisable(GL_BLEND);
-
+    Renderer::BlendMode::SetBlendActive(false);;
     Renderer::Mesh::Unbind();
     Renderer::Shader::Unbind();
 }

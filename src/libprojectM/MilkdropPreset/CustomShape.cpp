@@ -2,6 +2,7 @@
 
 #include "PresetFileParser.hpp"
 
+#include <Renderer/BlendMode.hpp>
 #include <Renderer/TextureManager.hpp>
 
 #include <vector>
@@ -80,7 +81,7 @@ void CustomShape::Draw()
         return;
     }
 
-    glEnable(GL_BLEND);
+    Renderer::BlendMode::SetBlendActive(true);
 
     for (int instance = 0; instance < m_instances; instance++)
     {
@@ -98,7 +99,10 @@ void CustomShape::Draw()
         }
 
         // Additive Drawing or Overwrite
-        glBlendFunc(GL_SRC_ALPHA, static_cast<int>(*m_perFrameContext.additive) != 0 ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
+        Renderer::BlendMode::SetBlendFunction(Renderer::BlendMode::Function::SourceAlpha,
+                                              static_cast<int>(*m_perFrameContext.additive) != 0
+                                                  ? Renderer::BlendMode::Function::One
+                                                  : Renderer::BlendMode::Function::OneMinusSourceAlpha);
 
         auto& vertexData = m_fillMesh.Vertices();
         auto& colorData = m_fillMesh.Colors();
@@ -281,7 +285,7 @@ void CustomShape::Draw()
 #ifndef USE_GLES
     glDisable(GL_LINE_SMOOTH);
 #endif
-    glDisable(GL_BLEND);
+    Renderer::BlendMode::SetBlendActive(false);
 }
 
 } // namespace MilkdropPreset

@@ -1,5 +1,9 @@
 #include "Filters.hpp"
 
+#include <Renderer/BlendMode.hpp>
+
+using libprojectM::Renderer::BlendMode;
+
 namespace libprojectM {
 namespace MilkdropPreset {
 
@@ -20,7 +24,7 @@ void Filters::Draw()
         return;
     }
 
-    glEnable(GL_BLEND);
+    BlendMode::SetBlendActive(true);
 
     auto shader = m_presetState.untexturedShader.lock();
     shader->Bind();
@@ -48,37 +52,37 @@ void Filters::Draw()
     Renderer::Mesh::Unbind();
     Renderer::Shader::Unbind();
 
-    glDisable(GL_BLEND);
+    BlendMode::SetBlendActive(false);
 }
 
 
 void Filters::Brighten()
 {
-    glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
+    BlendMode::SetBlendFunction(BlendMode::Function::OneMinusDestinationColor, BlendMode::Function::Zero);
     m_filterMesh.Draw();
-    glBlendFunc(GL_ZERO, GL_DST_COLOR);
+    BlendMode::SetBlendFunction(BlendMode::Function::Zero, BlendMode::Function::DestinationColor);
     m_filterMesh.Draw();
-    glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
+    BlendMode::SetBlendFunction(BlendMode::Function::OneMinusDestinationColor, BlendMode::Function::Zero);
     m_filterMesh.Draw();
 }
 
 void Filters::Darken()
 {
-    glBlendFunc(GL_ZERO, GL_DST_COLOR);
+    BlendMode::SetBlendFunction(BlendMode::Function::Zero, BlendMode::Function::DestinationColor);
     m_filterMesh.Draw();
 }
 
 void Filters::Solarize()
 {
-    glBlendFunc(GL_ZERO, GL_ONE_MINUS_DST_COLOR);
+    BlendMode::SetBlendFunction(BlendMode::Function::Zero, BlendMode::Function::OneMinusDestinationColor);
     m_filterMesh.Draw();
-    glBlendFunc(GL_DST_COLOR, GL_ONE);
+    BlendMode::SetBlendFunction(BlendMode::Function::DestinationColor, BlendMode::Function::One);
     m_filterMesh.Draw();
 }
 
 void Filters::Invert()
 {
-    glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
+    BlendMode::SetBlendFunction(BlendMode::Function::OneMinusDestinationColor, BlendMode::Function::Zero);
     m_filterMesh.Draw();
 }
 

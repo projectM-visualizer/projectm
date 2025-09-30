@@ -2,6 +2,7 @@
 
 #include "MilkdropStaticShaders.hpp"
 
+#include <Renderer/BlendMode.hpp>
 #include <Renderer/ShaderCache.hpp>
 #include <Renderer/TextureManager.hpp>
 
@@ -62,8 +63,7 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
 
     m_motionVectorMesh.SetVertexCount(static_cast<std::size_t>(countX + 1) * 2); // countX + 1 lines for each grid row, 2 vertices each.
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::OneMinusSourceAlpha);
 
     auto shader = GetShader();
     shader->Bind();
@@ -120,7 +120,7 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
     glDisable(GL_LINE_SMOOTH);
 #endif
 
-    glDisable(GL_BLEND);
+    Renderer::BlendMode::SetBlendActive(false);
 }
 
 std::shared_ptr<Renderer::Shader> MotionVectors::GetShader()
