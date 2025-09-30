@@ -3,6 +3,8 @@
 #include "PerFrameContext.hpp"
 #include "PresetFileParser.hpp"
 
+#include <Renderer/BlendMode.hpp>
+
 #include <algorithm>
 #include <cmath>
 
@@ -161,14 +163,13 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     glLineWidth(1);
 
     // Additive wave drawing (vice overwrite)
-    glEnable(GL_BLEND);
     if (m_additive)
     {
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::One);
     }
     else
     {
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::OneMinusSourceAlpha);
     }
 
     auto shader = m_presetState.untexturedShader.lock();
@@ -223,8 +224,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
 
     m_mesh.Unbind();
     Renderer::Shader::Unbind();
-
-    glDisable(GL_BLEND);
+    Renderer::BlendMode::SetBlendActive(false);
 }
 
 void CustomWaveform::LoadPerFrameEvaluationVariables(const PerFrameContext& presetPerFrameContext)

@@ -1,5 +1,7 @@
 #include "Border.hpp"
 
+#include <Renderer/BlendMode.hpp>
+
 namespace libprojectM {
 namespace MilkdropPreset {
 
@@ -30,8 +32,7 @@ void Border::Draw(const PerFrameContext& presetPerFrameContext)
     float const innerBorderSize = static_cast<float>(*presetPerFrameContext.ib_size);
 
     // No additive drawing for borders
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::OneMinusSourceAlpha);
 
     auto shader = m_presetState.untexturedShader.lock();
     shader->Bind();
@@ -69,8 +70,7 @@ void Border::Draw(const PerFrameContext& presetPerFrameContext)
 
     Renderer::Mesh::Unbind();
     Renderer::Shader::Unbind();
-
-    glDisable(GL_BLEND);
+    Renderer::BlendMode::SetBlendActive(false);
 }
 
 } // namespace MilkdropPreset

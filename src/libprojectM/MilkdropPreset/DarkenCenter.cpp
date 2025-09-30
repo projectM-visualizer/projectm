@@ -1,5 +1,7 @@
 #include "DarkenCenter.hpp"
 
+#include <Renderer/BlendMode.hpp>
+
 namespace libprojectM {
 namespace MilkdropPreset {
 
@@ -35,8 +37,7 @@ void DarkenCenter::Draw()
         m_mesh.Update();
     }
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::OneMinusSourceAlpha);
 
     auto shader = m_presetState.untexturedShader.lock();
     shader->Bind();
@@ -44,7 +45,7 @@ void DarkenCenter::Draw()
 
     m_mesh.Draw();
 
-    glDisable(GL_BLEND);
+    Renderer::BlendMode::SetBlendActive(false);
     Renderer::Mesh::Unbind();
     Renderer::Shader::Unbind();
 }

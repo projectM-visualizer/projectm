@@ -6,6 +6,7 @@
 #include <Preset.hpp>
 #include <PresetFileParser.hpp>
 
+#include <Renderer/BlendMode.hpp>
 #include <Renderer/ShaderCache.hpp>
 #include <Renderer/TextureManager.hpp>
 
@@ -237,24 +238,20 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
     {
         case 0:
         default:
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::OneMinusSourceAlpha);
             break;
         case 1:
-            glDisable(GL_BLEND);
+            Renderer::BlendMode::SetBlendActive(false);
             break;
         case 2:
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_ONE, GL_ONE);
+            Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::One, Renderer::BlendMode::Function::One);
             break;
         case 3:
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
+            Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceColor, Renderer::BlendMode::Function::OneMinusSourceColor);
             break;
         case 4:
             // Milkdrop actually changed color keying to using texture alpha. The color key is ignored.
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::OneMinusSourceAlpha);
             break;
     }
 
@@ -279,13 +276,10 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(outputFramebufferObject));
     }
 
-    glDisable(GL_BLEND);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
     m_texture->Unbind(0);
     Renderer::Mesh::Unbind();
     Renderer::Shader::Unbind();
+    Renderer::BlendMode::SetBlendActive(false);
 }
 
 auto MilkdropSprite::Done() const -> bool

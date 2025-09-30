@@ -6,7 +6,8 @@
 #include "PerPixelContext.hpp"
 #include "PresetState.hpp"
 
-#include "Renderer/ShaderCache.hpp"
+#include <Renderer/BlendMode.hpp>
+#include <Renderer/ShaderCache.hpp>
 
 #include <algorithm>
 #include <cmath>
@@ -320,7 +321,7 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
     }
 
     // No blending between presets here, so we make sure blending is disabled.
-    glDisable(GL_BLEND);
+    Renderer::BlendMode::SetBlendActive(false);
 
     if (!m_warpShader)
     {

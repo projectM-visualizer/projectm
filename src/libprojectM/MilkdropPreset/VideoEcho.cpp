@@ -1,5 +1,7 @@
 #include "VideoEcho.hpp"
 
+#include <Renderer/BlendMode.hpp>
+
 namespace libprojectM {
 namespace MilkdropPreset {
 
@@ -76,8 +78,7 @@ void VideoEcho::Draw()
         DrawGammaAdjustment();
     }
 
-    glDisable(GL_BLEND);
-
+    Renderer::BlendMode::SetBlendActive(false);
     Renderer::Mesh::Unbind();
     Renderer::Shader::Unbind();
 
@@ -95,8 +96,7 @@ void VideoEcho::DrawVideoEcho()
     auto const videoEchoOrientation = m_presetState.videoEchoOrientation % 4;
     auto const gammaAdj = m_presetState.gammaAdj;
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ZERO);
+    Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::One, Renderer::BlendMode::Function::Zero);
 
     for (int pass = 0; pass < 2; pass++)
     {
@@ -141,7 +141,7 @@ void VideoEcho::DrawVideoEcho()
 
         if (pass == 0)
         {
-            glBlendFunc(GL_ONE, GL_ONE);
+            Renderer::BlendMode::SetBlendFunction(Renderer::BlendMode::Function::One, Renderer::BlendMode::Function::One);
         }
 
         if (gammaAdj > 0.001f)
@@ -183,8 +183,7 @@ void VideoEcho::DrawGammaAdjustment()
                           {0.0f, 1.0f},
                           {1.0f, 1.0f}});
 
-    glDisable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ZERO);
+    Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::One, Renderer::BlendMode::Function::Zero);
 
     auto const gammaAdj = m_presetState.gammaAdj;
     int const redrawCount = static_cast<int>(gammaAdj - 0.0001f) + 1;
@@ -215,8 +214,7 @@ void VideoEcho::DrawGammaAdjustment()
 
         if (redraw == 0)
         {
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_ONE, GL_ONE);
+            Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::One, Renderer::BlendMode::Function::One);
         }
     }
 }

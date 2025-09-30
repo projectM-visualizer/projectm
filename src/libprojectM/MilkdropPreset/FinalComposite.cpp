@@ -2,6 +2,8 @@
 
 #include "PresetState.hpp"
 
+#include <Renderer/BlendMode.hpp>
+
 #include <cstddef>
 
 #ifdef MILKDROP_PRESET_DEBUG
@@ -117,7 +119,7 @@ void FinalComposite::Draw(const PresetState& presetState, const PerFrameContext&
         ApplyHueShaderColors(presetState);
 
         // Render the grid
-        glDisable(GL_BLEND);
+        Renderer::BlendMode::SetBlendActive(false);
         m_compositeShader->LoadVariables(presetState, perFrameContext);
 
         m_compositeMesh.Draw();

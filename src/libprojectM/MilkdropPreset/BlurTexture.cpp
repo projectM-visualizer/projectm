@@ -5,6 +5,7 @@
 
 #include "MilkdropStaticShaders.hpp"
 
+#include <Renderer/BlendMode.hpp>
 #include <Renderer/Point.hpp>
 #include <Renderer/ShaderCache.hpp>
 
@@ -150,7 +151,7 @@ void BlurTexture::Update(const Renderer::Texture& sourceTexture, const PerFrameC
 
     m_blurFramebuffer.Bind(0);
 
-    glBlendFunc(GL_ONE, GL_ZERO);
+    Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::One, Renderer::BlendMode::Function::Zero);
 
     for (unsigned int pass = 0; pass < passes; pass++)
     {
@@ -263,7 +264,7 @@ void BlurTexture::Update(const Renderer::Texture& sourceTexture, const PerFrameC
     }
 
     Renderer::Mesh::Unbind();
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    Renderer::BlendMode::Set(false, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::OneMinusSourceAlpha);
 
     // Bind previous framebuffer and reset viewport size
     glBindFramebuffer(GL_READ_FRAMEBUFFER, origReadFramebuffer);
