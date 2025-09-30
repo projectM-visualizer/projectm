@@ -15,8 +15,8 @@ void CenteredSpiro::GenerateVertices(const PresetState&, const PerFrameContext&)
 
     for (int i = 0; i < m_samples; i++)
     {
-        m_wave1Vertices[i].x = m_pcmDataR[i] * m_aspectY + m_waveX;
-        m_wave1Vertices[i].y = m_pcmDataL[i + 32] * m_aspectX + m_waveY;
+        m_wave1Vertices[i] = {m_pcmDataR[i] * m_aspectY + m_waveX,
+                              m_pcmDataL[i + 32] * m_aspectX + m_waveY};
     }
 }
 

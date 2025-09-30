@@ -51,12 +51,12 @@ auto WaveformMath::GetVertices(const PresetState& presetState,
      * Note that this is an IIR filter with alpha = waveSmoothing.
      */
     float mix2 = presetState.waveSmoothing; // amount of previous sample to add to this sample
-    float mix1 = scale * (1.0f - mix2); // amount to scale this sample
+    float mix1 = scale * (1.0f - mix2);     // amount to scale this sample
     // Scale and mix samples after the first one.
     for (size_t i = 1; i < m_pcmDataL.size(); ++i)
     {
-        m_pcmDataL[i] = m_pcmDataL[i]*mix1 + m_pcmDataL[i-1]*mix2;
-        m_pcmDataR[i] = m_pcmDataR[i]*mix1 + m_pcmDataR[i-1]*mix2;
+        m_pcmDataL[i] = m_pcmDataL[i] * mix1 + m_pcmDataL[i - 1] * mix2;
+        m_pcmDataR[i] = m_pcmDataR[i] * mix1 + m_pcmDataR[i - 1] * mix2;
     }
 
     // Aspect multipliers
@@ -131,8 +131,9 @@ void WaveformMath::SmoothWave(const VertexList& inputVertices, VertexList& outpu
         size_t const indexAbove = indexAbove2;
         indexAbove2 = std::min(static_cast<size_t>(m_samples) - 1, inputIndex + 2);
         outputVertices[outputIndex] = inputVertices[inputIndex];
-        outputVertices[outputIndex + 1].x = (c1 * inputVertices[indexBelow].x + c2 * inputVertices[inputIndex].x + c3 * inputVertices[indexAbove].x + c4 * inputVertices[indexAbove2].x) * inverseSum;
-        outputVertices[outputIndex + 1].y = (c1 * inputVertices[indexBelow].y + c2 * inputVertices[inputIndex].y + c3 * inputVertices[indexAbove].y + c4 * inputVertices[indexAbove2].y) * inverseSum;
+        outputVertices[outputIndex + 1] = {
+            (c1 * inputVertices[indexBelow].X() + c2 * inputVertices[inputIndex].X() + c3 * inputVertices[indexAbove].X() + c4 * inputVertices[indexAbove2].X()) * inverseSum,
+            (c1 * inputVertices[indexBelow].Y() + c2 * inputVertices[inputIndex].Y() + c3 * inputVertices[indexAbove].Y() + c4 * inputVertices[indexAbove2].Y()) * inverseSum};
         indexBelow = inputIndex;
         outputIndex += 2;
     }

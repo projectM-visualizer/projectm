@@ -34,15 +34,16 @@ void DerivativeLine::GenerateVertices(const PresetState& presetState, const PerF
     for (int i = 0; i < m_samples; i++)
     {
         assert((i + 25 + sampleOffset) < 512);
-        m_wave1Vertices[i].x = -1.0f + 2.0f * (static_cast<float>(i) * inverseSamples) + m_waveX;
-        m_wave1Vertices[i].y = m_pcmDataL[i + sampleOffset] * 0.47f + m_waveY;
-        m_wave1Vertices[i].x += m_pcmDataR[i + 25 + sampleOffset] * 0.44f;
+        const float x = -1.0f + 2.0f * (static_cast<float>(i) * inverseSamples) + m_waveX + m_pcmDataR[i + 25 + sampleOffset] * 0.44f;
+        const float y = m_pcmDataL[i + sampleOffset] * 0.47f + m_waveY;
+        m_wave1Vertices[i] = {x, y};
 
         // Momentum
         if (i > 1)
         {
-            m_wave1Vertices[i].x = m_wave1Vertices[i].x * w2 + w1 * (m_wave1Vertices[i - 1].x * 2.0f - m_wave1Vertices[i - 2].x);
-            m_wave1Vertices[i].y = m_wave1Vertices[i].y * w2 + w1 * (m_wave1Vertices[i - 1].y * 2.0f - m_wave1Vertices[i - 2].y);
+            m_wave1Vertices[i] = {
+                x * w2 + w1 * (m_wave1Vertices[i - 1].X() * 2.0f - m_wave1Vertices[i - 2].X()),
+                y * w2 + w1 * (m_wave1Vertices[i - 1].Y() * 2.0f - m_wave1Vertices[i - 2].Y())};
         }
     }
 }

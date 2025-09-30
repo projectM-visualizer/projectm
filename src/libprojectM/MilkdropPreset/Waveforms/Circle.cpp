@@ -41,8 +41,9 @@ void Circle::GenerateVertices(const PresetState& presetState,
             radius = radius2 * (1.0f - mix) + radius * (mix);
         }
 
-        m_wave1Vertices[i].x = radius * cosf(angle) * m_aspectY + m_waveX;
-        m_wave1Vertices[i].y = radius * sinf(angle) * m_aspectX + m_waveY;
+        m_wave1Vertices[i] = {
+            radius * cosf(angle) * m_aspectY + m_waveX,
+            radius * sinf(angle) * m_aspectX + m_waveY};
     }
 }
 

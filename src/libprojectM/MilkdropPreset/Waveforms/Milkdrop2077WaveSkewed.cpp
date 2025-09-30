@@ -27,8 +27,8 @@ void Milkdrop2077WaveSkewed::GenerateVertices(const PresetState& presetState,
     {
         float rad = 0.63f + 0.23f * m_pcmDataR[i] + m_mysteryWaveParam;
         float ang = m_pcmDataL[i + 32] * 0.9f + presetState.renderContext.time * 3.3f;
-        m_wave1Vertices[i].x = rad * cosf(ang + alpha) * m_aspectY + m_waveX;
-        m_wave1Vertices[i].y = rad * sinf(ang) * m_aspectX + m_waveY;
+        m_wave1Vertices[i] = {rad * cosf(ang + alpha) * m_aspectY + m_waveX,
+                              rad * sinf(ang) * m_aspectX + m_waveY};
     }
 }
 

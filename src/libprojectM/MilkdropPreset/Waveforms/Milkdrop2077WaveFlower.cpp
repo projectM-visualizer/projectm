@@ -39,8 +39,9 @@ void Milkdrop2077WaveFlower::GenerateVertices(const PresetState& presetState,
             radius = radius2 * (1.0f - mix) + radius * mix * .25f;
         }
 
-        m_wave1Vertices[sample].x = radius * cosf(angle * 3.1416f) * m_aspectY / 1.5f + m_waveX * cosf(3.1416f);
-        m_wave1Vertices[sample].y = radius * sinf(angle - presetState.renderContext.time / 3.0f) * m_aspectX / 1.5f + m_waveY * cosf(3.1416f);
+        m_wave1Vertices[sample] = {
+            radius * cosf(angle * 3.1416f) * m_aspectY / 1.5f + m_waveX * cosf(3.1416f),
+            radius * sinf(angle - presetState.renderContext.time / 3.0f) * m_aspectX / 1.5f + m_waveY * cosf(3.1416f)};
     }
 }
 
