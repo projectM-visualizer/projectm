@@ -21,8 +21,9 @@ void ExplosiveHash::GenerateVertices(const PresetState& presetState, const PerFr
     {
         const float x0 = (m_pcmDataR[i] * m_pcmDataL[i + 32] + m_pcmDataL[i] * m_pcmDataR[i + 32]);
         const float y0 = (m_pcmDataR[i] * m_pcmDataR[i] - m_pcmDataL[i + 32] * m_pcmDataL[i + 32]);
-        m_wave1Vertices[i].x = ((x0 * cosineRotation - y0 * sineRotation) * m_aspectY) + m_waveX;
-        m_wave1Vertices[i].y = ((x0 * sineRotation + y0 * cosineRotation) * m_aspectX) + m_waveY;
+        m_wave1Vertices[i] = {
+            (x0 * cosineRotation - y0 * sineRotation) * m_aspectY + m_waveX,
+            (x0 * sineRotation + y0 * cosineRotation) * m_aspectX + m_waveY};
     }
 }
 

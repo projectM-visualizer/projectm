@@ -37,8 +37,8 @@ void Milkdrop2077WaveStar::GenerateVertices(const PresetState& presetState,
             float const radius2 = 0.5f + 0.4f * m_pcmDataR[sample + m_samples - sampleOffset] + m_mysteryWaveParam;
             radius = radius2 * (1.0f - mix) + radius * mix;
         }
-        m_wave1Vertices[sample].x = radius * cosf(angle) * m_aspectY + m_waveX;
-        m_wave1Vertices[sample].y = radius * sinf(angle) * m_aspectX + m_waveY;
+        m_wave1Vertices[sample] = {radius * cosf(angle) * m_aspectY + m_waveX,
+                                   radius * sinf(angle) * m_aspectX + m_waveY};
     }
 }
 

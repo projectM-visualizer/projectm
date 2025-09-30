@@ -21,8 +21,9 @@ void SpectrumLine::GenerateVertices(const PresetState&, const PerFrameContext&)
     for (size_t i = 0; i < static_cast<size_t>(m_samples); i++)
     {
         const float f = 0.1f * logf(m_pcmDataL[i * 2] + m_pcmDataL[i * 2 + 1]);
-        m_wave1Vertices[i].x = m_edgeX + m_distanceX * static_cast<float>(i) + m_perpetualDX * f;
-        m_wave1Vertices[i].y = m_edgeY + m_distanceY * static_cast<float>(i) + m_perpetualDY * f;
+        m_wave1Vertices[i] = {
+            m_edgeX + m_distanceX * static_cast<float>(i) + m_perpetualDX * f,
+            m_edgeY + m_distanceY * static_cast<float>(i) + m_perpetualDY * f};
     }
 }
 
