@@ -37,7 +37,7 @@ class Playlist
 {
 public:
     /**
-     * Short-hand constant which can be used in AddItem() to add new presets at the end of the playlist.
+     * Shorthand constant which can be used in AddItem() to add new presets at the end of the playlist.
      */
     static constexpr auto InsertAtEnd = std::numeric_limits<uint32_t>::max();
 
@@ -89,7 +89,7 @@ public:
     virtual bool Empty() const;
 
     /**
-     * @brief Clears the current playlist.
+     * @brief Clears the current playlist and playback history.
      */
     virtual void Clear();
 
@@ -97,12 +97,14 @@ public:
      * @brief Returns the playlist items.
      * @return A vector with items in the current playlist.
      */
-    virtual const std::vector<Item>& Items() const;
+    virtual auto Items() const -> const std::vector<Item>&;
 
     /**
      * @brief Adds a preset file to the playlist.
      *
      * Use Playlist::InsertAtEnd as index to always insert an item at the end of the playlist.
+     *
+     * The playback history will be kept, and indices are updated accordingly.
      *
      * @param filename The file path and name to add.
      * @param index The index to insert the preset at. If larger than the playlist size, it's added
@@ -117,7 +119,9 @@ public:
      * @brief Adds presets (recursively) from the given path.
      *
      * The function will scan the given path (and possible subdirs) for files with a .milk extension
-     * and and the to the playlist, starting at the given index.
+     * and add them to the playlist, starting at the given index.
+     *
+     * The playback history will be kept, and indices are updated accordingly.
      *
      * The order of the added files is unspecified. Use the Sort() method to sort the playlist or
      * the newly added range.
@@ -135,7 +139,8 @@ public:
                          bool allowDuplicates) -> uint32_t;
 
     /**
-     * @brief Removed a playlist item at the given playlist index.
+     * @brief Removes a playlist item at the given playlist index.
+     * The playback history will be kept, and indices are updated accordingly.
      * @param index The index to remove.
      * @return True if an item was removed, false if the index was out of bounds and no item was
      *         removed..
@@ -158,6 +163,8 @@ public:
      * @brief Sorts the whole or a part of the playlist according to the options.
      *
      * Sorting is case-sensitive.
+     *
+     * The playback history is cleared when calling this function.
      *
      * @param startIndex The index to start sorting at. If the index is larger than the last
      *                   item index, the playlist will remain unchanged.
@@ -225,6 +232,12 @@ public:
      * Useful if the last playlist item failed to load, so it won't get selected again.
      */
     virtual void RemoveLastHistoryEntry();
+
+    /**
+     * @brief Returns a vector with the playlist indices of the current playback history.
+     * @return A vector of indices with the last played presets.
+     */
+    virtual auto HistoryItems() const -> std::vector<uint32_t>;
 
     /**
      * @brief Returns the current playlist filter list.
