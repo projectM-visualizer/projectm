@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include "AudioConstants.hpp"
-#include "FrameAudioData.hpp"
-#include "Loudness.hpp"
-#include "MilkdropFFT.hpp"
-#include "WaveformAligner.hpp"
+#include "Audio/AudioConstants.hpp"
+#include "Audio/FrameAudioData.hpp"
+#include "Audio/Loudness.hpp"
+#include "Audio/MilkdropFFT.hpp"
+#include "Audio/WaveformAligner.hpp"
 
 #include <projectM-4/projectM_export.h>
 

@@ -5,7 +5,7 @@
 
 #include <Renderer/Color.hpp>
 #include <Renderer/Mesh.hpp>
-#include "Renderer/Point.hpp"
+#include <Renderer/Point.hpp>
 
 #include <vector>
 

@@ -1,4 +1,4 @@
-#include "LineBase.hpp"
+#include "Waveforms/LineBase.hpp"
 
 #include <Audio/AudioConstants.hpp>
 

@@ -1,11 +1,11 @@
 #include "PresetFactoryManager.hpp"
 
+#include "Utils.hpp"
+
 #include <MilkdropPreset/Factory.hpp>
 
 #include <Logging.hpp>
-#include <Utils.hpp>
 
-#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <sstream>

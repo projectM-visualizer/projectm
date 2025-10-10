@@ -1,4 +1,4 @@
-#include "CopyTexture.hpp"
+#include "Renderer/CopyTexture.hpp"
 
 namespace libprojectM {
 namespace Renderer {

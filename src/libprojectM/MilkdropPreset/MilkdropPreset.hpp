@@ -27,7 +27,6 @@
 #include "CustomShape.hpp"
 #include "CustomWaveform.hpp"
 #include "DarkenCenter.hpp"
-#include "Filters.hpp"
 #include "FinalComposite.hpp"
 #include "MotionVectors.hpp"
 #include "PerFrameContext.hpp"
@@ -39,8 +38,6 @@
 #include <Renderer/CopyTexture.hpp>
 #include <Renderer/Framebuffer.hpp>
 
-#include <cassert>
-#include <map>
 #include <memory>
 #include <string>
 

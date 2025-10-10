@@ -6,11 +6,11 @@
 
 #include <Audio/AudioConstants.hpp>
 
-#include <cstring>
 #include <projectM-4/parameters.h>
 #include <projectM-4/render_opengl.h>
-#include <sstream>
 
+#include <cstring>
+#include <sstream>
 
 namespace libprojectM {
 

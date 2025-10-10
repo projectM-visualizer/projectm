@@ -1,6 +1,6 @@
-#include "TextureSamplerDescriptor.hpp"
+#include "Renderer/TextureSamplerDescriptor.hpp"
 
-#include "TextureManager.hpp"
+#include "Renderer/TextureManager.hpp"
 
 #include <utility>
 

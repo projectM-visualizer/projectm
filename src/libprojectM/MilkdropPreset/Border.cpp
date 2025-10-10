@@ -1,5 +1,7 @@
 #include "Border.hpp"
 
+#include "PerFrameContext.hpp"
+
 #include <Renderer/BlendMode.hpp>
 
 namespace libprojectM {

@@ -1,4 +1,4 @@
-#include "DerivativeLine.hpp"
+#include "Waveforms/DerivativeLine.hpp"
 
 #include "PresetState.hpp"
 
