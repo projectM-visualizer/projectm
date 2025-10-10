@@ -1,4 +1,4 @@
-#include "MilkdropNoise.hpp"
+#include "Renderer/MilkdropNoise.hpp"
 
 #include "projectM-opengl.h"
 

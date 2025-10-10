@@ -7,7 +7,6 @@
 #include <Renderer/Mesh.hpp>
 
 #include <memory>
-#include <vector>
 
 namespace libprojectM {
 namespace MilkdropPreset {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WaveformMath.hpp"
+#include "Waveforms/WaveformMath.hpp"
 
 #include <memory>
 

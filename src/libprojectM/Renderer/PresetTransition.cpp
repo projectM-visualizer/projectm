@@ -1,11 +1,9 @@
-#include "PresetTransition.hpp"
+#include "Renderer/PresetTransition.hpp"
 
-#include "TextureManager.hpp"
+#include "Renderer/TextureManager.hpp"
 
 #include <algorithm>
-#include <array>
 #include <cmath>
-#include <cstddef>
 
 namespace libprojectM {
 namespace Renderer {

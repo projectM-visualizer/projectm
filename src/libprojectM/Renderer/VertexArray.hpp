@@ -1,8 +1,5 @@
 #pragma once
 
-#include "VertexBuffer.hpp"
-
-
 #include <projectM-opengl.h>
 
 namespace libprojectM {

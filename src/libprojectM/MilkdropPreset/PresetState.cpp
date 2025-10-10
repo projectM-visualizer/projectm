@@ -3,7 +3,7 @@
 #include "MilkdropStaticShaders.hpp"
 #include "PresetFileParser.hpp"
 
-#include "Renderer/ShaderCache.hpp"
+#include <Renderer/ShaderCache.hpp>
 
 #include <glm/gtc/matrix_transform.hpp>
 

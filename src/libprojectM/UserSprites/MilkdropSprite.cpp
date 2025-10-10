@@ -1,6 +1,7 @@
 #include "UserSprites/MilkdropSprite.hpp"
 
-#include "SpriteException.hpp"
+#include "UserSprites/SpriteException.hpp"
+
 #include "SpriteShaders.hpp"
 
 #include <Preset.hpp>

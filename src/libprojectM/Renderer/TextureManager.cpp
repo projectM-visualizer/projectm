@@ -1,10 +1,11 @@
-#include "TextureManager.hpp"
+#include "Renderer/TextureManager.hpp"
 
-#include "FileScanner.hpp"
-#include "IdleTextures.hpp"
-#include "MilkdropNoise.hpp"
-#include "Texture.hpp"
-#include "Utils.hpp"
+#include "Renderer/FileScanner.hpp"
+#include "Renderer/IdleTextures.hpp"
+#include "Renderer/MilkdropNoise.hpp"
+#include "Renderer/Texture.hpp"
+
+#include <Utils.hpp>
 
 #include <Logging.hpp>
 #include <SOIL2/SOIL2.h>

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "PerFrameContext.hpp"
 #include "PresetState.hpp"
 
 #include <projectm-eval.h>
@@ -36,6 +35,7 @@ public:
      * is an undocumented feature, we should do the same as some presets may depend on it.
      *
      * @param state The preset state container.
+     * @param perFrameState The per-frame execution context.
      */
     void LoadStateReadOnlyVariables(PresetState& state, PerFrameContext& perFrameState);
 
