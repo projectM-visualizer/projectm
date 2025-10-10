@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
-#include <PresetFileParser.hpp>
+#include <MilkdropPreset/PresetFileParser.hpp>
 
 static constexpr auto fileParserTestDataPath{ PROJECTM_TEST_DATA_DIR "/PresetFileParser/" };
 
-using libprojectM::PresetFileParser;
+using libprojectM::MilkdropPreset::PresetFileParser;
 
 /**
  * Class to make protected function accessible to tests.

@@ -93,7 +93,7 @@ private:
 
     void Load(std::istream& stream);
 
-    void InitializePreset(::libprojectM::PresetFileParser& parsedFile);
+    void InitializePreset(PresetFileParser& parsedFile);
 
     void CompileCodeAndRunInitExpressions();
 

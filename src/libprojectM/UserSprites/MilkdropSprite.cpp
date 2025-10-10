@@ -4,8 +4,9 @@
 
 #include "SpriteShaders.hpp"
 
+#include <MilkdropPreset/PresetFileParser.hpp>
+
 #include <Preset.hpp>
-#include <PresetFileParser.hpp>
 
 #include <Renderer/BlendMode.hpp>
 #include <Renderer/ShaderCache.hpp>
@@ -35,7 +36,7 @@ MilkdropSprite::MilkdropSprite()
 
 void MilkdropSprite::Init(const std::string& spriteData, const Renderer::RenderContext& renderContext)
 {
-    PresetFileParser parser;
+    MilkdropPreset::PresetFileParser parser;
     std::stringstream spriteDataStream(spriteData);
     if (!parser.Read(spriteDataStream))
     {

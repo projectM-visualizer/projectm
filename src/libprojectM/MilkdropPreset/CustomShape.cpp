@@ -25,7 +25,7 @@ CustomShape::CustomShape(PresetState& presetState)
     m_perFrameContext.RegisterBuiltinVariables();
 }
 
-void CustomShape::Initialize(::libprojectM::PresetFileParser& parsedFile, int index)
+void CustomShape::Initialize(PresetFileParser& parsedFile, int index)
 {
     std::string const shapecodePrefix = "shapecode_" + std::to_string(index) + "_";
 

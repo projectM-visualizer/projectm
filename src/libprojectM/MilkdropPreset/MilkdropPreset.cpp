@@ -207,7 +207,7 @@ void MilkdropPreset::Load(const std::string& pathname)
 
     SetFilename(ParseFilename(pathname));
 
-    ::libprojectM::PresetFileParser parser;
+    PresetFileParser parser;
 
     if (!parser.Read(pathname))
     {
@@ -223,7 +223,7 @@ void MilkdropPreset::Load(std::istream& stream)
 {
     LOG_DEBUG("[MilkdropPreset] Loading preset from stream.");
 
-    ::libprojectM::PresetFileParser parser;
+    PresetFileParser parser;
 
     if (!parser.Read(stream))
     {
@@ -235,7 +235,7 @@ void MilkdropPreset::Load(std::istream& stream)
     InitializePreset(parser);
 }
 
-void MilkdropPreset::InitializePreset(::libprojectM::PresetFileParser& parsedFile)
+void MilkdropPreset::InitializePreset(PresetFileParser& parsedFile)
 {
     // Create the offscreen rendering surfaces.
     m_motionVectorUVMap = std::make_shared<Renderer::TextureAttachment>(GL_RG16F, GL_RG, GL_FLOAT, 0, 0);
