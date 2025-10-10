@@ -10,10 +10,9 @@
 #include <vector>
 
 namespace libprojectM {
+namespace MilkdropPreset {
 
 class PresetFileParser;
-
-namespace MilkdropPreset {
 
 class CustomWaveform
 {
@@ -30,7 +29,7 @@ public:
      * @param parsedFile The file parser with the preset data.
      * @param index The waveform index.
      */
-    void Initialize(::libprojectM::PresetFileParser& parsedFile, int index);
+    void Initialize(PresetFileParser& parsedFile, int index);
 
     /**
      * @brief Compiles all code blocks and runs the init expression.
