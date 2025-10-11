@@ -7,7 +7,7 @@
 
 #include <Renderer/BlendMode.hpp>
 
-#include <projectM-opengl.h>
+#include <../Renderer/OpenGL.h>
 
 #include <algorithm>
 #include <cmath>

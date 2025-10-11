@@ -1,8 +1,7 @@
 #pragma once
 
+#include "Renderer/OpenGL.h"
 #include "Renderer/VertexBufferUsage.hpp"
-
-#include <projectM-opengl.h>
 
 #include <cstddef>
 #include <vector>

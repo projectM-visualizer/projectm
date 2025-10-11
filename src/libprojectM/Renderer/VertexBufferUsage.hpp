@@ -1,6 +1,6 @@
 #pragma once
 
-#include <projectM-opengl.h>
+#include "Renderer/OpenGL.h"
 
 namespace libprojectM {
 namespace Renderer {

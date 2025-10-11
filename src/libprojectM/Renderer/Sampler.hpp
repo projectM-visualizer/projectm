@@ -4,7 +4,7 @@
 */
 #pragma once
 
-#include <projectM-opengl.h>
+#include <Renderer/OpenGL.h>
 
 #include <memory>
 

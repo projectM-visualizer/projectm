@@ -1,9 +1,9 @@
 #pragma once
 
-#include <projectM-opengl.h>
+#include "Renderer/OpenGL.h"
 
-#include <cstdint>
 #include <cmath>
+#include <cstdint>
 
 namespace libprojectM {
 namespace Renderer {
