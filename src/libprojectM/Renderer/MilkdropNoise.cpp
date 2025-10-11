@@ -1,6 +1,6 @@
 #include "Renderer/MilkdropNoise.hpp"
 
-#include "projectM-opengl.h"
+#include "Renderer/OpenGL.h"
 
 #include <chrono>
 #include <random>

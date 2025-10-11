@@ -28,7 +28,6 @@ add_library(projectM_main OBJECT
         TimeKeeper.hpp
         Utils.cpp
         Utils.hpp
-        projectM-opengl.h
         )
 
 target_link_libraries(projectM_main
