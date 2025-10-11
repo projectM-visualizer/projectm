@@ -108,7 +108,6 @@ unsigned char* convert_image_to_DXT1(
 	unsigned char ublock[16*3];
 	unsigned char cblock[8];
 	int index = 0, chan_step = 1;
-	int block_count = 0;
 	/*	error check	*/
 	*out_size = 0;
 	if( (width < 1) || (height < 1) ||
@@ -167,7 +166,6 @@ unsigned char* convert_image_to_DXT1(
 				}
 			}
 			/*	compress the block	*/
-			++block_count;
 			compress_DDS_color_block( 3, ublock, cblock );
 			/*	copy the data from the block into the main block	*/
 			for( x = 0; x < 8; ++x )
@@ -189,7 +187,7 @@ unsigned char* convert_image_to_DXT5(
 	unsigned char ublock[16*4];
 	unsigned char cblock[8];
 	int index = 0, chan_step = 1;
-	int block_count = 0, has_alpha;
+	int has_alpha;
 	/*	error check	*/
 	*out_size = 0;
 	if( (width < 1) || (height < 1) ||
@@ -262,7 +260,6 @@ unsigned char* convert_image_to_DXT5(
 				compressed[index++] = cblock[x];
 			}
 			/*	then compress the color block	*/
-			++block_count;
 			compress_DDS_color_block( 4, ublock, cblock );
 			/*	copy the data from the compressed color block into the main buffer	*/
 			for( x = 0; x < 8; ++x )

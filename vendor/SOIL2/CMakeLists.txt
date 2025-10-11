@@ -1,31 +1,34 @@
 add_library(SOIL2 OBJECT
-        etc1_utils.c
-        etc1_utils.h
-        image_DXT.c
-        image_DXT.h
-        image_helper.c
-        image_helper.h
-        pkm_helper.h
-        pvr_helper.h
-        SOIL2.c
-        SOIL2.h
-        stb_image.h
-        stb_image_write.h
-        stbi_DDS.h
-        stbi_DDS_c.h
-        stbi_ext.h
-        stbi_ext_c.h
-        stbi_pkm.h
-        stbi_pkm_c.h
-        stbi_pvr.h
-        stbi_pvr_c.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/common/common.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/common/common.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/image_DXT.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/image_DXT.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/image_helper.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/image_helper.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/pkm_helper.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/pvr_helper.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/SOIL2.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/SOIL2.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/stb_image.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/stb_image_write.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/stbi_DDS.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/stbi_DDS_c.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/stbi_ext.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/stbi_ext_c.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/stbi_pkm.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/stbi_pkm_c.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/stbi_pvr.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/stbi_pvr_c.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/stbi_qoi.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/stbi_qoi_c.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/stbi_qoi_write.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/wfETC.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/SOIL2/wfETC.h
         )
 
 target_include_directories(SOIL2
-        PRIVATE
-        "."
         PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}/.."
+        "${CMAKE_CURRENT_SOURCE_DIR}/src"
         )
 
 target_link_libraries(SOIL2
@@ -36,15 +39,21 @@ target_link_libraries(SOIL2
 if(USE_GLES)
     target_compile_definitions(SOIL2
             PRIVATE
-            SOIL_GLES3
-            SOIL_NO_EGL
+            SOIL_GLES2
             )
     target_link_libraries(SOIL2
             PUBLIC
             ${CMAKE_DL_LIBS}
             )
 endif()
-        
+
+if(NOT TARGET OpenGL::EGL)
+    target_compile_definitions(SOIL2
+            PRIVATE
+            SOIL_NO_EGL
+            )
+endif()
+
 set_target_properties(SOIL2 PROPERTIES
-        FOLDER libprojectM
+        FOLDER vendor/SOIL2
         )

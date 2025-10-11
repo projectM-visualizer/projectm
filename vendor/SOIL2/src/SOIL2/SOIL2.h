@@ -2,7 +2,7 @@
 	@mainpage SOIL2
 
 	Fork by Martin Lucas Golini
-	
+
 	Original author Jonathan Dummer
 	2007-07-26-10.36
 
@@ -24,7 +24,8 @@
 	- TGA		load & save
 	- DDS		load & save
 	- PNG		load & save
-	- JPG		load
+	- JPG		load & save
+	- QOI		load & save
 	- PSD		load
 	- HDR		load
 	- PIC		load
@@ -48,6 +49,19 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define SOIL_MAJOR_VERSION 1
+#define SOIL_MINOR_VERSION 3
+#define SOIL_PATCH_LEVEL 0
+
+#define SOIL_VERSION_NUM( X, Y, Z ) ( (X)*1000 + (Y)*100 + ( Z ) )
+
+#define SOIL_COMPILED_VERSION \
+	SOIL_VERSION_NUM( SOIL_MAJOR_VERSION, SOIL_MINOR_VERSION, SOIL_PATCH_LEVEL )
+
+#define SOIL_VERSION_ATLEAST( X, Y, Z ) ( SOIL_COMPILED_VERSION >= SOIL_VERSION_NUM( X, Y, Z ) )
+
+	unsigned long SOIL_version();
 
 /**
 	The format of images that may be loaded (force_channels).
@@ -112,7 +126,8 @@ enum
 	SOIL_FLAG_TEXTURE_RECTANGLE = 512,
 	SOIL_FLAG_PVR_LOAD_DIRECT = 1024,
 	SOIL_FLAG_ETC1_LOAD_DIRECT = 2048,
-	SOIL_FLAG_GL_MIPMAPS = 4096
+	SOIL_FLAG_GL_MIPMAPS = 4096,
+	SOIL_FLAG_SRGB_COLOR_SPACE = 8192
 };
 
 /**
@@ -127,7 +142,9 @@ enum
 	SOIL_SAVE_TYPE_TGA = 0,
 	SOIL_SAVE_TYPE_BMP = 1,
 	SOIL_SAVE_TYPE_PNG = 2,
-	SOIL_SAVE_TYPE_DDS = 3
+	SOIL_SAVE_TYPE_DDS = 3,
+	SOIL_SAVE_TYPE_JPG = 4,
+	SOIL_SAVE_TYPE_QOI = 5
 };
 
 /**
@@ -166,9 +183,8 @@ unsigned int
 		const char *filename,
 		int force_channels,
 		unsigned int reuse_texture_ID,
-        unsigned int flags,
-        int *width,
-        int *height);
+		unsigned int flags
+	);
 
 /**
 	Loads 6 images from disk into an OpenGL cubemap texture.
@@ -245,14 +261,13 @@ unsigned int
 **/
 unsigned int
 	SOIL_load_OGL_texture_from_memory
-    (const unsigned char *const buffer,
-        unsigned int buffer_length,
-        int force_channels,
-        unsigned int reuse_texture_ID,
-        unsigned int flags,
-        int * width,
-        int * height
-    );
+	(
+		const unsigned char *const buffer,
+		int buffer_length,
+		int force_channels,
+		unsigned int reuse_texture_ID,
+		unsigned int flags
+	);
 
 /**
 	Loads 6 images from memory into an OpenGL cubemap texture.
@@ -405,8 +420,19 @@ unsigned char*
 
 /**
 	Saves an image from an array of unsigned chars (RGBA) to disk
+	\param quality parameter only used for SOIL_SAVE_TYPE_JPG files, values accepted between 0 and 100.
 	\return 0 if failed, otherwise returns 1
 **/
+int
+	SOIL_save_image_quality
+	(
+		const char *filename,
+		int image_type,
+		int width, int height, int channels,
+		const unsigned char *const data,
+		int quality
+	);
+
 int
 	SOIL_save_image
 	(
@@ -415,6 +441,34 @@ int
 		int width, int height, int channels,
 		const unsigned char *const data
 	);
+
+
+/**
+	Saves an image from an array of unsigned chars (RGBA) to a memory buffer in the target format.
+	Free the buffer with SOIL_free_image_data.
+	\param quality parameter only used for SOIL_SAVE_TYPE_JPG files, values accepted between 0 and 100.
+	\param imageSize returns the byte count of the image.
+	\return 0 if failed, otherwise returns 1
+**/
+
+unsigned char*
+SOIL_write_image_to_memory_quality
+(
+	int image_type,
+	int width, int height, int channels,
+	const unsigned char* const data,
+	int quality,
+	int* imageSize
+);
+
+unsigned char*
+SOIL_write_image_to_memory
+(
+	int image_type,
+	int width, int height, int channels,
+	const unsigned char* const data,
+	int* imageSize
+);
 
 /**
 	Frees the image data (note, this is just C's "free()"...this function is
@@ -462,7 +516,7 @@ unsigned int SOIL_direct_load_DDS(
 /** Loads the DDS texture directly to the GPU memory ( if supported ) */
 unsigned int SOIL_direct_load_DDS_from_memory(
 		const unsigned char *const buffer,
-        unsigned int buffer_length,
+		int buffer_length,
 		unsigned int reuse_texture_ID,
 		int flags,
 		int loading_as_cubemap );

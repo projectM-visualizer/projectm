@@ -14,7 +14,8 @@ enum {
 	STBI_dds	= 9,
 	STBI_pvr	= 10,
 	STBI_pkm	= 11,
-	STBI_hdr	= 12
+	STBI_hdr	= 12,
+	STBI_qoi	= 13
 };
 
 extern int      stbi_test_from_memory      (stbi_uc const *buffer, int len);

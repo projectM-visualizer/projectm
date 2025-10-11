@@ -65,10 +65,10 @@ auto TextureManager::GetSampler(const std::string& fullName) -> std::shared_ptr<
 void TextureManager::Preload()
 {
     // Create samplers
-    m_samplers.emplace(std::pair<GLint, GLint>(GL_CLAMP_TO_EDGE, GL_LINEAR), std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR));
-    m_samplers.emplace(std::pair<GLint, GLint>(GL_CLAMP_TO_EDGE, GL_NEAREST), std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_NEAREST));
-    m_samplers.emplace(std::pair<GLint, GLint>(GL_REPEAT, GL_LINEAR), std::make_shared<Sampler>(GL_REPEAT, GL_LINEAR));
-    m_samplers.emplace(std::pair<GLint, GLint>(GL_REPEAT, GL_NEAREST), std::make_shared<Sampler>(GL_REPEAT, GL_NEAREST));
+    m_samplers.emplace(std::make_pair(GL_CLAMP_TO_EDGE, GL_LINEAR), std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR));
+    m_samplers.emplace(std::make_pair(GL_CLAMP_TO_EDGE, GL_NEAREST), std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_NEAREST));
+    m_samplers.emplace(std::make_pair(GL_REPEAT, GL_LINEAR), std::make_shared<Sampler>(GL_REPEAT, GL_LINEAR));
+    m_samplers.emplace(std::make_pair(GL_REPEAT, GL_NEAREST), std::make_shared<Sampler>(GL_REPEAT, GL_NEAREST));
 
     int width{};
     int height{};
@@ -78,7 +78,7 @@ void TextureManager::Preload()
         M_bytes,
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
+        SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA);
 
     m_textures["idlem"] = std::make_shared<Texture>("idlem", tex, GL_TEXTURE_2D, width, height, false);;
 
@@ -87,7 +87,7 @@ void TextureManager::Preload()
         headphones_bytes,
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
+        SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA);
 
     m_textures["idleheadphones"] = std::make_shared<Texture>("idleheadphones", tex, GL_TEXTURE_2D, width, height, false);;
 
@@ -217,7 +217,7 @@ auto TextureManager::LoadTexture(const ScannedFile& file) -> std::shared_ptr<Tex
         file.filePath.c_str(),
         SOIL_LOAD_RGBA,
         SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
+        SOIL_FLAG_MULTIPLY_ALPHA);
 
     if (tex == 0)
     {
