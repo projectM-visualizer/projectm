@@ -62,13 +62,20 @@ void SpriteManager::Draw(const Audio::FrameAudioData& audioData,
                          uint32_t outputFramebufferObject,
                          Sprite::PresetList presets)
 {
+    std::vector<SpriteIdentifier> toDestroy;
+
     for (auto& idAndSprite : m_sprites) {
         idAndSprite.second->Draw(audioData, renderContext, outputFramebufferObject, presets);
 
         if (idAndSprite.second->Done())
         {
-            Destroy(idAndSprite.first);
+            toDestroy.push_back(idAndSprite.first);
         }
+    }
+
+    for (auto id : toDestroy)
+    {
+        Destroy(id);
     }
 }
 
