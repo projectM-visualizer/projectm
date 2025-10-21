@@ -478,6 +478,11 @@ const Intrinsic _intrinsic[] =
         Intrinsic( "length", HLSLBaseType_Float,  HLSLBaseType_Float3 ),
         Intrinsic( "length", HLSLBaseType_Float,  HLSLBaseType_Float4 ),
 
+        Intrinsic( "distance", HLSLBaseType_Float,  HLSLBaseType_Float , HLSLBaseType_Float  ),
+        Intrinsic( "distance", HLSLBaseType_Float,  HLSLBaseType_Float2, HLSLBaseType_Float2 ),
+        Intrinsic( "distance", HLSLBaseType_Float,  HLSLBaseType_Float3, HLSLBaseType_Float3 ),
+        Intrinsic( "distance", HLSLBaseType_Float,  HLSLBaseType_Float4, HLSLBaseType_Float4 ),
+
         INTRINSIC_FLOAT2_FUNCTION( "max" ),
         INTRINSIC_FLOAT2_FUNCTION( "min" ),
 
