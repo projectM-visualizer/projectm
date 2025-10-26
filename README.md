@@ -4,7 +4,7 @@
 [![Emscripten Build Status](https://github.com/projectM-visualizer/projectm/actions/workflows/build_emscripten.yml/badge.svg?branch=master)](https://github.com/projectM-visualizer/projectm/actions/workflows/build_emscripten.yml)
 [![Android Build Status](https://github.com/projectM-visualizer/projectm/actions/workflows/build_android.yml/badge.svg?branch=master)](https://github.com/projectM-visualizer/projectm/actions/workflows/build_android.yml)
 
-![Discord Shield](https://discordapp.com/api/guilds/737206408482914387/widget.png?style=shield) [Chat with us on Discord](https://discord.gg/mMrxAqaa3W)
+![Discord Shield](https://discordapp.com/api/guilds/737206408482914387/widget.png?style=shield) [Chat with us on Discord](https://discord.gg/N9DyQfCH4j)
 
 ![Logo](https://github.com/projectM-visualizer/projectm/raw/master/docs/web/logo.png)
 
@@ -88,7 +88,7 @@ Source code and other resources, mostly aimed at developers.
 
 ### Discord chat
 
-[Chat with us on Discord!](https://discord.gg/mMrxAqaa3W)
+[Chat with us on Discord!](https://discord.gg/N9DyQfCH4j)
 
 ### Demo Video
 
@@ -201,7 +201,7 @@ and findings to the existing issue instead of opening a new ticket.
 
 ## Get in contact with us
 
-[Chat with us on Discord.](https://discord.gg/mMrxAqaa3W)
+[Chat with us on Discord.](https://discord.gg/N9DyQfCH4j)
 
 ## Contribute to projectM
 
