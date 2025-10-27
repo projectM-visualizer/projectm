@@ -8,7 +8,7 @@ Want to build it fast?
 
 Required tools and dependencies:
 
-- CMake 3.20 or higher.
+- CMake 3.21 or higher.
 - A working toolchain, e.g. Visual Studio on Windows or the `build-essentials` package on Ubuntu Linux.
 - Main OpenGL libraries and development files.
 - The `GLEW` Library on Windows.
