@@ -887,9 +887,11 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
         }
         else
         {
+            // Array subscript operator in GLSL requires an explicit int parameter
+            const HLSLType& intType = HLSLType(HLSLBaseType_Int);
             OutputExpression(arrayAccess->array);
             m_writer.Write("[");
-            OutputExpression(arrayAccess->index);
+            OutputExpression(arrayAccess->index, &intType);
             m_writer.Write("]");
         }
 
