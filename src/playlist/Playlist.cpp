@@ -253,7 +253,7 @@ auto Playlist::NextPresetIndex() -> uint32_t
 
     if (m_shuffle)
     {
-        std::uniform_int_distribution<uint32_t> randomDistribution(0, static_cast<uint32_t>(m_items.size()));
+        std::uniform_int_distribution<uint32_t> randomDistribution(0, static_cast<uint32_t>(m_items.size() - 1));
         m_currentPosition = randomDistribution(m_randomGenerator);
     }
     else
@@ -280,7 +280,7 @@ auto Playlist::PreviousPresetIndex() -> uint32_t
 
     if (m_shuffle)
     {
-        std::uniform_int_distribution<uint32_t> randomDistribution(0, static_cast<uint32_t>(m_items.size()));
+        std::uniform_int_distribution<uint32_t> randomDistribution(0, static_cast<uint32_t>(m_items.size() - 1));
         m_currentPosition = randomDistribution(m_randomGenerator);
     }
     else
