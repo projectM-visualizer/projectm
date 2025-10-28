@@ -6,7 +6,14 @@ body:
   - type: markdown
     attributes:
       value: |
+        ### Prefer using the discussion boards
+        
+        If your question or suggestion may result in a longer discussion or the answer may interest others, it might be a better idea to open a topic [in one of our discussion forums](https://github.com/orgs/projectM-visualizer/discussions).
+        
+        Questions answered in the boards can be marked accordingly and others may find it easier than by searching through closed issues.
+        
         ### Requests regarding the projectM Android App
+        
         Note that **we cannot answer questions regarding the Android apps** in the Google Play Store. These apps are not being developed by the projectM team. Please contact the app author directly via the information provided in the Play Store.
   - type: checkboxes
     id: reporter_ack
