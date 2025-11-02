@@ -426,6 +426,9 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
 
     if (m_options.flags & Flag_AlternateNanPropagation) {
         /* Implement alternate functions that propagate NaNs like shader model 3 and DX9. */
+        m_writer.WriteLine(0, "float %s(int i_x, int i_y) { float x=float(i_x); float y=float(i_y); if (x == 0.0 || y == 0.0) { return 0.0; } else { return (x * y); } }", m_altMultFunction);
+        m_writer.WriteLine(0, "float %s(int i_x, float y) { float x=float(i_x); if (x == 0.0 || y == 0.0) { return 0.0; } else { return (x * y); } }", m_altMultFunction);
+        m_writer.WriteLine(0, "float %s(float x, int i_y) { float y=float(i_y); if (x == 0.0 || y == 0.0) { return 0.0; } else { return (x * y); } }", m_altMultFunction);
         m_writer.WriteLine(0, "float %s(float x, float y) { if (x == 0.0 || y == 0.0) { return 0.0; } else { return (x * y); } }", m_altMultFunction);
         m_writer.WriteLine(0, "vec2 %s(vec2 x, vec2 y) { return vec2(%s(x.x, y.x), %s(x.y, y.y)); }", m_altMultFunction, m_altMultFunction, m_altMultFunction);
         m_writer.WriteLine(0, "vec3 %s(vec3 x, vec3 y) { return vec3(%s(x.x, y.x), %s(x.y, y.y), %s(x.z, y.z)); }", m_altMultFunction, m_altMultFunction, m_altMultFunction, m_altMultFunction);
