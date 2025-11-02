@@ -186,14 +186,14 @@ void MilkdropShader::LoadVariables(const PresetState& presetState, const PerFram
                                       presetState.renderContext.fps,
                                       presetState.renderContext.frame,
                                       presetState.renderContext.progress});
-    m_shader.SetUniformFloat4("_c3", {presetState.audioData.bass / 100,
-                                      presetState.audioData.mid / 100,
-                                      presetState.audioData.treb / 100,
-                                      presetState.audioData.vol / 100});
-    m_shader.SetUniformFloat4("_c4", {presetState.audioData.bassAtt / 100,
-                                      presetState.audioData.midAtt / 100,
-                                      presetState.audioData.trebAtt / 100,
-                                      presetState.audioData.volAtt / 100});
+    m_shader.SetUniformFloat4("_c3", {presetState.audioData.bass,
+                                      presetState.audioData.mid,
+                                      presetState.audioData.treb,
+                                      presetState.audioData.vol});
+    m_shader.SetUniformFloat4("_c4", {presetState.audioData.bassAtt,
+                                      presetState.audioData.midAtt,
+                                      presetState.audioData.trebAtt,
+                                      presetState.audioData.volAtt});
     m_shader.SetUniformFloat4("_c5", {blurMax[0] - blurMin[0],
                                       blurMin[0],
                                       blurMax[1] - blurMin[1],
