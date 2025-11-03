@@ -317,7 +317,11 @@ PROJECTM_EXPORT bool projectm_get_preset_locked(projectm_handle instance);
 /**
  * @brief Sets the current viewport size in pixels.
  *
- * Calling this function will reset the OpenGL renderer.
+ * The internal textures will only be replaced and resized when rendering the next frame and only
+ * if any of the two dimensions actually changed.
+ *
+ * Calling this function on every frame with the same size doesn't have any negative
+ * effects as it only updates the size with the same values.
  *
  * @param instance The projectM instance handle.
  * @param width New viewport width in pixels.
