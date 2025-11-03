@@ -3,6 +3,9 @@
 #include "Renderer/VertexBufferUsage.hpp"
 
 #include <projectM-opengl.h>
+
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 namespace libprojectM {
