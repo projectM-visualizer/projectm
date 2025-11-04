@@ -22,7 +22,12 @@ if(NOT ENABLE_BOOST_FILESYSTEM AND STD_FILESYSTEM_EXISTS)
     set(PROJECTM_FILESYSTEM_INCLUDE <filesystem>)
     set(PROJECTM_FILESYSTEM_USE_BOOST FALSE)
 else()
-    find_package(Boost REQUIRED COMPONENTS Filesystem)
+    # Requires Boost 1.70 or higher (which was released back in 2019)
+    if(POLICY CMP0167)
+        cmake_policy(SET CMP0167 NEW)
+    endif()
+
+    find_package(Boost CONFIG NO_MODULE REQUIRED COMPONENTS Filesystem)
 
     set(PROJECTM_FILESYSTEM_NAMESPACE boost)
     set(PROJECTM_FILESYSTEM_INCLUDE <boost/filesystem.hpp>)
