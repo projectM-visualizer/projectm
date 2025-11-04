@@ -2,19 +2,27 @@ name: Emscripten
 
 on:
   push:
-      branches: 
+      branches:
         - "*"
       tags:
         - "*"
-    
+
   pull_request:
-      branches: 
+      branches:
         - "*"
 
 jobs:
   build:
-    name: Static Library
-    runs-on: ubuntu-latest
+    name: "Libs: ${{ matrix.libs }}, FS Lib: ${{ matrix.fslib }}, SDK: ${{ matrix.emsdk-version }}, Arch: WASM, Build OS: ${{ matrix.runs-on }}"
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - libs: static
+            fslib: stl
+            emsdk-version: 3.1.53
+            runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v4
@@ -25,7 +33,7 @@ jobs:
         uses: mymindstorm/setup-emsdk@v14
         with:
           # Make sure to set a version number!
-          version: 3.1.53
+          version: ${{ matrix.emsdk-version }}
           # This is the name of the cache folder.
           # The cache folder will be placed in the build directory,
           #  so make sure it doesn't conflict with anything!
@@ -45,7 +53,14 @@ jobs:
           cd ${{ github.workspace }}/build-gtest && ./setup.sh && ./build-emscripten.sh
 
       - name: Configure Build
-        run: emcmake cmake -G "Unix Makefiles" -S "${{ github.workspace }}" -B "${{ github.workspace }}/cmake-build" -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" -DCMAKE_VERBOSE_MAKEFILE=YES -DBUILD_TESTING=YES -DGTest_DIR="${{ github.workspace }}/build-gtest/dist/emscripten/lib/lib/cmake/GTest"
+        run: |
+          emcmake cmake -G "Unix Makefiles" \
+            -S "${{ github.workspace }}" \
+            -B "${{ github.workspace }}/cmake-build" \
+            -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" \
+            -DCMAKE_VERBOSE_MAKEFILE=YES \
+            -DBUILD_TESTING=YES \
+            -DGTest_DIR="${{ github.workspace }}/build-gtest/dist/emscripten/lib/lib/cmake/GTest"
 
       - name: Build Debug
         run: emmake cmake --build "${{ github.workspace }}/cmake-build" --parallel
@@ -65,5 +80,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-            name: projectm-emscripten-static-latest
+            name: projectm-emscripten-${{ matrix.libs }}-emsdk-${{ matrix.emsdk-version }}
             path: install/*
