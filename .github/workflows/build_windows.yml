@@ -1,28 +1,100 @@
-name: Windows (x64)
+name: Windows
 
 on:
   push:
-      branches: 
+      branches:
         - "*"
       tags:
         - "*"
-    
+
   pull_request:
-      branches: 
+      branches:
         - "*"
 
 jobs:
   build-shared:
-    name: Shared Library
-    runs-on: windows-latest
+    name: "Libs: ${{ matrix.libs }}, FS Lib: ${{ matrix.fslib }}, Arch: ${{ matrix.arch }}, Build OS: ${{ matrix.runs-on }}"
+    runs-on: ${{ matrix.runs-on }}
+    env:
+      USERNAME: projectM-visualizer
+      VCPKG_EXE: ${{ github.workspace }}/vcpkg/vcpkg
+      FEED_URL: https://nuget.pkg.github.com/projectM-visualizer/index.json
+      VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/projectM-visualizer/index.json,readwrite"
+    strategy:
+      fail-fast: false
+      matrix:
+        libs: ['shared', 'static']
+        fslib: ['stl', 'boost']
+        arch: ['X64', 'Win32']
+        runs-on: ['windows-2025', 'windows-2022']
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout vcpkg
+        uses: actions/checkout@v4
+        with:
+          repository: microsoft/vcpkg
+          path: vcpkg
+          submodules: recursive
+
+      - name: Bootstrap vcpkg
+        shell: pwsh
+        run: ${{ github.workspace }}/vcpkg/bootstrap-vcpkg.bat
+
+      - name: Add NuGet sources
+        shell: pwsh
+        run: |
+          .$(${{ env.VCPKG_EXE }} fetch nuget) `
+            sources add `
+            -Source "${{ env.FEED_URL }}" `
+            -StorePasswordInClearText `
+            -Name GitHubPackages `
+            -UserName "${{ env.USERNAME }}" `
+            -Password "${{ secrets.VCPKG_PACKAGES_TOKEN }}"
+          .$(${{ env.VCPKG_EXE }} fetch nuget) `
+            setapikey "${{ secrets.VCPKG_PACKAGES_TOKEN }}" `
+            -Source "${{ env.FEED_URL }}"
+
+      - name: Checkout libprojectM
+        uses: actions/checkout@v4
         with:
           submodules: 'recursive'
 
-      - name: Configure Build (MD)
-        run: cmake -G "Visual Studio 17 2022" -A "X64" -S "${{ github.workspace }}" -B "${{ github.workspace }}/cmake-build" -DCMAKE_TOOLCHAIN_FILE="${Env:VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded$<$<CONFIG:Debug>:Debug>DLL" -DCMAKE_VERBOSE_MAKEFILE=YES -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=YES
+      - name: Configure Build
+        run: |
+          if("${{ matrix.libs }}" -eq "shared") {
+            $shared_libs = "ON"
+          } else {
+            $shared_libs = "OFF"
+          }
+          if("${{ matrix.fslib }}" -eq "boost") {
+            $use_boost = "ON"
+          } else {
+            $use_boost = "OFF"
+          }
+          if("${{ matrix.arch }}" -eq "X64") {
+            $triplet = "x64-windows"
+          } else {
+            $triplet = "x86-windows"
+          }
+          if("${{ matrix.libs }}" -eq "shared") {
+            $runtime = "DLL"
+          } else {
+            $runtime = ""
+            $triplet = $triplet + "-static"
+          }
+          
+          cmake -G "Visual Studio 17 2022" `
+            -A "${{ matrix.arch }}" `
+            -S "${{ github.workspace }}" `
+            -B "${{ github.workspace }}/cmake-build" `
+            -DCMAKE_TOOLCHAIN_FILE="${Env:VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" `
+            -DVCPKG_TARGET_TRIPLET="$($triplet)" `
+            -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" `
+            -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded$<$<CONFIG:Debug>:Debug>$($runtime)" `
+            -DCMAKE_VERBOSE_MAKEFILE=YES `
+            -DBUILD_SHARED_LIBS="$($shared_libs)" `
+            -DENABLE_BOOST_FILESYSTEM="$($use_boost)" `
+            -DBUILD_TESTING=YES
 
       - name: Build Debug
         run: cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --parallel
@@ -41,37 +113,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-            name: projectm-windows-shared-latest
+            name: projectm-windows-${{ matrix.libs }}-${{ matrix.fslib }}-${{ matrix.arch }}-${{ matrix.runs-on }}
             path: install/*
-
-  build-static:
-    name: Static Library
-    runs-on: windows-latest
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: 'recursive'
-
-      - name: Configure Build (MD)
-        run: cmake -G "Visual Studio 17 2022" -A "X64" -S "${{ github.workspace }}" -B "${{ github.workspace }}/cmake-build" -DCMAKE_TOOLCHAIN_FILE="${Env:VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded$<$<CONFIG:Debug>:Debug>" -DCMAKE_VERBOSE_MAKEFILE=YES -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=YES
-
-      - name: Build Debug
-        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --parallel
-
-      - name: Run Unit Tests
-        run: ctest --test-dir "${{ github.workspace }}/cmake-build" --verbose --build-config "Debug"
-
-      - name: Build Release
-        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --parallel
-
-      - name: Install
-        run: |
-          cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --target INSTALL
-          cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target INSTALL
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: projectm-windows-static-latest
-          path: install/*

@@ -1,20 +1,27 @@
-name: Android (arm64-v8a, API level 33)
+name: Android
 
 on:
   push:
-      branches: 
+      branches:
         - "*"
       tags:
         - "*"
-    
+
   pull_request:
-      branches: 
+      branches:
         - "*"
 
 jobs:
   build-shared:
-    name: Shared Library
-    runs-on: ubuntu-latest
+    name: "Libs: ${{ matrix.libs }}, ABI: ${{ matrix.abi }}, Platform: ${{ matrix.platform-version }}, Build OS: ${{ matrix.runs-on }}"
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        libs: ['shared', 'static']
+        abi: ['arm64-v8a', 'armeabi-v7a', 'x86_64']
+        platform-version: ['33']
+        runs-on: ['ubuntu-24.04']
 
     steps:
       - uses: actions/checkout@v4
@@ -27,7 +34,23 @@ jobs:
           sudo apt-get install -y ninja-build
 
       - name: Configure Build
-        run: cmake -G "Ninja Multi-Config" -S "${{ github.workspace }}" -B "${{ github.workspace }}/cmake-build" -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake" -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" -DANDROID_PLATFORM=33 -DANDROID_ABI=arm64-v8a -DCMAKE_VERBOSE_MAKEFILE=YES -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=NO -DENABLE_SDL_UI=OFF
+        run: |
+          if [ "${{ matrix.libs }}" == "shared" ]; then
+            shared_libs=ON
+          else
+            shared_libs=OFF
+          fi
+          cmake -G "Ninja Multi-Config" \
+            -S "${{ github.workspace }}" \
+            -B "${{ github.workspace }}/cmake-build" \
+            -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake" \
+            -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" \
+            -DANDROID_PLATFORM="${{ matrix.platform-version }}" \
+            -DANDROID_ABI="${{ matrix.abi }}" \
+            -DCMAKE_VERBOSE_MAKEFILE=YES \
+            -DBUILD_SHARED_LIBS="${shared_libs}" \
+            -DBUILD_TESTING=NO \
+            -DENABLE_SDL_UI=OFF
 
       - name: Build Debug
         run: cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --parallel
@@ -43,39 +66,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-            name: projectm-android-shared-latest
+            name: projectm-android-${{ matrix.libs }}-${{ matrix.abi }}-api${{ matrix.platform-version }}
             path: install/*
-
-  build-static:
-    name: Static Library
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: 'recursive'
-
-      - name: Install Packages
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgl1-mesa-dev mesa-common-dev libsdl2-dev libglm-dev libgtest-dev libgmock-dev ninja-build
-
-      - name: Configure Build
-        run: cmake -G "Ninja Multi-Config" -S "${{ github.workspace }}" -B "${{ github.workspace }}/cmake-build" -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake" -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" -DANDROID_PLATFORM=33 -DANDROID_ABI=arm64-v8a -DCMAKE_VERBOSE_MAKEFILE=YES -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=NO -DENABLE_SDL_UI=OFF
-
-      - name: Build Debug
-        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --parallel
-
-      - name: Build Release
-        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --parallel
-
-      - name: Install
-        run: |
-          cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --target install
-          cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target install
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: projectm-android-static-latest
-          path: install/*
