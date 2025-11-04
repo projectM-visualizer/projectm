@@ -1,31 +1,71 @@
-name: macOS (x86_64)
+name: macOS
 
 on:
   push:
-      branches: 
+      branches:
         - "*"
       tags:
         - "*"
-    
+
   pull_request:
-      branches: 
+      branches:
         - "*"
 
 jobs:
   build-shared:
-    name: Shared Library
-    runs-on: macos-latest
+    name: "Libs: ${{ matrix.libs }}, FS Lib: ${{ matrix.fslib }}, Arch: ${{ matrix.arch }}, Build OS: ${{ matrix.runs-on }}"
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        libs: ['shared', 'static']
+        fslib: ['stl', 'boost']
+        arch: ['arm64', 'x86_64']
+        runs-on: ['macos-15', 'macos-15-intel']
+        exclude:
+          - arch: arm64
+            runs-on: macos-15-intel
+          - arch: x86_64
+            runs-on: macos-15
+          ### BROKEN: Homebrew's Boost build for arm64 does not properly populate the include dir of the Boost CMake targets.
+          - arch: arm64
+            runs-on: macos-15
+            fslib: boost
 
     steps:
+      - name: Install Packages
+        run: brew install sdl2 ninja googletest
+
+      - name: Install boost-filesystem-dev
+        if: "${{ contains(matrix.fslib, 'boost') }}"
+        run: |
+          brew install boost
+
       - uses: actions/checkout@v4
         with:
           submodules: 'recursive'
 
-      - name: Install Packages
-        run: brew install sdl2 ninja googletest
-
       - name: Configure Build
-        run: cmake -G "Ninja Multi-Config" -S "${{ github.workspace }}" -B "${{ github.workspace }}/cmake-build" -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" -DCMAKE_VERBOSE_MAKEFILE=YES -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=YES
+        run: |
+          if [ "${{ matrix.libs }}" == "shared" ]; then
+          shared_libs=ON
+          else
+          shared_libs=OFF
+          fi
+          if [ "${{ matrix.fslib }}" == "boost" ]; then
+          use_boost=ON
+          else
+          use_boost=OFF
+          fi
+          cmake -G "Ninja Multi-Config" \
+            -S "${{ github.workspace }}" \
+            -B "${{ github.workspace }}/cmake-build" \
+            -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" \
+            -DCMAKE_VERBOSE_MAKEFILE=YES \
+            -DBUILD_SHARED_LIBS="${shared_libs}" \
+            -DENABLE_BOOST_FILESYSTEM="${use_boost}" \
+            -DCMAKE_OSX_ARCHITECTURES="${{ matrix.arch }}" \
+            -DBUILD_TESTING=YES
 
       - name: Build Debug
         run: cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --parallel
@@ -44,40 +84,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-            name: projectm-osx-shared-latest
+            name: projectm-osx-${{ matrix.libs }}-${{ matrix.fslib }}-${{ matrix.arch }}-${{ matrix.runs-on }}
             path: install/*
-
-  build-static:
-    name: Static Library
-    runs-on: macos-latest
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: 'recursive'
-
-      - name: Install Packages
-        run: brew install sdl2 ninja googletest
-
-      - name: Configure Build
-        run: cmake -G "Ninja Multi-Config" -S "${{ github.workspace }}" -B "${{ github.workspace }}/cmake-build" -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" -DCMAKE_VERBOSE_MAKEFILE=YES -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=YES
-
-      - name: Build Debug
-        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --parallel
-
-      - name: Run Unit Tests
-        run: ctest --test-dir "${{ github.workspace }}/cmake-build" --verbose --build-config "Debug"
-
-      - name: Build Release
-        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --parallel
-
-      - name: Install
-        run: |
-          cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --target install
-          cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target install
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: projectm-osx-static-latest
-          path: install/*
