@@ -212,12 +212,22 @@ auto TextureManager::LoadTexture(const ScannedFile& file) -> std::shared_ptr<Tex
 
     int width{};
     int height{};
+    int channels{};
 
-    unsigned int const tex = SOIL_load_OGL_texture(
-        file.filePath.c_str(),
-        SOIL_LOAD_RGBA,
+    std::unique_ptr<unsigned char, decltype(&SOIL_free_image_data)> imageData(SOIL_load_image(file.filePath.c_str(), &width, &height, &channels, SOIL_LOAD_RGBA), SOIL_free_image_data);
+
+    if (imageData == nullptr)
+    {
+        return {};
+    }
+
+    unsigned int const tex = SOIL_create_OGL_texture(
+        imageData.get(),
+        &width, &height, SOIL_LOAD_RGBA,
         SOIL_CREATE_NEW_ID,
         SOIL_FLAG_MULTIPLY_ALPHA);
+
+    imageData.reset();
 
     if (tex == 0)
     {
