@@ -28,6 +28,7 @@ namespace UserSprites {
 MilkdropSprite::MilkdropSprite()
     : m_mesh(Renderer::VertexBufferUsage::DynamicDraw, false, true)
 {
+    m_mesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::TriangleStrip);
     m_mesh.SetVertexCount(4);
 }
 
