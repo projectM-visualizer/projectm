@@ -6,7 +6,9 @@ include(CMakeFindDependencyMacro)
 
 if(NOT "@ENABLE_EMSCRIPTEN@") # ENABLE_EMSCRIPTEN
     if("@ENABLE_GLES@") # ENABLE_GLES
-        list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+        if (CMAKE_VERSION VERSION_LESS_EQUAL "3.22" OR CMAKE_SYSTEM_NAME STREQUAL Android)
+          list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+        endif()
         find_dependency(OpenGL COMPONENTS GLES3)
     else()
         find_dependency(OpenGL)
