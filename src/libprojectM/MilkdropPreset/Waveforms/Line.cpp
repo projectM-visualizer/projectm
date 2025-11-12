@@ -17,7 +17,7 @@ void Line::GenerateVertices(const PresetState& presetState, const PerFrameContex
 
     m_wave1Vertices.resize(m_samples);
 
-    ClipWaveformEdges(1.57f + m_mysteryWaveParam);
+    ClipWaveformEdges(1.57f * m_mysteryWaveParam);
 
     for (int i = 0; i < m_samples; i++)
     {

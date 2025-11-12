@@ -71,7 +71,7 @@ auto WaveformMath::GetVertices(const PresetState& presetState,
 
     m_mysteryWaveParam = static_cast<float>(*presetPerFrameContext.wave_mystery);
 
-    if (UsesNormalizedMysteryParam() && (m_mysteryWaveParam < 1.0f || m_mysteryWaveParam > 1.0f))
+    if (UsesNormalizedMysteryParam() && (m_mysteryWaveParam < -1.0f || m_mysteryWaveParam > 1.0f))
     {
         m_mysteryWaveParam = m_mysteryWaveParam * 0.5f + 0.5f;
         m_mysteryWaveParam -= std::floor(m_mysteryWaveParam);
