@@ -35,6 +35,7 @@ void Border::Draw(const PerFrameContext& presetPerFrameContext)
 
     m_presetState.untexturedShader.Bind();
     m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+    m_presetState.untexturedShader.SetUniformFloat("vertex_point_size", 1.0f);
 
     std::array<Point, 4> vertices{};
     for (int border = 0; border < 2; border++)

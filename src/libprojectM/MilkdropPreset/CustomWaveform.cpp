@@ -184,6 +184,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
 
     m_presetState.untexturedShader.Bind();
     m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+    m_presetState.untexturedShader.SetUniformFloat("vertex_point_size", m_drawThick ? 2.0f : 1.0f);
 
     auto iterations = (m_drawThick && !m_useDots) ? 4 : 1;
 
