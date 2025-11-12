@@ -42,6 +42,7 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
     auto shader = m_presetState.untexturedShader.lock();
     shader->Bind();
     shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+    shader->SetUniformFloat("vertex_point_size", 1.0f);
 
     // Additive wave drawing (vice overwrite)
     if (m_presetState.additiveWaves)
