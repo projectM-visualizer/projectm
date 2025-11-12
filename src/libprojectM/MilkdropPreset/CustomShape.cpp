@@ -223,8 +223,7 @@ void CustomShape::Draw()
             auto shader = m_presetState.untexturedShader.lock();
             shader->Bind();
             shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
-
-            m_outlineMesh.Bind();
+            shader->SetUniformFloat("vertex_point_size", 1.0f);
 
             glVertexAttrib4f(1,
                              static_cast<float>(*m_perFrameContext.border_r),
