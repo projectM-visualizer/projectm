@@ -1,6 +1,7 @@
 #include "Playlist.hpp"
 
 #include <algorithm>
+#include <chrono>
 
 // Fall back to boost if compiler doesn't support C++17
 #include PROJECTM_FILESYSTEM_INCLUDE

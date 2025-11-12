@@ -52,7 +52,7 @@ endif()
 
 project(libprojectM
         LANGUAGES C CXX
-        VERSION 4.1.5
+        VERSION 4.1.6
         )
 
 # The API (SO) version for the shared library. Should be incremented whenever the binary interface changes
@@ -105,7 +105,12 @@ if(ENABLE_SYSTEM_GLM)
 endif()
 
 if(ENABLE_SYSTEM_PROJECTM_EVAL)
-    find_package(projectM-Eval)
+    find_package(projectM-Eval QUIET)
+    if(NOT TARGET projectM::Eval)
+        message(STATUS "projectM-Eval could not be found externally. Using sources from vendor dir (if present).")
+    else()
+        message(STATUS "Found external projectM-Eval: Version ${projectM-Eval_VERSION}")
+    endif()
 endif()
 
 if(NOT BUILD_SHARED_LIBS AND CMAKE_SYSTEM_NAME STREQUAL "Windows")

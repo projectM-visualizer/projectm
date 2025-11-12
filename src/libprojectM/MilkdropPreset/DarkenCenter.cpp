@@ -46,6 +46,7 @@ void DarkenCenter::Draw()
 
     m_presetState.untexturedShader.Bind();
     m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+    m_presetState.untexturedShader.SetUniformFloat("vertex_point_size", 1.0f);
 
     glDrawArrays(GL_TRIANGLE_FAN, 0, 6);
 

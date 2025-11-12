@@ -31,6 +31,7 @@ void Filters::Draw()
 
     m_presetState.untexturedShader.Bind();
     m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+    m_presetState.untexturedShader.SetUniformFloat("vertex_point_size", 1.0f);
 
     glBindVertexArray(m_vaoID);
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);

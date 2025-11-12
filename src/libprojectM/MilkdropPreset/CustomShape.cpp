@@ -253,6 +253,7 @@ void CustomShape::Draw()
 
             m_presetState.untexturedShader.Bind();
             m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+            m_presetState.untexturedShader.SetUniformFloat("vertex_point_size", 1.0f);
 
             glBindVertexArray(m_vaoIdUntextured);
             glDrawArrays(GL_TRIANGLE_FAN, 0, sides + 2);
@@ -271,6 +272,7 @@ void CustomShape::Draw()
 
             m_presetState.untexturedShader.Bind();
             m_presetState.untexturedShader.SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+            m_presetState.untexturedShader.SetUniformFloat("vertex_point_size", 1.0f);
 
             glVertexAttrib4f(1,
                              static_cast<float>(*m_perFrameContext.border_r),

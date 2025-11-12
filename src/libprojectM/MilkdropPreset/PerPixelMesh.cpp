@@ -308,13 +308,7 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
                                  0.5f / static_cast<float>(presetState.renderContext.viewportSizeY)};
 
     // Decay
-    float decay = static_cast<float>(*perFrameContext.decay);
-    if (decay < 0.9999f)
-    {
-        // Milkdrop uses a GPU-specific value, either 0.0 or 2.0.
-        // We'll simply assume 2, as it's the default value.
-        decay = std::min(decay, (32.0f - 2.0f) / 32.0f);
-    }
+    float decay = std::min(static_cast<float>(*perFrameContext.decay), 1.0f);
 
     // No blending between presets here, so we make sure blending is disabled.
     glDisable(GL_BLEND);
