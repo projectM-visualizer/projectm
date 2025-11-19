@@ -76,6 +76,9 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
 
     int const maxSampleCount{m_spectrum ? Audio::SpectrumSamples : Audio::WaveformSamples};
 
+    int sampleCount = std::min(maxSampleCount, static_cast<int>(*m_perFrameContext.samples));
+    sampleCount -= m_sep;
+
     // Initialize and execute per-frame code
     LoadPerFrameEvaluationVariables(presetPerFrameContext);
     m_perFrameContext.ExecutePerFrameCode();
@@ -83,8 +86,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     // Copy Q and T vars to per-point context
     InitPerPointEvaluationVariables();
 
-    int sampleCount = std::min(maxSampleCount, static_cast<int>(*m_perFrameContext.samples));
-    sampleCount -= m_sep;
+    sampleCount = std::min(maxSampleCount, static_cast<int>(*m_perFrameContext.samples));
 
     // If there aren't enough samples to draw a single line or dot, skip drawing the waveform.
     if ((m_useDots && sampleCount < 1) || sampleCount < 2)
