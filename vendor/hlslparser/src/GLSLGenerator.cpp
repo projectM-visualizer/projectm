@@ -426,7 +426,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
          * (such as post-increment or -decrement) the result would not be what we expect
          * if we evaluated this equation as a macro in OutputExpression.
          */
-        m_writer.WriteLine(0, "float %s(float x) { if (abs(x) > 1.0) { return 0.39269908169872415*(4-sign(x)*(abs(x) - 3.0)*(abs(x) - 3.0)); } else { return acos(x); } }", m_acosFunction);
+        m_writer.WriteLine(0, "float %s(float x) { if (abs(x) > 1.0) { return 0.39269908169872415*(4.0-sign(x)*(abs(x) - 3.0)*(abs(x) - 3.0)); } else { return acos(x); } }", m_acosFunction);
         m_writer.WriteLine(0, "vec2 %s(vec2 x) { vec2 ret; ret.x = %s(x.x); ret.y = %s(x.y); return ret; }", m_acosFunction, m_acosFunction, m_acosFunction);
         m_writer.WriteLine(0, "vec3 %s(vec3 x) { vec3 ret; ret.x = %s(x.x); ret.y = %s(x.y); ret.z = %s(x.z); return ret; }", m_acosFunction, m_acosFunction, m_acosFunction, m_acosFunction);
         m_writer.WriteLine(0, "vec4 %s(vec4 x) { vec4 ret; ret.x = %s(x.x); ret.y = %s(x.y); ret.z = %s(x.z); ret.w = %s(x.w); return ret; }", m_acosFunction, m_acosFunction, m_acosFunction, m_acosFunction, m_acosFunction);
