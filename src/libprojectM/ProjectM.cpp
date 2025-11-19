@@ -455,6 +455,18 @@ void ProjectM::SetMeshSize(uint32_t meshResolutionX, uint32_t meshResolutionY)
     m_meshY = std::max(8u, std::min(400u, m_meshY));
 }
 
+void ProjectM::TexelOffsets(float& texelOffsetX, float& texelOffsetY) const
+{
+    texelOffsetX = m_texelOffsetX;
+    texelOffsetY = m_texelOffsetY;
+}
+
+void ProjectM::SetTexelOffsets(float texelOffsetX, float texelOffsetY)
+{
+    m_texelOffsetX = texelOffsetX;
+    m_texelOffsetY = texelOffsetY;
+}
+
 auto ProjectM::PCM() -> libprojectM::Audio::PCM&
 {
     return m_audioStorage;
@@ -493,8 +505,13 @@ auto ProjectM::GetRenderContext() -> Renderer::RenderContext
     ctx.aspectY = (m_windowWidth > m_windowHeight) ? static_cast<float>(m_windowHeight) / static_cast<float>(m_windowWidth) : 1.0f;
     ctx.invAspectX = 1.0f / ctx.aspectX;
     ctx.invAspectY = 1.0f / ctx.aspectY;
+
     ctx.perPixelMeshX = static_cast<int>(m_meshX);
     ctx.perPixelMeshY = static_cast<int>(m_meshY);
+
+    ctx.texelOffsetX = m_texelOffsetX;
+    ctx.texelOffsetY = m_texelOffsetY;
+
     ctx.textureManager = m_textureManager.get();
     ctx.shaderCache = m_shaderCache.get();
 

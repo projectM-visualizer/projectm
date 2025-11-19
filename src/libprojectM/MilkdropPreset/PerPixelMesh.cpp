@@ -308,8 +308,8 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
     };
 
     // Texel alignment
-    glm::vec2 const texelOffsets{0.5f / static_cast<float>(presetState.renderContext.viewportSizeX),
-                                 0.5f / static_cast<float>(presetState.renderContext.viewportSizeY)};
+    glm::vec2 const texelOffsets{presetState.renderContext.texelOffsetX / static_cast<float>(presetState.renderContext.viewportSizeX),
+                                 presetState.renderContext.texelOffsetY / static_cast<float>(presetState.renderContext.viewportSizeY)};
 
     // Decay
     float decay = std::min(static_cast<float>(*perFrameContext.decay), 1.0f);

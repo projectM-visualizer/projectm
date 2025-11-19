@@ -177,6 +177,10 @@ public:
 
     void SetMeshSize(uint32_t meshResolutionX, uint32_t meshResolutionY);
 
+    void TexelOffsets(float& texelOffsetX, float& texelOffsetY) const;
+
+    void SetTexelOffsets(float texelOffsetX, float texelOffsetY);
+
     void Touch(float touchX, float touchY, int pressure, int touchType);
 
     void TouchDrag(float touchX, float touchY, int pressure);
@@ -265,6 +269,8 @@ private:
     bool m_aspectCorrection{true};   //!< If true, corrects aspect ratio for non-rectangular windows.
     float m_easterEgg{1.0};          //!< Random preset duration modifier. See TimeKeeper class.
     float m_previousFrameVolume{};   //!< Volume in previous frame, used for hard cuts.
+    float m_texelOffsetX{0.0};       //!< Horizontal warp shader texel offset
+    float m_texelOffsetY{0.0};       //!< Vertical warp shader texel offset
 
     std::vector<std::string> m_textureSearchPaths; ///!< List of paths to search for texture files
 

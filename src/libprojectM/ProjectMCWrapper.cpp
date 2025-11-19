@@ -273,6 +273,18 @@ void projectm_get_mesh_size(projectm_handle instance, size_t* width, size_t* hei
     *height = static_cast<size_t>(h);
 }
 
+void projectm_set_texel_offset(projectm_handle instance, float offset_X, float offset_y)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->SetTexelOffsets(offset_X, offset_y);
+}
+
+void projectm_get_texel_offset(projectm_handle instance, float* offset_X, float* offset_y)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->TexelOffsets(*offset_X, *offset_y);
+}
+
 void projectm_set_mesh_size(projectm_handle instance, size_t width, size_t height)
 {
     auto projectMInstance = handle_to_instance(instance);

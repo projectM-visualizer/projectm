@@ -228,6 +228,34 @@ PROJECTM_EXPORT void projectm_set_mesh_size(projectm_handle instance, size_t wid
 PROJECTM_EXPORT void projectm_get_mesh_size(projectm_handle instance, size_t* width, size_t* height);
 
 /**
+ * @brief Applies a sub-texel offset for main texture lookups in the warp shader.
+ *
+ * Original Milkdrop uses 0.5 here, but it doesn't seem to be required in OpenGL as this value
+ * introduces a slight warp drift to the top left. As this may be vendor-specific, this value can
+ * be configured externally to fix any possible drift.
+ *
+ * @param instance The projectM instance handle.
+ * @param offset_X The offset in texels in the horizontal direction. Milkdrop uses 0.5, default in projectM is 0.0.
+ * @param offset_y The offset in texels in the vertical direction. Milkdrop uses 0.5, default in projectM is 0.0.
+ * @since 4.2.0
+ */
+PROJECTM_EXPORT void projectm_set_texel_offset(projectm_handle instance, float offset_X, float offset_y);
+
+/**
+ * @brief Retrieves the current sub-texel offsets for main texture lookups in the warp shader.
+ *
+ * Original Milkdrop uses 0.5 here, but it doesn't seem to be required in OpenGL as this value
+ * introduces a slight warp drift to the top left. As this may be vendor-specific, this value can
+ * be configured externally to fix any possible drift.
+ *
+ * @param instance The projectM instance handle.
+ * @param offset_X A valid pointer to a float variable that will receive the currently set horizontal texel offset.
+ * @param offset_y A valid pointer to a float variable that will receive the currently set vertical texel offset.
+ * @since 4.2.0
+ */
+PROJECTM_EXPORT void projectm_get_texel_offset(projectm_handle instance, float* offset_X, float* offset_y);
+
+/**
  * @brief Sets the current/average frames per second.
  *
  * Applications running projectM should UpdateMeshSize this value regularly and set it to the calculated
