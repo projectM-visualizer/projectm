@@ -303,10 +303,6 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
         11.49f + 4.0f * cosf(warpTime * 0.933f + 5),
     };
 
-    // Texel alignment
-    glm::vec2 const texelOffsets{0.5f / static_cast<float>(presetState.renderContext.viewportSizeX),
-                                 0.5f / static_cast<float>(presetState.renderContext.viewportSizeY)};
-
     // Decay
     float decay = std::min(static_cast<float>(*perFrameContext.decay), 1.0f);
 
@@ -325,7 +321,6 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
         m_perPixelMeshShader.SetUniformFloat("warpTime", warpTime);
         m_perPixelMeshShader.SetUniformFloat("warpScaleInverse", warpScaleInverse);
         m_perPixelMeshShader.SetUniformFloat4("warpFactors", warpFactors);
-        m_perPixelMeshShader.SetUniformFloat2("texelOffset", texelOffsets);
         m_perPixelMeshShader.SetUniformFloat("decay", decay);
     }
     else
@@ -339,7 +334,6 @@ void PerPixelMesh::WarpedBlit(const PresetState& presetState,
         shader.SetUniformFloat("warpTime", warpTime);
         shader.SetUniformFloat("warpScaleInverse", warpScaleInverse);
         shader.SetUniformFloat4("warpFactors", warpFactors);
-        shader.SetUniformFloat2("texelOffset", texelOffsets);
         shader.SetUniformFloat("decay", decay);
     }
 
