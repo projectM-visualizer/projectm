@@ -119,7 +119,7 @@ GLSLGenerator::GLSLGenerator() :
 #else
     m_version                   = Version_330;
 #endif
-	
+
     m_versionLegacy             = false;
     m_inAttribPrefix            = NULL;
     m_outAttribPrefix           = NULL;
@@ -244,7 +244,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
         m_writer.WriteLine(0, "precision highp float;");
     }
     else if (m_version == Version_300_ES)
-    {  
+    {
         m_writer.WriteLine(0, "#version 300 es");
         m_writer.WriteLine(0, "precision highp float;");
         m_writer.WriteLine(0, "precision highp sampler3D;");
@@ -420,7 +420,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
          * domain. To do this, we bail out to a separate function that piecewise-defines
          * a polynomial that qualitatively matches what we see under DX9. The DX9
          * implementation itself is unknown, so this is only a rough match.
-         * 
+         *
          * We also implement this as a separate function because we need to evaluate the
          * argument multiple times. If the argument expression involves side-effects
          * (such as post-increment or -decrement) the result would not be what we expect
@@ -547,7 +547,7 @@ void GLSLGenerator::OutputExpressionList(HLSLExpression* expression, HLSLArgumen
         {
             m_writer.Write(", ");
         }
-        
+
         HLSLType* expectedType = NULL;
         if (argument != NULL)
         {
@@ -1028,16 +1028,60 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
                 Error("%s expects 2 arguments", functionName);
                 return;
             }
+
             /* See rsqrt above regarding abs(). Note that this behaves
              * as expected on some drivers but not others, so we add
              * the abs() call for compatibility across drivers.
+             *
+             * There's one special case though: if the exponent is a literal "1" (or "1.0"),
+             * don't use pow() at all, just return the base (arg 1) unchanged, even if negative.
+             * This is probably due to an HLSL compiler optimization which does the same thing.
+             * When not optimized, pow(x, 1) with a negative value of x would return NaN instead.
              */
-            m_writer.Write("pow(abs(");
-            OutputExpression(argument[0], &functionCall->function->returnType);
-            m_writer.Write("),");
-            OutputExpression(argument[1], &functionCall->function->returnType);
-            m_writer.Write(")");
-            handled = true;
+            if (argument[1]->nodeType == HLSLNodeType_LiteralExpression)
+            {
+                HLSLLiteralExpression* literalExpression = static_cast<HLSLLiteralExpression*>(argument[1]);
+                float value = 0.0;
+                bool found = false;
+                switch (literalExpression->type)
+                {
+                    case HLSLBaseType_Float:
+                        value = literalExpression->fValue;
+                        found = true;
+                        break;
+                    case HLSLBaseType_Int:
+                    case HLSLBaseType_Uint:
+                        value = literalExpression->iValue;
+                        found = true;
+                        break;
+                    case HLSLBaseType_Bool:
+                        value = literalExpression->bValue;
+                        found = true;
+                        break;
+                    default:
+                        break;
+                }
+
+                // Replace the function call with just arg 1.
+                if (found && value == 1.0)
+                {
+                    m_writer.Write("(");
+                    OutputExpression(argument[0], &functionCall->function->returnType);
+                    m_writer.Write(")");
+                    handled = true;
+                }
+            }
+
+            // Other cases, including variable exponent arguments, will still call pow().
+            if (!handled)
+            {
+                m_writer.Write("pow(abs(");
+                OutputExpression(argument[0], &functionCall->function->returnType);
+                m_writer.Write("),");
+                OutputExpression(argument[1], &functionCall->function->returnType);
+                m_writer.Write(")");
+                handled = true;
+            }
         }
         else if (String_Equal(functionName, "ldexp"))
         {
@@ -1173,7 +1217,7 @@ void GLSLGenerator::OutputIdentifier(const char* name)
     {
         name = m_asinFunction;
     }
-    else 
+    else
     {
         // The identifier could be a GLSL reserved word (if it's not also a HLSL reserved word).
         name = GetSafeIdentifierName(name);
@@ -2155,7 +2199,7 @@ void GLSLGenerator::Error(const char* format, ...)
     va_start(arg, format);
     Log_ErrorArgList(format, arg);
     va_end(arg);
-} 
+}
 
 const char* GLSLGenerator::GetSafeIdentifierName(const char* name) const
 {
