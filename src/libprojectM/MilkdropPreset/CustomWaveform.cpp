@@ -104,7 +104,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     // PCM data smoothing
     const int offset1 = m_spectrum ? 0 : (maxSampleCount - sampleCount) / 2 - m_sep / 2;
     const int offset2 = m_spectrum ? 0 : (maxSampleCount - sampleCount) / 2 + m_sep / 2;
-    const int t = m_spectrum ? static_cast<int>(static_cast<float>(maxSampleCount - m_sep) / static_cast<float>(sampleCount)) : 1;
+    const float t = m_spectrum ? static_cast<float>(maxSampleCount - m_sep) / static_cast<float>(sampleCount) : 1.0f;
     const float mix1 = std::pow(m_smoothing * 0.98f, 0.5f);
     const float mix2 = 1.0f - mix1;
 
