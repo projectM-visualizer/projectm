@@ -20,71 +20,71 @@ TextureSamplerDescriptor::TextureSamplerDescriptor(const std::shared_ptr<class T
 
 auto TextureSamplerDescriptor::Empty() const -> bool
 {
-    return m_texture.expired() || m_sampler.expired();
+    return m_texture->Empty();
 }
 
 void TextureSamplerDescriptor::Bind(GLint unit, const Shader& shader) const
 {
-    auto texture = m_texture.lock();
-    auto sampler = m_sampler.lock();
 
-    if (texture && sampler)
+    if (m_texture && m_sampler)
     {
-        texture->Bind(unit, sampler);
+        m_texture->Bind(unit, m_sampler);
 
         shader.SetUniformInt(std::string("sampler_" + m_samplerName).c_str(), unit);
         // Might be setting this more than once if the texture is used with different wrap/filter modes, but this rarely happens.
-        shader.SetUniformFloat4(std::string("texsize_" + m_sizeName).c_str(), {texture->Width(),
-                                                                               texture->Height(),
-                                                                               1.0f / static_cast<float>(texture->Width()),
-                                                                               1.0f / static_cast<float>(texture->Height())});
+        shader.SetUniformFloat4(std::string("texsize_" + m_sizeName).c_str(), {m_texture->Width(),
+                                                                               m_texture->Height(),
+                                                                               1.0f / static_cast<float>(m_texture->Width()),
+                                                                               1.0f / static_cast<float>(m_texture->Height())});
         // Bind shorthand random texture size uniform
         if (m_sizeName.substr(0, 4) == "rand" && m_sizeName.length() > 7 && m_sizeName.at(6) == '_')
         {
-            shader.SetUniformFloat4(std::string("texsize_" + m_sizeName.substr(0, 6)).c_str(), {texture->Width(),
-                                                                                                texture->Height(),
-                                                                                                1.0f / static_cast<float>(texture->Width()),
-                                                                                                1.0f / static_cast<float>(texture->Height())});
+            shader.SetUniformFloat4(std::string("texsize_" + m_sizeName.substr(0, 6)).c_str(), {m_texture->Width(),
+                                                                                                m_texture->Height(),
+                                                                                                1.0f / static_cast<float>(m_texture->Width()),
+                                                                                                1.0f / static_cast<float>(m_texture->Height())});
         }
     }
 }
 
 void TextureSamplerDescriptor::Unbind(GLint unit)
 {
-    auto texture = m_texture.lock();
-    if (texture)
+    if (m_texture)
     {
-        texture->Unbind(unit);
+        m_texture->Unbind(unit);
     }
     Sampler::Unbind(unit);
 }
 
 auto TextureSamplerDescriptor::Texture() const -> std::shared_ptr<class Texture>
 {
-    return m_texture.lock();
+    return m_texture;
 }
 
-void TextureSamplerDescriptor::Texture(std::weak_ptr<class Texture> texture)
+void TextureSamplerDescriptor::Texture(const std::shared_ptr<Renderer::Texture>& texture)
 {
     m_texture = texture;
 }
 
+void TextureSamplerDescriptor::Texture(const std::weak_ptr<Renderer::Texture>& texture)
+{
+    m_texture = texture.lock();
+}
+
 auto TextureSamplerDescriptor::Sampler() const -> std::shared_ptr<class Sampler>
 {
-    return m_sampler.lock();
+    return m_sampler;
 }
 
 auto TextureSamplerDescriptor::SamplerDeclaration() const -> std::string
 {
-    auto texture = m_texture.lock();
-    auto sampler = m_sampler.lock();
-    if (!texture || !sampler)
+    if (!m_texture || !m_sampler)
     {
         return {};
     }
 
     std::string declaration = "uniform ";
-    if (texture->Type() == GL_TEXTURE_3D)
+    if (m_texture->Type() == GL_TEXTURE_3D)
     {
         declaration.append("sampler3D sampler_");
     }
@@ -109,9 +109,7 @@ auto TextureSamplerDescriptor::SamplerDeclaration() const -> std::string
 
 auto TextureSamplerDescriptor::TexSizeDeclaration() const -> std::string
 {
-    auto texture = m_texture.lock();
-    auto sampler = m_sampler.lock();
-    if (!texture || !sampler)
+    if (!m_texture || !m_sampler)
     {
         return {};
     }
