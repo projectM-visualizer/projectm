@@ -1,6 +1,10 @@
 #pragma once
 
+#include "Renderer/Sampler.hpp"
 #include "Renderer/Shader.hpp"
+#include "Renderer/Texture.hpp"
+
+#include <memory>
 
 namespace libprojectM {
 namespace Renderer {
@@ -67,9 +71,15 @@ public:
 
     /**
      * @brief Updates the internal texture with a new one.
+     * @param texture A shared pointer to the new texture.
+     */
+    void Texture(const std::shared_ptr<class Texture>& texture);
+
+    /**
+     * @brief Updates the internal texture with a new one.
      * @param texture A weak pointer to the new texture.
      */
-    void Texture(std::weak_ptr<class Texture> texture);
+    void Texture(const std::weak_ptr<class Texture>& texture);
 
     /**
      * @brief Returns a pointer to the stored sampler.
@@ -96,8 +106,8 @@ public:
     void TryUpdate(TextureManager& textureManager);
 
 private:
-    std::weak_ptr<class Texture> m_texture; //!< A weak reference to the texture.
-    std::weak_ptr<class Sampler> m_sampler; //!< A weak reference to the sampler.
+    std::shared_ptr<class Texture> m_texture; //!< A reference to the texture.
+    std::shared_ptr<class Sampler> m_sampler; //!< A reference to the sampler.
     std::string m_samplerName; //!< The name of the texture sampler as referenced in the shader.
     std::string m_sizeName; //!< The name of the "texsize_" uniform as referenced in the shader.
     bool m_updateFailed{false}; //!< Set to true if the update try failed, e.g. texture could not be loaded.
