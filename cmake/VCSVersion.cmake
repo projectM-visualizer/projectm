@@ -8,6 +8,7 @@ if(Git_FOUND)
             OUTPUT_VARIABLE _git_ref
             ERROR_QUIET
             OUTPUT_STRIP_TRAILING_WHITESPACE
+            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
             )
 
     if(NOT _git_ref STREQUAL "")
