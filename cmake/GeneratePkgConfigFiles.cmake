@@ -23,7 +23,7 @@ macro(GENERATE_PKG_CONFIG_FILES target package_name)
             endforeach()
         endif()
 
-        # Get name for "-l:<name>" linker flags
+        # Get name for "-l<name>" linker flags
         get_target_property(_lib_name ${target} OUTPUT_NAME)
 
         # Using different package name for debug and release, as pkg-config doesn't support
