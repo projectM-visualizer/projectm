@@ -246,6 +246,16 @@ public:
      */
     auto UserSpriteIdentifiers() const -> std::vector<uint32_t>;
 
+    /**
+     * @brief Draws the given texture on the active preset's main texture to get a "burn-in" effect.
+     * @param openGlTextureId The OpenGL texture to draw onto the active preset(s).
+     * @param left Left coordinate in pixels on the destination texture.
+     * @param top Top coordinate in pixels on the destination texture.
+     * @param width Width of the final image on the destination texture in pixels, can be negative to flip it horizontally.
+     * @param height Height of the final image on the destination texture in pixels, can be negative to flip it vertically.
+     */
+    void BurnInTexture(uint32_t openGlTextureId, int left, int top, int width, int height);
+
 private:
     void Initialize();
 
