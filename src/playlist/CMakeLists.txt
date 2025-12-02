@@ -158,7 +158,7 @@ if(ENABLE_INSTALL)
             # into pkgconfig's expected format.
             # We will just assume the build uses Boost from the default location (e.g. not a custom CMAKE_PREFIX_PATH) and
             # the library name is correct.
-            set(PKGCONFIG_LIBS "${PKGCONFIG_LIBS} -l:boost_filesystem")
+            set(PKGCONFIG_LIBS "${PKGCONFIG_LIBS} -lboost_filesystem")
         endif()
 
         set(PKGCONFIG_PACKAGE_NAME "${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}-playlist")
