@@ -13,6 +13,8 @@ add_subdirectory(UserSprites)
 
 add_library(projectM_main OBJECT
         "${PROJECTM_EXPORT_HEADER}"
+        Logging.cpp
+        Logging.hpp
         Preset.hpp
         PresetFactory.cpp
         PresetFactory.hpp
