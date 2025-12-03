@@ -27,8 +27,9 @@ test_api_headers(TestMainAPIHeaders
         )
 
 add_executable(projectM-unittest
-        WaveformAlignerTest.cpp
+        LoggingTest.cpp
         PresetFileParserTest.cpp
+        WaveformAlignerTest.cpp
 
         $<TARGET_OBJECTS:Audio>
         $<TARGET_OBJECTS:MilkdropPreset>
