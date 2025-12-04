@@ -1,6 +1,6 @@
 /**
  * @file parameters.h
- * @copyright 2003-2024 projectM Team
+ * @copyright 2003-2025 projectM Team
  * @brief Functions to set and retrieve all sorts of projectM parameters and setting.
  * @since 4.0.0
  *
