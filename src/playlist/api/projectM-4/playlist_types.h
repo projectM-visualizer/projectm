@@ -1,6 +1,6 @@
 /**
  * @file playlist_types.h
- * @copyright 2003-2024 projectM Team
+ * @copyright 2003-2025 projectM Team
  * @brief Types and enumerations used in the playlist API headers.
  * @since 4.0.0
  *

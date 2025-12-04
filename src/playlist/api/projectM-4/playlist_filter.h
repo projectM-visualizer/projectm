@@ -1,6 +1,6 @@
 /**
  * @file playlist_filter.h
- * @copyright 2003-2024 projectM Team
+ * @copyright 2003-2025 projectM Team
  * @brief Playlist filter functions.
  * @since 4.0.0
  *
