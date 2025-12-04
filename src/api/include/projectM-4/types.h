@@ -78,7 +78,21 @@ typedef enum
     PROJECTM_TOUCH_TYPE_DOUBLE_LINE      //!< Draws a double-line waveform.
 } projectm_touch_type;
 
+/**
+ * Log level constants for use with the logging API functions.
+ * @since 4.2.0
+ */
+typedef enum
+{
+    PROJECTM_LOG_LEVEL_NOTSET = 0, //!< No specific log level, use default (INFO).
+    PROJECTM_LOG_LEVEL_TRACE = 1,  //!< Verbose trace logging. Only enabled in debug builds by default.
+    PROJECTM_LOG_LEVEL_DEBUG = 2,  //!< Development-related debug logging. Only enabled in debug builds by default.
+    PROJECTM_LOG_LEVEL_INFO = 3,   //!< Informational messages.
+    PROJECTM_LOG_LEVEL_WARN = 4,   //!< Warnings about non-critical issues.
+    PROJECTM_LOG_LEVEL_ERROR = 5,  //!< Recoverable errors, e.g. shader compilation or I/O errors.
+    PROJECTM_LOG_LEVEL_FATAL = 6   //!< Irrecoverable errors preventing projectM from working.
+} projectm_log_level;
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
