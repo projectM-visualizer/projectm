@@ -91,4 +91,3 @@ PROJECTM_EXPORT void projectm_set_preset_switch_failed_event_callback(projectm_h
 #ifdef __cplusplus
 } // extern "C"
 #endif
-

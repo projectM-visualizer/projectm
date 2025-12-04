@@ -2,6 +2,8 @@
 
 #include <projectM-4/projectM.h>
 
+#include <Logging.hpp>
+
 #include <Audio/AudioConstants.hpp>
 
 #include <cstring>
@@ -467,4 +469,28 @@ uint32_t projectm_sprite_get_max_sprites(projectm_handle instance)
     auto* projectMInstance = handle_to_instance(instance);
 
     return projectMInstance->UserSpriteLimit();
+}
+
+void projectm_set_log_callback(projectm_log_callback callback, bool current_thread_only, void* user_data)
+{
+    if (current_thread_only)
+    {
+        libprojectM::Logging::SetThreadCallback({reinterpret_cast<libprojectM::Logging::CallbackFunction>(callback), user_data});
+    }
+    else
+    {
+        libprojectM::Logging::SetGlobalCallback({reinterpret_cast<libprojectM::Logging::CallbackFunction>(callback), user_data});
+    }
+}
+
+void projectm_set_log_level(projectm_log_level log_level, bool current_thread_only)
+{
+    if (current_thread_only)
+    {
+        libprojectM::Logging::SetThreadLogLevel(static_cast<libprojectM::Logging::LogLevel>(log_level));
+    }
+    else
+    {
+        libprojectM::Logging::SetGlobalLogLevel(static_cast<libprojectM::Logging::LogLevel>(log_level));
+    }
 }
