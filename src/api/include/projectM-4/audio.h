@@ -1,6 +1,6 @@
 /**
  * @file audio.h
- * @copyright 2003-2024 projectM Team
+ * @copyright 2003-2025 projectM Team
  * @brief Functions to pass in audio data to libprojectM.
  * @since 4.0.0
  *

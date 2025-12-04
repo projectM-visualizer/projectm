@@ -1,6 +1,6 @@
 /**
  * @file playlist.h
- * @copyright 2003-2024 projectM Team
+ * @copyright 2003-2025 projectM Team
  * @brief Optional playlist API for libprojectM.
  * @since 4.0.0
  *

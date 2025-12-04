@@ -1,6 +1,6 @@
 /**
  * @file render_opengl.h
- * @copyright 2003-2024 projectM Team
+ * @copyright 2003-2025 projectM Team
  * @brief Functions to configure and render projectM visuals using OpenGL.
  *
  * projectM -- Milkdrop-esque visualisation SDK

@@ -1,6 +1,6 @@
 /**
  * @file playlist_playback.h
- * @copyright 2003-2024 projectM Team
+ * @copyright 2003-2025 projectM Team
  * @brief Playback control functions.
  * @since 4.0.0
  *

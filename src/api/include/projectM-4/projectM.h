@@ -1,6 +1,6 @@
 /**
  * @file projectM.h
- * @copyright 2003-2024 projectM Team
+ * @copyright 2003-2025 projectM Team
  * @brief Convenience include file that includes all other API headers.
  * @since 4.0.0
  *
@@ -29,6 +29,7 @@
 #include "projectM-4/callbacks.h"
 #include "projectM-4/core.h"
 #include "projectM-4/debug.h"
+#include "projectM-4/logging.h"
 #include "projectM-4/memory.h"
 #include "projectM-4/parameters.h"
 #include "projectM-4/render_opengl.h"
