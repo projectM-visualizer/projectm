@@ -21,6 +21,7 @@
 
 #include "ProjectM.hpp"
 
+#include "Logging.hpp"
 #include "Preset.hpp"
 #include "PresetFactoryManager.hpp"
 #include "TimeKeeper.hpp"
@@ -65,6 +66,7 @@ void ProjectM::LoadPresetFile(const std::string& presetFilename, bool smoothTran
     }
     catch (const std::exception& ex)
     {
+        LOG_ERROR(ex.what());
         PresetSwitchFailedEvent(presetFilename, ex.what());
     }
 }
@@ -78,6 +80,7 @@ void ProjectM::LoadPresetData(std::istream& presetData, bool smoothTransition)
     }
     catch (const std::exception& ex)
     {
+        LOG_ERROR(ex.what());
         PresetSwitchFailedEvent("", ex.what());
     }
 }

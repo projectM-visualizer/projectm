@@ -8,6 +8,7 @@
 
 #include <GLSLGenerator.h>
 #include <HLSLParser.h>
+#include <Logging.hpp>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/mat4x4.hpp>
@@ -331,10 +332,15 @@ auto MilkdropShader::Shader() -> Renderer::Shader&
 
 void MilkdropShader::PreprocessPresetShader(std::string& program)
 {
+    std::string shaderTypeString = "composite";
+    if (m_type == ShaderType::WarpShader)
+    {
+        shaderTypeString = "warp";
+    }
 
     if (program.length() <= 0)
     {
-        throw Renderer::ShaderException("Preset shader is declared, but empty.");
+        throw Renderer::ShaderException("[MilkdropShader] Preset " + shaderTypeString + " shader is declared, but empty.");
     }
 
     size_t found;
@@ -391,7 +397,8 @@ void PS(float4 _vDiffuse : COLOR,
     }
     else
     {
-        throw Renderer::ShaderException("Preset shader is missing \"shader_body\" entry point.");
+        LOG_DEBUG("[MilkdropShader] Failed " + shaderTypeString + " shader code:\n" + program);
+        throw Renderer::ShaderException("[MilkdropShader] Preset " + shaderTypeString + " shader is missing \"shader_body\" entry point.");
     }
 
     // replace the "{" immediately following shader_body with some variable declarations
@@ -407,7 +414,8 @@ void PS(float4 _vDiffuse : COLOR,
     }
     else
     {
-        throw Renderer::ShaderException("Preset shader has no opening braces.");
+        LOG_DEBUG("[MilkdropShader] Failed " + shaderTypeString + " shader code:\n" + program);
+        throw Renderer::ShaderException("[MilkdropShader] Preset " + shaderTypeString + " shader has no opening braces.");
     }
 
     // replace "}" with return statement (this can probably be optimized for the GLSL conversion...)
@@ -419,7 +427,8 @@ void PS(float4 _vDiffuse : COLOR,
     }
     else
     {
-        throw Renderer::ShaderException("Preset shader has no closing brace.");
+        LOG_DEBUG("[MilkdropShader] Failed " + shaderTypeString + " shader code:\n" + program);
+        throw Renderer::ShaderException("[MilkdropShader] Preset " + shaderTypeString + " shader has no closing brace.");
     }
 
     // Find matching closing brace and cut off excess text after shader's main function
@@ -591,7 +600,8 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
     std::string sourcePreprocessed;
     if (!parser.ApplyPreprocessor("", program.c_str(), program.size(), sourcePreprocessed))
     {
-        throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: Preprocessing failed.\nSource:\n" + program);
+        LOG_DEBUG("[MilkdropShader] Failed " + shaderTypeString + " shader code:\n" + program);
+        throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: Preprocessing failed.");
     }
 
     // Remove previous shader declarations
@@ -644,7 +654,9 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
     // First, parse HLSL into a tree
     if (!parser.Parse("", sourcePreprocessed.c_str(), sourcePreprocessed.size()))
     {
-        throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: HLSL parsing failed.\nSource:\n" + sourcePreprocessed);
+        LOG_DEBUG("[MilkdropShader] Failed " + shaderTypeString + " shader code:\n" + program);
+        LOG_DEBUG("[MilkdropShader] Failed preprocessed " + shaderTypeString + " shader code:\n" + sourcePreprocessed);
+        throw Renderer::ShaderException("[MilkdropShader] Error translating HLSL " + shaderTypeString + " shader: HLSL parsing failed.");
     }
 
     // Then generate GLSL from the resulting parser tree
@@ -652,8 +664,12 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
                             MilkdropStaticShaders::Get()->GetGlslGeneratorVersion(),
                             "PS", M4::GLSLGenerator::Options(M4::GLSLGenerator::Flag_AlternateNanPropagation)))
     {
-        throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: GLSL generating failed.\nSource:\n" + sourcePreprocessed);
+        LOG_DEBUG("[MilkdropShader] Failed " + shaderTypeString + " shader code:\n" + program);
+        LOG_DEBUG("[MilkdropShader] Failed preprocessed " + shaderTypeString + " shader code:\n" + sourcePreprocessed);
+        throw Renderer::ShaderException("[MilkdropShader] Error translating HLSL " + shaderTypeString + " shader: GLSL generating failed.\nSource:\n" + sourcePreprocessed);
     }
+
+    LOG_TRACE("[MilkdropShader] Transpiled GLSL " + shaderTypeString + " shader code:\n" + std::string(generator.GetResult()));
 
     // Now we have GLSL source for the preset shader program (hopefully it's valid!)
     // Compile the preset shader fragment shader with the standard vertex shader and cross our fingers.

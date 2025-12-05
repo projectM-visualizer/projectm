@@ -1,5 +1,6 @@
 #include "Shader.hpp"
 
+#include <Logging.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include <vector>
@@ -49,7 +50,11 @@ void Shader::CompileProgram(const std::string& vertexShaderSource,
     std::vector<char> message(infoLogLength + 1);
     glGetProgramInfoLog(m_shaderProgram, infoLogLength, nullptr, message.data());
 
-    throw ShaderException("Error compiling shader: " + std::string(message.data()));
+    std::string linkError = "[Shader] Error linking compiled shader program: " + std::string(message.data());
+    LOG_ERROR(linkError);
+    LOG_DEBUG("[Shader] Vertex shader source: " + vertexShaderSource);
+    LOG_DEBUG("[Shader] Fragment shader source: " + fragmentShaderSource);
+    throw ShaderException(linkError);
 }
 
 bool Shader::Validate(std::string& validationMessage) const
@@ -206,7 +211,10 @@ GLuint Shader::CompileShader(const std::string& source, GLenum type)
     glGetShaderInfoLog(shader, infoLogLength, nullptr, message.data());
     glDeleteShader(shader);
 
-    throw ShaderException("Error compiling shader: " + std::string(message.data()));
+    std::string compileError = "[Shader] Error compiling " + std::string(type == GL_VERTEX_SHADER ? "vertex" : "fragment") + " shader: " + std::string(message.data());
+    LOG_ERROR(compileError);
+    LOG_DEBUG("[Shader] Failed source: " + source);
+    throw ShaderException(compileError);
 }
 
 auto Shader::GetShaderLanguageVersion() -> Shader::GlslVersion

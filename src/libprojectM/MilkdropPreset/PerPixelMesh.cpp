@@ -6,15 +6,12 @@
 #include "PerPixelContext.hpp"
 #include "PresetState.hpp"
 
+#include <Logging.hpp>
 #include <Renderer/BlendMode.hpp>
 #include <Renderer/ShaderCache.hpp>
 
 #include <algorithm>
 #include <cmath>
-
-#ifdef MILKDROP_PRESET_DEBUG
-#include <iostream>
-#endif
 
 namespace libprojectM {
 namespace MilkdropPreset {
@@ -57,17 +54,12 @@ void PerPixelMesh::LoadWarpShader(const PresetState& presetState)
             {
                 m_warpShader = std::make_unique<MilkdropShader>(MilkdropShader::ShaderType::WarpShader);
                 m_warpShader->LoadCode(presetState.warpShader);
-#ifdef MILKDROP_PRESET_DEBUG
-                std::cerr << "[Warp Shader] Loaded preset warp shader code." << std::endl;
-#endif
+                LOG_DEBUG("[PerPixelMesh] Successfully loaded preset warp shader code.");
             }
             catch (Renderer::ShaderException& ex)
             {
-#ifdef MILKDROP_PRESET_DEBUG
-                std::cerr << "[Warp Shader] Error loading warp shader code:" << ex.message() << std::endl;
-#else
-                (void) ex; // silence unused parameter warning
-#endif
+                LOG_ERROR("[PerPixelMesh] Error loading warp shader code:" + ex.message());
+                LOG_DEBUG("[PerPixelMesh] Warp shader code:\n" + presetState.warpShader);
                 m_warpShader.reset();
             }
         }
@@ -81,17 +73,11 @@ void PerPixelMesh::CompileWarpShader(PresetState& presetState)
         try
         {
             m_warpShader->LoadTexturesAndCompile(presetState);
-#ifdef MILKDROP_PRESET_DEBUG
-            std::cerr << "[Warp Shader] Successfully compiled warp shader code." << std::endl;
-#endif
+            LOG_DEBUG("[PerPixelMesh] Successfully compiled warp shader code.");
         }
-        catch (Renderer::ShaderException& ex)
+        catch (Renderer::ShaderException&)
         {
-#ifdef MILKDROP_PRESET_DEBUG
-            std::cerr << "[Warp Shader] Error compiling warp shader code:" << ex.message() << std::endl;
-#else
-            (void) ex; // silence unused parameter warning
-#endif
+            LOG_ERROR("[PerPixelMesh] Error compiling warp shader code.");
             m_warpShader.reset();
         }
     }

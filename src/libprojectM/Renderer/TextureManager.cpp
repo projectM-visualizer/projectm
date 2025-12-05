@@ -6,16 +6,13 @@
 #include "Texture.hpp"
 #include "Utils.hpp"
 
+#include <Logging.hpp>
 #include <SOIL2/SOIL2.h>
 
 #include <algorithm>
 #include <memory>
 #include <random>
 #include <vector>
-
-#ifdef DEBUG
-#include <iostream>
-#endif
 
 // Missing in macOS SDK. Query will most certainly fail, but then use the default format.
 #ifndef GL_TEXTURE_IMAGE_FORMAT
@@ -154,14 +151,13 @@ void TextureManager::PurgeTextures()
     {
         return;
     }
-    // Purge one texture. No need to inform presets, as the texture shouldn't be in use anymore.
-    // If this really happens for some reason, it'll simply be reloaded on the next frame.
+
+    // Purge one texture. No need to inform presets, as the texture will stay alive until the preset
+    // is unloaded.
     m_textures.erase(m_textures.find(biggestName));
     m_textureStats.erase(m_textureStats.find(biggestName));
 
-#ifdef DEBUG
-    std::cerr << "Purged texture " << biggestName << std::endl;
-#endif
+    LOG_DEBUG("[TextureManager] Purged texture \"" + biggestName + "\"");
 }
 
 auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSamplerDescriptor
@@ -186,16 +182,12 @@ auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSample
 
         if (texture)
         {
-#ifdef DEBUG
-            std::cerr << "Loaded texture " << unqualifiedName << std::endl;
-#endif
+            LOG_DEBUG("[TextureManager] Loaded texture \"" + unqualifiedName + "\" from file: " + file.filePath);
             return {texture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};;
         }
     }
 
-#ifdef DEBUG
-    std::cerr << "Failed to find texture " << unqualifiedName << std::endl;
-#endif
+    LOG_WARN("[TextureManager] Failed to find requested texture \"" + unqualifiedName + "\"");
 
     // Return a placeholder.
     return {m_placeholderTexture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
@@ -218,6 +210,7 @@ auto TextureManager::LoadTexture(const ScannedFile& file) -> std::shared_ptr<Tex
 
     if (imageData == nullptr)
     {
+        LOG_DEBUG("[TextureManager] Failed to decode image data.");
         return {};
     }
 
@@ -231,6 +224,7 @@ auto TextureManager::LoadTexture(const ScannedFile& file) -> std::shared_ptr<Tex
 
     if (tex == 0)
     {
+        LOG_DEBUG("[TextureManager] Failed to create GPU texture from image data.");
         return {};
     }
 
@@ -255,6 +249,7 @@ auto TextureManager::GetRandomTexture(const std::string& randomName) -> TextureS
 
     if (m_scannedTextureFiles.empty())
     {
+        LOG_DEBUG("[TextureManager] Texture file list is empty.");
         return {};
     }
 
@@ -291,6 +286,7 @@ auto TextureManager::GetRandomTexture(const std::string& randomName) -> TextureS
     // If a prefix was set and no file matched, filename can be empty.
     if (selectedFilename.empty())
     {
+        LOG_DEBUG("[TextureManager] No random texture found. Prefix: \"" + prefix + "\".");
         return {};
     }
 

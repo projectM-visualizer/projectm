@@ -25,9 +25,7 @@
 #include "MilkdropPresetExceptions.hpp"
 #include "PresetFileParser.hpp"
 
-#ifdef MILKDROP_PRESET_DEBUG
-#include <iostream>
-#endif
+#include <Logging.hpp>
 
 namespace libprojectM {
 namespace MilkdropPreset {
@@ -205,9 +203,7 @@ void MilkdropPreset::PerFrameUpdate()
 
 void MilkdropPreset::Load(const std::string& pathname)
 {
-#ifdef MILKDROP_PRESET_DEBUG
-    std::cerr << "[Preset] Loading preset from file \"" << pathname << "\"." << std::endl;
-#endif
+    LOG_DEBUG("[MilkdropPreset] Loading preset from file \"" + pathname + "\".")
 
     SetFilename(ParseFilename(pathname));
 
@@ -215,10 +211,9 @@ void MilkdropPreset::Load(const std::string& pathname)
 
     if (!parser.Read(pathname))
     {
-#ifdef MILKDROP_PRESET_DEBUG
-        std::cerr << "[Preset] Could not parse preset file." << std::endl;
-#endif
-        throw MilkdropPresetLoadException("Could not parse preset file \"" + pathname + "\"");
+        const std::string error = "[MilkdropPreset] Could not parse preset file \"" + pathname + "\".";
+        LOG_ERROR(error)
+        throw MilkdropPresetLoadException(error);
     }
 
     InitializePreset(parser);
@@ -226,18 +221,15 @@ void MilkdropPreset::Load(const std::string& pathname)
 
 void MilkdropPreset::Load(std::istream& stream)
 {
-#ifdef MILKDROP_PRESET_DEBUG
-    std::cerr << "[Preset] Loading preset from stream." << std::endl;
-#endif
+    LOG_DEBUG("[MilkdropPreset] Loading preset from stream.");
 
     ::libprojectM::PresetFileParser parser;
 
     if (!parser.Read(stream))
     {
-#ifdef MILKDROP_PRESET_DEBUG
-        std::cerr << "[Preset] Could not parse preset data." << std::endl;
-#endif
-        throw MilkdropPresetLoadException("Could not parse preset data.");
+        const std::string error =  "[MilkdropPreset] Could not parse preset data.";
+        LOG_ERROR(error)
+        throw MilkdropPresetLoadException(error);
     }
 
     InitializePreset(parser);
