@@ -2,6 +2,7 @@
 
 #include <MilkdropPreset/Factory.hpp>
 
+#include <Logging.hpp>
 #include <Utils.hpp>
 
 #include <algorithm>
@@ -36,11 +37,9 @@ void PresetFactoryManager::initialize()
     registerFactory(milkdropFactory->supportedExtensions(), milkdropFactory);
 }
 
-// Current behavior if a conflict is occurs is to override the previous request
-
 void PresetFactoryManager::registerFactory(const std::string& extensions, PresetFactory* factory)
 {
-
+    // Current behavior if an extension conflict occurs is to override the previous once
     std::stringstream ss(extensions);
     std::string extension;
 
@@ -50,7 +49,7 @@ void PresetFactoryManager::registerFactory(const std::string& extensions, Preset
     {
         if (m_factoryMap.count(extension))
         {
-            std::cerr << "[PresetFactoryManager] Warning: extension \"" << extension << "\" already has a factory. New factory handler ignored." << std::endl;
+            LOG_ERROR("[PresetFactoryManager] Warning: extension \"" + extension + "\" already has a factory. New factory handler ignored.");
         }
         else
         {
@@ -78,7 +77,7 @@ std::unique_ptr<Preset> PresetFactoryManager::CreatePresetFromFile(const std::st
     }
     catch (...)
     {
-        throw PresetFactoryException("Uncaught preset factory exception");
+        throw PresetFactoryException("[PresetFactoryManager] Uncaught preset factory exception.");
     }
 }
 
@@ -98,19 +97,21 @@ std::unique_ptr<Preset> PresetFactoryManager::CreatePresetFromStream(const std::
     }
     catch (...)
     {
-        throw PresetFactoryException("Uncaught preset factory exception");
+        throw PresetFactoryException("[PresetFactoryManager] Uncaught preset factory exception.");
     }
 }
 
 PresetFactory& PresetFactoryManager::factory(const std::string& extension)
 {
-
     if (!extensionHandled(extension))
     {
-        std::ostringstream os;
-        os << "No preset factory associated with \"" << extension << "\"." << std::endl;
-        throw PresetFactoryException(os.str());
+        std::string error = "[PresetFactoryManager] No preset factory associated with extension \"";
+        error += extension;
+        error += "\"";
+        LOG_ERROR(error);
+        throw PresetFactoryException(error);
     }
+
     return *m_factoryMap[extension];
 }
 

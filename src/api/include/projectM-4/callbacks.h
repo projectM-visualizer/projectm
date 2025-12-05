@@ -1,6 +1,6 @@
 /**
  * @file callbacks.h
- * @copyright 2003-2024 projectM Team
+ * @copyright 2003-2025 projectM Team
  * @brief Functions and prototypes for projectM callbacks.
  * @since 4.0.0
  *
@@ -91,4 +91,3 @@ PROJECTM_EXPORT void projectm_set_preset_switch_failed_event_callback(projectm_h
 #ifdef __cplusplus
 } // extern "C"
 #endif
-

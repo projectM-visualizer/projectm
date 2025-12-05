@@ -13,17 +13,6 @@ namespace MilkdropPreset {
 MilkdropStaticShaders::MilkdropStaticShaders(bool useGLES)
     : m_useGLES(useGLES)
 {
-    m_GLSLVersion = Renderer::Shader::GetShaderLanguageVersion();
-
-    if (m_GLSLVersion.major == 0)
-    {
-        throw std::runtime_error("Could not retrieve OpenGL shader language version. Is OpenGL available and the context initialized?");
-    }
-    if (m_GLSLVersion.major < 3)
-    {
-        throw std::runtime_error("OpenGL shader language version 3 or higher is required, but not available in the current context.");
-    }
-
     if (m_useGLES)
     {
         // If GLES is enabled, use the embedded specification language variant.
