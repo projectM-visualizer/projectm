@@ -1,8 +1,6 @@
 #include "PresetFactory.hpp"
 
-#ifdef DEBUG
-#include <iostream>
-#endif
+#include <Logging.hpp>
 
 namespace libprojectM {
 
@@ -17,9 +15,8 @@ std::string PresetFactory::Protocol(const std::string& url, std::string& path)
     }
 
     path = url.substr(pos + 3, url.length());
-#ifdef DEBUG
-    std::cout << "[PresetFactory] Filename is URL: " << url << std::endl;
-#endif
+
+    LOG_DEBUG("[PresetFactory] Preset filename is URL: " + url);
     return url.substr(0, pos);
 }
 

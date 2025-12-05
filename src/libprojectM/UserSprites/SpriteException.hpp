@@ -12,12 +12,17 @@ namespace UserSprites {
 class SpriteException : public std::exception
 {
 public:
-    inline SpriteException(std::string message)
+    SpriteException(std::string message)
         : m_message(std::move(message))
     {
     }
 
     virtual ~SpriteException() = default;
+
+    const char* what() const noexcept override
+    {
+        return m_message.c_str();
+    }
 
     const std::string& message() const
     {

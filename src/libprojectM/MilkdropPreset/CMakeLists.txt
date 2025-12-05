@@ -1,6 +1,3 @@
-# Debugging options, for development purposes.
-option(ENABLE_DEBUG_MILKDROP_PRESET "Enable STDERR debug output in Milkdrop preset code (Debug builds only)" OFF)
-
 set(SHADER_FILES
         Shaders/Blur1FragmentShaderGlsl330.frag
         Shaders/Blur2FragmentShaderGlsl330.frag
@@ -149,13 +146,6 @@ if(NOT BUILD_SHARED_LIBS)
         PRIVATE
         PROJECTM_STATIC_DEFINE
         )
-endif()
-
-if(ENABLE_DEBUG_MILKDROP_PRESET)
-    target_compile_definitions(MilkdropPreset
-            PRIVATE
-            MILKDROP_PRESET_DEBUG=1
-            )
 endif()
 
 set_target_properties(MilkdropPreset PROPERTIES

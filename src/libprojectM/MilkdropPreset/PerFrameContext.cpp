@@ -2,9 +2,7 @@
 
 #include "MilkdropPresetExceptions.hpp"
 
-#ifdef MILKDROP_PRESET_DEBUG
-#include <iostream>
-#endif
+#include <Logging.hpp>
 
 #define REG_VAR(var) \
     var = projectm_eval_context_register_variable(perFrameCodeContext, #var);
@@ -126,16 +124,22 @@ void PerFrameContext::EvaluateInitCode(PresetState& state)
     auto* initCode = projectm_eval_code_compile(perFrameCodeContext, state.perFrameInitCode.c_str());
     if (initCode == nullptr)
     {
-#ifdef MILKDROP_PRESET_DEBUG
+        std::string error;
         int line;
         int col;
         auto* errmsg = projectm_eval_get_error(perFrameCodeContext, &line, &col);
         if (errmsg)
         {
-            std::cerr << "[Preset] Could not compile per-frame INIT code: " << errmsg << "(L" << line << " C" << col << ")" << std::endl;
+            error = "[PerFrameContext] Could not compile per-frame INIT code: ";
+            error += errmsg;
+            error += "(L" + std::to_string(line) + " C" + std::to_string(col) + ")";
         }
-#endif
-        throw MilkdropCompileException("Could not compile per-frame init code");
+        else
+        {
+            error = "[PerFrameContext] Could not compile per-frame init code.";
+        }
+        LOG_DEBUG("[PerFrameContext] Failed per-frame INIT code:\n" + state.perFrameInitCode);
+        throw MilkdropCompileException(error);
     }
 
     projectm_eval_code_execute(initCode);
@@ -241,16 +245,22 @@ void PerFrameContext::CompilePerFrameCode(const std::string& perFrameCode)
     perFrameCodeHandle = projectm_eval_code_compile(perFrameCodeContext, perFrameCode.c_str());
     if (perFrameCodeHandle == nullptr)
     {
-#ifdef MILKDROP_PRESET_DEBUG
+        std::string error;
         int line;
         int col;
         auto* errmsg = projectm_eval_get_error(perFrameCodeContext, &line, &col);
         if (errmsg)
         {
-            std::cerr << "[Preset] Could not compile per-frame code: " << errmsg << "(L" << line << " C" << col << ")" << std::endl;
+            error = "[PerFrameContext] Could not compile per-frame code: ";
+            error += errmsg;
+            error += "(L" + std::to_string(line) + " C" + std::to_string(col) + ")";
         }
-#endif
-        throw MilkdropCompileException("Could not compile per-frame code");
+        else
+        {
+            error = "[PerFrameContext] Could not compile per-frame code.";
+        }
+        LOG_DEBUG("[PerFrameContext] Failed per-frame code:\n" + perFrameCode);
+        throw MilkdropCompileException(error);
     }
 }
 

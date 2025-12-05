@@ -12,12 +12,17 @@ namespace libprojectM {
 class PresetFactoryException : public std::exception
 {
 public:
-    inline PresetFactoryException(std::string message)
+    PresetFactoryException(std::string message)
         : m_message(std::move(message))
     {
     }
 
     virtual ~PresetFactoryException() = default;
+
+    const char* what() const noexcept override
+    {
+        return m_message.c_str();
+    }
 
     const std::string& message() const
     {

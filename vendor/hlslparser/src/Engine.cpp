@@ -1,11 +1,16 @@
 
 #include "Engine.h"
 
-#include <stdio.h>  // vsnprintf
-#include <string.h> // strcmp, strcasecmp
-#include <stdlib.h>	// strtol
+#include "libprojectM/Logging.hpp"
+
+#include <cstdio>  // vsnprintf
+#include <cstring> // strcmp, strcasecmp
+#include <cstdlib> // strtol
 #include <locale>
+#include <string>
 #include <sstream>
+#include <vector>
+
 
 namespace M4 {
 
@@ -112,14 +117,14 @@ void Log_Error(const char * format, ...) {
 }
 
 void Log_ErrorArgList(const char * format, va_list args) {
-#if 1 // @@ Don't we need to do this?
+    using libprojectM::Logging;
+
     va_list tmp;
     va_copy(tmp, args);
-    vprintf( format, args );
+    std::vector<char> buffer(static_cast<size_t>(std::vsnprintf(nullptr, 0, format, tmp)) + 1, '\0');
     va_end(tmp);
-#else
-    vprintf( format, args );
-#endif
+    vsnprintf(buffer.data(), buffer.size(), format, args );
+    LOG_ERROR("[HLSLParser] " + std::string(buffer.data()));
 }
 
 
