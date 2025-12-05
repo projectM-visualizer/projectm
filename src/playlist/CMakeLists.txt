@@ -2,15 +2,10 @@ if(NOT ENABLE_PLAYLIST)
     return()
 endif()
 
-add_library(projectM_playlist_main OBJECT
-        Filter.cpp
-        Filter.hpp
-        Item.cpp
-        Item.hpp
-        Playlist.cpp
-        Playlist.hpp
-        PlaylistCWrapper.cpp
-        PlaylistCWrapper.hpp
+set(PROJECTM_PLAYLIST_EXPORT_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4/projectM_playlist_export.h")
+
+set(PROJECTM_PLAYLIST_PUBLIC_HEADERS
+        "${PROJECTM_PLAYLIST_EXPORT_HEADER}"
         api/projectM-4/playlist.h
         api/projectM-4/playlist_callbacks.h
         api/projectM-4/playlist_core.h
@@ -19,6 +14,18 @@ add_library(projectM_playlist_main OBJECT
         api/projectM-4/playlist_memory.h
         api/projectM-4/playlist_playback.h
         api/projectM-4/playlist_types.h
+        )
+
+add_library(projectM_playlist_main OBJECT
+        ${PROJECTM_PLAYLIST_PUBLIC_HEADERS}
+        Filter.cpp
+        Filter.hpp
+        Item.cpp
+        Item.hpp
+        Playlist.cpp
+        Playlist.hpp
+        PlaylistCWrapper.cpp
+        PlaylistCWrapper.hpp
         )
 
 target_include_directories(projectM_playlist_main
@@ -45,6 +52,7 @@ set_target_properties(projectM_playlist PROPERTIES
         EXPORT_NAME playlist
         FOLDER libprojectM
         OUTPUT_NAME ${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}-playlist
+        PUBLIC_HEADER "${PROJECTM_PLAYLIST_PUBLIC_HEADERS}"
         )
 
 target_include_directories(projectM_playlist
@@ -88,8 +96,6 @@ endif()
 
 include(GenerateExportHeader)
 
-set(PROJECTM_PLAYLIST_EXPORT_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4/projectM_playlist_export.h")
-
 generate_export_header(projectM_playlist
         BASE_NAME projectM_playlist
         EXPORT_FILE_NAME "${PROJECTM_PLAYLIST_EXPORT_HEADER}"
@@ -105,17 +111,6 @@ if(ENABLE_INSTALL)
             RUNTIME DESTINATION "${PROJECTM_RUNTIME_DIR}" COMPONENT Runtime
             ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Devel
             PUBLIC_HEADER DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4" COMPONENT Devel
-            )
-
-    install(FILES
-            "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4/projectM_playlist_export.h"
-            DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4"
-            COMPONENT Devel
-            )
-
-    install(DIRECTORY api/projectM-4
-            DESTINATION "${PROJECTM_INCLUDE_DIR}"
-            COMPONENT Devel
             )
 
 
