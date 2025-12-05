@@ -249,6 +249,8 @@ public:
 private:
     void Initialize();
 
+    void CheckGLSLVersion();
+
     void StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hardCut);
 
     void LoadIdlePreset();
