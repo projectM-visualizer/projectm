@@ -109,6 +109,7 @@ private:
     thread_local static LogLevel m_threadLogLevel; //!< The thread-specific log level.
 };
 
+#ifdef ENABLE_DEBUG_LOGGING
 #define LOG_TRACE(message)                                                            \
     if (Logging::HasCallback() && Logging::GetLogLevel() == Logging::LogLevel::Trace) \
     {                                                                                 \
@@ -120,6 +121,10 @@ private:
     {                                                                                 \
         Logging::Log(message, Logging::LogLevel::Debug);                              \
     }
+#else
+#define LOG_TRACE(message)
+#define LOG_DEBUG(message)
+#endif
 
 #define LOG_INFO(message)                                                                   \
     if (Logging::HasCallback() && Logging::GetLogLevel() <= Logging::LogLevel::Information) \
