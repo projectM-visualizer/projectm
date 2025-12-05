@@ -192,16 +192,14 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
 
 void ProjectM::Initialize()
 {
-    /** Initialise start time */
+    // Check OpenGL first before allocating any additional memory.
+    CheckGLSLVersion();
+
     m_timeKeeper = std::make_unique<TimeKeeper>(m_presetDuration,
                                                 m_softCutDuration,
                                                 m_hardCutDuration,
                                                 m_easterEgg);
 
-    /** Nullify frame stash */
-
-    /** Initialise per-pixel matrix calculations */
-    /** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
     m_textureManager = std::make_unique<Renderer::TextureManager>(m_textureSearchPaths);
     m_shaderCache = std::make_unique<Renderer::ShaderCache>();
 
@@ -213,12 +211,36 @@ void ProjectM::Initialize()
 
     m_presetFactoryManager->initialize();
 
-    /* Set the seed to the current time in seconds */
-    srand(time(nullptr));
-
     LoadIdlePreset();
 
     m_timeKeeper->StartPreset();
+}
+
+void ProjectM::CheckGLSLVersion()
+{
+    auto glslVersion = Renderer::Shader::GetShaderLanguageVersion();
+
+    if (glslVersion.major == 0)
+    {
+        std::string error = "Could not retrieve OpenGL shader language version. Is OpenGL available and the context initialized?";
+        LOG_FATAL(error);
+        throw std::runtime_error(error);
+    }
+#ifdef USE_GLES
+    if (glslVersion.major < 3)
+    {
+        std::string error = "OpenGL ES shading language version 3.00 or higher is required, but the current context only provides version " + std::to_string(glslVersion.major) + "." + std::to_string(glslVersion.minor) + ".";
+        LOG_FATAL(error);
+        throw std::runtime_error(error);
+    }
+#else
+    if (glslVersion.major < 3 || (glslVersion.major == 3 && glslVersion.minor < 30))
+    {
+        std::string error = "OpenGL shading language version 3.30 or higher is required, but the current context only provides version " + std::to_string(glslVersion.major) + "." + std::to_string(glslVersion.minor) + ".";
+        LOG_FATAL(error);
+        throw std::runtime_error(error);
+    }
+#endif
 }
 
 void ProjectM::LoadIdlePreset()
