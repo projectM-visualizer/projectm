@@ -13,7 +13,7 @@
 #include "Audio/MilkdropFFT.hpp"
 #include "Audio/WaveformAligner.hpp"
 
-#include <projectM-4/projectM_export.h>
+#include <projectM-4/projectM_cxx_export.h>
 
 #include <atomic>
 #include <cstdint>
@@ -23,7 +23,7 @@
 namespace libprojectM {
 namespace Audio {
 
-class PCM
+class PROJECTM_CXX_EXPORT PCM
 {
 public:
     /**
@@ -33,7 +33,7 @@ public:
      * @param channels The number of channels in the input data.
      * @param count The amount of samples in the buffer
      */
-    PROJECTM_EXPORT void Add(const float* samples, uint32_t channels, size_t count);
+    void Add(const float* samples, uint32_t channels, size_t count);
 
     /**
      * @brief Adds new mono unsigned 8-bit PCM data to the storage
@@ -42,7 +42,7 @@ public:
      * @param channels The number of channels in the input data.
      * @param count The amount of samples in the buffer
      */
-    PROJECTM_EXPORT void Add(const uint8_t* samples, uint32_t channels, size_t count);
+    void Add(const uint8_t* samples, uint32_t channels, size_t count);
 
     /**
      * @brief Adds new mono signed 16-bit PCM data to the storage
@@ -51,7 +51,7 @@ public:
      * @param channels The number of channels in the input data.
      * @param count The amount of samples in the buffer
      */
-    PROJECTM_EXPORT void Add(const int16_t* samples, uint32_t channels, size_t count);
+    void Add(const int16_t* samples, uint32_t channels, size_t count);
 
     /**
      * @brief Updates the internal audio data values for rendering the next frame.
@@ -64,13 +64,13 @@ public:
      * @param secondsSinceLastFrame Time passed since rendering the last frame. Basically 1.0/FPS.
      * @param frame Frames rendered since projectM was started.
      */
-    PROJECTM_EXPORT void UpdateFrameAudioData(double secondsSinceLastFrame, uint32_t frame);
+    void UpdateFrameAudioData(double secondsSinceLastFrame, uint32_t frame);
 
     /**
      * @brief Returns a class holding a copy of the current frame audio data.
      * @return A FrameAudioData class with waveform, spectrum and other derived values.
      */
-    PROJECTM_EXPORT auto GetFrameAudioData() const -> FrameAudioData;
+    auto GetFrameAudioData() const -> FrameAudioData;
 
 private:
     template<

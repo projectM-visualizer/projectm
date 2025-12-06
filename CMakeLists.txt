@@ -199,16 +199,6 @@ else()
     endif()
 endif()
 
-if(ENABLE_CXX_INTERFACE)
-    set(CMAKE_C_VISIBILITY_PRESET default)
-    set(CMAKE_CXX_VISIBILITY_PRESET default)
-    set(CMAKE_VISIBILITY_INLINES_HIDDEN OFF)
-else()
-    set(CMAKE_C_VISIBILITY_PRESET hidden)
-    set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-    set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
-endif()
-
 # Disable trace/debug logging in release builds unless explicitly requested
 add_compile_definitions(
         $<$<OR:$<CONFIG:Debug>,$<BOOL:${ENABLE_VERBOSE_LOGGING}>>:ENABLE_DEBUG_LOGGING>
