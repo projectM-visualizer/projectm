@@ -77,6 +77,13 @@ target_include_directories(projectM
         "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}>"
         )
 
+if(ENABLE_CXX_INTERFACE)
+    target_include_directories(projectM
+            PUBLIC
+            "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}/projectM-4>"
+            )
+endif()
+
 target_link_libraries(projectM
         PUBLIC
         ${PROJECTM_OPENGL_LIBRARIES}
@@ -99,10 +106,25 @@ set_target_properties(projectM PROPERTIES
         )
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(projectM_main
-            PRIVATE
-            projectM_api_EXPORTS
-            )
+    # If the C++ interface was requested, enable all exports. Otherwise,
+    # we only enable API exports for the C wrapper, and disable it for all other files.
+    if(ENABLE_CXX_INTERFACE)
+        target_compile_definitions(projectM_main
+                PRIVATE
+                projectM_api_EXPORTS
+                )
+    else()
+        # Using PROJECTM_CXX_STATIC_DEFINE has precedence over projectM_api_EXPORTS,
+        # so all PROJECTM_CXX_EXPORT macros are removed.
+        target_compile_definitions(projectM_main
+                PRIVATE
+                PROJECTM_CXX_STATIC_DEFINE
+                )
+
+        set_source_files_properties(ProjectMCWrapper.cpp PROPERTIES
+                COMPILE_DEFINITIONS projectM_api_EXPORTS
+                )
+    endif()
 
     target_link_libraries(projectM
             PUBLIC
@@ -112,6 +134,13 @@ else()
     target_compile_definitions(projectM_main
             PUBLIC
             PROJECTM_STATIC_DEFINE
+            PROJECTM_CXX_STATIC_DEFINE
+            )
+
+    target_compile_definitions(projectM
+            INTERFACE
+            PROJECTM_STATIC_DEFINE
+            PROJECTM_CXX_STATIC_DEFINE
             )
 
     set_target_properties(projectM PROPERTIES
@@ -134,23 +163,29 @@ if(ENABLE_INSTALL)
 
     if(ENABLE_CXX_INTERFACE)
         install(FILES
+                Audio/AudioConstants.hpp
+                Audio/FrameAudioData.hpp
+                Audio/Loudness.hpp
+                Audio/MilkdropFFT.hpp
                 Audio/PCM.hpp
+                Audio/WaveformAligner.hpp
+                DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4/Audio"
+                COMPONENT Devel
+                )
+
+        install(FILES
+                Renderer/RenderContext.hpp
+                DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4/Renderer"
+                COMPONENT Devel
+                )
+
+        install(FILES
+                Logging.hpp
                 ProjectM.hpp
                 DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4"
                 COMPONENT Devel
                 )
-    else()
-        # Set PROJECTM_STATIC_EXPORT for C++ implementations to use project default visibility
-        # and no dllimport/dllexport.
-        set_source_files_properties(ProjectM.cpp Audio/PCM.cpp PROPERTIES
-                COMPILE_DEFINITIONS PROJECTM_STATIC_DEFINE
-                )
-        target_compile_definitions(projectM
-                INTERFACE
-                PROJECTM_STATIC_DEFINE
-                )
     endif()
-
 
     # CMake target exports
 
