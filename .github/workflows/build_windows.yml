@@ -113,5 +113,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-            name: projectm-windows-${{ matrix.libs }}-${{ matrix.fslib }}-${{ matrix.arch }}-${{ matrix.runs-on }}
+            name: projectm-windows-${{ matrix.libs }}-${{ matrix.fslib }}-${{ matrix.arch }}-${{ matrix.runs-on }}.zip
             path: install/*
