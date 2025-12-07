@@ -66,5 +66,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-            name: projectm-android-${{ matrix.libs }}-${{ matrix.abi }}-api${{ matrix.platform-version }}
+            name: projectm-android-${{ matrix.libs }}-${{ matrix.abi }}-api${{ matrix.platform-version }}.zip
             path: install/*
