@@ -66,12 +66,12 @@ jobs:
           if("${{ matrix.libs }}" -eq "shared") {
             $shared_libs = "ON"
           } else {
-            $shared_libs = "ON"
+            $shared_libs = "OFF"
           }
           if("${{ matrix.fslib }}" -eq "boost") {
             $use_boost = "ON"
           } else {
-            $use_boost = "ON"
+            $use_boost = "OFF"
           }
           if("${{ matrix.arch }}" -eq "X64") {
             $triplet = "x64-windows"
