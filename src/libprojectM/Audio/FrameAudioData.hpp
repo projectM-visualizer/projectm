@@ -6,8 +6,9 @@
  */
 #pragma once
 
-#include "projectM-4/projectM_export.h"
-#include "AudioConstants.hpp"
+#include "Audio/AudioConstants.hpp"
+
+#include <projectM-4/projectM_export.h>
 
 #include <array>
 

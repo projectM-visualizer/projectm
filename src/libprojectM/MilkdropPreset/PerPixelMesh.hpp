@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Renderer/Mesh.hpp"
-
+#include <Renderer/Mesh.hpp>
 #include <Renderer/Shader.hpp>
 
 namespace libprojectM {

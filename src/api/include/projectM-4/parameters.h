@@ -64,7 +64,7 @@ PROJECTM_EXPORT void projectm_set_texture_search_paths(projectm_handle instance,
  * If using this feature, it is further recommended to set the time to 0.0 on the first frame.
  *
  * @param instance The projectM instance handle.
- * @param seconds_since_first_frame Any value >= 0 to use user-specified timestamps, values < 0 will use the system clock.
+ * @param seconds_since_first_frame Any value >= 0 to use user-specified timestamps, values < 0 will use the system clock. Default: -1.0
  * @since 4.2.0
  */
 PROJECTM_EXPORT void projectm_set_frame_time(projectm_handle instance, double seconds_since_first_frame);
@@ -87,7 +87,7 @@ PROJECTM_EXPORT double projectm_get_last_frame_time(projectm_handle instance);
  * The beat sensitivity to be used.
  *
  * @param instance The projectM instance handle.
- * @param sensitivity The sensitivity setting.
+ * @param sensitivity The sensitivity setting. Default: 1.0
  * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_beat_sensitivity(projectm_handle instance, float sensitivity);
@@ -109,7 +109,7 @@ PROJECTM_EXPORT float projectm_get_beat_sensitivity(projectm_handle instance);
  * <p>Set this to a higher value than preset duration to disable hard cuts.</p>
  *
  * @param instance The projectM instance handle.
- * @param seconds Minimum number of seconds the preset will be displayed before a hard cut.
+ * @param seconds Minimum number of seconds the preset will be displayed before a hard cut. Default: 20.0
  * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_hard_cut_duration(projectm_handle instance, double seconds);
@@ -129,7 +129,7 @@ PROJECTM_EXPORT double projectm_get_hard_cut_duration(projectm_handle instance);
  * to work properly.
  *
  * @param instance The projectM instance handle.
- * @param enabled True to enable hard cuts, false to disable.
+ * @param enabled True to enable hard cuts, false to disable. Default: false
  * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_hard_cut_enabled(projectm_handle instance, bool enabled);
@@ -148,7 +148,7 @@ PROJECTM_EXPORT bool projectm_get_hard_cut_enabled(projectm_handle instance);
  * The beat detection volume difference that must be surpassed to trigger a hard cut.
  *
  * @param instance The projectM instance handle.
- * @param sensitivity The volume threshold that triggers a hard cut if surpassed.
+ * @param sensitivity The volume threshold that triggers a hard cut if surpassed. Default: 2.0
  * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_hard_cut_sensitivity(projectm_handle instance, float sensitivity);
@@ -168,7 +168,7 @@ PROJECTM_EXPORT float projectm_get_hard_cut_sensitivity(projectm_handle instance
  * to the other.
  *
  * @param instance The projectM instance handle.
- * @param seconds Time in seconds it takes to smoothly transition from one preset to another.
+ * @param seconds Time in seconds it takes to smoothly transition from one preset to another. Default: 3.0
  * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_soft_cut_duration(projectm_handle instance, double seconds);
@@ -188,7 +188,7 @@ PROJECTM_EXPORT double projectm_get_soft_cut_duration(projectm_handle instance);
  * a smooth cut will be initiated. A hard cut, if any, will always happen before this time.
  *
  * @param instance The projectM instance handle.
- * @param seconds The number of seconds a preset will be displayed before the next is shown.
+ * @param seconds The number of seconds a preset will be displayed before the next is shown. Default: 30.0
  * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_preset_duration(projectm_handle instance, double seconds);
@@ -212,8 +212,8 @@ PROJECTM_EXPORT double projectm_get_preset_duration(projectm_handle instance);
  * so only multiples of two are used.
  *
  * @param instance The projectM instance handle.
- * @param width The new width of the mesh.
- * @param height The new height of the mesh.
+ * @param width The new width of the mesh. Default: 32
+ * @param height The new height of the mesh. Default: 24
  * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_mesh_size(projectm_handle instance, size_t width, size_t height);
@@ -235,8 +235,8 @@ PROJECTM_EXPORT void projectm_get_mesh_size(projectm_handle instance, size_t* wi
  * be configured externally to fix any possible drift.
  *
  * @param instance The projectM instance handle.
- * @param offset_X The offset in texels in the horizontal direction. Milkdrop uses 0.5, default in projectM is 0.0.
- * @param offset_y The offset in texels in the vertical direction. Milkdrop uses 0.5, default in projectM is 0.0.
+ * @param offset_X The offset in texels in the horizontal direction. Milkdrop uses 0.5. Default: 0.0
+ * @param offset_y The offset in texels in the vertical direction. Milkdrop uses 0.5. Default: 0.0
  * @since 4.2.0
  */
 PROJECTM_EXPORT void projectm_set_texel_offset(projectm_handle instance, float offset_X, float offset_y);
@@ -263,7 +263,7 @@ PROJECTM_EXPORT void projectm_get_texel_offset(projectm_handle instance, float* 
  * which may choose to use it for calculations. It is not used in any other way by the library.
  *
  * @param instance The projectM instance handle.
- * @param fps The current FPS value projectM is running with.
+ * @param fps The current FPS value projectM is running with. Default: 35
  * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_fps(projectm_handle instance, int32_t fps);
@@ -286,7 +286,7 @@ PROJECTM_EXPORT int32_t projectm_get_fps(projectm_handle instance);
  * be distorted if the viewport isn't exactly square.
  *
  * @param instance The projectM instance handle.
- * @param enabled True to enable aspect correction, false to disable it.
+ * @param enabled True to enable aspect correction, false to disable it. Default: true
  * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_aspect_correction(projectm_handle instance, bool enabled);
@@ -309,7 +309,7 @@ PROJECTM_EXPORT bool projectm_get_aspect_correction(projectm_handle instance);
  * <p>See function sampledPresetDuration() of the TimeKeeper class on how it is used.</p>
  *
  * @param instance The projectM instance handle.
- * @param value The new "easter egg" value. Must be greater than zero, otherwise a default sigma value of 1.0 will be used.
+ * @param value The new "easter egg" value. Must be greater than zero, otherwise a default sigma value of 1.0 will be used. Default: 1.0
  * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_easter_egg(projectm_handle instance, float value);
@@ -329,7 +329,7 @@ PROJECTM_EXPORT float projectm_get_easter_egg(projectm_handle instance);
  * preset switches will still be executed.
  *
  * @param instance The projectM instance handle.
- * @param lock True to lock the current preset, false to enable automatic transitions.
+ * @param lock True to lock the current preset, false to enable automatic transitions. Default: false
  * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_preset_locked(projectm_handle instance, bool lock);
@@ -345,6 +345,9 @@ PROJECTM_EXPORT bool projectm_get_preset_locked(projectm_handle instance);
 /**
  * @brief Sets the current viewport size in pixels.
  *
+ * This method must be called with a non-zero size for each dimension for projectM to render
+ * anything. The viewport size should be the same size or smaller as the surface being rendered to.
+ *
  * The internal textures will only be replaced and resized when rendering the next frame and only
  * if any of the two dimensions actually changed.
  *
@@ -352,8 +355,8 @@ PROJECTM_EXPORT bool projectm_get_preset_locked(projectm_handle instance);
  * effects as it only updates the size with the same values.
  *
  * @param instance The projectM instance handle.
- * @param width New viewport width in pixels.
- * @param height New viewport height in pixels.
+ * @param width New viewport width in pixels. Default: 0
+ * @param height New viewport height in pixels. Default: 0
  * @since 4.0.0
  */
 PROJECTM_EXPORT void projectm_set_window_size(projectm_handle instance, size_t width, size_t height);

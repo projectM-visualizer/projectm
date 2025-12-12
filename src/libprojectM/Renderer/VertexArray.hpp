@@ -1,9 +1,6 @@
 #pragma once
 
-#include "VertexBuffer.hpp"
-
-
-#include <projectM-opengl.h>
+#include "Renderer/OpenGL.h"
 
 namespace libprojectM {
 namespace Renderer {

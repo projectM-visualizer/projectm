@@ -1,4 +1,4 @@
-#include "Mesh.hpp"
+#include "Renderer/Mesh.hpp"
 
 namespace libprojectM {
 namespace Renderer {

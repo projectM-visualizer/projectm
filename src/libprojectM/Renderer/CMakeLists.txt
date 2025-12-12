@@ -31,6 +31,7 @@ add_library(Renderer OBJECT
         Mesh.hpp
         MilkdropNoise.cpp
         MilkdropNoise.hpp
+        OpenGL.h
         Point.hpp
         PresetTransition.cpp
         PresetTransition.hpp

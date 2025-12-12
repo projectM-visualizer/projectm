@@ -1,14 +1,12 @@
 #pragma once
 
-#include "VertexArray.hpp"
-#include "VertexIndexArray.hpp"
-
-
-#include <Renderer/Color.hpp>
-#include <Renderer/Point.hpp>
-#include <Renderer/TextureUV.hpp>
-#include <Renderer/VertexBuffer.hpp>
-#include <Renderer/VertexBufferUsage.hpp>
+#include "Renderer/Color.hpp"
+#include "Renderer/Point.hpp"
+#include "Renderer/TextureUV.hpp"
+#include "Renderer/VertexArray.hpp"
+#include "Renderer/VertexBuffer.hpp"
+#include "Renderer/VertexBufferUsage.hpp"
+#include "Renderer/VertexIndexArray.hpp"
 
 #include <cstdint>
 

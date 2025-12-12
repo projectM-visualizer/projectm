@@ -1,4 +1,4 @@
-#include "TextureAttachment.hpp"
+#include "Renderer/TextureAttachment.hpp"
 
 // OpenGL ES might not define this constant in its headers, e.g. in the iOS and Emscripten SDKs.
 #ifndef GL_STENCIL_INDEX

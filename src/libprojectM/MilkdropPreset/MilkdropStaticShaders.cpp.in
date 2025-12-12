@@ -1,6 +1,6 @@
 #include "MilkdropStaticShaders.hpp"
 
-#include <projectM-opengl.h>
+#include <Renderer/OpenGL.h>
 
 #include <cstring>
 #include <stdexcept>

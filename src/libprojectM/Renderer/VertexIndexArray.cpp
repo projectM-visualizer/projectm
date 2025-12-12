@@ -1,4 +1,4 @@
-#include "VertexIndexArray.hpp"
+#include "Renderer/VertexIndexArray.hpp"
 
 namespace libprojectM {
 namespace Renderer {

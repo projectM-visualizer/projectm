@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "AudioConstants.hpp"
+#include "Audio/AudioConstants.hpp"
 
 #include <cstddef>
 #include <cstdint>

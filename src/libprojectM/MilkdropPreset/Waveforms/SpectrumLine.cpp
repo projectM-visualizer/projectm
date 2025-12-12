@@ -1,4 +1,4 @@
-#include "SpectrumLine.hpp"
+#include "Waveforms/SpectrumLine.hpp"
 
 #include <cmath>
 

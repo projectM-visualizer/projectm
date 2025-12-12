@@ -1,4 +1,4 @@
-#include "CenteredSpiro.hpp"
+#include "Waveforms/CenteredSpiro.hpp"
 
 #include <Audio/AudioConstants.hpp>
 

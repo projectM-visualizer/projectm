@@ -1,8 +1,6 @@
-#include "TransitionShaderManager.hpp"
+#include "Renderer/TransitionShaderManager.hpp"
 
 #include "BuiltInTransitionsResources.hpp"
-
-#include <iostream>
 
 namespace libprojectM {
 namespace Renderer {

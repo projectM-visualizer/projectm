@@ -1,6 +1,7 @@
 #include "PerPixelContext.hpp"
 
 #include "MilkdropPresetExceptions.hpp"
+#include "PerFrameContext.hpp"
 
 #include <Logging.hpp>
 

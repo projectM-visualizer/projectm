@@ -1,4 +1,4 @@
-#include "Framebuffer.hpp"
+#include "Renderer/Framebuffer.hpp"
 
 namespace libprojectM {
 namespace Renderer {
