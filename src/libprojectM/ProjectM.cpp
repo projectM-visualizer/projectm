@@ -493,8 +493,8 @@ void ProjectM::SetMeshSize(uint32_t meshResolutionX, uint32_t meshResolutionY)
     }
 
     // Constrain per-pixel mesh size to sensible limits
-    m_meshX = std::max(8u, std::min(400u, m_meshX));
-    m_meshY = std::max(8u, std::min(400u, m_meshY));
+    m_meshX = std::max(8u, std::min(300u, m_meshX));
+    m_meshY = std::max(8u, std::min(300u, m_meshY));
 }
 
 void ProjectM::TexelOffsets(float& texelOffsetX, float& texelOffsetY) const
