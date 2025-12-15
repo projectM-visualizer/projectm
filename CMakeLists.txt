@@ -170,7 +170,7 @@ else()
             message(FATAL_ERROR "OpenGL ES 3 support is currently only available for Linux platforms. You're building for ${CMAKE_SYSTEM_NAME}.")
         endif()
 
-        if (CMAKE_VERSION VERSION_LESS_EQUAL "3.22" OR CMAKE_SYSTEM_NAME STREQUAL Android)
+        if (CMAKE_VERSION VERSION_LESS_EQUAL "3.26" OR CMAKE_SYSTEM_NAME STREQUAL Android)
             # We use a local find script for OpenGL::GLES3 until the proposed changes are merged upstream.
             list(APPEND CMAKE_MODULE_PATH "${PROJECTM_SOURCE_DIR}/cmake/gles")
         endif()
