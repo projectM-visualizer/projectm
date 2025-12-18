@@ -20,6 +20,7 @@ set(PROJECTM_PUBLIC_HEADERS
         include/projectM-4/debug.h
         include/projectM-4/logging.h
         include/projectM-4/memory.h
+        include/projectM-4/parameters.h
         include/projectM-4/projectM.h
         include/projectM-4/render_opengl.h
         include/projectM-4/touch.h
