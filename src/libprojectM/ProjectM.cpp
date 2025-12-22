@@ -38,8 +38,8 @@
 
 namespace libprojectM {
 
-ProjectM::ProjectM()
-    : m_presetFactoryManager(std::make_unique<PresetFactoryManager>())
+ProjectM::ProjectM(const std::shared_ptr<Renderer::Platform::GLResolver>& glResolver)
+    : m_glResolver(glResolver), m_presetFactoryManager(std::make_unique<PresetFactoryManager>())
 {
     Initialize();
 }

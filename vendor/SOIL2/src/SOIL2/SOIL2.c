@@ -18,73 +18,19 @@
 
 #define SOIL_CHECK_FOR_GL_ERRORS 0
 
-#if defined( __APPLE_CC__ ) || defined ( __APPLE__ )
-	#include <TargetConditionals.h>
+// --- projectM patched GL discovery start ---
+#include "SOIL2_gl_bridge.h"
 
-	#if defined( __IPHONE__ ) || ( defined( TARGET_OS_IPHONE ) && TARGET_OS_IPHONE ) || ( defined( TARGET_IPHONE_SIMULATOR ) && TARGET_IPHONE_SIMULATOR )
-		#define SOIL_PLATFORM_IOS
-		#include <dlfcn.h>
-	#else
-		#define SOIL_PLATFORM_OSX
-	#endif
-#elif defined( __ANDROID__ ) || defined( ANDROID )
-	#define SOIL_PLATFORM_ANDROID
-#elif ( defined ( linux ) || defined( __linux__ ) || defined( __FreeBSD__ ) || defined(__OpenBSD__) || defined( __NetBSD__ ) || defined( __DragonFly__ ) || defined( __SVR4 ) )
-	#define SOIL_X11_PLATFORM
+#ifndef APIENTRY
+# if defined(_WIN32)
+#   define APIENTRY __stdcall
+# else
+#   define APIENTRY
+# endif
 #endif
 
-#if ( defined( SOIL_PLATFORM_IOS ) || defined( SOIL_PLATFORM_ANDROID ) ) && ( !defined( SOIL_GLES1 ) && !defined( SOIL_GLES2 ) )
-	#define SOIL_GLES2
-#endif
+// --- projectM patched GL discovery end ---
 
-#if ( defined( SOIL_GLES2 ) || defined( SOIL_GLES1 ) ) && !defined( SOIL_NO_EGL ) && !defined( SOIL_PLATFORM_IOS )
-	#include <EGL/egl.h>
-#endif
-
-#if defined( SOIL_GLES2 )
-	#ifdef SOIL_PLATFORM_IOS
-		#include <OpenGLES/ES2/gl.h>
-		#include <OpenGLES/ES2/glext.h>
-	#else
-		#include <GLES2/gl2.h>
-		#include <GLES2/gl2ext.h>
-	#endif
-
-	#define APIENTRY GL_APIENTRY
-#elif defined( SOIL_GLES1 )
-	#ifndef GL_GLEXT_PROTOTYPES
-	#define GL_GLEXT_PROTOTYPES
-	#endif
-	#ifdef SOIL_PLATFORM_IOS
-		#include <OpenGLES/ES1/gl.h>
-		#include <OpenGLES/ES1/glext.h>
-	#else
-		#include <GLES/gl.h>
-		#include <GLES/glext.h>
-	#endif
-
-	#define APIENTRY GL_APIENTRY
-#else
-
-#if defined( __WIN32__ ) || defined( _WIN32 ) || defined( WIN32 )
-	#define SOIL_PLATFORM_WIN32
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
-	#include <wingdi.h>
-	#include <GL/gl.h>
-#elif defined(__APPLE__) || defined(__APPLE_CC__)
-	/*	I can't test this Apple stuff!	*/
-	#include <OpenGL/gl.h>
-	#include <Carbon/Carbon.h>
-	#define APIENTRY
-#elif defined( SOIL_X11_PLATFORM )
-	#include <GL/gl.h>
-	#include <GL/glx.h>
-#else
-	#include <GL/gl.h>
-#endif
-
-#endif
 
 #ifndef GL_BGRA
 #define GL_BGRA 0x80E1
@@ -108,6 +54,38 @@
 #define GL_UNSIGNED_BYTE_3_3_2 0x8032
 #endif
 
+// --- projectM patched GL discovery start ---
+
+#ifndef GL_LUMINANCE
+# define GL_LUMINANCE 0x1909
+#endif
+
+#ifndef GL_LUMINANCE_ALPHA
+# define GL_LUMINANCE_ALPHA 0x190A
+#endif
+
+#ifndef GL_ALPHA
+# define GL_ALPHA 0x1906
+#endif
+
+#ifndef GL_CLAMP
+# define GL_CLAMP 0x2900
+#endif
+
+#ifndef GL_CLAMP_TO_EDGE
+# define GL_CLAMP_TO_EDGE 0x812F
+#endif
+
+#ifndef GL_BGR
+# define GL_BGR 0x80E0
+#endif
+
+#ifndef GL_BGRA
+# define GL_BGRA 0x80E1
+#endif
+
+// --- projectM patched GL discovery end ---
+
 #include "SOIL2.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -120,6 +98,21 @@
 
 #include <stdlib.h>
 #include <string.h>
+
+// --- projectM patched GL discovery start ---
+
+#if defined(_WIN32) || defined(SOIL_PLATFORM_WIN32)
+
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#include <stddef.h>
+#include <windows.h>
+
+#endif
+
+// --- projectM patched GL discovery end ---
 
 unsigned long SOIL_version() { return SOIL_COMPILED_VERSION; }
 
@@ -173,11 +166,7 @@ int query_3Dc_capability( void );
 #define SOIL_GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT 0x8C4F
 static int has_sRGB_capability = SOIL_CAPABILITY_UNKNOWN;
 int query_sRGB_capability( void );
-typedef void (APIENTRY * P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC) (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLsizei imageSize, const GLvoid * data);
-static P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC soilGlCompressedTexImage2D = NULL;
-
-typedef void (APIENTRY *P_SOIL_GLGENERATEMIPMAPPROC)(GLenum target);
-static P_SOIL_GLGENERATEMIPMAPPROC soilGlGenerateMipmap = NULL;
+// --- projectM patched GL discovery removed function pointer definitions soilGlCompressedTexImage2D / soilGlGenerateMipmap ---
 
 static int has_gen_mipmap_capability = SOIL_CAPABILITY_UNKNOWN;
 static int query_gen_mipmap_capability( void );
@@ -196,23 +185,62 @@ int query_ETC1_capability( void );
 #define SOIL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG                     0x8C03
 #define SOIL_GL_ETC1_RGB8_OES                                     0x8D64
 
+// --- projectM patched GL discovery start ---
+
+typedef const GLubyte* (APIENTRY *P_SOIL_glGetStringiFunc)(GLenum, GLuint);
+static P_SOIL_glGetStringiFunc soilGlGetStringi = NULL;
+
+static void soil2_init_stringi(void)
+{
+    if (!soilGlGetStringi) {
+        soilGlGetStringi = (P_SOIL_glGetStringiFunc)SOIL_GL_GetProcAddress("glGetStringi");
+    }
+}
+
+// --- projectM patched GL discovery end ---
+
 #if defined( SOIL_X11_PLATFORM ) || defined( SOIL_PLATFORM_WIN32 ) || defined( SOIL_PLATFORM_OSX ) || defined(__HAIKU__)
 typedef const GLubyte *(APIENTRY * P_SOIL_glGetStringiFunc) (GLenum, GLuint);
 static P_SOIL_glGetStringiFunc soilGlGetStringiFunc = NULL;
 
+// --- projectM patched GL discovery start ---
+
 static int isAtLeastGL3()
 {
-	static int is_gl3 = SOIL_CAPABILITY_UNKNOWN;
+    static int cached = SOIL_CAPABILITY_UNKNOWN;
+    if (cached != SOIL_CAPABILITY_UNKNOWN) return cached;
 
-	if ( SOIL_CAPABILITY_UNKNOWN == is_gl3 )
-	{
-		const char * verstr	= (const char *) glGetString( GL_VERSION );
-		is_gl3				= ( verstr && ( atoi(verstr) >= 3 ) &&
-								strstr( verstr, " ES " ) == NULL );
-	}
+    const char* verstr = (const char*)glGetString(GL_VERSION);
+    if (!verstr) {
+        cached = SOIL_CAPABILITY_NONE;
+        return cached;
+    }
 
-	return is_gl3;
+    // Desktop examples:
+    //   "3.3.0 NVIDIA 555.xx"
+    // GLES examples:
+    //   "OpenGL ES 3.2 Mesa ..."
+    //   "OpenGL ES-CM 1.1 ..." (old)
+    const int is_es = (strstr(verstr, "OpenGL ES") != NULL) || (strstr(verstr, " ES ") != NULL);
+
+    int maj = 0, min = 0;
+    if (is_es) {
+        // Best-effort: parse the first X.Y in the string
+        if (sscanf(verstr, "%*[^0-9]%d.%d", &maj, &min) == 2 && maj >= 3)
+            cached = SOIL_CAPABILITY_PRESENT;
+        else
+            cached = SOIL_CAPABILITY_NONE;
+    } else {
+        if (sscanf(verstr, "%d.%d", &maj, &min) == 2 && maj >= 3)
+            cached = SOIL_CAPABILITY_PRESENT;
+        else
+            cached = SOIL_CAPABILITY_NONE;
+    }
+
+    return cached;
 }
+// --- projectM patched GL discovery end ---
+
 #else
 static int isAtLeastGL3()
 {
@@ -232,167 +260,116 @@ static int soilTestWinProcPointer(const PROC pTest)
 }
 #endif
 
-#if defined(__sgi) || defined (__sun) || defined(__HAIKU__)
-#include <dlfcn.h>
-
-void* dlGetProcAddress (const char* name)
+// --- projectM patched GL discovery start ---
+int SOIL_GL_ExtensionSupported(const char* extension)
 {
-  static void* h = NULL;
-  static void* gpa;
+    /* Validate input */
+    if (!extension || *extension == '\0' || strchr(extension, ' '))
+        return 0;
 
-  if (h == NULL)
-  {
-	if ((h = dlopen(NULL, RTLD_LAZY | RTLD_LOCAL)) == NULL) return NULL;
-	gpa = dlsym(h, "glXGetProcAddress");
-  }
+    /* Make sure function pointers are resolved (safe to call repeatedly). */
+    if (isAtLeastGL3() == SOIL_CAPABILITY_PRESENT) {
+        soil2_init_stringi();
+    }
 
-  if (gpa != NULL)
-	return ((void*(*)(const GLubyte*))gpa)((const GLubyte*)name);
-  else
-	return dlsym(h, (const char*)name);
-}
-#endif
+    /* Prefer GL3+/GLES3+ enumeration when available */
+    if (soilGlGetStringi)
+    {
+        #if defined(GL_NUM_EXTENSIONS)
+        GLint num_exts = 0;
+        glGetIntegerv(GL_NUM_EXTENSIONS, &num_exts);
+        if (glGetError() == GL_NO_ERROR && num_exts > 0)
+        {
+            for (GLint i = 0; i < num_exts; ++i)
+            {
+                const char* ext = (const char*)soilGlGetStringi(GL_EXTENSIONS, (GLuint)i);
+                if (ext && strcmp(ext, extension) == 0)
+                    return 1;
+            }
+            return 0;
+        }
+        /* If GL_NUM_EXTENSIONS isn't supported (e.g. GL2), fall through. */
+        #endif /* GL_NUM_EXTENSIONS */
+    }
 
-void * SOIL_GL_GetProcAddress(const char *proc)
-{
-	void *func = NULL;
+    /* GL2 / GLES2 style: space-separated extension string */
+    {
+        const char* extensions = (const char*)glGetString(GL_EXTENSIONS);
+        if (!extensions)
+            return 0;
 
-#if defined( SOIL_PLATFORM_IOS )
-	func = dlsym( RTLD_DEFAULT, proc );
-#elif defined( SOIL_GLES2 ) || defined( SOIL_GLES1 )
-	#ifndef SOIL_NO_EGL
-		func = eglGetProcAddress( proc );
-	#else
-		func = NULL;
-	#endif
-#elif defined( SOIL_PLATFORM_WIN32 )
-	if ( NULL == openglModule )
-		openglModule = LoadLibraryA("opengl32.dll");
+        const char* start = extensions;
+        for (;;)
+        {
+            const char* where = strstr(start, extension);
+            if (!where)
+                break;
 
-	func = (void*)wglGetProcAddress(proc);
+            const char* terminator = where + strlen(extension);
+            if ((where == start || *(where - 1) == ' ') &&
+                (*terminator == ' ' || *terminator == '\0'))
+                return 1;
 
-	if (!soilTestWinProcPointer((const PROC)func)) {
-		func = (void *)GetProcAddress(openglModule, proc);
-	}
+            start = terminator;
+        }
+    }
 
-#elif defined( SOIL_PLATFORM_OSX )
-	/*	I can't test this Apple stuff!	*/
-	CFBundleRef bundle;
-	CFURLRef bundleURL =
-	CFURLCreateWithFileSystemPath(
-								  kCFAllocatorDefault,
-								  CFSTR("/System/Library/Frameworks/OpenGL.framework"),
-								  kCFURLPOSIXPathStyle,
-								  true );
-	CFStringRef extensionName =
-	CFStringCreateWithCString(
-							  kCFAllocatorDefault,
-							  proc,
-							  kCFStringEncodingASCII );
-	bundle = CFBundleCreate( kCFAllocatorDefault, bundleURL );
-	assert( bundle != NULL );
-
-	func = CFBundleGetFunctionPointerForName( bundle, extensionName );
-
-	CFRelease( bundleURL );
-	CFRelease( extensionName );
-	CFRelease( bundle );
-#elif defined( SOIL_X11_PLATFORM )
-	func =
-#if !defined(GLX_VERSION_1_4)
-	glXGetProcAddressARB
-#else
-	glXGetProcAddress
-#endif
-	( (const GLubyte *)proc );
-#elif defined(__sgi) || defined (__sun) || defined(__HAIKU__)
-	func = dlGetProcAddress(proc);
-#endif
-
-	return func;
+    return 0;
 }
 
-/* Based on the SDL2 implementation */
-int SOIL_GL_ExtensionSupported(const char *extension)
+
+
+// --------------------------- Compressed texture function pointers ---------------------------
+typedef void (APIENTRY * P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC) (GLenum target, GLint level, GLenum internalformat,
+                                                                GLsizei width, GLsizei height, GLint border,
+                                                                GLsizei imageSize, const void* data);
+
+static P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC soilGlCompressedTexImage2D = NULL;
+
+typedef void (APIENTRY * P_SOIL_GLGENERATEMIPMAPPROC)(GLenum target);
+static P_SOIL_GLGENERATEMIPMAPPROC soilGlGenerateMipmap = NULL;
+
+
+static int soil2_gl_inited = 0;
+
+
+
+void SOIL_GL_Init()
 {
-	const char *extensions;
-	const char *start;
-	const char *where, *terminator;
+    /* Must be called after a GL context exists and AFTER SOIL_GL_SetResolver(). */
+    if (soil2_gl_inited)
+        return;
 
-	/* Extension names should not have spaces. */
-	where = strchr(extension, ' ');
+    /* Resolve compressed upload */
+    soilGlCompressedTexImage2D =
+        (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)SOIL_GL_GetProcAddress("glCompressedTexImage2D");
+    if (!soilGlCompressedTexImage2D)
+        soilGlCompressedTexImage2D =
+            (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)SOIL_GL_GetProcAddress("glCompressedTexImage2DARB");
 
-	if (where || *extension == '\0')
-	{
-		return 0;
-	}
+    /* Resolve mipmap generator (desktop + ES extensions) */
+    soilGlGenerateMipmap =
+        (P_SOIL_GLGENERATEMIPMAPPROC)SOIL_GL_GetProcAddress("glGenerateMipmap");
+    if (!soilGlGenerateMipmap)
+        soilGlGenerateMipmap =
+            (P_SOIL_GLGENERATEMIPMAPPROC)SOIL_GL_GetProcAddress("glGenerateMipmapEXT");
+    if (!soilGlGenerateMipmap)
+        soilGlGenerateMipmap =
+            (P_SOIL_GLGENERATEMIPMAPPROC)SOIL_GL_GetProcAddress("glGenerateMipmapOES");
 
-	#if defined( SOIL_X11_PLATFORM ) || defined( SOIL_PLATFORM_WIN32 ) || defined( SOIL_PLATFORM_OSX ) || defined(__HAIKU__)
-	/* Lookup the available extensions */
-	if ( isAtLeastGL3() )
-	{
-		GLint num_exts = 0;
-		GLint i;
-
-		if ( NULL == soilGlGetStringiFunc )
-		{
-			soilGlGetStringiFunc = (P_SOIL_glGetStringiFunc)SOIL_GL_GetProcAddress("glGetStringi");
-
-			if ( NULL == soilGlGetStringiFunc )
-			{
-				return 0;
-			}
-		}
-
-		#ifndef GL_NUM_EXTENSIONS
-		#define GL_NUM_EXTENSIONS 0x821D
-		#endif
-		glGetIntegerv(GL_NUM_EXTENSIONS, &num_exts);
-		for (i = 0; i < num_exts; i++)
-		{
-			const char *thisext = (const char *) soilGlGetStringiFunc(GL_EXTENSIONS, i);
-
-			if (strcmp(thisext, extension) == 0)
-			{
-				return 1;
-			}
-		}
-
-		return 0;
-	}
-	#endif
-
-	/* Try the old way with glGetString(GL_EXTENSIONS) ... */
-	extensions = (const char *) glGetString(GL_EXTENSIONS);
-
-	if (!extensions)
-	{
-		return 0;
-	}
-
-	/*
-	 * It takes a bit of care to be fool-proof about parsing the OpenGL
-	 * extensions string. Don't be fooled by sub-strings, etc.
-	 */
-	start = extensions;
-
-	for (;;) {
-		where = strstr(start, extension);
-
-		if (!where)
-			break;
-
-		terminator = where + strlen(extension);
-
-		if (where == start || *(where - 1) == ' ')
-			if (*terminator == ' ' || *terminator == '\0')
-				return 1;
-
-		start = terminator;
-	}
-
-	return 0;
+    soil2_gl_inited = 1;
 }
+
+/* Ensure OpenGL function pointers are initialized (safe to call repeatedly). */
+static void soil2_ensure_gl_inited(void)
+{
+	if(!soil2_gl_inited)
+	{
+		SOIL_GL_Init();
+	}
+}
+
+// --- projectM patched GL discovery end ---
 
 /*	other functions	*/
 unsigned int
@@ -3186,17 +3163,12 @@ int query_cubemap_capability( void )
 
 static P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC get_glCompressedTexImage2D_addr()
 {
-	/*	and find the address of the extension function	*/
-	P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC ext_addr = NULL;
-
-#if defined( SOIL_PLATFORM_WIN32 ) || defined( SOIL_PLATFORM_OSX ) || defined( SOIL_X11_PLATFORM )
-	ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)SOIL_GL_GetProcAddress( "glCompressedTexImage2D" );
-#else
-	ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)&glCompressedTexImage2D;
-#endif
-
-	return ext_addr;
+    /* Always go through the user-provided resolver to avoid link-time symbol collisions
+       (e.g. when GLAD or other loaders are compiled into the binary). */
+    soil2_ensure_gl_inited();
+    return soilGlCompressedTexImage2D;
 }
+
 
 int query_DXT_capability( void )
 {
@@ -3374,60 +3346,37 @@ int query_ETC1_capability( void )
 	return has_ETC1_capability;
 }
 
+// --- projectM patched GL discovery start ---
+
 int query_gen_mipmap_capability( void )
 {
-	/* check for the capability   */
-	P_SOIL_GLGENERATEMIPMAPPROC ext_addr = NULL;
+    if (has_gen_mipmap_capability == SOIL_CAPABILITY_UNKNOWN)
+    {
+        /* Need either FBO support (common proxy for GenerateMipmap availability) or GL3+ */
+        if (0 == SOIL_GL_ExtensionSupported("GL_ARB_framebuffer_object") &&
+            0 == SOIL_GL_ExtensionSupported("GL_EXT_framebuffer_object") &&
+            0 == SOIL_GL_ExtensionSupported("GL_OES_framebuffer_object") &&
+            !isAtLeastGL3())
+        {
+            has_gen_mipmap_capability = SOIL_CAPABILITY_NONE;
+        }
+        else
+        {
+            soil2_ensure_gl_inited();
 
-	if( has_gen_mipmap_capability == SOIL_CAPABILITY_UNKNOWN )
-	{
-		if (	0 == SOIL_GL_ExtensionSupported( "GL_ARB_framebuffer_object" ) &&
-				0 == SOIL_GL_ExtensionSupported( "GL_EXT_framebuffer_object" ) &&
-				0 == SOIL_GL_ExtensionSupported( "GL_OES_framebuffer_object" ) &&
-				!isAtLeastGL3()
-		   )
-		{
-			/* not there, flag the failure */
-			has_gen_mipmap_capability = SOIL_CAPABILITY_NONE;
-		}
-		else
-		{
-			#if !defined( SOIL_GLES1 ) && !defined( SOIL_GLES2 )
+            if (soilGlGenerateMipmap)
+            {
+                has_gen_mipmap_capability = SOIL_CAPABILITY_PRESENT;
+            }
+            else
+            {
+                /* Could not resolve GenerateMipmap via resolver */
+                has_gen_mipmap_capability = SOIL_CAPABILITY_NONE;
+            }
+        }
+    }
 
-			ext_addr = (P_SOIL_GLGENERATEMIPMAPPROC)SOIL_GL_GetProcAddress("glGenerateMipmap");
-
-			if(ext_addr == NULL)
-			{
-				ext_addr = (P_SOIL_GLGENERATEMIPMAPPROC)SOIL_GL_GetProcAddress("glGenerateMipmapEXT");
-			}
-
-			#elif !defined( SOIL_NO_EGL )
-
-			ext_addr = (P_SOIL_GLGENERATEMIPMAPPROC)SOIL_GL_GetProcAddress("glGenerateMipmapOES");
-
-			if(ext_addr == NULL)
-			{
-				ext_addr = (P_SOIL_GLGENERATEMIPMAPPROC)SOIL_GL_GetProcAddress("glGenerateMipmap");
-			}
-
-			#elif defined( SOIL_GLES2 )
-				ext_addr = 	&glGenerateMipmap;
-			#else /** SOIL_GLES1 */
-				ext_addr = &glGenerateMipmapOES;
-			#endif
-		}
-
-		if(ext_addr == NULL)
-		{
-			/* this should never happen */
-			has_gen_mipmap_capability = SOIL_CAPABILITY_NONE;
-		} else
-		{
-			/* it's there! */
-			has_gen_mipmap_capability = SOIL_CAPABILITY_PRESENT;
-			soilGlGenerateMipmap = ext_addr;
-		}
-	}
-
-	return has_gen_mipmap_capability;
+    return has_gen_mipmap_capability;
 }
+
+// --- projectM patched GL discovery end ---

@@ -35,5 +35,4 @@ target_link_libraries(UserSprites
         PUBLIC
         MilkdropPreset
         GLM::GLM
-        ${PROJECTM_OPENGL_LIBRARIES}
         )

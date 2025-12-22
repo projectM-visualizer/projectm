@@ -138,9 +138,6 @@ Only relevant for Windows:
    library dependencies and/or using CMake to configure the build.
 -  `NuGet <https://www.nuget.org/>`__: Dependency manager for .NET.
    Required to build the EyeTune app.
--  `GLEW <http://glew.sourceforge.net/>`__: The OpenGL Extension
-   Wrangler Library. Only required if using CMake to configure the
-   build, the pre-created solutions use a bundled copy of GLEW.
 
 Building on Linux and macOS
 ---------------------------

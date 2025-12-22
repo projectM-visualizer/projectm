@@ -62,6 +62,7 @@ extern "C" {
 #define SOIL_VERSION_ATLEAST( X, Y, Z ) ( SOIL_COMPILED_VERSION >= SOIL_VERSION_NUM( X, Y, Z ) )
 
 	unsigned long SOIL_version();
+	void SOIL_GL_Init();
 
 /**
 	The format of images that may be loaded (force_channels).

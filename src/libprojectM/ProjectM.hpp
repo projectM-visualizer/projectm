@@ -39,6 +39,11 @@ class Renderer;
 class TextureManager;
 class ShaderCache;
 class TransitionShaderManager;
+
+namespace Platform {
+class GLResolver;
+}
+
 } // namespace Renderer
 
 namespace UserSprites {
@@ -52,7 +57,7 @@ class TimeKeeper;
 class PROJECTM_EXPORT ProjectM
 {
 public:
-    ProjectM();
+    ProjectM(const std::shared_ptr<Renderer::Platform::GLResolver>& glResolver);
 
     virtual ~ProjectM();
 
@@ -291,6 +296,7 @@ private:
     bool m_presetLocked{false};         //!< If true, the preset change event will not be sent.
     bool m_presetChangeNotified{false}; //!< Stores whether the user has been notified that projectM wants to switch the preset.
 
+    std::shared_ptr<Renderer::Platform::GLResolver> m_glResolver;                 //!< Function resolver for accessing GL backend.
     std::unique_ptr<PresetFactoryManager> m_presetFactoryManager; //!< Provides access to all available preset factories.
 
     Audio::PCM m_audioStorage;                                                    //!< Audio data buffer and analyzer instance.

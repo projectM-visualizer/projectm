@@ -165,10 +165,6 @@ else()
 
     if(ENABLE_GLES)
         message(STATUS "Building for OpenGL Embedded Profile")
-        if(NOT CMAKE_SYSTEM_NAME STREQUAL Linux
-                AND NOT CMAKE_SYSTEM_NAME STREQUAL Android)
-            message(FATAL_ERROR "OpenGL ES 3 support is currently only available for Linux platforms. You're building for ${CMAKE_SYSTEM_NAME}.")
-        endif()
 
         # We use a local find script for OpenGL::GLES3 until the proposed changes are merged upstream.
         list(APPEND CMAKE_MODULE_PATH "${PROJECTM_SOURCE_DIR}/cmake/gles")
@@ -183,19 +179,6 @@ else()
         message(STATUS "Building for OpenGL Core Profile")
         find_package(OpenGL REQUIRED)
         set(PROJECTM_OPENGL_LIBRARIES OpenGL::GL)
-        # GLX is required by SOIL2 on platforms with the X Window System (e.g. most Linux distributions)
-        if(TARGET OpenGL::GLX)
-            list(APPEND PROJECTM_OPENGL_LIBRARIES OpenGL::GLX)
-        endif()
-        if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-            find_package(GLEW REQUIRED)
-            # Prefer shared, but check for static lib if shared is not available.
-            if(TARGET GLEW::glew)
-                list(APPEND PROJECTM_OPENGL_LIBRARIES GLEW::glew)
-            elseif(TARGET GLEW::glew_s)
-                list(APPEND PROJECTM_OPENGL_LIBRARIES GLEW::glew_s)
-            endif()
-        endif()
     endif()
 endif()
 
