@@ -30,6 +30,8 @@ namespace libprojectM {
 class projectMWrapper : public ProjectM
 {
 public:
+    projectMWrapper(const std::shared_ptr<Renderer::Platform::GLResolver>& glResolver);
+
     void PresetSwitchFailedEvent(const std::string& presetFilename,
                                  const std::string& failureMessage) const override;
     void PresetSwitchRequestedEvent(bool isHardCut) const override;

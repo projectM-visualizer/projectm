@@ -32,6 +32,9 @@ add_library(Renderer OBJECT
         MilkdropNoise.cpp
         MilkdropNoise.hpp
         OpenGL.h
+        PlatformGLResolver.cpp
+        PlatformGLResolver.hpp
+        PlatformLoader.h
         Point.hpp
         PresetTransition.cpp
         PresetTransition.hpp
@@ -76,6 +79,8 @@ target_link_libraries(Renderer
         GLM::GLM
         hlslparser
         SOIL2
+        glad
+        ${PROJECTM_FILESYSTEM_LIBRARY}
         )
 
 set_target_properties(Renderer PROPERTIES

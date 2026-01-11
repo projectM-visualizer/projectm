@@ -1,5 +1,6 @@
 #include "setup.hpp"
 
+#include <projectM-4/logging.h>
 #include "ConfigFile.h"
 
 #include <SDL2/SDL_hints.h>
@@ -47,7 +48,11 @@ std::string getConfigFilePath(std::string datadir_path) {
 #if defined _MSC_VER
     _mkdir(projectM_home.c_str());
 #else
-    mkdir(projectM_home.c_str(), 0755);
+    #ifdef _WIN32
+        mkdir(projectM_home.c_str());
+    #else
+        mkdir(projectM_home.c_str(), 0755);
+    #endif
 #endif
 
     projectM_home += "/config.inp";
@@ -94,8 +99,8 @@ void initGL() {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 #else
     // Disabling compatibility profile
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 #endif
 }
@@ -128,11 +133,39 @@ void enableGLDebugOutput() {
 #endif
 }
 
+namespace {
+void logMessage(const char* message, projectm_log_level severity, void* userData)
+{
+    switch (severity)
+    {
+        case PROJECTM_LOG_LEVEL_FATAL:
+        case PROJECTM_LOG_LEVEL_ERROR:
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s\n", message);
+            break;
+        case PROJECTM_LOG_LEVEL_WARN:
+            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "%s\n", message);
+            break;
+        case PROJECTM_LOG_LEVEL_TRACE:
+        case PROJECTM_LOG_LEVEL_DEBUG:
+            // redirect debug logs to info for now
+            //SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "%s\n", message);
+            //break;
+        case PROJECTM_LOG_LEVEL_NOTSET:
+        case PROJECTM_LOG_LEVEL_INFO:
+            SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%s\n", message);
+            break;
+    }
+}
+}
+
 // initialize SDL, openGL, config
 projectMSDL *setupSDLApp() {
     projectMSDL *app;
     seedRand();
-        
+
+    projectm_set_log_callback(&logMessage, false, nullptr);
+    projectm_set_log_level(PROJECTM_LOG_LEVEL_DEBUG, false);
+
     if (!initLoopback())
 		{
 			SDL_Log("Failed to initialize audio loopback device.");
@@ -174,12 +207,6 @@ projectMSDL *setupSDLApp() {
 
     SDL_GLContext glCtx = SDL_GL_CreateContext(win);
 
-#if defined(_WIN32)
-	GLenum err = glewInit();
-#endif /** _WIN32 */
-
-    dumpOpenGLInfo();
-
     SDL_SetWindowTitle(win, "projectM");
 
     SDL_GL_MakeCurrent(win, glCtx);  // associate GL context with main window
@@ -187,6 +214,16 @@ projectMSDL *setupSDLApp() {
     if (avsync == -1) { // adaptive vsync not supported
         SDL_GL_SetSwapInterval(1); // enable updates synchronized with vertical retrace
     }
+
+#ifdef USE_GLES
+    if (!gladLoadGLES2(reinterpret_cast<GLADloadfunc>(SDL_GL_GetProcAddress))) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error loading GLAD for GLES2\n");
+    }
+#else
+    if (!gladLoadGL(reinterpret_cast<GLADloadfunc>(SDL_GL_GetProcAddress))) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Error loading GLAD for GL Core Profile\n");
+    }
+#endif
 
     std::string base_path = DATADIR_PATH;
     SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Using data directory: %s\n", base_path.c_str());
@@ -248,7 +285,6 @@ projectMSDL *setupSDLApp() {
     app->fakeAudio  = true;
 #endif
 
-    enableGLDebugOutput();
     configureLoopback(app);
 
 #if !FAKE_AUDIO && !WASAPI_LOOPBACK

@@ -6,10 +6,20 @@ add_compile_definitions(
         $<IF:$<PLATFORM_ID:Windows>,STBI_NO_DDS,>
         )
 
+include_directories(
+        "${PROJECTM_SOURCE_DIR}/vendor/glad/include"
+        )
+
 add_subdirectory(Audio)
 add_subdirectory(MilkdropPreset)
 add_subdirectory(Renderer)
 add_subdirectory(UserSprites)
+
+set(PROJECTM_LINK_GL_LIBS "")
+if (WIN32)
+    # windows libs need to link to opengl32.dll
+    set(PROJECTM_LINK_GL_LIBS "${PROJECTM_OPENGL_LIBRARIES}")
+endif()
 
 add_library(projectM_main OBJECT
         "${PROJECTM_EXPORT_HEADER}"
@@ -70,6 +80,7 @@ add_library(projectM
         $<TARGET_OBJECTS:SOIL2>
         $<TARGET_OBJECTS:projectM_main>
         $<TARGET_OBJECTS:projectM::Eval>
+        $<TARGET_OBJECTS:glad_obj>
         )
 
 target_include_directories(projectM
@@ -79,7 +90,7 @@ target_include_directories(projectM
 
 target_link_libraries(projectM
         PUBLIC
-        ${PROJECTM_OPENGL_LIBRARIES}
+        ${PROJECTM_LINK_GL_LIBS}
         libprojectM::API
         ${PROJECTM_FILESYSTEM_LIBRARY}
         )

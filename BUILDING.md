@@ -100,11 +100,6 @@ development files. To build projectM, both binaries and development files need t
   library dependencies and/or using CMake to configure the build. Mainly used on Windows, but also works for Linux and
   macOS.
 
-### Only relevant for Windows:
-
-* [**GLEW**](http://glew.sourceforge.net/): The OpenGL Extension Wrangler Library. Only required if using CMake to
-  configure the build, the pre-created solutions use a bundled copy of GLEW.
-
 ## Building on Linux and macOS
 
 ### Installing dependencies

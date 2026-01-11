@@ -55,7 +55,7 @@ endif()
 
 # Temporary fix to deal with wrong include dir set by SDL2's CMake configuration.
 get_target_property(_SDL2_INCLUDE_DIR SDL2::SDL2 INTERFACE_INCLUDE_DIRECTORIES)
-if(_SDL2_INCLUDE_DIR MATCHES "(.+)/SDL2\$" AND _SDL2_TARGET_TYPE STREQUAL STATIC_LIBRARY)
+if(_SDL2_INCLUDE_DIR MATCHES "(.+)/SDL2\$")
     # Check if SDL2::SDL2 is aliased to SDL2::SDL2-static (will be the case for static-only builds)
     get_target_property(_SDL2_ALIASED_TARGET SDL2::SDL2 ALIASED_TARGET)
     if(_SDL2_ALIASED_TARGET)
