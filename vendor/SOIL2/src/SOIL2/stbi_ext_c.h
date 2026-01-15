@@ -31,6 +31,9 @@ static int stbi_test_main(stbi__context *s)
    #ifndef STBI_NO_PKM
    if (stbi__pkm_test(s))  return STBI_pkm;
    #endif
+   #ifndef STBI_NO_QOI
+   if (stbi__qoi_test(s))  return STBI_qoi;
+   #endif
    #ifndef STBI_NO_HDR
    if (stbi__hdr_test(s))  return STBI_hdr;
    #endif

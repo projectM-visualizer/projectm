@@ -2,7 +2,7 @@
 
 #include "PresetState.hpp"
 
-#include <Renderer/RenderItem.hpp>
+#include <Renderer/Mesh.hpp>
 
 namespace libprojectM {
 namespace MilkdropPreset {
@@ -10,13 +10,11 @@ namespace MilkdropPreset {
 /**
  * @brief Classic Milkdrop 1 postprocessing effects.
  */
-class Filters : public Renderer::RenderItem
+class Filters
 {
 public:
     Filters() = delete;
     explicit Filters(const PresetState& presetState);
-
-    void InitVertexAttrib();
 
     /**
      * @brief Applies the configured filters to the current output.
@@ -47,6 +45,8 @@ private:
     void Invert();
 
     const PresetState& m_presetState; //!< The global preset state.
+
+    Renderer::Mesh m_filterMesh;
 
     int m_viewportWidth{}; //!< Last known viewport width
     int m_viewportHeight{}; //!< Last known viewport height

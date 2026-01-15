@@ -6,6 +6,7 @@
 #include <vector>
 
 namespace libprojectM {
+namespace MilkdropPreset {
 
 auto PresetFileParser::Read(const std::string& presetFile) -> bool
 {
@@ -191,4 +192,5 @@ auto PresetFileParser::ToLower(std::string str) -> std::string
     return str;
 }
 
+} // namespace MilkdropPreset
 } // namespace libprojectM

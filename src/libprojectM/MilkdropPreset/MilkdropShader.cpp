@@ -1,6 +1,5 @@
 #include "MilkdropShader.hpp"
 
-#include "PerFrameContext.hpp"
 #include "PresetState.hpp"
 #include "Utils.hpp"
 
@@ -8,6 +7,7 @@
 
 #include <GLSLGenerator.h>
 #include <HLSLParser.h>
+#include <Logging.hpp>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/mat4x4.hpp>
@@ -15,8 +15,6 @@
 #include <algorithm>
 #include <regex>
 #include <set>
-
-#include <omp.h>
 
 namespace libprojectM {
 namespace MilkdropPreset {
@@ -32,7 +30,6 @@ MilkdropShader::MilkdropShader(ShaderType type)
     unsigned int index = 0;
     do
     {
-        #pragma omp simd
         for (int i = 0; i < 4; i++)
         {
             float const m_randTranslationMult = 1;
@@ -189,14 +186,14 @@ void MilkdropShader::LoadVariables(const PresetState& presetState, const PerFram
                                       presetState.renderContext.fps,
                                       presetState.renderContext.frame,
                                       presetState.renderContext.progress});
-    m_shader.SetUniformFloat4("_c3", {presetState.audioData.bass / 100,
-                                      presetState.audioData.mid / 100,
-                                      presetState.audioData.treb / 100,
-                                      presetState.audioData.vol / 100});
-    m_shader.SetUniformFloat4("_c4", {presetState.audioData.bassAtt / 100,
-                                      presetState.audioData.midAtt / 100,
-                                      presetState.audioData.trebAtt / 100,
-                                      presetState.audioData.volAtt / 100});
+    m_shader.SetUniformFloat4("_c3", {presetState.audioData.bass,
+                                      presetState.audioData.mid,
+                                      presetState.audioData.treb,
+                                      presetState.audioData.vol});
+    m_shader.SetUniformFloat4("_c4", {presetState.audioData.bassAtt,
+                                      presetState.audioData.midAtt,
+                                      presetState.audioData.trebAtt,
+                                      presetState.audioData.volAtt});
     m_shader.SetUniformFloat4("_c5", {blurMax[0] - blurMin[0],
                                       blurMin[0],
                                       blurMax[1] - blurMin[1],
@@ -334,10 +331,15 @@ auto MilkdropShader::Shader() -> Renderer::Shader&
 
 void MilkdropShader::PreprocessPresetShader(std::string& program)
 {
+    std::string shaderTypeString = "composite";
+    if (m_type == ShaderType::WarpShader)
+    {
+        shaderTypeString = "warp";
+    }
 
     if (program.length() <= 0)
     {
-        throw Renderer::ShaderException("Preset shader is declared, but empty.");
+        throw Renderer::ShaderException("[MilkdropShader] Preset " + shaderTypeString + " shader is declared, but empty.");
     }
 
     size_t found;
@@ -374,16 +376,28 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
     {
         if (m_type == ShaderType::WarpShader)
         {
-            program.replace(int(found), 11, "void PS(float4 _vDiffuse : COLOR, float4 _uv : TEXCOORD0, float2 _rad_ang : TEXCOORD1, out float4 _return_value : COLOR0, out float4 _mv_tex_coords : COLOR1)\n");
+            program.replace(int(found), 11, R"(
+void PS(float4 _vDiffuse : COLOR,
+        float4 _uv : TEXCOORD0,
+        float2 _rad_ang : TEXCOORD1,
+        out float4 _return_value : COLOR0,
+        out float4 _mv_tex_coords : COLOR1)
+)");
         }
         else
         {
-            program.replace(int(found), 11, "void PS(float4 _vDiffuse : COLOR, float2 _uv : TEXCOORD0, float2 _rad_ang : TEXCOORD1, out float4 _return_value : COLOR)\n");
+            program.replace(int(found), 11, R"(
+void PS(float4 _vDiffuse : COLOR,
+        float2 _uv : TEXCOORD0,
+        float2 _rad_ang : TEXCOORD1,
+        out float4 _return_value : COLOR)
+)");
         }
     }
     else
     {
-        throw Renderer::ShaderException("Preset shader is missing \"shader_body\" entry point.");
+        LOG_DEBUG("[MilkdropShader] Failed " + shaderTypeString + " shader code:\n" + program);
+        throw Renderer::ShaderException("[MilkdropShader] Preset " + shaderTypeString + " shader is missing \"shader_body\" entry point.");
     }
 
     // replace the "{" immediately following shader_body with some variable declarations
@@ -399,7 +413,8 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
     }
     else
     {
-        throw Renderer::ShaderException("Preset shader has no opening braces.");
+        LOG_DEBUG("[MilkdropShader] Failed " + shaderTypeString + " shader code:\n" + program);
+        throw Renderer::ShaderException("[MilkdropShader] Preset " + shaderTypeString + " shader has no opening braces.");
     }
 
     // replace "}" with return statement (this can probably be optimized for the GLSL conversion...)
@@ -411,7 +426,8 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
     }
     else
     {
-        throw Renderer::ShaderException("Preset shader has no closing brace.");
+        LOG_DEBUG("[MilkdropShader] Failed " + shaderTypeString + " shader code:\n" + program);
+        throw Renderer::ShaderException("[MilkdropShader] Preset " + shaderTypeString + " shader has no closing brace.");
     }
 
     // Find matching closing brace and cut off excess text after shader's main function
@@ -583,7 +599,8 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
     std::string sourcePreprocessed;
     if (!parser.ApplyPreprocessor("", program.c_str(), program.size(), sourcePreprocessed))
     {
-        throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: Preprocessing failed.\nSource:\n" + program);
+        LOG_DEBUG("[MilkdropShader] Failed " + shaderTypeString + " shader code:\n" + program);
+        throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: Preprocessing failed.");
     }
 
     // Remove previous shader declarations
@@ -636,7 +653,9 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
     // First, parse HLSL into a tree
     if (!parser.Parse("", sourcePreprocessed.c_str(), sourcePreprocessed.size()))
     {
-        throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: HLSL parsing failed.\nSource:\n" + sourcePreprocessed);
+        LOG_DEBUG("[MilkdropShader] Failed " + shaderTypeString + " shader code:\n" + program);
+        LOG_DEBUG("[MilkdropShader] Failed preprocessed " + shaderTypeString + " shader code:\n" + sourcePreprocessed);
+        throw Renderer::ShaderException("[MilkdropShader] Error translating HLSL " + shaderTypeString + " shader: HLSL parsing failed.");
     }
 
     // Then generate GLSL from the resulting parser tree
@@ -644,8 +663,12 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
                             MilkdropStaticShaders::Get()->GetGlslGeneratorVersion(),
                             "PS", M4::GLSLGenerator::Options(M4::GLSLGenerator::Flag_AlternateNanPropagation)))
     {
-        throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: GLSL generating failed.\nSource:\n" + sourcePreprocessed);
+        LOG_DEBUG("[MilkdropShader] Failed " + shaderTypeString + " shader code:\n" + program);
+        LOG_DEBUG("[MilkdropShader] Failed preprocessed " + shaderTypeString + " shader code:\n" + sourcePreprocessed);
+        throw Renderer::ShaderException("[MilkdropShader] Error translating HLSL " + shaderTypeString + " shader: GLSL generating failed.\nSource:\n" + sourcePreprocessed);
     }
+
+    LOG_TRACE("[MilkdropShader] Transpiled GLSL " + shaderTypeString + " shader code:\n" + std::string(generator.GetResult()));
 
     // Now we have GLSL source for the preset shader program (hopefully it's valid!)
     // Compile the preset shader fragment shader with the standard vertex shader and cross our fingers.

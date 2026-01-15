@@ -4,9 +4,7 @@
 #include "MilkdropPresetExceptions.hpp"
 #include "PerFrameContext.hpp"
 
-#ifdef MILKDROP_PRESET_DEBUG
-#include <iostream>
-#endif
+#include <Logging.hpp>
 
 #define REG_VAR(var) \
     var = projectm_eval_context_register_variable(perPointCodeContext, #var);
@@ -95,16 +93,24 @@ void WaveformPerPointContext::CompilePerPointCode(const std::string& perPointCod
     perPointCodeHandle = projectm_eval_code_compile(perPointCodeContext, perPointCode.c_str());
     if (perPointCodeHandle == nullptr)
     {
-#ifdef MILKDROP_PRESET_DEBUG
+        std::string error;
         int line;
         int col;
         auto* errmsg = projectm_eval_get_error(perPointCodeContext, &line, &col);
         if (errmsg)
         {
-            std::cerr << "[Preset] Could not compile custom wave " << waveform.m_index << " per-point code: " << errmsg << "(L" << line << " C" << col << ")" << std::endl;
+            error = "[WaveformPerPointContext] Could not compile custom wave ";
+            error += std::to_string(waveform.m_index);
+            error += " per-point code: ";
+            error += errmsg;
+            error += "(L" + std::to_string(line) + " C" + std::to_string(col) + ")";
         }
-#endif
-        throw MilkdropCompileException("Could not compile custom wave " + std::to_string(waveform.m_index) + " per-point code");
+        else
+        {
+            error = "[WaveformPerPointContext] Could not compile custom wave " + std::to_string(waveform.m_index) + " per-point code.";
+        }
+        LOG_DEBUG("[WaveformPerPointContext] Failed custom wave " + std::to_string(waveform.m_index) + " per-point code:\n" + perPointCode);
+        throw MilkdropCompileException(error);
     }
 }
 

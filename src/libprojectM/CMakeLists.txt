@@ -13,13 +13,13 @@ add_subdirectory(UserSprites)
 
 add_library(projectM_main OBJECT
         "${PROJECTM_EXPORT_HEADER}"
+        Logging.cpp
+        Logging.hpp
         Preset.hpp
         PresetFactory.cpp
         PresetFactory.hpp
         PresetFactoryManager.cpp
         PresetFactoryManager.hpp
-        PresetFileParser.cpp
-        PresetFileParser.hpp
         ProjectM.cpp
         ProjectM.hpp
         ProjectMCWrapper.cpp
@@ -28,7 +28,6 @@ add_library(projectM_main OBJECT
         TimeKeeper.hpp
         Utils.cpp
         Utils.hpp
-        projectM-opengl.h
         )
 
 target_link_libraries(projectM_main
@@ -211,7 +210,7 @@ if(ENABLE_INSTALL)
             # into pkgconfig's expected format.
             # We will just assume the build uses Boost from the default location (e.g. not a custom CMAKE_PREFIX_PATH) and
             # the library name is correct.
-            set(PKGCONFIG_LIBS "${PKGCONFIG_LIBS} -l:boost_filesystem")
+            set(PKGCONFIG_LIBS "${PKGCONFIG_LIBS} -lboost_filesystem")
         endif()
 
         set(PKGCONFIG_PACKAGE_NAME "${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}")
