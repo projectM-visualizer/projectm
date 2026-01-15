@@ -84,7 +84,7 @@ jobs:
             $runtime = ""
             $triplet = $triplet + "-static"
           }
-
+          
           cmake -G "Visual Studio 17 2022" `
             -A "${{ matrix.arch }}" `
             -S "${{ github.workspace }}" `
