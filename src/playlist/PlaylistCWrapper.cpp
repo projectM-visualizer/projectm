@@ -62,6 +62,11 @@ void PlaylistCWrapper::OnPresetSwitchFailed(const char* presetFilename, const ch
     }
 
     auto* playlist = reinterpret_cast<PlaylistCWrapper*>(userData);
+
+    playlist->m_lastPresetSwitchFailed = true;
+    playlist->m_lastFailedPresetFileName = presetFilename;
+    playlist->m_lastFailedPresetError = message;
+
     auto lastDirection = playlist->GetLastNavigationDirection();
 
     if (lastDirection != NavigationDirection::Last)
@@ -69,39 +74,6 @@ void PlaylistCWrapper::OnPresetSwitchFailed(const char* presetFilename, const ch
         // Don't let the user go back to a broken preset.
         playlist->RemoveLastHistoryEntry();
     }
-
-    // Preset switch may fail due to broken presets, retry a few times before giving up.
-    if (playlist->m_presetSwitchFailedCount >= playlist->m_presetSwitchRetryCount)
-    {
-    if (playlist->m_onPlaylistPresetSwitchFailed)
-        {
-        // Note: The lambda stored in m_onPlaylistPresetSwitchFailed already captures the C callback and user_data.
-        // It expects std::string arguments.
-        playlist->m_onPlaylistPresetSwitchFailed(presetFilename ? std::string(presetFilename) : "", message ? std::string(message) : "");
-        }
-
-        return;
-    }
-
-    playlist->m_presetSwitchFailedCount++;
-
-    uint32_t playlistIndex{};
-    switch (lastDirection)
-    {
-        case NavigationDirection::Previous:
-            playlistIndex = playlist->PreviousPresetIndex();
-            break;
-
-        case NavigationDirection::Next:
-            playlistIndex = playlist->NextPresetIndex();
-            break;
-
-        case NavigationDirection::Last:
-            playlistIndex = playlist->LastPresetIndex();
-            break;
-    }
-
-    playlist->PlayPresetIndex(playlistIndex, playlist->m_hardCutRequested, false);
 }
 
 
@@ -119,61 +91,93 @@ auto PlaylistCWrapper::RetryCount() -> uint32_t
 
 void PlaylistCWrapper::SetPresetSwitchedCallback(projectm_playlist_preset_switched_event callback, void* userData)
 {
-    if (callback) {
-        m_onPresetSwitched = [callback, userData](bool isHardCut, uint32_t playlist_index) {
-            callback(isHardCut, playlist_index, userData);
-        };
-    } else {
-        m_onPresetSwitched = nullptr;
-    }
+    m_presetSwitchedEventCallback = callback;
+    m_presetSwitchedEventUserData = userData;
 }
 
 
 void PlaylistCWrapper::SetPresetSwitchFailedCallback(projectm_playlist_preset_switch_failed_event callback, void* userData)
 {
-    if (callback) {
-        m_onPlaylistPresetSwitchFailed = [callback, userData](const std::string& presetFilename, const std::string& failureMessage) {
-            callback(presetFilename.c_str(), failureMessage.c_str(), userData);
-        };
-    } else {
-        m_onPlaylistPresetSwitchFailed = nullptr;
-    }
+    m_presetSwitchFailedEventCallback = callback;
+    m_presetSwitchFailedEventUserData = userData;
 }
 
 
 void PlaylistCWrapper::PlayPresetIndex(uint32_t index, bool hardCut, bool resetFailureCount)
 {
-    if (resetFailureCount)
-    {
-        m_presetSwitchFailedCount = 0;
-    }
-
     m_hardCutRequested = hardCut;
 
-    const auto& playlistItems = Items();
+    auto& playlistItems = Items();
 
-    if (playlistItems.size() <= index)
+    uint32_t failedCount = 0;
+    while (true)
     {
-        return;
+        if (playlistItems.size() <= index)
+        {
+            return;
+        }
+
+        projectm_load_preset_file(m_projectMInstance,
+                                  playlistItems.at(index).Filename().c_str(), !hardCut);
+
+        if (!m_lastPresetSwitchFailed)
+        {
+            break;
+        }
+
+        failedCount++;
+
+        if (failedCount >= m_presetSwitchRetryCount)
+        {
+            if (m_presetSwitchFailedEventCallback != nullptr)
+            {
+                m_presetSwitchFailedEventCallback(m_lastFailedPresetFileName.c_str(),
+                                                  m_lastFailedPresetError.c_str(),
+                                                  m_presetSwitchFailedEventUserData);
+            }
+
+            return;
+        }
+
+        m_lastPresetSwitchFailed = false;
+
+        // Remove failed preset from playlist
+        RemoveItem(index);
+
+        if (playlistItems.empty())
+        {
+            return;
+        }
+
+        // Set next index to proper value depending on navigation
+        switch (GetLastNavigationDirection())
+        {
+            case NavigationDirection::Last:
+                index = LastPresetIndex();
+                break;
+            case NavigationDirection::Next:
+                index = NextPresetIndex();
+                break;
+            case NavigationDirection::Previous:
+                index = PreviousPresetIndex();
+                break;
+        }
     }
 
-    projectm_load_preset_file(m_projectMInstance,
-                              playlistItems.at(index).Filename().c_str(), !hardCut);
-
-    if (m_onPresetSwitched)
+    if (m_presetSwitchedEventCallback != nullptr)
     {
-        m_onPresetSwitched(hardCut, index);
+        m_presetSwitchedEventCallback(hardCut, index, m_presetSwitchedEventUserData);
     }
 }
 
 
-void PlaylistCWrapper::SetLastNavigationDirection(PlaylistCWrapper::NavigationDirection direction)
+void PlaylistCWrapper::SetLastNavigationDirection(NavigationDirection direction)
 {
     m_lastNavigationDirection = direction;
 }
 
 
-auto PlaylistCWrapper::GetLastNavigationDirection() const -> PlaylistCWrapper::NavigationDirection
+auto PlaylistCWrapper::GetLastNavigationDirection() const -> NavigationDirection
 {
     return m_lastNavigationDirection;
 }
@@ -274,7 +278,7 @@ auto projectm_playlist_items(projectm_playlist_handle instance, uint32_t start, 
 
     if (start >= items.size())
     {
-        auto* array = new char* [1] {};
+        auto* array = new char*[1]{};
         return array;
     }
 

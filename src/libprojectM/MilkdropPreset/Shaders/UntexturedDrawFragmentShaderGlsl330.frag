@@ -1,5 +1,4 @@
-precision highp float;
-precision highp int;
+precision mediump float;
 
 in vec4 fragment_color;
 

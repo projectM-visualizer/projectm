@@ -1,6 +1,7 @@
 #include "UserSprites/SpriteManager.hpp"
 
 #include "UserSprites/Factory.hpp"
+#include "UserSprites/SpriteException.hpp"
 
 #include <Renderer/Shader.hpp>
 
@@ -62,13 +63,20 @@ void SpriteManager::Draw(const Audio::FrameAudioData& audioData,
                          uint32_t outputFramebufferObject,
                          Sprite::PresetList presets)
 {
+    std::vector<SpriteIdentifier> toDestroy;
+
     for (auto& idAndSprite : m_sprites) {
         idAndSprite.second->Draw(audioData, renderContext, outputFramebufferObject, presets);
 
         if (idAndSprite.second->Done())
         {
-            Destroy(idAndSprite.first);
+            toDestroy.push_back(idAndSprite.first);
         }
+    }
+
+    for (auto id : toDestroy)
+    {
+        Destroy(id);
     }
 }
 
@@ -99,7 +107,8 @@ auto SpriteManager::ActiveSpriteCount() const -> uint32_t
 auto SpriteManager::ActiveSpriteIdentifiers() const -> std::vector<SpriteIdentifier>
 {
     std::vector<SpriteIdentifier> identifierList;
-    for (auto& idAndSprite : m_sprites) {
+    for (auto& idAndSprite : m_sprites)
+    {
         identifierList.emplace_back(idAndSprite.first);
     }
 

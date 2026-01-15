@@ -28,8 +28,11 @@ public:
     float invAspectX{1.0};     //!< Inverse X aspect ratio.
     float invAspectY{1.0};     //!< Inverse Y aspect ratio.
 
-    int perPixelMeshX{96}; //!< Per-pixel/per-vertex mesh X resolution.
-    int perPixelMeshY{96}; //!< Per-pixel/per-vertex mesh Y resolution.
+    int perPixelMeshX{64}; //!< Per-pixel/per-vertex mesh X resolution.
+    int perPixelMeshY{48}; //!< Per-pixel/per-vertex mesh Y resolution.
+
+    float texelOffsetX{0.0f}; //!< Horizontal texel offset in the warp shader.
+    float texelOffsetY{0.0f}; //!< Vertical texel offset in the warp shader.
 
     TextureManager* textureManager{nullptr}; //!< Holds all loaded textures for shader access.
     ShaderCache* shaderCache{nullptr}; //!< The shader chace of this projectM instance.

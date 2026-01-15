@@ -25,8 +25,6 @@
 
 #include <projectM-4/projectM.h>
 
-#include <functional>
-
 namespace libprojectM {
 
 class projectMWrapper : public ProjectM
@@ -36,8 +34,11 @@ public:
                                  const std::string& failureMessage) const override;
     void PresetSwitchRequestedEvent(bool isHardCut) const override;
 
-    std::function<void(const std::string& presetFilename, const std::string& failureMessage)> m_onPresetSwitchFailed;
-    std::function<void(bool isHardCut)> m_onPresetSwitchRequested;
+    projectm_preset_switch_failed_event m_presetSwitchFailedEventCallback{nullptr};
+    void* m_presetSwitchFailedEventUserData{nullptr};
+
+    projectm_preset_switch_requested_event m_presetSwitchRequestedEventCallback{nullptr};
+    void* m_presetSwitchRequestedEventUserData{nullptr};
 };
 
 } // namespace libprojectM

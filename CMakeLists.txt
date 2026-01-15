@@ -25,6 +25,7 @@ option(ENABLE_DEBUG_POSTFIX "Add \"d\" (by default) after library names for debu
 option(ENABLE_PLAYLIST "Enable building the playlist management library" ON)
 option(ENABLE_BOOST_FILESYSTEM "Force the use of boost::filesystem, even if the compiler supports C++17." OFF)
 option(ENABLE_SDL_UI "Build the SDL2-based developer test UI. Ignored when building with Emscripten or for Android." OFF)
+option(ENABLE_VERBOSE_LOGGING "Enables TRACE and DEBUG logging even in release builds, negatively affecting the performance." OFF)
 
 option(BUILD_TESTING "Build the libprojectM test suite" OFF)
 option(BUILD_DOCS "Build documentation" OFF)
@@ -105,7 +106,12 @@ if(ENABLE_SYSTEM_GLM)
 endif()
 
 if(ENABLE_SYSTEM_PROJECTM_EVAL)
-    find_package(projectM-Eval)
+    find_package(projectM-Eval QUIET)
+    if(NOT TARGET projectM::Eval)
+        message(STATUS "projectM-Eval could not be found externally. Using sources from vendor dir (if present).")
+    else()
+        message(STATUS "Found external projectM-Eval: Version ${projectM-Eval_VERSION}")
+    endif()
 endif()
 
 if(NOT BUILD_SHARED_LIBS AND CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -206,6 +212,11 @@ else()
     set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 endif()
 
+# Disable trace/debug logging in release builds unless explicitly requested
+add_compile_definitions(
+        $<$<OR:$<CONFIG:Debug>,$<BOOL:${ENABLE_VERBOSE_LOGGING}>>:ENABLE_DEBUG_LOGGING>
+        )
+
 if(BUILD_DOCS)
     find_package(Doxygen REQUIRED)
     find_package(Sphinx REQUIRED breathe exhale)
@@ -218,15 +229,15 @@ if(BUILD_DOCS)
     set(DOXYGEN_EXCLUDE_PATTERNS "*.cpp")
 
     doxygen_add_docs(
-        projectm_doxygen
-        src
-        COMMENT "Generate HTML documentation")
+            projectm_doxygen
+            src
+            COMMENT "Generate HTML documentation")
 
     sphinx_add_docs(
-        projectm_sphinx
-        BREATHE_PROJECTS projectm_doxygen
-        BUILDER html
-        SOURCE_DIRECTORY docs)
+            projectm_sphinx
+            BREATHE_PROJECTS projectm_doxygen
+            BUILDER html
+            SOURCE_DIRECTORY docs)
 endif()
 
 add_subdirectory(vendor)
@@ -276,6 +287,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL Emscripten)
 endif()
 message(STATUS "    Use system GLM:              ${ENABLE_SYSTEM_GLM}")
 message(STATUS "    Use system projectM-eval:    ${ENABLE_SYSTEM_PROJECTM_EVAL}")
+if(ENABLE_SYSTEM_PROJECTM_EVAL)
+    message(STATUS "        projectM-eval version:       ${projectM-Eval_VERSION}")
+endif()
 message(STATUS "    Link UI with shared lib:     ${ENABLE_SHARED_LINKING}")
 message(STATUS "")
 message(STATUS "Targets and applications:")

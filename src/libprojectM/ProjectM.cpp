@@ -21,6 +21,7 @@
 
 #include "ProjectM.hpp"
 
+#include "Logging.hpp"
 #include "Preset.hpp"
 #include "PresetFactoryManager.hpp"
 #include "TimeKeeper.hpp"
@@ -29,8 +30,8 @@
 
 #include <Renderer/CopyTexture.hpp>
 #include <Renderer/PresetTransition.hpp>
-#include <Renderer/TextureManager.hpp>
 #include <Renderer/ShaderCache.hpp>
+#include <Renderer/TextureManager.hpp>
 #include <Renderer/TransitionShaderManager.hpp>
 
 #include <UserSprites/SpriteManager.hpp>
@@ -65,6 +66,7 @@ void ProjectM::LoadPresetFile(const std::string& presetFilename, bool smoothTran
     }
     catch (const std::exception& ex)
     {
+        LOG_ERROR(ex.what());
         PresetSwitchFailedEvent(presetFilename, ex.what());
     }
 }
@@ -78,6 +80,7 @@ void ProjectM::LoadPresetData(std::istream& presetData, bool smoothTransition)
     }
     catch (const std::exception& ex)
     {
+        LOG_ERROR(ex.what());
         PresetSwitchFailedEvent("", ex.what());
     }
 }
@@ -177,11 +180,11 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
     }
     else
     {
-        m_textureCopier->Draw(m_activePreset->OutputTexture(), false, false);
+        m_textureCopier->Draw(*renderContext.shaderCache, m_activePreset->OutputTexture(), false, false);
     }
 
     // Draw user sprites
-    m_spriteManager->Draw(audioData, renderContext, targetFramebufferObject, { m_activePreset, m_transitioningPreset });
+    m_spriteManager->Draw(audioData, renderContext, targetFramebufferObject, {m_activePreset, m_transitioningPreset});
 
     m_frameCount++;
     m_previousFrameVolume = audioData.vol;
@@ -189,16 +192,14 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
 
 void ProjectM::Initialize()
 {
-    /** Initialise start time */
+    // Check OpenGL first before allocating any additional memory.
+    CheckGLSLVersion();
+
     m_timeKeeper = std::make_unique<TimeKeeper>(m_presetDuration,
                                                 m_softCutDuration,
                                                 m_hardCutDuration,
                                                 m_easterEgg);
 
-    /** Nullify frame stash */
-
-    /** Initialise per-pixel matrix calculations */
-    /** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
     m_textureManager = std::make_unique<Renderer::TextureManager>(m_textureSearchPaths);
     m_shaderCache = std::make_unique<Renderer::ShaderCache>();
 
@@ -210,12 +211,36 @@ void ProjectM::Initialize()
 
     m_presetFactoryManager->initialize();
 
-    /* Set the seed to the current time in seconds */
-    srand(time(nullptr));
-
     LoadIdlePreset();
 
     m_timeKeeper->StartPreset();
+}
+
+void ProjectM::CheckGLSLVersion()
+{
+    auto glslVersion = Renderer::Shader::GetShaderLanguageVersion();
+
+    if (glslVersion.major == 0)
+    {
+        std::string error = "Could not retrieve OpenGL shader language version. Is OpenGL available and the context initialized?";
+        LOG_FATAL(error);
+        throw std::runtime_error(error);
+    }
+#ifdef USE_GLES
+    if (glslVersion.major < 3)
+    {
+        std::string error = "OpenGL ES shading language version 3.00 or higher is required, but the current context only provides version " + std::to_string(glslVersion.major) + "." + std::to_string(glslVersion.minor) + ".";
+        LOG_FATAL(error);
+        throw std::runtime_error(error);
+    }
+#else
+    if (glslVersion.major < 3 || (glslVersion.major == 3 && glslVersion.minor < 30))
+    {
+        std::string error = "OpenGL shading language version 3.30 or higher is required, but the current context only provides version " + std::to_string(glslVersion.major) + "." + std::to_string(glslVersion.minor) + ".";
+        LOG_FATAL(error);
+        throw std::runtime_error(error);
+    }
+#endif
 }
 
 void ProjectM::LoadIdlePreset()
@@ -310,6 +335,23 @@ auto ProjectM::UserSpriteLimit() const -> uint32_t
 auto ProjectM::UserSpriteIdentifiers() const -> std::vector<uint32_t>
 {
     return m_spriteManager->ActiveSpriteIdentifiers();
+}
+
+void ProjectM::BurnInTexture(uint32_t openGlTextureId, int left, int top, int width, int height)
+{
+    if (m_activePreset)
+    {
+        m_activePreset->BindFramebuffer();
+        m_textureCopier->Draw(*m_shaderCache, openGlTextureId, m_windowWidth, m_windowHeight, left, top, width, height);
+    }
+
+    if (m_transitioningPreset)
+    {
+        m_transitioningPreset->BindFramebuffer();
+        m_textureCopier->Draw(*m_shaderCache, openGlTextureId, m_windowWidth, m_windowHeight, left, top, width, height);
+    }
+
+    Renderer::Framebuffer::Unbind();
 }
 
 void ProjectM::SetPresetLocked(bool locked)
@@ -451,8 +493,20 @@ void ProjectM::SetMeshSize(uint32_t meshResolutionX, uint32_t meshResolutionY)
     }
 
     // Constrain per-pixel mesh size to sensible limits
-    m_meshX = std::max(8u, std::min(400u, m_meshX));
-    m_meshY = std::max(8u, std::min(400u, m_meshY));
+    m_meshX = std::max(8u, std::min(300u, m_meshX));
+    m_meshY = std::max(8u, std::min(300u, m_meshY));
+}
+
+void ProjectM::TexelOffsets(float& texelOffsetX, float& texelOffsetY) const
+{
+    texelOffsetX = m_texelOffsetX;
+    texelOffsetY = m_texelOffsetY;
+}
+
+void ProjectM::SetTexelOffsets(float texelOffsetX, float texelOffsetY)
+{
+    m_texelOffsetX = texelOffsetX;
+    m_texelOffsetY = texelOffsetY;
 }
 
 auto ProjectM::PCM() -> libprojectM::Audio::PCM&
@@ -493,8 +547,13 @@ auto ProjectM::GetRenderContext() -> Renderer::RenderContext
     ctx.aspectY = (m_windowWidth > m_windowHeight) ? static_cast<float>(m_windowHeight) / static_cast<float>(m_windowWidth) : 1.0f;
     ctx.invAspectX = 1.0f / ctx.aspectX;
     ctx.invAspectY = 1.0f / ctx.aspectY;
+
     ctx.perPixelMeshX = static_cast<int>(m_meshX);
     ctx.perPixelMeshY = static_cast<int>(m_meshY);
+
+    ctx.texelOffsetX = m_texelOffsetX;
+    ctx.texelOffsetY = m_texelOffsetY;
+
     ctx.textureManager = m_textureManager.get();
     ctx.shaderCache = m_shaderCache.get();
 

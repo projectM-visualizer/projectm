@@ -24,12 +24,17 @@ namespace Renderer {
 class ShaderException : public std::exception
 {
 public:
-    inline ShaderException(std::string message)
+    ShaderException(std::string message)
         : m_message(std::move(message))
     {
     }
 
     virtual ~ShaderException() = default;
+
+    const char* what() const noexcept override
+    {
+        return m_message.c_str();
+    }
 
     const std::string& message() const
     {

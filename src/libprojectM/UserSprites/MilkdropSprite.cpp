@@ -1,10 +1,14 @@
 #include "UserSprites/MilkdropSprite.hpp"
 
+#include "UserSprites/SpriteException.hpp"
+
 #include "SpriteShaders.hpp"
 
-#include <Preset.hpp>
-#include <PresetFileParser.hpp>
+#include <MilkdropPreset/PresetFileParser.hpp>
 
+#include <Preset.hpp>
+
+#include <Renderer/BlendMode.hpp>
 #include <Renderer/ShaderCache.hpp>
 #include <Renderer/TextureManager.hpp>
 
@@ -24,24 +28,15 @@ namespace libprojectM {
 namespace UserSprites {
 
 MilkdropSprite::MilkdropSprite()
+    : m_mesh(Renderer::VertexBufferUsage::DynamicDraw, false, true)
 {
-    RenderItem::Init();
-}
-
-void MilkdropSprite::InitVertexAttrib()
-{
-    glEnableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x))); // Position
-    // Color (index 1) is passed as a 4-float constant vertex attribute.
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, u))); // Texture coordinate
+    m_mesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::TriangleStrip);
+    m_mesh.SetVertexCount(4);
 }
 
 void MilkdropSprite::Init(const std::string& spriteData, const Renderer::RenderContext& renderContext)
 {
-    PresetFileParser parser;
+    MilkdropPreset::PresetFileParser parser;
     std::stringstream spriteDataStream(spriteData);
     if (!parser.Read(spriteDataStream))
     {
@@ -55,7 +50,7 @@ void MilkdropSprite::Init(const std::string& spriteData, const Renderer::RenderC
         // ToDo: Better handle this in the shader class to reduce duplicate code.
 #ifdef USE_GLES
         // GLES also requires a precision specifier for variables and 3D samplers
-    constexpr char versionHeader[] = "#version 300 es\n\nprecision highp int;\nprecision highp float;\nprecision highp sampler2D;\nprecision highp sampler3D;\n";
+        constexpr char versionHeader[] = "#version 300 es\n\nprecision mediump float;\nprecision mediump sampler3D;\n";
 #else
         constexpr char versionHeader[] = "#version 330\n\n";
 #endif
@@ -119,7 +114,7 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
     m_spriteDone = *m_codeContext.done != 0.0;
     bool burnIn = *m_codeContext.burn != 0.0;
 
-    Quad vertices{};
+    auto& vertices = m_mesh.Vertices().Get();
 
     // Get values from expression code and clamp them where necessary.
     float x = std::min(1000.0f, std::max(-1000.0f, static_cast<float>(*m_codeContext.x) * 2.0f - 1.0f));
@@ -139,14 +134,14 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
     float a = std::min(1.0f, std::max(0.0f, (static_cast<float>(*m_codeContext.a))));
 
     // ToDo: Move all translations to vertex shader
-    vertices[0 + flipx].x = -sx;
-    vertices[1 - flipx].x = sx;
-    vertices[2 + flipx].x = -sx;
-    vertices[3 - flipx].x = sx;
-    vertices[0 + flipy * 2].y = -sy;
-    vertices[1 + flipy * 2].y = -sy;
-    vertices[2 - flipy * 2].y = sy;
-    vertices[3 - flipy * 2].y = sy;
+    vertices[0 + flipx].SetX(-sx);
+    vertices[1 - flipx].SetX(sx);
+    vertices[2 + flipx].SetX(-sx);
+    vertices[3 - flipx].SetX(sx);
+    vertices[0 + flipy * 2].SetY(-sy);
+    vertices[1 + flipy * 2].SetY(-sy);
+    vertices[2 - flipy * 2].SetY(sy);
+    vertices[3 - flipy * 2].SetY(sy);
 
     // First aspect ratio: adjust for non-1:1 images
     {
@@ -157,7 +152,7 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
             // Landscape image
             for (auto& vertex : vertices)
             {
-                vertex.y *= aspect;
+                vertex.SetY(vertex.Y() * aspect);
             }
         }
         else
@@ -165,7 +160,7 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
             // Portrait image
             for (auto& vertex : vertices)
             {
-                vertex.x /= aspect;
+                vertex.SetX(vertex.X() / aspect);
             }
         }
     }
@@ -177,18 +172,17 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
 
         for (auto& vertex : vertices)
         {
-            float rotX = vertex.x * cos_rot - vertex.y * sin_rot;
-            float rotY = vertex.x * sin_rot + vertex.y * cos_rot;
-            vertex.x = rotX;
-            vertex.y = rotY;
+            float rotX = vertex.X() * cos_rot - vertex.Y() * sin_rot;
+            float rotY = vertex.X() * sin_rot + vertex.Y() * cos_rot;
+            vertex = {rotX, rotY};
         }
     }
 
     // Translation
     for (auto& vertex : vertices)
     {
-        vertex.x += x;
-        vertex.y += y;
+        vertex.SetX(vertex.X() + x);
+        vertex.SetY(vertex.Y() + y);
     }
 
     // Second aspect ratio: normalize to width of screen
@@ -199,14 +193,14 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
         {
             for (auto& vertex : vertices)
             {
-                vertex.y *= aspect;
+                vertex.SetY(vertex.Y() * aspect);
             }
         }
         else
         {
             for (auto& vertex : vertices)
             {
-                vertex.x /= aspect;
+                vertex.SetX(vertex.X() / aspect);
             }
         }
     }
@@ -219,19 +213,15 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
         float dtu = 0.5f;
         float dtv = 0.5f;
 
-        vertices[0].u = -dtu;
-        vertices[1].u = dtu;
-        vertices[2].u = -dtu;
-        vertices[3].u = dtu;
-        vertices[0].v = -dtv;
-        vertices[1].v = -dtv;
-        vertices[2].v = dtv;
-        vertices[3].v = dtv;
+        m_mesh.UVs().Set({{-dtu, dtv},
+                          {dtu, dtv},
+                          {-dtu, -dtv},
+                          {dtu, -dtv}});
 
-        for (auto& vertex : vertices)
+        for (auto& uv : m_mesh.UVs().Get())
         {
-            vertex.u = (vertex.u - 0.0f) * repeatx + 0.5f;
-            vertex.v = (vertex.v - 0.0f) * repeaty + 0.5f;
+            uv = {(uv.U() - 0.0f) * repeatx + 0.5f,
+                  (uv.V() - 0.0f) * repeaty + 0.5f};
         }
     }
 
@@ -243,9 +233,7 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
     m_texture->Bind(0);
     m_sampler.Bind(0);
 
-    glBindVertexArray(m_vaoID);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(), GL_DYNAMIC_DRAW);
+    m_mesh.Update();
 
     glVertexAttrib4f(1, r, g, b, a);
 
@@ -253,29 +241,25 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
     {
         case 0:
         default:
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::OneMinusSourceAlpha);
             break;
         case 1:
-            glDisable(GL_BLEND);
+            Renderer::BlendMode::SetBlendActive(false);
             break;
         case 2:
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_ONE, GL_ONE);
+            Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::One, Renderer::BlendMode::Function::One);
             break;
         case 3:
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR);
+            Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceColor, Renderer::BlendMode::Function::OneMinusSourceColor);
             break;
         case 4:
             // Milkdrop actually changed color keying to using texture alpha. The color key is ignored.
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::OneMinusSourceAlpha);
             break;
     }
 
     // Draw to current output buffer
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    m_mesh.Draw();
 
     if (burnIn)
     {
@@ -288,19 +272,17 @@ void MilkdropSprite::Draw(const Audio::FrameAudioData& audioData,
             }
 
             preset.get()->BindFramebuffer();
-            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            m_mesh.Draw();
         }
 
         // Reset to original FBO
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(outputFramebufferObject));
     }
 
-    glDisable(GL_BLEND);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
     m_texture->Unbind(0);
+    Renderer::Mesh::Unbind();
     Renderer::Shader::Unbind();
+    Renderer::BlendMode::SetBlendActive(false);
 }
 
 auto MilkdropSprite::Done() const -> bool

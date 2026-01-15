@@ -20,9 +20,6 @@
  */
 #pragma once
 
-#include <wasm_simd128.h>
-#include <immintrin.h> 
-
 #include <projectM-4/projectM_export.h>
 
 #include <Renderer/RenderContext.hpp>
@@ -30,7 +27,6 @@
 #include <Audio/PCM.hpp>
 
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -180,6 +176,10 @@ public:
 
     void SetMeshSize(uint32_t meshResolutionX, uint32_t meshResolutionY);
 
+    void TexelOffsets(float& texelOffsetX, float& texelOffsetY) const;
+
+    void SetTexelOffsets(float texelOffsetX, float texelOffsetY);
+
     void Touch(float touchX, float touchY, int pressure, int touchType);
 
     void TouchDrag(float touchX, float touchY, int pressure);
@@ -245,8 +245,20 @@ public:
      */
     auto UserSpriteIdentifiers() const -> std::vector<uint32_t>;
 
+    /**
+     * @brief Draws the given texture on the active preset's main texture to get a "burn-in" effect.
+     * @param openGlTextureId The OpenGL texture to draw onto the active preset(s).
+     * @param left Left coordinate in pixels on the destination texture.
+     * @param top Top coordinate in pixels on the destination texture.
+     * @param width Width of the final image on the destination texture in pixels, can be negative to flip it horizontally.
+     * @param height Height of the final image on the destination texture in pixels, can be negative to flip it vertically.
+     */
+    void BurnInTexture(uint32_t openGlTextureId, int left, int top, int width, int height);
+
 private:
     void Initialize();
+
+    void CheckGLSLVersion();
 
     void StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hardCut);
 
@@ -254,20 +266,22 @@ private:
 
     auto GetRenderContext() -> Renderer::RenderContext;
 
-    uint32_t m_meshX{96};            //!< Per-point mesh horizontal resolution.
-    uint32_t m_meshY{96};            //!< Per-point mesh vertical resolution.
-    uint32_t m_targetFps{60};        //!< Target frames per second.
+    uint32_t m_meshX{32};            //!< Per-point mesh horizontal resolution.
+    uint32_t m_meshY{24};            //!< Per-point mesh vertical resolution.
+    uint32_t m_targetFps{35};        //!< Target frames per second.
     uint32_t m_windowWidth{0};       //!< EvaluateFrameData window width. If 0, nothing is rendered.
     uint32_t m_windowHeight{0};      //!< EvaluateFrameData window height. If 0, nothing is rendered.
-    double m_presetDuration{27.0};   //!< Preset duration in seconds.
-    double m_softCutDuration{17.0};   //!< Soft cut transition time.
-    double m_hardCutDuration{14.0};  //!< Time after which a hard cut can happen at the earliest.
-    bool m_hardCutEnabled{true};    //!< If true, hard cuts based on beat detection are enabled.
+    double m_presetDuration{30.0};   //!< Preset duration in seconds.
+    double m_softCutDuration{3.0};   //!< Soft cut transition time.
+    double m_hardCutDuration{20.0};  //!< Time after which a hard cut can happen at the earliest.
+    bool m_hardCutEnabled{false};    //!< If true, hard cuts based on beat detection are enabled.
     float m_hardCutSensitivity{2.0}; //!< Loudness sensitivity value for hard cuts.
     float m_beatSensitivity{1.0};    //!< General beat sensitivity modifier for presets.
-    bool m_aspectCorrection{false};   //!< If true, corrects aspect ratio for non-rectangular windows.
+    bool m_aspectCorrection{true};   //!< If true, corrects aspect ratio for non-rectangular windows.
     float m_easterEgg{1.0};          //!< Random preset duration modifier. See TimeKeeper class.
     float m_previousFrameVolume{};   //!< Volume in previous frame, used for hard cuts.
+    float m_texelOffsetX{0.0};       //!< Horizontal warp shader texel offset
+    float m_texelOffsetY{0.0};       //!< Vertical warp shader texel offset
 
     std::vector<std::string> m_textureSearchPaths; ///!< List of paths to search for texture files
 

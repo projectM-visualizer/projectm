@@ -5,35 +5,20 @@
 
 #include "Waveforms/Factory.hpp"
 
-#include <projectM-opengl.h>
+#include <Renderer/BlendMode.hpp>
 
-#include <Audio/AudioConstants.hpp>
+#include <../Renderer/OpenGL.h>
 
 #include <algorithm>
 #include <cmath>
-
-using libprojectM::Renderer::RenderItem;
 
 namespace libprojectM {
 namespace MilkdropPreset {
 
 Waveform::Waveform(PresetState& presetState)
-    : RenderItem()
-    , m_presetState(presetState)
+    : m_presetState(presetState)
+    , m_waveMesh(Renderer::VertexBufferUsage::StreamDraw)
 {
-    RenderItem::Init();
-}
-
-void Waveform::InitVertexAttrib()
-{
-    glEnableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-
-    std::vector<Point> vertexData;
-    vertexData.resize(std::max(libprojectM::Audio::SpectrumSamples, libprojectM::Audio::WaveformSamples) * 2 + 2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * vertexData.size(), vertexData.data(), GL_DYNAMIC_DRAW);
 }
 
 void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
@@ -56,20 +41,17 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
 
     auto shader = m_presetState.untexturedShader.lock();
     shader->Bind();
-    shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
-
-    glBindVertexArray(m_vaoID);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
+    shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjectionFlipped);
+    shader->SetUniformFloat("vertex_point_size", 1.0f);
 
     // Additive wave drawing (vice overwrite)
-    glEnable(GL_BLEND);
     if (m_presetState.additiveWaves)
     {
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::One);
     }
     else
     {
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::OneMinusSourceAlpha);
     }
 
     auto smoothedVertices = m_waveformMath->GetVertices(m_presetState, presetPerFrameContext);
@@ -90,7 +72,11 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
         const auto incrementX = 2.0f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
         const auto incrementY = 2.0f / static_cast<float>(m_presetState.renderContext.viewportSizeY);
 
-        GLuint drawType = m_presetState.waveDots ? GL_POINTS : (m_waveformMath->IsLoop() ? GL_LINE_LOOP : GL_LINE_STRIP);
+        m_waveMesh.SetRenderPrimitiveType(m_presetState.waveDots
+                                              ? Renderer::Mesh::PrimitiveType::Points
+                                          : m_waveformMath->IsLoop()
+                                              ? Renderer::Mesh::PrimitiveType::LineLoop
+                                              : Renderer::Mesh::PrimitiveType::LineStrip);
 
         // If thick outline is used, draw the shape four times with slight offsets
         // (top left, top right, bottom right, bottom left).
@@ -104,35 +90,35 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
                 case 1:
                     for (auto j = 0U; j < smoothedWave.size(); j++)
                     {
-                        smoothedWave[j].x += incrementX;
+                        smoothedWave[j].SetX(smoothedWave[j].X() + incrementX);
                     }
                     break;
 
                 case 2:
                     for (auto j = 0U; j < smoothedWave.size(); j++)
                     {
-                        smoothedWave[j].y += incrementY;
+                        smoothedWave[j].SetY(smoothedWave[j].Y() + incrementY);
                     }
                     break;
 
                 case 3:
                     for (auto j = 0U; j < smoothedWave.size(); j++)
                     {
-                        smoothedWave[j].x -= incrementX;
+                        smoothedWave[j].SetX(smoothedWave[j].X() - incrementX);
                     }
                     break;
             }
 
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Point) * smoothedWave.size(), smoothedWave.data());
-            glDrawArrays(drawType, 0, static_cast<GLsizei>(smoothedWave.size()));
+            m_waveMesh.Vertices().Set(smoothedWave);
+            m_waveMesh.Indices().Resize(smoothedWave.size());
+            m_waveMesh.Indices().MakeContinuous();
+            m_waveMesh.Update();
+            m_waveMesh.Draw();
         }
     }
 
-    glDisable(GL_BLEND);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
+    Renderer::BlendMode::SetBlendActive(false);;
+    Renderer::Mesh::Unbind();
     Renderer::Shader::Unbind();
 }
 

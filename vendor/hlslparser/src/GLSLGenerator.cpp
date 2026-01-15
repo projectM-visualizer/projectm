@@ -119,7 +119,7 @@ GLSLGenerator::GLSLGenerator() :
 #else
     m_version                   = Version_330;
 #endif
-	
+
     m_versionLegacy             = false;
     m_inAttribPrefix            = NULL;
     m_outAttribPrefix           = NULL;
@@ -244,7 +244,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
         m_writer.WriteLine(0, "precision highp float;");
     }
     else if (m_version == Version_300_ES)
-    {  
+    {
         m_writer.WriteLine(0, "#version 300 es");
         m_writer.WriteLine(0, "precision highp float;");
         m_writer.WriteLine(0, "precision highp sampler3D;");
@@ -257,10 +257,25 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
 
     // Output the special function used to access rows in a matrix.
     m_writer.WriteLine(0, "vec2 %s(mat2 m, int i) { return vec2( m[0][i], m[1][i] ); }", m_matrixRowFunction);
+    m_writer.WriteLine(0, "vec2 %s(mat2 m, float i_float) { int i=int(i_float); return vec2( m[0][i], m[1][i] ); }", m_matrixRowFunction);
+    m_writer.WriteLine(0, "vec2 %s(mat2x3 m, int i) { return vec2( m[0][i], m[1][i]); }", m_matrixRowFunction);
+    m_writer.WriteLine(0, "vec2 %s(mat2x3 m, float i_float) { int i=int(i_float); return vec2( m[0][i], m[1][i]); }", m_matrixRowFunction);
+    m_writer.WriteLine(0, "vec2 %s(mat2x4 m, int i) { return vec2( m[0][i], m[1][i]); }", m_matrixRowFunction);
+    m_writer.WriteLine(0, "vec2 %s(mat2x4 m, float i_float) { int i=int(i_float); return vec2( m[0][i], m[1][i]); }", m_matrixRowFunction);
+
     m_writer.WriteLine(0, "vec3 %s(mat3 m, int i) { return vec3( m[0][i], m[1][i], m[2][i] ); }", m_matrixRowFunction);
+    m_writer.WriteLine(0, "vec3 %s(mat3 m, float i_float) { int i=int(i_float); return vec3( m[0][i], m[1][i], m[2][i] ); }", m_matrixRowFunction);
+    m_writer.WriteLine(0, "vec3 %s(mat3x2 m, int i) { return vec3( m[0][i], m[1][i], m[2][i] ); }", m_matrixRowFunction);
+    m_writer.WriteLine(0, "vec3 %s(mat3x2 m, float i_float) { int i=int(i_float); return vec3( m[0][i], m[1][i], m[2][i] ); }", m_matrixRowFunction);
     m_writer.WriteLine(0, "vec3 %s(mat3x4 m, int i) { return vec3( m[0][i], m[1][i], m[2][i] ); }", m_matrixRowFunction);
+    m_writer.WriteLine(0, "vec3 %s(mat3x4 m, float i_float) { int i=int(i_float); return vec3( m[0][i], m[1][i], m[2][i] ); }", m_matrixRowFunction);
+
     m_writer.WriteLine(0, "vec4 %s(mat4 m, int i) { return vec4( m[0][i], m[1][i], m[2][i], m[3][i] ); }", m_matrixRowFunction);
+    m_writer.WriteLine(0, "vec4 %s(mat4 m, float i_float) { int i=int(i_float); return vec4( m[0][i], m[1][i], m[2][i], m[3][i] ); }", m_matrixRowFunction);
     m_writer.WriteLine(0, "vec4 %s(mat4x3 m, int i) { return vec4( m[0][i], m[1][i], m[2][i], m[3][i] ); }", m_matrixRowFunction);
+    m_writer.WriteLine(0, "vec4 %s(mat4x3 m, float i_float) { int i=int(i_float); return vec4( m[0][i], m[1][i], m[2][i], m[3][i] ); }", m_matrixRowFunction);
+    m_writer.WriteLine(0, "vec4 %s(mat4x2 m, int i) { return vec4( m[0][i], m[1][i], m[2][i], m[3][i] ); }", m_matrixRowFunction);
+    m_writer.WriteLine(0, "vec4 %s(mat4x2 m, float i_float) { int i=int(i_float); return vec4( m[0][i], m[1][i], m[2][i], m[3][i] ); }", m_matrixRowFunction);
 
     // Output the special function used to do matrix cast for OpenGL 2.0
     if (m_versionLegacy)
@@ -405,13 +420,13 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
          * domain. To do this, we bail out to a separate function that piecewise-defines
          * a polynomial that qualitatively matches what we see under DX9. The DX9
          * implementation itself is unknown, so this is only a rough match.
-         * 
+         *
          * We also implement this as a separate function because we need to evaluate the
          * argument multiple times. If the argument expression involves side-effects
          * (such as post-increment or -decrement) the result would not be what we expect
          * if we evaluated this equation as a macro in OutputExpression.
          */
-        m_writer.WriteLine(0, "float %s(float x) { if (abs(x) > 1.0) { return 0.39269908169872415*(4-sign(x)*(abs(x) - 3.0)*(abs(x) - 3.0)); } else { return acos(x); } }", m_acosFunction);
+        m_writer.WriteLine(0, "float %s(float x) { if (abs(x) > 1.0) { return 0.39269908169872415*(4.0-sign(x)*(abs(x) - 3.0)*(abs(x) - 3.0)); } else { return acos(x); } }", m_acosFunction);
         m_writer.WriteLine(0, "vec2 %s(vec2 x) { vec2 ret; ret.x = %s(x.x); ret.y = %s(x.y); return ret; }", m_acosFunction, m_acosFunction, m_acosFunction);
         m_writer.WriteLine(0, "vec3 %s(vec3 x) { vec3 ret; ret.x = %s(x.x); ret.y = %s(x.y); ret.z = %s(x.z); return ret; }", m_acosFunction, m_acosFunction, m_acosFunction, m_acosFunction);
         m_writer.WriteLine(0, "vec4 %s(vec4 x) { vec4 ret; ret.x = %s(x.x); ret.y = %s(x.y); ret.z = %s(x.z); ret.w = %s(x.w); return ret; }", m_acosFunction, m_acosFunction, m_acosFunction, m_acosFunction, m_acosFunction);
@@ -426,6 +441,9 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
 
     if (m_options.flags & Flag_AlternateNanPropagation) {
         /* Implement alternate functions that propagate NaNs like shader model 3 and DX9. */
+        m_writer.WriteLine(0, "float %s(int i_x, int i_y) { float x=float(i_x); float y=float(i_y); if (x == 0.0 || y == 0.0) { return 0.0; } else { return (x * y); } }", m_altMultFunction);
+        m_writer.WriteLine(0, "float %s(int i_x, float y) { float x=float(i_x); if (x == 0.0 || y == 0.0) { return 0.0; } else { return (x * y); } }", m_altMultFunction);
+        m_writer.WriteLine(0, "float %s(float x, int i_y) { float y=float(i_y); if (x == 0.0 || y == 0.0) { return 0.0; } else { return (x * y); } }", m_altMultFunction);
         m_writer.WriteLine(0, "float %s(float x, float y) { if (x == 0.0 || y == 0.0) { return 0.0; } else { return (x * y); } }", m_altMultFunction);
         m_writer.WriteLine(0, "vec2 %s(vec2 x, vec2 y) { return vec2(%s(x.x, y.x), %s(x.y, y.y)); }", m_altMultFunction, m_altMultFunction, m_altMultFunction);
         m_writer.WriteLine(0, "vec3 %s(vec3 x, vec3 y) { return vec3(%s(x.x, y.x), %s(x.y, y.y), %s(x.z, y.z)); }", m_altMultFunction, m_altMultFunction, m_altMultFunction, m_altMultFunction);
@@ -529,7 +547,7 @@ void GLSLGenerator::OutputExpressionList(HLSLExpression* expression, HLSLArgumen
         {
             m_writer.Write(", ");
         }
-        
+
         HLSLType* expectedType = NULL;
         if (argument != NULL)
         {
@@ -887,9 +905,11 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
         }
         else
         {
+            // Array subscript operator in GLSL requires an explicit int parameter
+            const HLSLType& intType = HLSLType(HLSLBaseType_Int);
             OutputExpression(arrayAccess->array);
             m_writer.Write("[");
-            OutputExpression(arrayAccess->index);
+            OutputExpression(arrayAccess->index, &intType);
             m_writer.Write("]");
         }
 
@@ -1008,16 +1028,60 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
                 Error("%s expects 2 arguments", functionName);
                 return;
             }
+
             /* See rsqrt above regarding abs(). Note that this behaves
              * as expected on some drivers but not others, so we add
              * the abs() call for compatibility across drivers.
+             *
+             * There's one special case though: if the exponent is a literal "1" (or "1.0"),
+             * don't use pow() at all, just return the base (arg 1) unchanged, even if negative.
+             * This is probably due to an HLSL compiler optimization which does the same thing.
+             * When not optimized, pow(x, 1) with a negative value of x would return NaN instead.
              */
-            m_writer.Write("pow(abs(");
-            OutputExpression(argument[0], &functionCall->function->returnType);
-            m_writer.Write("),");
-            OutputExpression(argument[1], &functionCall->function->returnType);
-            m_writer.Write(")");
-            handled = true;
+            if (argument[1]->nodeType == HLSLNodeType_LiteralExpression)
+            {
+                HLSLLiteralExpression* literalExpression = static_cast<HLSLLiteralExpression*>(argument[1]);
+                float value = 0.0;
+                bool found = false;
+                switch (literalExpression->type)
+                {
+                    case HLSLBaseType_Float:
+                        value = literalExpression->fValue;
+                        found = true;
+                        break;
+                    case HLSLBaseType_Int:
+                    case HLSLBaseType_Uint:
+                        value = literalExpression->iValue;
+                        found = true;
+                        break;
+                    case HLSLBaseType_Bool:
+                        value = literalExpression->bValue;
+                        found = true;
+                        break;
+                    default:
+                        break;
+                }
+
+                // Replace the function call with just arg 1.
+                if (found && value == 1.0)
+                {
+                    m_writer.Write("(");
+                    OutputExpression(argument[0], &functionCall->function->returnType);
+                    m_writer.Write(")");
+                    handled = true;
+                }
+            }
+
+            // Other cases, including variable exponent arguments, will still call pow().
+            if (!handled)
+            {
+                m_writer.Write("pow(abs(");
+                OutputExpression(argument[0], &functionCall->function->returnType);
+                m_writer.Write("),");
+                OutputExpression(argument[1], &functionCall->function->returnType);
+                m_writer.Write(")");
+                handled = true;
+            }
         }
         else if (String_Equal(functionName, "ldexp"))
         {
@@ -1153,7 +1217,7 @@ void GLSLGenerator::OutputIdentifier(const char* name)
     {
         name = m_asinFunction;
     }
-    else 
+    else
     {
         // The identifier could be a GLSL reserved word (if it's not also a HLSL reserved word).
         name = GetSafeIdentifierName(name);
@@ -2135,7 +2199,7 @@ void GLSLGenerator::Error(const char* format, ...)
     va_start(arg, format);
     Log_ErrorArgList(format, arg);
     va_end(arg);
-} 
+}
 
 const char* GLSLGenerator::GetSafeIdentifierName(const char* name) const
 {

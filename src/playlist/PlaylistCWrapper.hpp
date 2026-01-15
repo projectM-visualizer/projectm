@@ -5,7 +5,6 @@
 #include "Playlist.hpp"
 
 #include <cstdint>
-#include <functional>
 
 namespace libprojectM {
 namespace Playlist {
@@ -99,13 +98,18 @@ public:
 private:
     projectm_handle m_projectMInstance{nullptr}; //!< The projectM instance handle this instance is connected to.
 
-    uint32_t m_presetSwitchRetryCount{5};  //!< Number of switch retries before sending the failure event to the application.
-    uint32_t m_presetSwitchFailedCount{0}; //!< Number of retries since the last preset switch.
+    uint32_t m_presetSwitchRetryCount{500}; //!< Number of switch retries before sending the failure event to the application.
+    bool m_lastPresetSwitchFailed{false};   //!< Indicates that the last preset switch has failed.
+    std::string m_lastFailedPresetFileName; //!< File name of the last failed preset.
+    std::string m_lastFailedPresetError;    //!< Error message of the last failure.
 
     bool m_hardCutRequested{false}; //!< Stores the type of the last requested switch attempt.
 
-    std::function<void(bool isHardCut, uint32_t playlist_index)> m_onPresetSwitched;
-    std::function<void(const std::string& presetFilename, const std::string& failureMessage)> m_onPlaylistPresetSwitchFailed;
+    projectm_playlist_preset_switched_event m_presetSwitchedEventCallback{nullptr}; //!< Preset switched callback pointer set by the application.
+    void* m_presetSwitchedEventUserData{nullptr};                                   //!< Context data pointer set by the application.
+
+    projectm_playlist_preset_switch_failed_event m_presetSwitchFailedEventCallback{nullptr}; //!< Preset switch failed callback pointer set by the application.
+    void* m_presetSwitchFailedEventUserData{nullptr};                                        //!< Context data pointer set by the application.
 
     NavigationDirection m_lastNavigationDirection{NavigationDirection::Next}; //!< Last direction used to switch a preset.
 };
