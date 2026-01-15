@@ -1,6 +1,7 @@
 #include "Playlist.hpp"
 
 #include <algorithm>
+#include <chrono>
 
 // Fall back to boost if compiler doesn't support C++17
 #include PROJECTM_FILESYSTEM_INCLUDE
@@ -65,13 +66,22 @@ bool Playlist::AddItem(const std::string& filename, uint32_t index, bool allowDu
         }
     }
 
-    m_presetHistory.clear();
     if (index >= m_items.size())
     {
         m_items.emplace_back(filename);
     }
     else
     {
+        // Increment indices of items equal or grater than the newly added index.
+        for (auto& historyItem : m_presetHistory)
+        {
+            if (historyItem >= index)
+            {
+                historyItem++;
+            }
+        }
+
+
         m_items.emplace(m_items.cbegin() + index, filename);
     }
 
@@ -83,7 +93,6 @@ auto Playlist::AddPath(const std::string& path, uint32_t index, bool recursive, 
 {
     uint32_t presetsAdded{0};
 
-    m_presetHistory.clear();
     if (recursive)
     {
         try
@@ -129,6 +138,15 @@ auto Playlist::AddPath(const std::string& path, uint32_t index, bool recursive, 
         }
     }
 
+    // Increment indices of items in playback history equal or grater than the newly added index.
+    for (auto& historyItem : m_presetHistory)
+    {
+        if (historyItem >= index)
+        {
+            historyItem += presetsAdded;
+        }
+    }
+
     return presetsAdded;
 }
 
@@ -140,7 +158,23 @@ auto Playlist::RemoveItem(uint32_t index) -> bool
         return false;
     }
 
-    m_presetHistory.clear();
+    // Remove item from history and decrement indices of items after the removed index.
+    for (auto it = begin(m_presetHistory); it != end(m_presetHistory);)
+    {
+        if (*it == index)
+        {
+            it = m_presetHistory.erase(it);
+            continue;
+        }
+
+        if (*it > index)
+        {
+            (*it)--;
+        }
+
+        ++it;
+    }
+
     m_items.erase(m_items.cbegin() + index);
 
     return true;
@@ -220,7 +254,7 @@ auto Playlist::NextPresetIndex() -> uint32_t
 
     if (m_shuffle)
     {
-        std::uniform_int_distribution<uint32_t> randomDistribution(0, static_cast<uint32_t>(m_items.size()));
+        std::uniform_int_distribution<uint32_t> randomDistribution(0, static_cast<uint32_t>(m_items.size() - 1));
         m_currentPosition = randomDistribution(m_randomGenerator);
     }
     else
@@ -247,7 +281,7 @@ auto Playlist::PreviousPresetIndex() -> uint32_t
 
     if (m_shuffle)
     {
-        std::uniform_int_distribution<uint32_t> randomDistribution(0, static_cast<uint32_t>(m_items.size()));
+        std::uniform_int_distribution<uint32_t> randomDistribution(0, static_cast<uint32_t>(m_items.size() - 1));
         m_currentPosition = randomDistribution(m_randomGenerator);
     }
     else
@@ -330,6 +364,15 @@ void Playlist::RemoveLastHistoryEntry()
     {
         m_presetHistory.pop_back();
     }
+}
+
+
+auto Playlist::HistoryItems() const -> std::vector<uint32_t>
+{
+    std::vector<uint32_t> items;
+    std::copy(begin(m_presetHistory), end(m_presetHistory), std::back_inserter(items));
+
+    return items;
 }
 
 

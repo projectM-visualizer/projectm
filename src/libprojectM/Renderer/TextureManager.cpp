@@ -1,21 +1,19 @@
-#include "TextureManager.hpp"
+#include "Renderer/TextureManager.hpp"
 
-#include "FileScanner.hpp"
-#include "IdleTextures.hpp"
-#include "MilkdropNoise.hpp"
-#include "Texture.hpp"
-#include "Utils.hpp"
+#include "Renderer/FileScanner.hpp"
+#include "Renderer/IdleTextures.hpp"
+#include "Renderer/MilkdropNoise.hpp"
+#include "Renderer/Texture.hpp"
 
+#include <Utils.hpp>
+
+#include <Logging.hpp>
 #include <SOIL2/SOIL2.h>
 
 #include <algorithm>
 #include <memory>
 #include <random>
 #include <vector>
-
-#ifdef DEBUG
-#include <iostream>
-#endif
 
 // Missing in macOS SDK. Query will most certainly fail, but then use the default format.
 #ifndef GL_TEXTURE_IMAGE_FORMAT
@@ -31,12 +29,6 @@ TextureManager::TextureManager(const std::vector<std::string>& textureSearchPath
 {
     Preload();
 }
-
-// Destructor can be removed if it becomes empty, or kept if other cleanup is added later.
-// For now, let's leave it commented out or remove it if it was only for IMG_Quit().
-// TextureManager::~TextureManager()
-// {
-// }
 
 void TextureManager::SetCurrentPresetPath(const std::string&)
 {
@@ -71,10 +63,10 @@ auto TextureManager::GetSampler(const std::string& fullName) -> std::shared_ptr<
 void TextureManager::Preload()
 {
     // Create samplers
-    m_samplers.emplace(std::pair<GLint, GLint>(GL_CLAMP_TO_EDGE, GL_LINEAR), std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR));
-    m_samplers.emplace(std::pair<GLint, GLint>(GL_CLAMP_TO_EDGE, GL_NEAREST), std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_NEAREST));
-    m_samplers.emplace(std::pair<GLint, GLint>(GL_REPEAT, GL_LINEAR), std::make_shared<Sampler>(GL_REPEAT, GL_LINEAR));
-    m_samplers.emplace(std::pair<GLint, GLint>(GL_REPEAT, GL_NEAREST), std::make_shared<Sampler>(GL_REPEAT, GL_NEAREST));
+    m_samplers.emplace(std::make_pair(GL_CLAMP_TO_EDGE, GL_LINEAR), std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR));
+    m_samplers.emplace(std::make_pair(GL_CLAMP_TO_EDGE, GL_NEAREST), std::make_shared<Sampler>(GL_CLAMP_TO_EDGE, GL_NEAREST));
+    m_samplers.emplace(std::make_pair(GL_REPEAT, GL_LINEAR), std::make_shared<Sampler>(GL_REPEAT, GL_LINEAR));
+    m_samplers.emplace(std::make_pair(GL_REPEAT, GL_NEAREST), std::make_shared<Sampler>(GL_REPEAT, GL_NEAREST));
 
     int width{};
     int height{};
@@ -84,7 +76,7 @@ void TextureManager::Preload()
         M_bytes,
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
+        SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA);
 
     m_textures["idlem"] = std::make_shared<Texture>("idlem", tex, GL_TEXTURE_2D, width, height, false);;
 
@@ -93,7 +85,7 @@ void TextureManager::Preload()
         headphones_bytes,
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
+        SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA);
 
     m_textures["idleheadphones"] = std::make_shared<Texture>("idleheadphones", tex, GL_TEXTURE_2D, width, height, false);;
 
@@ -160,14 +152,13 @@ void TextureManager::PurgeTextures()
     {
         return;
     }
-    // Purge one texture. No need to inform presets, as the texture shouldn't be in use anymore.
-    // If this really happens for some reason, it'll simply be reloaded on the next frame.
+
+    // Purge one texture. No need to inform presets, as the texture will stay alive until the preset
+    // is unloaded.
     m_textures.erase(m_textures.find(biggestName));
     m_textureStats.erase(m_textureStats.find(biggestName));
 
-#ifdef DEBUG
-    std::cerr << "Purged texture " << biggestName << std::endl;
-#endif
+    LOG_DEBUG("[TextureManager] Purged texture \"" + biggestName + "\"");
 }
 
 auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSamplerDescriptor
@@ -192,16 +183,12 @@ auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSample
 
         if (texture)
         {
-#ifdef DEBUG
-            std::cerr << "Loaded texture " << unqualifiedName << std::endl;
-#endif
+            LOG_DEBUG("[TextureManager] Loaded texture \"" + unqualifiedName + "\" from file: " + file.filePath);
             return {texture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};;
         }
     }
 
-#ifdef DEBUG
-    std::cerr << "Failed to find texture " << unqualifiedName << std::endl;
-#endif
+    LOG_WARN("[TextureManager] Failed to find requested texture \"" + unqualifiedName + "\"");
 
     // Return a placeholder.
     return {m_placeholderTexture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
@@ -218,15 +205,27 @@ auto TextureManager::LoadTexture(const ScannedFile& file) -> std::shared_ptr<Tex
 
     int width{};
     int height{};
+    int channels{};
 
-    unsigned int const tex = SOIL_load_OGL_texture(
-        file.filePath.c_str(),
-        SOIL_LOAD_RGBA,
+    std::unique_ptr<unsigned char, decltype(&SOIL_free_image_data)> imageData(SOIL_load_image(file.filePath.c_str(), &width, &height, &channels, SOIL_LOAD_RGBA), SOIL_free_image_data);
+
+    if (imageData == nullptr)
+    {
+        LOG_DEBUG("[TextureManager] Failed to decode image data.");
+        return {};
+    }
+
+    unsigned int const tex = SOIL_create_OGL_texture(
+        imageData.get(),
+        &width, &height, SOIL_LOAD_RGBA,
         SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_MULTIPLY_ALPHA, &width, &height);
+        SOIL_FLAG_MULTIPLY_ALPHA);
+
+    imageData.reset();
 
     if (tex == 0)
     {
+        LOG_DEBUG("[TextureManager] Failed to create GPU texture from image data.");
         return {};
     }
 
@@ -251,6 +250,7 @@ auto TextureManager::GetRandomTexture(const std::string& randomName) -> TextureS
 
     if (m_scannedTextureFiles.empty())
     {
+        LOG_DEBUG("[TextureManager] Texture file list is empty.");
         return {};
     }
 
@@ -287,6 +287,7 @@ auto TextureManager::GetRandomTexture(const std::string& randomName) -> TextureS
     // If a prefix was set and no file matched, filename can be empty.
     if (selectedFilename.empty())
     {
+        LOG_DEBUG("[TextureManager] No random texture found. Prefix: \"" + prefix + "\".");
         return {};
     }
 

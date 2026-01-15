@@ -1,6 +1,6 @@
 /**
  * @file playlist_callbacks.h
- * @copyright 2003-2024 projectM Team
+ * @copyright 2003-2025 projectM Team
  * @brief Functions and prototypes for projectM playlist callbacks.
  * @since 4.0.0
  *

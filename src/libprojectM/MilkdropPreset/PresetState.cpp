@@ -3,7 +3,7 @@
 #include "MilkdropStaticShaders.hpp"
 #include "PresetFileParser.hpp"
 
-#include "Renderer/ShaderCache.hpp"
+#include <Renderer/ShaderCache.hpp>
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -33,7 +33,7 @@ PresetState::~PresetState()
     projectm_eval_memory_buffer_destroy(globalMemory);
 }
 
-void PresetState::Initialize(::libprojectM::PresetFileParser& parsedFile)
+void PresetState::Initialize(PresetFileParser& parsedFile)
 {
 
     // General:

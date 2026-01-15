@@ -1,4 +1,4 @@
-#include "PCM.hpp"
+#include "Audio/PCM.hpp"
 
 namespace libprojectM {
 namespace Audio {

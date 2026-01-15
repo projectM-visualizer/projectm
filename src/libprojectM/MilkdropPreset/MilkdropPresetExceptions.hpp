@@ -12,12 +12,17 @@ namespace MilkdropPreset {
 class MilkdropPresetLoadException : public std::exception
 {
 public:
-    inline MilkdropPresetLoadException(std::string message)
+    MilkdropPresetLoadException(std::string message)
         : m_message(std::move(message))
     {
     }
 
     virtual ~MilkdropPresetLoadException() = default;
+
+    const char* what() const noexcept override
+    {
+        return m_message.c_str();
+    }
 
     const std::string& message() const
     {
@@ -35,12 +40,17 @@ private:
 class MilkdropCompileException : public std::exception
 {
 public:
-    inline MilkdropCompileException(std::string message)
+    MilkdropCompileException(std::string message)
         : m_message(std::move(message))
     {
     }
 
     virtual ~MilkdropCompileException() = default;
+
+    const char* what() const noexcept override
+    {
+        return m_message.c_str();
+    }
 
     const std::string& message() const
     {

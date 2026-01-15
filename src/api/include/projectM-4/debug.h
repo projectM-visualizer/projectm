@@ -1,6 +1,6 @@
 /**
  * @file debug.h
- * @copyright 2003-2024 projectM Team
+ * @copyright 2003-2025 projectM Team
  * @brief Debug functions for both libprojectM and preset developers.
  * @since 4.0.0
  *

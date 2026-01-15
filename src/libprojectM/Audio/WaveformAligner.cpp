@@ -1,4 +1,4 @@
-#include "WaveformAligner.hpp"
+#include "Audio/WaveformAligner.hpp"
 
 #include <algorithm>
 #include <cmath>

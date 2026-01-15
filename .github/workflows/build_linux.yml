@@ -1,20 +1,26 @@
-name: Ubuntu Linux (x86_64)
+name: Linux
 
 on:
   push:
-      branches: 
+      branches:
         - "*"
       tags:
         - "*"
-    
+
   pull_request:
-      branches: 
+      branches:
         - "*"
 
 jobs:
   build-shared:
-    name: Shared Library
-    runs-on: ubuntu-latest
+    name: "Libs: ${{ matrix.libs }}, FS Lib: ${{ matrix.fslib }}, Build OS: ${{ matrix.runs-on }}"
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        libs: ['shared', 'static']
+        fslib: ['stl', 'boost']
+        runs-on: ['ubuntu-24.04', 'ubuntu-22.04']
 
     steps:
       - uses: actions/checkout@v4
@@ -24,10 +30,41 @@ jobs:
       - name: Install Packages
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgl1-mesa-dev mesa-common-dev libsdl2-dev libglm-dev libgtest-dev libgmock-dev ninja-build
+          sudo apt-get install  --yes --no-install-recommends \
+            libgl1-mesa-dev \
+            mesa-common-dev \
+            libsdl2-dev \
+            libglm-dev \
+            libgtest-dev \
+            libgmock-dev \
+            ninja-build
+
+      - name: Install boost-filesystem-dev
+        if: "${{ contains(matrix.fslib, 'boost') }}"
+        run: |
+          sudo apt-get install  --yes --no-install-recommends \
+            libboost-filesystem-dev
 
       - name: Configure Build
-        run: cmake -G "Ninja Multi-Config" -S "${{ github.workspace }}" -B "${{ github.workspace }}/cmake-build" -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" -DCMAKE_VERBOSE_MAKEFILE=YES -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=YES
+        run: |
+          if [ "${{ matrix.libs }}" == "shared" ]; then
+            shared_libs=ON
+          else
+            shared_libs=OFF
+          fi
+          if [ "${{ matrix.fslib }}" == "boost" ]; then
+            use_boost=ON
+          else
+            use_boost=OFF
+          fi
+          cmake -G "Ninja Multi-Config" \
+            -S "${{ github.workspace }}" \
+            -B "${{ github.workspace }}/cmake-build" \
+            -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" \
+            -DCMAKE_VERBOSE_MAKEFILE=YES \
+            -DBUILD_SHARED_LIBS="${shared_libs}" \
+            -DENABLE_BOOST_FILESYSTEM="${use_boost}" \
+            -DBUILD_TESTING=YES
 
       - name: Build Debug
         run: cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --parallel
@@ -46,42 +83,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-            name: projectm-linux-shared-latest
+            name: projectm-linux-${{ matrix.libs }}-${{ matrix.fslib }}-${{ matrix.runs-on }}
             path: install/*
-
-  build-static:
-    name: Static Library
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: 'recursive'
-
-      - name: Install Packages
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgl1-mesa-dev mesa-common-dev libsdl2-dev libglm-dev libgtest-dev libgmock-dev ninja-build
-
-      - name: Configure Build
-        run: cmake -G "Ninja Multi-Config" -S "${{ github.workspace }}" -B "${{ github.workspace }}/cmake-build" -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" -DCMAKE_VERBOSE_MAKEFILE=YES -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=YES
-
-      - name: Build Debug
-        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --parallel
-
-      - name: Run Unit Tests
-        run: ctest --test-dir "${{ github.workspace }}/cmake-build" --verbose --build-config "Debug"
-
-      - name: Build Release
-        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --parallel
-
-      - name: Install
-        run: |
-          cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --target install
-          cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target install
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: projectm-linux-static-latest
-          path: install/*
