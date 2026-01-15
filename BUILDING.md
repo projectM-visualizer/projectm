@@ -1,8 +1,9 @@
 # Building projectM from source
 
-Suggested: use CMake. See [BUILDING-cmake.md](./BUILDING-cmake.md).
+Since version 4.0, projectM uses CMake to configure and build the library on all platforms.
 
-This document describes the deprecated GNU Autotools setup.
+This file only contains quick-start build instructions. For a more detailed guide and a list of all build options,
+please read the [BUILDING-cmake.md](BUILDING-cmake.md) file.
 
 ## Quick Start (Debian / Ubuntu)
 
@@ -13,23 +14,26 @@ For other operating systems (Windows/macOS), see the OS-specific sections below.
 Mandatory packages:
 
 ```bash
-sudo apt install build-essential libgl1-mesa-dev mesa-common-dev libsdl2-dev libglm-dev
+sudo apt install build-essential cmake libgl1-mesa-dev mesa-common-dev
 ```
 
-Optional packages for additional features:
+**Important:** Depending on your distribution, the CMake package might be too old to build projectM, e.g. Debian 11 (
+bookworm) only provides CMake 3.18 while CMake 3.21 is required. In this case, get the latest CMake
+release [from Kitware's download page](https://cmake.org/download/).
+
+Optional packages:
 
 ```bash
-sudo apt install qtbase5-dev # For building Qt-based UIs
-sudo apt install libvisual-0.4-dev # To build the libvisual plug-in
-sudo apt install libjack-jackd2-dev # To build the JACK visualizer application
 sudo apt install ninja-build # To build projectM with Ninja instead of make
+sudo apt install libsdl2-dev # To build the development test UI
 ```
 
 ### Download the projectM sources
 
-If you want to use a stable version of projectM, download the latest release from
-the [Releases page on GitHub](https://github.com/projectM-visualizer/projectm/releases) and unpack it. You can then skip
-to the next step.
+For production use, it is highly recommended to use the latest stable version of projectM. Download the latest release
+from the [Releases page on GitHub](https://github.com/projectM-visualizer/projectm/releases) and unpack it.
+
+#### Using a development version
 
 If you prefer a bleeding-edge version or want to modify the code, clone the Git repository and initialize any
 submodules:
@@ -83,31 +87,21 @@ development files. To build projectM, both binaries and development files need t
 
 #### General build dependencies for all platforms:
 
-* A working build toolchain.
+* A working build toolchain (compiler, linker).
+* CMake 3.21 or highter.
 * **OpenGL**: 3D graphics library. Used to render the visualizations.
 * **GLES3**: OpenGL libraries for embedded systems, version 3. Required to build projectM on mobile devices, Raspberry
   Pi and Emscripten.
-* [**glm**](https://github.com/g-truc/glm):  OpenGL Mathematics library. Optional, will use a bundled version with
-  autotools or if not installed.
+* [**glm**](https://github.com/g-truc/glm):  OpenGL Mathematics library. It is optional, projectM will use a bundled
+  version if not installed.
 * [**SDL2**](https://github.com/libsdl-org/SDL): Simple Directmedia Layer. Version 2.0.5 or higher is required to build
-  the standalone visualizer application (projectMSDL).
-
-#### Only relevant for Linux distributions, FreeBSD and macOS:
-
-* [**Qt5**](https://www.qt.io/): Qt cross-platform UI framework. Used to build the Pulseaudio and JACK visualizer
-  applications. Requires the `Gui` and `OpenGL` component libraries/frameworks.
-* [**Pulseaudio**](https://www.freedesktop.org/wiki/Software/PulseAudio/): Sound system for POSIX platforms. Required to
-  build the Pulseaudio visualizer application.
-* [**JACK**](https://jackaudio.org/): Real-time audio server. Required to build the JACK visualizer application.
-* [**libvisual 0.4**](http://libvisual.org/): Audio visualization library with plug-in support. Required to build the
-  projectM libvisual plug-in.
-* [**CMake**](https://cmake.org/): Used to generate platform-specific build files.
+  the development test application in the build directory.
+* [**vcpkg**](https://github.com/microsoft/vcpkg): C++ Dependency Manager. Optional, but recommended to install
+  library dependencies and/or using CMake to configure the build. Mainly used on Windows, but also works for Linux and
+  macOS.
 
 ### Only relevant for Windows:
 
-* [**vcpkg**](https://github.com/microsoft/vcpkg): C++ Library Manager for Windows. Optional, but recommended to install
-  the aforementioned library dependencies and/or using CMake to configure the build.
-* [**NuGet**](https://www.nuget.org/): Dependency manager for .NET. Required to build the EyeTune app.
 * [**GLEW**](http://glew.sourceforge.net/): The OpenGL Extension Wrangler Library. Only required if using CMake to
   configure the build, the pre-created solutions use a bundled copy of GLEW.
 
@@ -119,37 +113,26 @@ development files. To build projectM, both binaries and development files need t
   commands to install them vary widely between distributions (and even versions of the same distribution). Please refer
   to the documentation of your build OS on how to find and install the required libraries.
 - On *BSD, install the appropriate Ports with `pkg install`.
-- On macOS, using [Homebrew](https://brew.sh/) is the recommended way of installing any dependencies not supplied by
-  Xcode.
+- On macOS, a working Xcode installation is required. CMake (and libSDL2 for the test UI) can be installed
+  using [Homebrew](https://brew.sh/).
 
-### Building with CMake
-
----
-
-:exclamation: **IMPORTANT NOTE**: Currently, CMake build support is still in active development and considered
-unfinished. It is working and produces running binaries, but there are still some features, build internals and whole
-targets missing. While testing the CMake build files on any platform and feedback on this is strongly encouraged,
-CMake-based builds should not yet be used in any production environment until this message is gone.
-
----
+### Building
 
 The steps documented below are a bare minimum quickstart guide on how to build and install the project. If you want to
 configure the build to your needs, require more in-depth information about the build process and available tweaks, or on
 how to use libprojectM in your own CMake-based projects, see [BUILDING-cmake.md](BUILDING-cmake.md).
 
-Using CMake is the recommended and future-proof way of building projectM. CMake is a platform-independent tool that is
-able to generate files for multiple build systems and toolsets while using only a single set of build instructions.
-CMake support is still new and in development, but will replace the other project files (automake/autoconf scripts,
-Visual Studio solutions and Xcode projects) in this repository once mature and stable.
+Using CMake is the only supported way of building projectM since version 4.0. CMake is a platform-independent tool that
+is able to generate files for multiple build systems and toolsets while using only a single set of build instructions.
 
 Building the project with CMake requires two steps:
 
 - Configure the build and generate project files.
 - Build and install the project using the selected build tools.
 
-**Note:** When building with CMake, the build directory should always be separate from the source directory. Generating
-the build files directly inside the source tree is possible, but strongly discouraged. Using a subdirectory,
-e.g. `cmake-build` inside the source directory is fine though.
+**Note:** The build directory should always be different from the source directory. Generating the build files directly
+inside the source tree is possible, but strongly discouraged. Using a subdirectory, e.g. `cmake-build` inside the source
+directory is fine though.
 
 This documentation only covers project-specific information. CMake is way too versatile and feature-rich to cover any
 possible platform- and toolset-specific configuration details here. If you are not experienced in using CMake, please
@@ -190,13 +173,18 @@ cmake --build /path/to/build/dir --config Release
 sudo cmake --build /path/to/build/dir --config Release --target install
 ```
 
-If you don't need root permissions to install running the second command without `sudo` is sufficient.
+If you don't need root permissions to install to the given path, running the second command without `sudo` is
+sufficient.
+
+To control how many files are compiled in parallel, pass the `--parallel N` argument to the build command, with `N`
+being the number of concurrent compile commands. If not given explicitly, the build processor (make, ninja, MSBuild,
+xcodebuild etc.) will decide the limit, which may range from one file at a time to all files at once.
 
 If you want to provide arguments directly to the toolset command, add `--` at the end of the CMake command line followed
 by any additional arguments. CMake will pass these *unchanged and unchecked* to the subcommand:
 
 ```shell
-cmake --build /path/to/build/dir --config Release -- -j 4
+cmake --build /path/to/build/dir --config Release -- <additional build tool args>
 ```
 
 ## Building on Windows
@@ -226,10 +214,10 @@ To make CMake aware of the installed vcpkg packages, simply use the provided too
 projectM build by
 pointing [`CMAKE_TOOLCHAIN_FILE`](https://cmake.org/cmake/help/latest/variable/CMAKE_TOOLCHAIN_FILE.html) to it.
 
-Here is a full command line example to create a Visual Studio 2019 solution for X64:
+Here is a full command line example to create a Visual Studio 2022 solution for X64:
 
 ```commandline
-cmake -G "Visual Studio 16 2019" -A "X64" -DCMAKE_TOOLCHAIN_FILE="<path to vcpkg>/scripts/buildsystems/vcpkg.cmake" -S "<path to source dir>" -B "<path to build dir>"
+cmake -G "Visual Studio 17 2022" -A "X64" -DCMAKE_TOOLCHAIN_FILE="<path to vcpkg>/scripts/buildsystems/vcpkg.cmake" -S "<path to source dir>" -B "<path to build dir>"
 ```
 
 If you use the CMake GUI, check the "Specify toolchain file for cross-compiling" option in the first page of the
@@ -280,10 +268,43 @@ cmake --build "<path to build dir>" --config Release
 
 ## Notes on other platforms and features
 
+### Supported platforms
+
+libprojectM is designed to be compatible with as many platforms and architectures as possible. Thus, the code base
+doesn't use any non-portable code like OS-specific APIs or assembly instructions.
+
+The code compiles for the following target architectures:
+
+- i686 (x32 / x86)
+- x86_64 (x64)
+- armv7 (arm)
+- aarch64 (arm64 / armv8)
+- WASM
+
+Other architectures such as PPC, RISC and MIPS should be supported as well. Big-endian support is untested and thus
+might be buggy.
+
+libprojectM builds at least on the following platforms:
+
+- Windows
+- Linux
+- macOS (iOS/tvOS as well, but be aware that Apple's TOS may prevent its use in Store apps!)
+- BSD derivates
+- Android
+- WebGL/WASM (using emscripten)
+
+As long as a platform provides OpenGL Core 3.3 or OpenGL ES 3.2 libraries and supports at least C++ 14, libprojectM
+should build fine.
+
 ### Raspberry Pi (and other embedded systems)
 
-* projectM is arch-independent, although there are some SSE2 enhancements for x86
-* [Notes on running on raspberry pi](https://github.com/projectM-visualizer/projectm/issues/115)
+Make sure to enable GLES support by passing `-DENABLE_GLES=TRUE` to CMake's configuration command and install the
+appropriate OS libraries. Otherwise, follow the Linux build instructions above.
+
+For applications using projectM, it's highly recommended to keep certain performance-related settings low, such as:
+
+- The per-point mesh resolution should be kept low, e.g. 48x32
+- The rendering resolution should not exceed 720p on the Pi, though most presets will also run at ~60 FPS in 1080p
 
 ### Build using NDK for Android
 
@@ -299,22 +320,15 @@ Some UNIX build systems cannot use CMake config packages, like GNU autotools. To
 systems, projectM's build system also creates basic `.pc` files during the installation process.
 
 Note that the resulting pkgconfig files will not necessarily work in all circumstances, because they are much less
-flexible than CMake (or Meson). When using pkgconfig, some required libraries will probably nor be linked
+flexible than CMake (or Meson). When using pkgconfig, some required libraries will probably not be linked
 automatically (e.g. OpenGL libraries) and have to be added manually depending on the application needs.
 
-## libprojectM
+### Frontends and audio capturing
 
-`libprojectM` is the core library. It is made up of three sub-libraries:
+Previous projectM versions (before 4.0) came with several UIs and audio capture implementations. To reduce the size of
+the code base and separate the release cycles and development of the core library and the frontends, these have been
+removed from libprojectM and either being rewritten or moved into their own, separate Git repository.
 
-#### Renderer
-
-Made up of everything in `src/libprojectM/Renderer`. These files compose the `libRenderer` sub-library.
-
-### Assets
-
-`libprojectM` can either have a configuration hard-coded or load from a configuration file. It's up to each application
-to decide how to load the config file. The config file can have paths defined specifying where to load fonts and presets
-from.
-
-You will want to install the config file and presets somewhere, and then define that path for the application you're
-trying to build.
+libprojectM on its own does not have any means of capturing audio, it simply takes PCM data via the API. Applications
+using projectM can supply this data from their own audio sources, e.g. music playing in an audio player or capturing
+audio data from OS or other external sources.

@@ -1,5 +1,4 @@
-precision highp float;
-precision highp int;
+precision mediump float;
 
 in vec2 fragment_texture;
 

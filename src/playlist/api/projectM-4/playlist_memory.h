@@ -1,6 +1,6 @@
 /**
  * @file playlist_memory.h
- * @copyright 2003-2024 projectM Team
+ * @copyright 2003-2025 projectM Team
  * @brief Memory allocation/deallocation helpers.
  * @since 4.0.0
  *

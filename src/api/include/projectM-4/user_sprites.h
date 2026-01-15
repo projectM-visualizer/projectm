@@ -1,6 +1,6 @@
 /**
  * @file user_sprites.h
- * @copyright 2003-2024 projectM Team
+ * @copyright 2003-2025 projectM Team
  * @brief Types and enumerations used in the other API headers.
  * @since 4.2.0
  *

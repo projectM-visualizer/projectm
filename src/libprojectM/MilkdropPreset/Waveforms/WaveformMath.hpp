@@ -3,7 +3,7 @@
 #include "Constants.hpp"
 #include "WaveformMode.hpp"
 
-#include "Renderer/RenderItem.hpp"
+#include "Renderer/Point.hpp"
 
 #include <array>
 #include <vector>
@@ -19,7 +19,7 @@ namespace Waveforms {
 class WaveformMath
 {
 public:
-    using VertexList = std::vector<Renderer::RenderItem::Point>;
+    using VertexList = std::vector<Renderer::Point>;
 
     virtual ~WaveformMath() = default;
 

@@ -1,6 +1,6 @@
 /**
  * @file touch.h
- * @copyright 2003-2024 projectM Team
+ * @copyright 2003-2025 projectM Team
  * @brief Touch-related functions to add random waveforms.
  * @since 4.0.0
  *

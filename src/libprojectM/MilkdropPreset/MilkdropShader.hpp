@@ -1,5 +1,5 @@
 /**
- * @file MilkdropShader
+ * @file MilkdropShader.hpp
  * @brief Holds a warp or composite shader of Milkdrop presets.
  *
  * This class wraps the conversion from HLSL shader code to GLSL and also manages the

@@ -2,30 +2,33 @@
 
 #include <projectM-4/projectM.h>
 
+#include <Logging.hpp>
+
 #include <Audio/AudioConstants.hpp>
 
-#include <cstring>
 #include <projectM-4/parameters.h>
 #include <projectM-4/render_opengl.h>
-#include <sstream>
 
+#include <cstring>
+#include <sstream>
 
 namespace libprojectM {
 
 void projectMWrapper::PresetSwitchRequestedEvent(bool isHardCut) const
 {
-    if (m_onPresetSwitchRequested)
+    if (m_presetSwitchRequestedEventCallback)
     {
-        m_onPresetSwitchRequested(isHardCut);
+        m_presetSwitchRequestedEventCallback(isHardCut, m_presetSwitchRequestedEventUserData);
     }
 }
 
 void projectMWrapper::PresetSwitchFailedEvent(const std::string& presetFilename,
                                               const std::string& failureMessage) const
 {
-    if (m_onPresetSwitchFailed)
+    if (m_presetSwitchFailedEventCallback)
     {
-        m_onPresetSwitchFailed(presetFilename, failureMessage);
+        m_presetSwitchFailedEventCallback(presetFilename.c_str(),
+                                          failureMessage.c_str(), m_presetSwitchFailedEventUserData);
     }
 }
 
@@ -101,28 +104,16 @@ void projectm_set_preset_switch_requested_event_callback(projectm_handle instanc
                                                          projectm_preset_switch_requested_event callback, void* user_data)
 {
     auto projectMInstance = handle_to_instance(instance);
-    if (callback) {
-        projectMInstance->m_onPresetSwitchRequested =
-            [callback, user_data](bool isHardCut) {
-                callback(isHardCut, user_data);
-            };
-    } else {
-        projectMInstance->m_onPresetSwitchRequested = nullptr;
-    }
+    projectMInstance->m_presetSwitchRequestedEventCallback = callback;
+    projectMInstance->m_presetSwitchRequestedEventUserData = user_data;
 }
 
 void projectm_set_preset_switch_failed_event_callback(projectm_handle instance,
                                                       projectm_preset_switch_failed_event callback, void* user_data)
 {
     auto projectMInstance = handle_to_instance(instance);
-    if (callback) {
-        projectMInstance->m_onPresetSwitchFailed =
-            [callback, user_data](const std::string& presetFilename, const std::string& failureMessage) {
-                callback(presetFilename.c_str(), failureMessage.c_str(), user_data);
-            };
-    } else {
-        projectMInstance->m_onPresetSwitchFailed = nullptr;
-    }
+    projectMInstance->m_presetSwitchFailedEventCallback = callback;
+    projectMInstance->m_presetSwitchFailedEventUserData = user_data;
 }
 
 void projectm_set_texture_search_paths(projectm_handle instance,
@@ -189,6 +180,12 @@ void projectm_opengl_render_frame_fbo(projectm_handle instance, uint32_t framebu
 {
     auto projectMInstance = handle_to_instance(instance);
     projectMInstance->RenderFrame(framebuffer_object_id);
+}
+
+void projectm_opengl_burn_texture(projectm_handle instance, uint32_t texture, int left, int top, int width, int height)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->BurnInTexture(texture, left, top, width, height);
 }
 
 void projectm_set_frame_time(projectm_handle instance, double seconds_since_first_frame)
@@ -282,6 +279,18 @@ void projectm_get_mesh_size(projectm_handle instance, size_t* width, size_t* hei
     projectMInstance->MeshSize(w, h);
     *width = static_cast<size_t>(w);
     *height = static_cast<size_t>(h);
+}
+
+void projectm_set_texel_offset(projectm_handle instance, float offset_X, float offset_y)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->SetTexelOffsets(offset_X, offset_y);
+}
+
+void projectm_get_texel_offset(projectm_handle instance, float* offset_X, float* offset_y)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->TexelOffsets(*offset_X, *offset_y);
 }
 
 void projectm_set_mesh_size(projectm_handle instance, size_t width, size_t height)
@@ -460,4 +469,28 @@ uint32_t projectm_sprite_get_max_sprites(projectm_handle instance)
     auto* projectMInstance = handle_to_instance(instance);
 
     return projectMInstance->UserSpriteLimit();
+}
+
+void projectm_set_log_callback(projectm_log_callback callback, bool current_thread_only, void* user_data)
+{
+    if (current_thread_only)
+    {
+        libprojectM::Logging::SetThreadCallback({reinterpret_cast<libprojectM::Logging::CallbackFunction>(callback), user_data});
+    }
+    else
+    {
+        libprojectM::Logging::SetGlobalCallback({reinterpret_cast<libprojectM::Logging::CallbackFunction>(callback), user_data});
+    }
+}
+
+void projectm_set_log_level(projectm_log_level log_level, bool current_thread_only)
+{
+    if (current_thread_only)
+    {
+        libprojectM::Logging::SetThreadLogLevel(static_cast<libprojectM::Logging::LogLevel>(log_level));
+    }
+    else
+    {
+        libprojectM::Logging::SetGlobalLogLevel(static_cast<libprojectM::Logging::LogLevel>(log_level));
+    }
 }

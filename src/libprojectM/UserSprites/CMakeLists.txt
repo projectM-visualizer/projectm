@@ -33,6 +33,7 @@ target_link_libraries(UserSprites
         projectM::Eval
         libprojectM::API # For export header
         PUBLIC
+        MilkdropPreset
         GLM::GLM
         ${PROJECTM_OPENGL_LIBRARIES}
         )

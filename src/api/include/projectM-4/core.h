@@ -1,6 +1,6 @@
 /**
  * @file core.h
- * @copyright 2003-2024 projectM Team
+ * @copyright 2003-2025 projectM Team
  * @brief Core functions to instantiate, destroy and control projectM.
  * @since 4.0.0
  *

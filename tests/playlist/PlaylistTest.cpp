@@ -153,6 +153,38 @@ TEST(projectMPlaylistPlaylist, AddItemNoDuplicates)
 }
 
 
+TEST(projectMPlaylistPlaylist, AddItemWithHistory)
+{
+    Playlist playlist;
+    EXPECT_TRUE(playlist.AddItem("/some/file", 0, false));
+    EXPECT_TRUE(playlist.AddItem("/some/other/file", Playlist::InsertAtEnd, false));
+    EXPECT_TRUE(playlist.AddItem("/and/another/file", Playlist::InsertAtEnd, false));
+
+    ASSERT_EQ(playlist.Size(), 3);
+
+    playlist.SetPresetIndex(1);
+    playlist.SetPresetIndex(2);
+    playlist.SetPresetIndex(0);
+
+    auto historyItemsBefore = playlist.HistoryItems();
+    ASSERT_EQ(historyItemsBefore.size(), 3);
+    EXPECT_EQ(historyItemsBefore.at(0), 0); // Playback started with index 0
+    EXPECT_EQ(historyItemsBefore.at(1), 1);
+    EXPECT_EQ(historyItemsBefore.at(2), 2);
+
+    EXPECT_TRUE(playlist.AddItem("/yet/another/file", 1, false));
+
+    ASSERT_EQ(playlist.Size(), 4);
+
+    auto historyItemsAfter = playlist.HistoryItems();
+    ASSERT_EQ(historyItemsAfter.size(), 3);
+    EXPECT_EQ(historyItemsAfter.at(0), 0);
+    EXPECT_EQ(historyItemsAfter.at(1), 2);
+    EXPECT_EQ(historyItemsAfter.at(2), 3);
+}
+
+
+
 TEST(projectMPlaylistPlaylist, AddPathRecursively)
 {
     Playlist playlist;
@@ -218,7 +250,7 @@ TEST(projectMPlaylistPlaylist, AddPathNonRecursively)
 }
 
 
-TEST(projectMPlaylistPlaylist, AddPathnonRecursivelyNoDuplicates)
+TEST(projectMPlaylistPlaylist, AddPathNonRecursivelyNoDuplicates)
 {
     Playlist playlist;
 
@@ -286,6 +318,36 @@ TEST(projectMPlaylistPlaylist, RemoveItemFromMiddle)
     ASSERT_EQ(items.size(), 2);
     EXPECT_EQ(items.at(0).Filename(), "/some/file");
     EXPECT_EQ(items.at(1).Filename(), "/yet/another/file");
+}
+
+
+TEST(projectMPlaylistPlaylist, RemoveItemWithHistory)
+{
+    Playlist playlist;
+    EXPECT_TRUE(playlist.AddItem("/some/file", Playlist::InsertAtEnd, false));
+    EXPECT_TRUE(playlist.AddItem("/some/other/file", Playlist::InsertAtEnd, false));
+    EXPECT_TRUE(playlist.AddItem("/yet/another/file", Playlist::InsertAtEnd, false));
+
+    ASSERT_EQ(playlist.Size(), 3);
+
+    playlist.SetPresetIndex(1);
+    playlist.SetPresetIndex(2);
+    playlist.SetPresetIndex(0);
+
+    auto historyItemsBefore = playlist.HistoryItems();
+    ASSERT_EQ(historyItemsBefore.size(), 3);
+    EXPECT_EQ(historyItemsBefore.at(0), 0); // Playback started with index 0
+    EXPECT_EQ(historyItemsBefore.at(1), 1);
+    EXPECT_EQ(historyItemsBefore.at(2), 2);
+
+    EXPECT_TRUE(playlist.RemoveItem(1));
+
+    ASSERT_EQ(playlist.Size(), 2);
+
+    auto historyItemsAfter = playlist.HistoryItems();
+    ASSERT_EQ(historyItemsAfter.size(), 2);
+    EXPECT_EQ(historyItemsAfter.at(0), 0);
+    EXPECT_EQ(historyItemsAfter.at(1), 1);
 }
 
 
