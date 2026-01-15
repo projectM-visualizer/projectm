@@ -23,7 +23,7 @@
 #endif
 
 // this table is rearranged from the specification so we do not have to add any logic to index into it
-const int32_t wfETC_IntensityTables[8][4] =
+const int32_t wfETC_IntensityTables[8][4] = 
 {
 	{  2,   8,  -2, -8   },
 	{  5,  17,  -5, -17  },
