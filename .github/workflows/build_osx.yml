@@ -65,6 +65,7 @@ jobs:
             -DBUILD_SHARED_LIBS="${shared_libs}" \
             -DENABLE_BOOST_FILESYSTEM="${use_boost}" \
             -DCMAKE_OSX_ARCHITECTURES="${{ matrix.arch }}" \
+            -DENABLE_CXX_INTERFACE=YES \
             -DBUILD_TESTING=YES
 
       - name: Build Debug
@@ -80,6 +81,17 @@ jobs:
         run: |
           cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --target install
           cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target install
+
+      - name: Test C++ Interface
+        run: |
+          cmake -G "Ninja Multi-Config" \
+            -S "${{ github.workspace }}/tests/cxx-interface" \
+            -B "${{ github.workspace }}/cmake-build-cxx-api" \
+            -DCMAKE_OSX_ARCHITECTURES="${{ matrix.arch }}" \
+            -DCMAKE_PREFIX_PATH="${{ github.workspace }}/install"
+          
+          cmake --build "${{ github.workspace }}/cmake-build-cxx-api" --config "Debug"
+          cmake --build "${{ github.workspace }}/cmake-build-cxx-api" --config "Release"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
