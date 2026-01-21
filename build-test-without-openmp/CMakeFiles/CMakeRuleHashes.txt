@@ -1,8 +1,0 @@
-# Hashes of file build rules.
-4dcb5ab68135fa6c42d38b0298fea7e4 /home/runner/work/Project-M/Project-M/vendor/projectm-eval/projectm-eval/Compiler.c
-41e8e1261b89766beb190899964bce3d /home/runner/work/Project-M/Project-M/vendor/projectm-eval/projectm-eval/Scanner.c
-acb6bf378dfecfc0471a251e23ff856d src/libprojectM/MilkdropPreset/MilkdropStaticShaders.cpp
-61a210884be87354c51085894e848898 src/libprojectM/Renderer/BuiltInTransitionsResources.hpp
-17fc24cf5e641c7982a0ecb6827cfe9d src/libprojectM/UserSprites/SpriteShaders.hpp
-b2988beddba75e78e870d153a98fded3 vendor/projectm-eval/projectm-eval/CMakeFiles/GenerateCompiler
-b2988beddba75e78e870d153a98fded3 vendor/projectm-eval/projectm-eval/CMakeFiles/GenerateScanner
