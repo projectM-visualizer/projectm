@@ -22,6 +22,11 @@ target_link_libraries(Audio
         libprojectM::API
         )
 
+if(ENABLE_OPENMP AND OpenMP_CXX_FOUND)
+    target_link_libraries(Audio PUBLIC OpenMP::OpenMP_CXX)
+    target_compile_definitions(Audio PUBLIC PRJM_ENABLE_OPENMP)
+endif()
+
 if(BUILD_SHARED_LIBS)
     if(ENABLE_CXX_INTERFACE)
         target_compile_definitions(Audio

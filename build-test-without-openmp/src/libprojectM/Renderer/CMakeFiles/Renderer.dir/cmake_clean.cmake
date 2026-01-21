@@ -1,0 +1,42 @@
+file(REMOVE_RECURSE
+  "BuiltInTransitionsResources.hpp"
+  "CMakeFiles/Renderer.dir/BlendMode.cpp.o"
+  "CMakeFiles/Renderer.dir/BlendMode.cpp.o.d"
+  "CMakeFiles/Renderer.dir/CopyTexture.cpp.o"
+  "CMakeFiles/Renderer.dir/CopyTexture.cpp.o.d"
+  "CMakeFiles/Renderer.dir/FileScanner.cpp.o"
+  "CMakeFiles/Renderer.dir/FileScanner.cpp.o.d"
+  "CMakeFiles/Renderer.dir/Framebuffer.cpp.o"
+  "CMakeFiles/Renderer.dir/Framebuffer.cpp.o.d"
+  "CMakeFiles/Renderer.dir/Mesh.cpp.o"
+  "CMakeFiles/Renderer.dir/Mesh.cpp.o.d"
+  "CMakeFiles/Renderer.dir/MilkdropNoise.cpp.o"
+  "CMakeFiles/Renderer.dir/MilkdropNoise.cpp.o.d"
+  "CMakeFiles/Renderer.dir/PresetTransition.cpp.o"
+  "CMakeFiles/Renderer.dir/PresetTransition.cpp.o.d"
+  "CMakeFiles/Renderer.dir/Sampler.cpp.o"
+  "CMakeFiles/Renderer.dir/Sampler.cpp.o.d"
+  "CMakeFiles/Renderer.dir/Shader.cpp.o"
+  "CMakeFiles/Renderer.dir/Shader.cpp.o.d"
+  "CMakeFiles/Renderer.dir/ShaderCache.cpp.o"
+  "CMakeFiles/Renderer.dir/ShaderCache.cpp.o.d"
+  "CMakeFiles/Renderer.dir/Texture.cpp.o"
+  "CMakeFiles/Renderer.dir/Texture.cpp.o.d"
+  "CMakeFiles/Renderer.dir/TextureAttachment.cpp.o"
+  "CMakeFiles/Renderer.dir/TextureAttachment.cpp.o.d"
+  "CMakeFiles/Renderer.dir/TextureManager.cpp.o"
+  "CMakeFiles/Renderer.dir/TextureManager.cpp.o.d"
+  "CMakeFiles/Renderer.dir/TextureSamplerDescriptor.cpp.o"
+  "CMakeFiles/Renderer.dir/TextureSamplerDescriptor.cpp.o.d"
+  "CMakeFiles/Renderer.dir/TransitionShaderManager.cpp.o"
+  "CMakeFiles/Renderer.dir/TransitionShaderManager.cpp.o.d"
+  "CMakeFiles/Renderer.dir/VertexBufferUsage.cpp.o"
+  "CMakeFiles/Renderer.dir/VertexBufferUsage.cpp.o.d"
+  "CMakeFiles/Renderer.dir/VertexIndexArray.cpp.o"
+  "CMakeFiles/Renderer.dir/VertexIndexArray.cpp.o.d"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/Renderer.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()
