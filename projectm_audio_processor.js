@@ -8,12 +8,19 @@ class ProjectMAudioWorkletProcessor extends AudioWorkletProcessor {
         this.isPlaying = false;
         this.outputChannels = 0;     // Determined from output buffer
 
+        // Buffering for projectM (optimization)
+        this.pmBufferSize = 512;     // Target batch size (reduce JS-Wasm calls)
+        this.pmBuffer = new Float32Array(this.pmBufferSize);
+        this.pmBufferIndex = 0;
+
         this.port.onmessage = (event) => {
             if (event.data.type === 'loadWavData') {
                 this.mainAudioBuffer = event.data.audioBuffer; // This is an AudioBuffer object
                 this.playhead = event.data.startPlaying ? 0 : -1; // Reset or keep paused
                 this.looping = event.data.loop !== undefined ? event.data.loop : true;
                 this.isPlaying = event.data.startPlaying || false;
+                // Reset buffering state on new load
+                this.pmBufferIndex = 0;
                 if (this.isPlaying) {
                     console.log('[Worklet] AudioBuffer received, playback started/resumed.');
                 } else {
@@ -50,30 +57,29 @@ class ProjectMAudioWorkletProcessor extends AudioWorkletProcessor {
         this.outputChannels = outputBuffer.length; // Number of output channels (e.g., 2 for stereo)
         const samplesToProcess = outputBuffer[0].length; // e.g., 128 samples (block size)
 
-        // Prepare a buffer to send to ProjectM (e.g., first channel, or mixdown)
-        // We send a copy of what's being played in this block.
-        let pcmDataForProjectM = new Float32Array(samplesToProcess);
-
         for (let i = 0; i < samplesToProcess; i++) {
             if (this.playhead >= this.mainAudioBuffer.length) { // End of buffer
                 if (this.looping) {
                     this.playhead = 0; // Loop
                 } else {
                     this.isPlaying = false; // Stop
+
+                    // Flush any remaining data in the PM buffer
+                    if (this.pmBufferIndex > 0) {
+                         this.port.postMessage({
+                            type: 'pcmData',
+                            audioData: this.pmBuffer.slice(0, this.pmBufferIndex),
+                            samplesPerChannel: this.pmBufferIndex,
+                            channelsForPM: 1
+                        });
+                        this.pmBufferIndex = 0;
+                    }
+
                     // Fill rest of current output block with silence
                     for (let ch = 0; ch < this.outputChannels; ch++) {
                         for (let j = i; j < samplesToProcess; j++) {
                             outputBuffer[ch][j] = 0;
                         }
-                    }
-                    // Send any partially filled pcmDataForProjectM before breaking
-                    if (i > 0) {
-                         this.port.postMessage({
-                            type: 'pcmData',
-                            audioData: pcmDataForProjectM.slice(0, i), // Send only filled part
-                            samplesPerChannel: i, // Number of valid samples in this partial block
-                            channelsForPM: 1 // Assuming we send one channel to PM
-                        });
                     }
                     return true; // End processing for this block
                 }
@@ -88,18 +94,23 @@ class ProjectMAudioWorkletProcessor extends AudioWorkletProcessor {
                 outputBuffer[ch][i] = sourceChannelData[this.playhead];
             }
 
-            // For addPCM: copy the first channel's data (or mixdown if you prefer)
-            pcmDataForProjectM[i] = outputBuffer[0][i];
+            // Accumulate for ProjectM
+            this.pmBuffer[this.pmBufferIndex] = outputBuffer[0][i];
+            this.pmBufferIndex++;
+
+            if (this.pmBufferIndex >= this.pmBufferSize) {
+                // Buffer full, send to main thread
+                this.port.postMessage({
+                    type: 'pcmData',
+                    audioData: this.pmBuffer, // No slice needed, sending full buffer
+                    samplesPerChannel: this.pmBufferSize,
+                    channelsForPM: 1
+                });
+                this.pmBufferIndex = 0;
+            }
+
             this.playhead++;
         }
-
-        // Post the fully processed block of PCM data to the main thread
-        this.port.postMessage({
-            type: 'pcmData',
-            audioData: pcmDataForProjectM, // Float32Array (already a copy of outputL for this block)
-            samplesPerChannel: samplesToProcess,
-            channelsForPM: 1 // Example: sending mono (left channel) to ProjectM
-        });
 
         return true; // Keep processor alive
     }
