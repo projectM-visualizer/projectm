@@ -192,36 +192,42 @@ EM_JS(void, js_initialize_worklet_system_once, (uintptr_t pm_handle_for_addpcm),
     return;
 });
 
-EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool start_playing), {
+EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool startPlaying), {
     const filePath = UTF8ToString(path_in_vfs);
     const audioContext = window.projectMAudioContext_Global_Cpp;
     const workletNode = window.projectMWorkletNode_Global_Cpp;
     if (!audioContext || !workletNode) { return; }
+    
     async function decodeAndSend() {
         try {
             const fileDataUint8Array = FS.readFile(filePath);
             console.log(`JS Load Song: Read ${fileDataUint8Array.length} bytes from ${filePath}.`);
             if (fileDataUint8Array.length === 0) { return; }
+            
             const audioDataArrayBuffer = fileDataUint8Array.buffer.slice(
                 fileDataUint8Array.byteOffset, fileDataUint8Array.byteOffset + fileDataUint8Array.byteLength
             );
+            
             if (audioContext.state === 'suspended') { await audioContext.resume(); }
+            
             const decodedBuffer = await audioContext.decodeAudioData(audioDataArrayBuffer);
             console.log(`JS Load Song: Decoded buffer. Duration: ${decodedBuffer.duration.toFixed(2)}s. Sending to worklet.`);
+            
             const rawChannelData = Array.from({length: decodedBuffer.numberOfChannels}, (_, i) => decodedBuffer.getChannelData(i));
+            
             workletNode.port.postMessage({
                 type: 'loadWavData',
                 channelData: rawChannelData,
                 sampleRate: decodedBuffer.sampleRate,
                 loop: loop,
-                startPlaying: startPlaying
+                startPlaying: startPlaying // Now consistently using 'startPlaying'
             });
         } catch(e) {
             console.error("JS Load Song: Error during decode and send:", e);
         }
     }
     decodeAndSend();
-return;
+    return;
 });
 
 extern "C" {
