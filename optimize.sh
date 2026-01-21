@@ -36,18 +36,7 @@ else
     echo "✓ wasmedge found"
 fi
 
-# 4. Optimize Emscripten WASM (Native Effects) - commented out as files may not exist
-if [ "$WASM_OPT_AVAILABLE" = true ] && [ -f "$NATIVE_WASM" ]; then
-    echo "🔧 Optimizing Native WASM..."
-    wasm-opt "$NATIVE_WASM" -o "$NATIVE_WASM" \
-      -O4 \
-      --converge \
-      --strip-debug \
-      --enable-threads \
-      --enable-bulk-memory \
-      --enable-nontrapping-float-to-int \
-      --enable-exception-handling
-fi
+
 
 # Try wasmedge optimization if available
 if [ "$WASMEDGE_AVAILABLE" = true ] && [ -f "$NATIVE_WASM" ]; then
