@@ -29,6 +29,10 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "Audio/MilkdropFFT.hpp"
 
+#ifdef PRJM_ENABLE_OPENMP
+#include <omp.h>
+#endif
+
 namespace libprojectM {
 namespace Audio {
 
@@ -59,6 +63,9 @@ void MilkdropFFT::InitEnvelopeTable(float power)
 
     if (power == 1.0f)
     {
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
         for (size_t i = 0; i < m_samplesIn; i++)
         {
             m_envelope[i] = 0.5f + 0.5f * std::sin(static_cast<float>(i) * multiplier - PI * 0.5f);
@@ -66,6 +73,9 @@ void MilkdropFFT::InitEnvelopeTable(float power)
     }
     else
     {
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
         for (size_t i = 0; i < m_samplesIn; i++)
         {
             m_envelope[i] = std::pow(0.5f + 0.5f * std::sin(static_cast<float>(i) * multiplier - PI * 0.5f), power);
@@ -86,6 +96,9 @@ void MilkdropFFT::InitEqualizeTable(bool equalize)
 
     m_equalize.resize(m_numFrequencies / 2);
 
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
     for (size_t i = 0; i < m_numFrequencies / 2; i++)
     {
         m_equalize[i] = scaling * std::log(static_cast<float>(m_numFrequencies / 2 - i) * inverseHalfNumFrequencies);
@@ -157,6 +170,9 @@ void MilkdropFFT::TimeToFrequencyDomain(const std::vector<float>& waveformData, 
 
     // 1. Set up input to the FFT
     std::vector<std::complex<float>> spectrumData(m_numFrequencies, std::complex<float>());
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
     for (size_t i = 0; i < m_numFrequencies; i++)
     {
         size_t const idx{m_bitRevTable[i]};
@@ -166,7 +182,7 @@ void MilkdropFFT::TimeToFrequencyDomain(const std::vector<float>& waveformData, 
         }
     }
 
-    // 2. Perform FFT
+    // 2. Perform FFT (not parallelized - stage-dependent iterations)
     size_t dftSize{2};
     size_t octave{0};
 
@@ -196,6 +212,9 @@ void MilkdropFFT::TimeToFrequencyDomain(const std::vector<float>& waveformData, 
 
     // 3. Take the magnitude & eventually equalize it (on a log10 scale) for output
     spectralData.resize(m_numFrequencies / 2);
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
     for (size_t i = 0; i < m_numFrequencies / 2; i++)
     {
         spectralData[i] = m_equalize[i] * std::abs(spectrumData[i]);
