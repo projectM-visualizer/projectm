@@ -45,7 +45,6 @@ if [ "$WASM_OPT_AVAILABLE" = true ] && [ -f "$NATIVE_WASM" ]; then
       --strip-debug \
       --enable-simd \
       --enable-threads \
-      --enable-relaxed-simd \
       --enable-bulk-memory \
       --enable-nontrapping-float-to-int \
       --enable-exception-handling
