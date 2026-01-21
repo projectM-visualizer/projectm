@@ -4,6 +4,10 @@
 
 #include <cmath>
 
+#ifdef PRJM_ENABLE_OPENMP
+#include <omp.h>
+#endif
+
 namespace libprojectM {
 namespace MilkdropPreset {
 namespace Waveforms {
@@ -23,6 +27,9 @@ void DoubleLine::GenerateVertices(const PresetState& presetState, const PerFrame
     ClipWaveformEdges(1.57f * m_mysteryWaveParam);
 
     float const separation = powf(m_waveY * 0.5f + 0.5f, 2.0f);
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
     for (int i = 0; i < m_samples; i++)
     {
         m_wave1Vertices[i] = {
