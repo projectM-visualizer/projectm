@@ -94,7 +94,18 @@ EM_JS(void, js_feed_stream_data_to_projectm, (uintptr_t pm_handle, int buffer_si
         return;
     }
     analyser.getFloatTimeDomainData(pcmBuffer);
-    Module.projectm_pcm_add_float(pm_handle, pcmBuffer, pcmBuffer.length, 1); // Assuming mono for simplicity
+
+    // Optimization: projectM's internal analysis buffer is 576 samples (AudioBufferSamples).
+    // Sending more than this just overwrites the older data in the ring buffer before analysis.
+    // We send only the most recent 576 samples to minimize overhead while keeping the buffer fresh.
+    const projectm_buffer_size = 576;
+    if (pcmBuffer.length > projectm_buffer_size) {
+        // Send subarray of the last 576 samples
+        const optimizedBuffer = pcmBuffer.subarray(pcmBuffer.length - projectm_buffer_size);
+        Module.projectm_pcm_add_float(pm_handle, optimizedBuffer, projectm_buffer_size, 1);
+    } else {
+        Module.projectm_pcm_add_float(pm_handle, pcmBuffer, pcmBuffer.length, 1);
+    }
 });
 
 EM_JS(void, js_initialize_stream_analyser, (), {
