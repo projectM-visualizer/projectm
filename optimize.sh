@@ -43,7 +43,6 @@ if [ "$WASM_OPT_AVAILABLE" = true ] && [ -f "$NATIVE_WASM" ]; then
       -O4 \
       --converge \
       --strip-debug \
-      --enable-simd \
       --enable-threads \
       --enable-bulk-memory \
       --enable-nontrapping-float-to-int \
