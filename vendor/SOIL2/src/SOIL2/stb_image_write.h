@@ -203,6 +203,10 @@ STBIWDEF void stbi_flip_vertically_on_write(int flip_boolean);
 
 #ifdef STB_IMAGE_WRITE_IMPLEMENTATION
 
+#ifdef PRJM_ENABLE_OPENMP
+#include <omp.h>
+#endif
+
 #ifdef _WIN32
    #ifndef _CRT_SECURE_NO_WARNINGS
    #define _CRT_SECURE_NO_WARNINGS
@@ -1147,6 +1151,54 @@ STBIWDEF unsigned char *stbi_write_png_to_mem(const unsigned char *pixels, int s
    }
 
    filt = (unsigned char *) STBIW_MALLOC((x*n+1) * y); if (!filt) return 0;
+#ifdef PRJM_ENABLE_OPENMP
+   {
+       int success = 1;
+#pragma omp parallel shared(success)
+       {
+           signed char *line_buffer = (signed char *) STBIW_MALLOC(x * n);
+           if (!line_buffer) {
+#pragma omp atomic write
+               success = 0;
+           } else {
+#pragma omp for
+               for (j=0; j < y; ++j) {
+                   if (success) {
+                       int filter_type;
+                       if (force_filter > -1) {
+                           filter_type = force_filter;
+                           stbiw__encode_png_line((unsigned char*)(pixels), stride_bytes, x, y, j, n, force_filter, line_buffer);
+                       } else { // Estimate the best filter by running through all of them:
+                           int best_filter = 0, best_filter_val = 0x7fffffff, est, i;
+                           for (filter_type = 0; filter_type < 5; filter_type++) {
+                               stbiw__encode_png_line((unsigned char*)(pixels), stride_bytes, x, y, j, n, filter_type, line_buffer);
+
+                               // Estimate the entropy of the line using this filter; the less, the better.
+                               est = 0;
+                               for (i = 0; i < x*n; ++i) {
+                                   est += abs((signed char) line_buffer[i]);
+                               }
+                               if (est < best_filter_val) {
+                                   best_filter_val = est;
+                                   best_filter = filter_type;
+                               }
+                           }
+                           if (filter_type != best_filter) {  // If the last iteration already got us the best filter, don't redo it
+                               stbiw__encode_png_line((unsigned char*)(pixels), stride_bytes, x, y, j, n, best_filter, line_buffer);
+                               filter_type = best_filter;
+                           }
+                       }
+                       // when we get here, filter_type contains the filter type, and line_buffer contains the data
+                       filt[j*(x*n+1)] = (unsigned char) filter_type;
+                       STBIW_MEMMOVE(filt+j*(x*n+1)+1, line_buffer, x*n);
+                   }
+               }
+               STBIW_FREE(line_buffer);
+           }
+       }
+       if (!success) { STBIW_FREE(filt); return 0; }
+   }
+#else
    line_buffer = (signed char *) STBIW_MALLOC(x * n); if (!line_buffer) { STBIW_FREE(filt); return 0; }
    for (j=0; j < y; ++j) {
       int filter_type;
@@ -1178,6 +1230,7 @@ STBIWDEF unsigned char *stbi_write_png_to_mem(const unsigned char *pixels, int s
       STBIW_MEMMOVE(filt+j*(x*n+1)+1, line_buffer, x*n);
    }
    STBIW_FREE(line_buffer);
+#endif
    zlib = stbi_zlib_compress(filt, y*( x*n+1), &zlen, stbi_write_png_compression_level);
    STBIW_FREE(filt);
    if (!zlib) return 0;
