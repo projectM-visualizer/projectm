@@ -4,7 +4,7 @@ set -e  # Exit on error for critical operations
 echo "🚀 Starting Post-Build Optimization..."
 
 # 1. Define Paths
-NATIVE_WASM="projectm-v.024-thread.wasm"
+NATIVE_WASM="/content/build_space/projectm/projectm-v.024-thread.wasm"
 
 # 2. Check for Tools (but don't fail if missing)
 WASM_OPT_AVAILABLE=false
