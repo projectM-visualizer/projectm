@@ -29,6 +29,7 @@ option(ENABLE_VERBOSE_LOGGING "Enables TRACE and DEBUG logging even in release b
 
 option(BUILD_TESTING "Build the libprojectM test suite" OFF)
 option(BUILD_DOCS "Build documentation" OFF)
+option(ENABLE_OPENMP "Enable OpenMP parallelization for performance-critical sections" OFF)
 
 # Enable vcpkg manifest features according to the build options set
 if(ENABLE_SYSTEM_GLM)
@@ -122,6 +123,17 @@ endif()
 if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
     # Silence OpenGL API deprecation warnings on macOS.
     add_compile_definitions(GL_SILENCE_DEPRECATION)
+endif()
+
+# OpenMP support
+if(ENABLE_OPENMP)
+    find_package(OpenMP)
+    if(OpenMP_CXX_FOUND)
+        message(STATUS "OpenMP found: version ${OpenMP_CXX_VERSION}")
+        message(STATUS "OpenMP parallelization will be enabled in performance-critical sections")
+    else()
+        message(WARNING "ENABLE_OPENMP is ON but OpenMP was not found. Building without OpenMP support.")
+    endif()
 endif()
 
 if(ENABLE_EMSCRIPTEN)
@@ -284,6 +296,10 @@ message(STATUS "    Use system GLM:              ${ENABLE_SYSTEM_GLM}")
 message(STATUS "    Use system projectM-eval:    ${ENABLE_SYSTEM_PROJECTM_EVAL}")
 if(ENABLE_SYSTEM_PROJECTM_EVAL)
     message(STATUS "        projectM-eval version:       ${projectM-Eval_VERSION}")
+endif()
+message(STATUS "    OpenMP parallelization:      ${ENABLE_OPENMP}")
+if(ENABLE_OPENMP AND OpenMP_CXX_FOUND)
+    message(STATUS "        OpenMP version:          ${OpenMP_CXX_VERSION}")
 endif()
 message(STATUS "    Link UI with shared lib:     ${ENABLE_SHARED_LINKING}")
 message(STATUS "")
