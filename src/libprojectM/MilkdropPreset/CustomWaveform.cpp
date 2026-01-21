@@ -8,6 +8,10 @@
 #include <algorithm>
 #include <cmath>
 
+#ifdef PRJM_ENABLE_OPENMP
+#include <omp.h>
+#endif
+
 namespace libprojectM {
 namespace MilkdropPreset {
 
@@ -141,20 +145,49 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     std::vector<Renderer::Color> colors(sampleCount);
 
     float const sampleMultiplicator = sampleCount > 1 ? 1.0f / static_cast<float>(sampleCount - 1) : 0.0f;
-    for (int sample = 0; sample < sampleCount; sample++)
+
+    if (!m_perPointContext.perPointCodeHandle)
     {
-        float const sampleIndex = static_cast<float>(sample) * sampleMultiplicator;
-        LoadPerPointEvaluationVariables(sampleIndex, sampleDataL[sample], sampleDataR[sample]);
+        const float invAspectX = m_presetState.renderContext.invAspectX;
+        const float invAspectY = m_presetState.renderContext.invAspectY;
+        const float r = static_cast<float>(*m_perFrameContext.r);
+        const float g = static_cast<float>(*m_perFrameContext.g);
+        const float b = static_cast<float>(*m_perFrameContext.b);
+        const float a = static_cast<float>(*m_perFrameContext.a);
 
-        m_perPointContext.ExecutePerPointCode();
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
+        for (int sample = 0; sample < sampleCount; sample++)
+        {
+            float const value1 = sampleDataL[sample];
+            float const value2 = sampleDataR[sample];
 
-        points[sample] = Renderer::Point(static_cast<float>((*m_perPointContext.x * 2.0 - 1.0) * m_presetState.renderContext.invAspectX),
-                                         static_cast<float>((*m_perPointContext.y * -2.0 + 1.0) * m_presetState.renderContext.invAspectY));
+            // x = 0.5 + value1, y = 0.5 + value2
+            // x' = (x * 2.0 - 1.0) * invAspectX = ((0.5 + value1) * 2.0 - 1.0) * invAspectX = 2.0 * value1 * invAspectX
+            // y' = (y * -2.0 + 1.0) * invAspectY = ((0.5 + value2) * -2.0 + 1.0) * invAspectY = -2.0 * value2 * invAspectY
 
-        colors[sample] = Renderer::Color::Modulo(Renderer::Color(static_cast<float>(*m_perPointContext.r),
-                                                                 static_cast<float>(*m_perPointContext.g),
-                                                                 static_cast<float>(*m_perPointContext.b),
-                                                                 static_cast<float>(*m_perPointContext.a)));
+            points[sample] = Renderer::Point(value1 * 2.0f * invAspectX, value2 * -2.0f * invAspectY);
+            colors[sample] = Renderer::Color::Modulo(Renderer::Color(r, g, b, a));
+        }
+    }
+    else
+    {
+        for (int sample = 0; sample < sampleCount; sample++)
+        {
+            float const sampleIndex = static_cast<float>(sample) * sampleMultiplicator;
+            LoadPerPointEvaluationVariables(sampleIndex, sampleDataL[sample], sampleDataR[sample]);
+
+            m_perPointContext.ExecutePerPointCode();
+
+            points[sample] = Renderer::Point(static_cast<float>((*m_perPointContext.x * 2.0 - 1.0) * m_presetState.renderContext.invAspectX),
+                                             static_cast<float>((*m_perPointContext.y * -2.0 + 1.0) * m_presetState.renderContext.invAspectY));
+
+            colors[sample] = Renderer::Color::Modulo(Renderer::Color(static_cast<float>(*m_perPointContext.r),
+                                                                     static_cast<float>(*m_perPointContext.g),
+                                                                     static_cast<float>(*m_perPointContext.b),
+                                                                     static_cast<float>(*m_perPointContext.a)));
+        }
     }
 
     SmoothWave(points, colors);
@@ -270,18 +303,21 @@ void CustomWaveform::SmoothWave(const std::vector<Renderer::Point>& points, cons
     constexpr float inverseSum{1.0f / (c1 + c2 + c3 + c4)};
 
     size_t outputIndex = 0;
-    size_t iBelow = 0;
-    size_t iAbove2 = 1;
-
     size_t vertexCount = points.size();
 
     auto& outVertices = m_mesh.Vertices();
     auto& outColors = m_mesh.Colors();
 
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
     for (size_t inputIndex = 0; inputIndex < vertexCount - 1; inputIndex++)
     {
-        size_t const iAbove = iAbove2;
-        iAbove2 = std::min(vertexCount - 1, inputIndex + 2);
+        size_t const outputIndex = inputIndex * 2;
+        size_t const iBelow = (inputIndex == 0) ? 0 : inputIndex - 1;
+        size_t const iAbove = std::min(vertexCount - 1, inputIndex + 1);
+        size_t const iAbove2 = std::min(vertexCount - 1, inputIndex + 2);
+
         outVertices[outputIndex] = points[inputIndex];
         outColors[outputIndex] = colors[inputIndex];
         outColors[outputIndex + 1] = colors[inputIndex];
@@ -289,9 +325,10 @@ void CustomWaveform::SmoothWave(const std::vector<Renderer::Point>& points, cons
         smoothedPoint = points[inputIndex];
         smoothedPoint.SetX((c1 * points[iBelow].X() + c2 * points[inputIndex].X() + c3 * points[iAbove].X() + c4 * points[iAbove2].X()) * inverseSum);
         smoothedPoint.SetY((c1 * points[iBelow].Y() + c2 * points[inputIndex].Y() + c3 * points[iAbove].Y() + c4 * points[iAbove2].Y()) * inverseSum);
-        iBelow = inputIndex;
-        outputIndex += 2;
     }
+
+    // Set outputIndex to the end for the final point assignment
+    outputIndex = (vertexCount - 1) * 2;
 
     outVertices[outputIndex] = points[vertexCount - 1];
     outColors[outputIndex] = colors[vertexCount - 1];

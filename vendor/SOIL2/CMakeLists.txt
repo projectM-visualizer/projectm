@@ -36,6 +36,11 @@ target_link_libraries(SOIL2
         ${PROJECTM_OPENGL_LIBRARIES}
         )
 
+if(ENABLE_OPENMP AND OpenMP_C_FOUND)
+    target_link_libraries(SOIL2 PRIVATE OpenMP::OpenMP_C)
+    target_compile_definitions(SOIL2 PRIVATE PRJM_ENABLE_OPENMP)
+endif()
+
 if(USE_GLES)
     target_compile_definitions(SOIL2
             PRIVATE
