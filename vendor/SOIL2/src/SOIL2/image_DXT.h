@@ -48,7 +48,7 @@ convert_image_to_DXT5
 );
 
 //	A bunch of DirectDraw Surface structures and flags
-typedef struct
+typedef struct  
 {
     uint32_t    dwMagic;
     uint32_t    dwSize;

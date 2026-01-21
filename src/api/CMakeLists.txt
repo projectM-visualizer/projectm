@@ -11,6 +11,14 @@ generate_export_header(projectM_api
         EXPORT_FILE_NAME "${PROJECTM_EXPORT_HEADER}"
         )
 
+# Always generate the header, but we only install it if the C++ interface is actually enabled.
+set(PROJECTM_CXX_EXPORT_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4/projectM_cxx_export.h")
+
+generate_export_header(projectM_api
+        BASE_NAME projectM_CXX
+        EXPORT_FILE_NAME "${PROJECTM_CXX_EXPORT_HEADER}"
+        )
+
 set(PROJECTM_PUBLIC_HEADERS
         "${PROJECTM_EXPORT_HEADER}"
         "${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4/version.h"
@@ -27,6 +35,10 @@ set(PROJECTM_PUBLIC_HEADERS
         include/projectM-4/types.h
         include/projectM-4/user_sprites.h
         )
+
+if(ENABLE_CXX_INTERFACE)
+    list(APPEND PROJECTM_PUBLIC_HEADERS ${PROJECTM_CXX_EXPORT_HEADER})
+endif()
 
 target_sources(projectM_api
         PRIVATE
@@ -45,6 +57,14 @@ target_include_directories(projectM_api
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
         "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}>"
         )
+
+if(NOT BUILD_SHARED_LIBS)
+    target_compile_definitions(projectM_api
+            INTERFACE
+            PROJECTM_STATIC_DEFINE
+            PROJECTM_CXX_STATIC_DEFINE
+            )
+endif()
 
 add_library(libprojectM::API ALIAS projectM_api)
 

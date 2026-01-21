@@ -7,6 +7,8 @@
 
 #include "Audio/AudioConstants.hpp"
 
+#include <projectM-4/projectM_cxx_export.h>
+
 #include <array>
 #include <cstdint>
 
@@ -16,14 +18,14 @@ namespace Audio {
 /**
  * @brief Calculates beat-detection loudness relative to the previous frame(s).
  */
-class Loudness
+class PROJECTM_CXX_EXPORT Loudness
 {
 public:
     /**
      * @brief Frequency bands.
      * Only the first half of the spectrum is used for these bands, each using one third of this half.
      */
-    enum class Band : int
+    enum class Band : std::uint8_t
     {
         Bass = 0,    //!< Bass band (first sixth of the spectrum)
         Middles = 1, //!< Middles band (second sixth of the spectrum)
@@ -76,7 +78,7 @@ private:
     void UpdateBandAverage(double secondsSinceLastFrame, uint32_t frame);
 
     /**
-     * @brief Adjusts the dampening rate according the the current FPS.
+     * @brief Adjusts the dampening rate according to the current FPS.
      * @param rate The rate to be dampened.
      * @param secondsSinceLastFrame (Fractional) seconds passed since the last frame.
      * @return The dampened rate value.

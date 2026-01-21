@@ -8,14 +8,14 @@
 
 #include "Audio/AudioConstants.hpp"
 
-#include <projectM-4/projectM_export.h>
+#include <projectM-4/projectM_cxx_export.h>
 
 #include <array>
 
 namespace libprojectM {
 namespace Audio {
 
-class PROJECTM_EXPORT FrameAudioData
+class PROJECTM_CXX_EXPORT FrameAudioData
 {
 public:
     float bass{0.f};

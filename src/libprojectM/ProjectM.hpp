@@ -20,12 +20,14 @@
  */
 #pragma once
 
-#include <projectM-4/projectM_export.h>
+#include <projectM-4/projectM_cxx_export.h>
 
 #include <Renderer/RenderContext.hpp>
 
 #include <Audio/PCM.hpp>
 
+#include <cstdint>
+#include <istream>
 #include <memory>
 #include <string>
 #include <vector>
@@ -49,10 +51,15 @@ class Preset;
 class PresetFactoryManager;
 class TimeKeeper;
 
-class PROJECTM_EXPORT ProjectM
+class PROJECTM_CXX_EXPORT ProjectM
 {
 public:
     ProjectM();
+
+    ProjectM(const ProjectM& other) = delete;
+    ProjectM(ProjectM&& other) noexcept = delete;
+    auto operator=(const ProjectM& other) -> ProjectM& = delete;
+    auto operator=(ProjectM&& other) noexcept -> ProjectM& = delete;
 
     virtual ~ProjectM();
 
@@ -122,7 +129,7 @@ public:
      *       system clock will be returned.
      * @return Seconds elapsed rendering the last frame since starting projectM.
      */
-    double GetFrameTime();
+    auto GetFrameTime() -> double;
 
     void SetBeatSensitivity(float sensitivity);
 

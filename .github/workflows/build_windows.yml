@@ -96,7 +96,9 @@ jobs:
             -DCMAKE_VERBOSE_MAKEFILE=YES `
             -DBUILD_SHARED_LIBS="$($shared_libs)" `
             -DENABLE_BOOST_FILESYSTEM="$($use_boost)" `
-            -DBUILD_TESTING=YES
+            -DENABLE_CXX_INTERFACE=YES `
+            -DBUILD_TESTING=YES `
+            -DCMAKE_VERBOSE_MAKEFILE=ON
 
       - name: Build Debug
         run: cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --parallel
@@ -111,6 +113,39 @@ jobs:
         run: |
           cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --target INSTALL
           cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target INSTALL
+
+      - name: Test C++ Interface
+        run: |
+          if("${{ matrix.fslib }}" -eq "boost") {
+            $use_boost = "ON"
+          } else {
+            $use_boost = "OFF"
+          }
+          if("${{ matrix.arch }}" -eq "X64") {
+            $triplet = "x64-windows"
+          } else {
+            $triplet = "x86-windows"
+          }
+          if("${{ matrix.libs }}" -eq "shared") {
+            $runtime = "DLL"
+          } else {
+            $runtime = ""
+            $triplet = $triplet + "-static"
+          }
+          
+          cmake -G "Visual Studio 17 2022" `
+            -A "${{ matrix.arch }}" `
+            -S "${{ github.workspace }}/tests/cxx-interface" `
+            -B "${{ github.workspace }}/cmake-build-cxx-api" `
+            -DCMAKE_PREFIX_PATH="${{ github.workspace }}/install" `
+            -DCMAKE_MSVC_RUNTIME_LIBRARY="MultiThreaded$<$<CONFIG:Debug>:Debug>$($runtime)" `
+            -DCMAKE_TOOLCHAIN_FILE="${Env:VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" `
+            -DVCPKG_TARGET_TRIPLET="$($triplet)" `
+            -DENABLE_BOOST_FILESYSTEM="$($use_boost)" `
+            -DCMAKE_VERBOSE_MAKEFILE=ON
+          
+          cmake --build "${{ github.workspace }}/cmake-build-cxx-api" --config "Debug"
+          cmake --build "${{ github.workspace }}/cmake-build-cxx-api" --config "Release"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

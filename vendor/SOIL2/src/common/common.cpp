@@ -135,3 +135,4 @@ static std::string GetProcessPath() {
 std::string ResourcePath(std::string fileName) {
 	return GetProcessPath() + fileName;
 }
+

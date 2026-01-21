@@ -4,6 +4,8 @@
 */
 #pragma once
 
+#include <projectM-4/projectM_cxx_export.h>
+
 namespace libprojectM {
 namespace Renderer {
 
@@ -13,7 +15,7 @@ class TextureManager;
 /**
  * @brief Holds all global data of the current rendering context, which can change from frame to frame.
  */
-class RenderContext
+class PROJECTM_CXX_EXPORT RenderContext
 {
 public:
     float time{0.0f};          //!< Time since the preset started, in seconds.
