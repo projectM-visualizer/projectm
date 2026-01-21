@@ -13,6 +13,10 @@
 #include <algorithm>
 #include <cmath>
 
+#ifdef PRJM_ENABLE_OPENMP
+#include <omp.h>
+#endif
+
 namespace libprojectM {
 namespace MilkdropPreset {
 
@@ -211,14 +215,22 @@ void PerPixelMesh::CalculateMesh(const PresetState& presetState, const PerFrameC
     float sx = static_cast<float>(*perFrameContext.sx);
     float sy = static_cast<float>(*perFrameContext.sy);
 
-    int vertex = 0;
-
     // Can't make this multithreaded as per-pixel code may use gmegabuf or regXX vars.
     auto& vertices = m_warpMesh.Vertices();
-    for (int y = 0; y <= m_gridSizeY; y++)
+    
+    // When no per-pixel code is active, we can safely parallelize the mesh calculation
+    if (!perPixelContext.perPixelCodeHandle)
     {
-        for (int x = 0; x <= m_gridSizeX; x++)
+        const int vertexCount = (m_gridSizeX + 1) * (m_gridSizeY + 1);
+        
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
+        for (int vertex = 0; vertex < vertexCount; vertex++)
         {
+            int y = vertex / (m_gridSizeX + 1);
+            int x = vertex % (m_gridSizeX + 1);
+            
             auto& curVertex = vertices[vertex];
             auto& curRadiusAngle = m_radiusAngleBuffer[vertex];
             auto& curZoomRotWarp = m_zoomRotWarpBuffer[vertex];
@@ -226,9 +238,31 @@ void PerPixelMesh::CalculateMesh(const PresetState& presetState, const PerFrameC
             auto& curDistance = m_distanceBuffer[vertex];
             auto& curStretch = m_stretchBuffer[vertex];
 
-            // Execute per-vertex/per-pixel code if the preset uses it.
-            if (perPixelContext.perPixelCodeHandle)
+            curZoomRotWarp.zoom = zoom;
+            curZoomRotWarp.zoomExp = zoomExp;
+            curZoomRotWarp.rot = rot;
+            curZoomRotWarp.warp = warp;
+            curCenter = {cx, cy};
+            curDistance = {dx, dy};
+            curStretch = {sx, sy};
+        }
+    }
+    else
+    {
+        // Serial path when per-pixel code is active (not thread-safe)
+        int vertex = 0;
+        for (int y = 0; y <= m_gridSizeY; y++)
+        {
+            for (int x = 0; x <= m_gridSizeX; x++)
             {
+                auto& curVertex = vertices[vertex];
+                auto& curRadiusAngle = m_radiusAngleBuffer[vertex];
+                auto& curZoomRotWarp = m_zoomRotWarpBuffer[vertex];
+                auto& curCenter = m_centerBuffer[vertex];
+                auto& curDistance = m_distanceBuffer[vertex];
+                auto& curStretch = m_stretchBuffer[vertex];
+
+                // Execute per-vertex/per-pixel code if the preset uses it.
                 *perPixelContext.x = static_cast<double>(curVertex.X() * 0.5f * presetState.renderContext.aspectX + 0.5f);
                 *perPixelContext.y = static_cast<double>(curVertex.Y() * -0.5f * presetState.renderContext.aspectY + 0.5f);
                 *perPixelContext.rad = static_cast<double>(curRadiusAngle.radius);
@@ -256,19 +290,9 @@ void PerPixelMesh::CalculateMesh(const PresetState& presetState, const PerFrameC
                                static_cast<float>(*perPixelContext.dy)};
                 curStretch = {static_cast<float>(*perPixelContext.sx),
                               static_cast<float>(*perPixelContext.sy)};
-            }
-            else
-            {
-                curZoomRotWarp.zoom = zoom;
-                curZoomRotWarp.zoomExp = zoomExp;
-                curZoomRotWarp.rot = rot;
-                curZoomRotWarp.warp = warp;
-                curCenter = { cx, cy};
-                curDistance = {dx, dy};
-                curStretch = {sx, sy};
-            }
 
-            vertex++;
+                vertex++;
+            }
         }
     }
 
