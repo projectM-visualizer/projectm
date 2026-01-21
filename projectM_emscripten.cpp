@@ -33,6 +33,7 @@
 
 using namespace emscripten;
 
+EGLContext ctxegl;
 EGLDisplay display;
 EGLSurface surface;
 EGLConfig eglconfig=NULL;
@@ -143,18 +144,21 @@ if (!current_pm_handle) {
 fprintf(stderr, "Error: projectM handle is null in from_js_array_wrapper.\n");
 return;
 }
+
 std::vector<float> cpp_audio_buffer = emscripten::vecFromJSArray<float>(js_audio_array_val);
 if (channels_enum_value <= 0 || num_samples_per_channel == 0) {
 fprintf(stderr, "Error: Invalid channel count (%d) or samples_per_channel (%u).\n",
 channels_enum_value, num_samples_per_channel);
 return;
 }
+
 size_t expected_total_elements = static_cast<size_t>(num_samples_per_channel) * static_cast<size_t>(channels_enum_value);
 if (cpp_audio_buffer.size() != expected_total_elements) {
 fprintf(stderr, "Error: Audio data size mismatch. Expected %zu elements, got %zu elements from JS array.\n",
 expected_total_elements, cpp_audio_buffer.size());
 return;
 }
+
 projectm_pcm_add_float(current_pm_handle, cpp_audio_buffer.data(), num_samples_per_channel, static_cast<projectm_channels>(channels_enum_value));
 return;
 }
