@@ -32,3 +32,4 @@ extern int      stbi__qoi_info_from_file   (FILE *f,                  int *x, in
 //
 ////   end header file   /////////////////////////////////////////////////////*/
 #endif /* HEADER_STB_IMAGE_QOI_AUGMENTATION */
+

@@ -7,7 +7,9 @@
 
 #include "Audio/AudioConstants.hpp"
 
-#include <cstddef>
+#include <projectM-4/projectM_cxx_export.h>
+
+#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -23,7 +25,7 @@ namespace Audio {
  * This will keep similar features in-place instead of randomly jumping around on each frame and creates
  * for a smoother-looking waveform visualization.
  */
-class WaveformAligner
+class PROJECTM_CXX_EXPORT WaveformAligner
 {
 public:
     WaveformAligner();
@@ -36,7 +38,7 @@ public:
 
 protected:
     void GenerateWeights();
-    int CalculateOffset(std::vector<WaveformBuffer>& newWaveformMips);
+    auto CalculateOffset(std::vector<WaveformBuffer>& newWaveformMips) -> int;
     void ResampleOctaves(std::vector<WaveformBuffer>& dstWaveformMips, WaveformBuffer& newWaveform);
 
     bool m_alignWaveReady{false}; //!< Alignment needs special treatment for the first buffer fill.

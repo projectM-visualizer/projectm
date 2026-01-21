@@ -39,7 +39,7 @@ libprojectM::projectMWrapper* handle_to_instance(projectm_handle instance)
     return reinterpret_cast<libprojectM::projectMWrapper*>(instance);
 }
 
-char* projectm_alloc_string(unsigned int length)
+PROJECTM_EXPORT char* projectm_alloc_string(unsigned int length)
 {
     try
     {
@@ -51,7 +51,7 @@ char* projectm_alloc_string(unsigned int length)
     }
 }
 
-char* projectm_alloc_string_from_std_string(const std::string& str)
+PROJECTM_EXPORT char* projectm_alloc_string_from_std_string(const std::string& str)
 {
     auto pointer = projectm_alloc_string(static_cast<uint32_t>(str.length() + 1));
     if (pointer)
