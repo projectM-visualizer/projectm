@@ -36,7 +36,6 @@ using namespace emscripten;
 EGLDisplay display;
 EGLSurface surface;
 EGLConfig eglconfig=NULL;
-EGLContext ctxegl;
 EGLint config_size,major,minor,atb_pos;
 EGLint numSamples;
 EGLint numSamplesNV;
@@ -211,7 +210,7 @@ EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool
                 channelData: rawChannelData,
                 sampleRate: decodedBuffer.sampleRate,
                 loop: loop,
-                startPlaying: start_playing
+                startPlaying: startPlaying
             });
         } catch(e) {
             console.error("JS Load Song: Error during decode and send:", e);
@@ -248,7 +247,6 @@ workletNode.port.postMessage({ type: 'stopPlayback' });
 
 } // extern "C"
 
-#pragma omp parallel
 void renderLoop(){
 if(app_data.loading==EM_TRUE){
 return;
@@ -308,7 +306,6 @@ return;
 
 }
 
-#pragma omp parallel
 void on_preset_switch_requested(bool is_hard_cut, void* user_data) {
 printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ? "true" : "false");
 // EM_ASM({
