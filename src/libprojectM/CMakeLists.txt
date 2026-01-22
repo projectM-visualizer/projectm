@@ -108,6 +108,17 @@ if(BUILD_SHARED_LIBS)
             PUBLIC
             ${CMAKE_DL_LIBS}
             )
+
+    if(ENABLE_MACOS_FRAMEWORK)
+        set_target_properties(projectM PROPERTIES
+                FRAMEWORK TRUE
+                FRAMEWORK_VERSION A
+                MACOSX_FRAMEWORK_IDENTIFIER com.github.projectm-visualizer.projectM
+                MACOSX_FRAMEWORK_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+                MACOSX_FRAMEWORK_BUNDLE_VERSION "${PROJECT_VERSION}"
+                PUBLIC_HEADER "${PROJECTM_PUBLIC_HEADERS}"
+                )
+    endif()
 else()
     target_compile_definitions(projectM_main
             PUBLIC
@@ -129,7 +140,8 @@ if(ENABLE_INSTALL)
             LIBRARY DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
             RUNTIME DESTINATION "${PROJECTM_RUNTIME_DIR}" COMPONENT Runtime
             ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Devel
-            PUBLIC_HEADER DESTINATION "${PROJECTM_INCLUDE_DIR}/libprojectM" COMPONENT Devel
+            PUBLIC_HEADER DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4" COMPONENT Devel
+            FRAMEWORK DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
             )
 
     if(ENABLE_CXX_INTERFACE)
