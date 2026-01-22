@@ -169,9 +169,54 @@ auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSample
 
     ExtractTextureSettings(name, wrapMode, filterMode, unqualifiedName);
 
+    std::string lowerCaseUnqualifiedName = Utils::ToLower(unqualifiedName);
+
+    // Try callback first if registered
+    if (m_textureLoadCallback)
+    {
+        TextureLoadData loadData;
+        m_textureLoadCallback(unqualifiedName, loadData);
+
+        // Check if callback provided an existing OpenGL texture ID
+        if (loadData.textureId != 0)
+        {
+            auto newTexture = std::make_shared<Texture>(unqualifiedName, loadData.textureId,
+                                                        GL_TEXTURE_2D, loadData.width, loadData.height, true);
+            m_textures[lowerCaseUnqualifiedName] = newTexture;
+            uint32_t memoryBytes = loadData.width * loadData.height * (loadData.channels > 0 ? loadData.channels : 4);
+            m_textureStats.insert({lowerCaseUnqualifiedName, {memoryBytes}});
+            LOG_DEBUG("[TextureManager] Loaded texture \"" + unqualifiedName + "\" from callback (texture ID)");
+            return {newTexture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
+        }
+
+        // Check if callback provided raw pixel data
+        if (loadData.data != nullptr && loadData.width > 0 && loadData.height > 0)
+        {
+            int width = static_cast<int>(loadData.width);
+            int height = static_cast<int>(loadData.height);
+            int channels = static_cast<int>(loadData.channels > 0 ? loadData.channels : 4);
+
+            unsigned int tex = SOIL_create_OGL_texture(
+                loadData.data,
+                &width, &height, channels,
+                SOIL_CREATE_NEW_ID,
+                SOIL_FLAG_MULTIPLY_ALPHA);
+
+            if (tex != 0)
+            {
+                uint32_t memoryBytes = width * height * 4;
+                auto newTexture = std::make_shared<Texture>(unqualifiedName, tex, GL_TEXTURE_2D, width, height, true);
+                m_textures[lowerCaseUnqualifiedName] = newTexture;
+                m_textureStats.insert({lowerCaseUnqualifiedName, {memoryBytes}});
+                LOG_DEBUG("[TextureManager] Loaded texture \"" + unqualifiedName + "\" from callback (pixel data)");
+                return {newTexture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
+            }
+        }
+    }
+
+    // Fall back to filesystem loading
     ScanTextures();
 
-    std::string lowerCaseUnqualifiedName = Utils::ToLower(unqualifiedName);
     for (const auto& file : m_scannedTextureFiles)
     {
         if (file.lowerCaseBaseName != lowerCaseUnqualifiedName)
@@ -367,6 +412,11 @@ void TextureManager::ScanTextures()
         fileScanner.Scan(std::bind(&TextureManager::AddTextureFile, this, _1, _2));
         m_filesScanned = true;
     }
+}
+
+void TextureManager::SetTextureLoadCallback(TextureLoadCallback callback)
+{
+    m_textureLoadCallback = std::move(callback);
 }
 
 } // namespace Renderer

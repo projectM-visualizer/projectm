@@ -89,11 +89,28 @@ void ProjectM::SetTexturePaths(std::vector<std::string> texturePaths)
 {
     m_textureSearchPaths = std::move(texturePaths);
     m_textureManager = std::make_unique<Renderer::TextureManager>(m_textureSearchPaths);
+    if (m_textureLoadCallback)
+    {
+        m_textureManager->SetTextureLoadCallback(m_textureLoadCallback);
+    }
 }
 
 void ProjectM::ResetTextures()
 {
     m_textureManager = std::make_unique<Renderer::TextureManager>(m_textureSearchPaths);
+    if (m_textureLoadCallback)
+    {
+        m_textureManager->SetTextureLoadCallback(m_textureLoadCallback);
+    }
+}
+
+void ProjectM::SetTextureLoadCallback(Renderer::TextureLoadCallback callback)
+{
+    m_textureLoadCallback = std::move(callback);
+    if (m_textureManager)
+    {
+        m_textureManager->SetTextureLoadCallback(m_textureLoadCallback);
+    }
 }
 
 void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
