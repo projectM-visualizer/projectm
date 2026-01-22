@@ -384,6 +384,18 @@ void projectm_set_window_size(projectm_handle instance, size_t width, size_t hei
     projectMInstance->SetWindowSize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
 }
 
+void projectm_set_preset_start_clean(projectm_handle instance, bool enabled)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->SetPresetStartClean(enabled);
+}
+
+bool projectm_get_preset_start_clean(projectm_handle instance)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    return projectMInstance->PresetStartClean();
+}
+
 unsigned int projectm_pcm_get_max_samples()
 {
     return libprojectM::Audio::WaveformSamples;
