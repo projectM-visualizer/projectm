@@ -69,6 +69,36 @@ typedef void (*projectm_playlist_preset_switched_event)(bool is_hard_cut, unsign
 typedef void (*projectm_playlist_preset_switch_failed_event)(const char* preset_filename,
                                                              const char* message, void* user_data);
 
+/**
+ * @brief Callback function that is executed when the playlist wants to load a preset.
+ *
+ * This callback allows applications to handle preset loading themselves instead of
+ * letting the playlist library load presets from the filesystem. This is useful for:
+ * - Loading presets from archives (e.g., ZIP files)
+ * - Loading presets from network sources (e.g., HTTP)
+ * - Asynchronous preset loading
+ * - Custom preset storage solutions
+ *
+ * When this callback is set and returns true, the playlist library will NOT attempt
+ * to load the preset file itself. The application is responsible for calling
+ * projectm_load_preset_file() or projectm_load_preset_data() with the preset content.
+ *
+ * If the callback returns false or is not set, the playlist library will use the
+ * default behavior of loading the preset from the filesystem.
+ *
+ * @note The filename pointer is only valid inside the callback. Make a copy if it needs
+ *       to be retained for later use.
+ * @param index The playlist index of the preset to be loaded.
+ * @param filename The preset filename/URL at this index. Can be used as a key or path.
+ * @param hard_cut True if this should be a hard cut, false for a smooth transition.
+ * @param user_data A user-defined data pointer that was provided when registering the callback,
+ *                  e.g. context information.
+ * @return True if the application handled the preset loading, false to use default behavior.
+ * @since 4.2.0
+ */
+typedef bool (*projectm_playlist_preset_load_event)(unsigned int index, const char* filename,
+                                                    bool hard_cut, void* user_data);
+
 
 /**
  * @brief Sets a callback function that will be called when a preset changes.
@@ -104,6 +134,25 @@ PROJECTM_PLAYLIST_EXPORT void projectm_playlist_set_preset_switched_event_callba
 PROJECTM_PLAYLIST_EXPORT void projectm_playlist_set_preset_switch_failed_event_callback(projectm_playlist_handle instance,
                                                                                         projectm_playlist_preset_switch_failed_event callback,
                                                                                         void* user_data);
+
+/**
+ * @brief Sets a callback function that will be called when the playlist wants to load a preset.
+ *
+ * This allows applications to handle preset loading themselves, e.g., from archives,
+ * network sources, or using custom storage. When set, this callback is called before
+ * the playlist library attempts to load a preset file.
+ *
+ * Only one callback can be registered per playlist instance. To remove the callback, use NULL.
+ *
+ * @param instance The playlist manager instance.
+ * @param callback A pointer to the callback function.
+ * @param user_data A pointer to any data that will be sent back in the callback, e.g. context
+ *                  information.
+ * @since 4.2.0
+ */
+PROJECTM_PLAYLIST_EXPORT void projectm_playlist_set_preset_load_event_callback(projectm_playlist_handle instance,
+                                                                               projectm_playlist_preset_load_event callback,
+                                                                               void* user_data);
 
 #ifdef __cplusplus
 } // extern "C"
