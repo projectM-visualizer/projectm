@@ -135,6 +135,20 @@ if(ENABLE_INSTALL)
     if(ENABLE_CXX_INTERFACE)
         install(FILES
                 Audio/PCM.hpp
+                Audio/WaveformAligner.hpp
+                DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4/Audio"
+                COMPONENT Devel
+                )
+
+        install(FILES
+                Renderer/RenderContext.hpp
+                Renderer/TextureTypes.hpp
+                DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4/Renderer"
+                COMPONENT Devel
+                )
+
+        install(FILES
+                Logging.hpp
                 ProjectM.hpp
                 DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4"
                 COMPONENT Devel
