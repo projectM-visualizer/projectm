@@ -103,6 +103,13 @@ void PlaylistCWrapper::SetPresetSwitchFailedCallback(projectm_playlist_preset_sw
 }
 
 
+void PlaylistCWrapper::SetPresetLoadCallback(projectm_playlist_preset_load_event callback, void* userData)
+{
+    m_presetLoadEventCallback = callback;
+    m_presetLoadEventUserData = userData;
+}
+
+
 void PlaylistCWrapper::PlayPresetIndex(uint32_t index, bool hardCut, bool resetFailureCount)
 {
     m_hardCutRequested = hardCut;
@@ -117,8 +124,24 @@ void PlaylistCWrapper::PlayPresetIndex(uint32_t index, bool hardCut, bool resetF
             return;
         }
 
-        projectm_load_preset_file(m_projectMInstance,
-                                  playlistItems.at(index).Filename().c_str(), !hardCut);
+        const auto& filename = playlistItems.at(index).Filename();
+
+        // If a preset load callback is set, give the application a chance to handle loading
+        if (m_presetLoadEventCallback != nullptr)
+        {
+            if (m_presetLoadEventCallback(index, filename.c_str(), hardCut, m_presetLoadEventUserData))
+            {
+                // Application handled the load, don't try to load from filesystem
+                if (m_presetSwitchedEventCallback != nullptr)
+                {
+                    m_presetSwitchedEventCallback(hardCut, index, m_presetSwitchedEventUserData);
+                }
+                return;
+            }
+        }
+
+        // Default behavior: load from filesystem
+        projectm_load_preset_file(m_projectMInstance, filename.c_str(), !hardCut);
 
         if (!m_lastPresetSwitchFailed)
         {
@@ -246,6 +269,15 @@ void projectm_playlist_set_preset_switch_failed_event_callback(projectm_playlist
 {
     auto* playlist = playlist_handle_to_instance(instance);
     playlist->SetPresetSwitchFailedCallback(callback, user_data);
+}
+
+
+void projectm_playlist_set_preset_load_event_callback(projectm_playlist_handle instance,
+                                                      projectm_playlist_preset_load_event callback,
+                                                      void* user_data)
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+    playlist->SetPresetLoadCallback(callback, user_data);
 }
 
 
