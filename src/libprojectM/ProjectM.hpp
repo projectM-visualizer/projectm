@@ -23,7 +23,7 @@
 #include <projectM-4/projectM_cxx_export.h>
 
 #include <Renderer/RenderContext.hpp>
-#include <Renderer/TextureManager.hpp>
+#include <Renderer/TextureTypes.hpp>
 
 #include <Audio/PCM.hpp>
 
