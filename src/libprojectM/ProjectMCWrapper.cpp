@@ -116,6 +116,39 @@ void projectm_set_preset_switch_failed_event_callback(projectm_handle instance,
     projectMInstance->m_presetSwitchFailedEventUserData = user_data;
 }
 
+void projectm_set_texture_load_event_callback(projectm_handle instance,
+                                              projectm_texture_load_event callback, void* user_data)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->m_textureLoadEventCallback = callback;
+    projectMInstance->m_textureLoadEventUserData = user_data;
+
+    if (callback != nullptr)
+    {
+        // Create a wrapper lambda that bridges C callback to C++ callback
+        projectMInstance->SetTextureLoadCallback(
+            [projectMInstance](const std::string& textureName, libprojectM::Renderer::TextureLoadData& data) {
+                if (projectMInstance->m_textureLoadEventCallback)
+                {
+                    projectm_texture_load_data cData{};
+                    projectMInstance->m_textureLoadEventCallback(
+                        textureName.c_str(), &cData, projectMInstance->m_textureLoadEventUserData);
+
+                    // Copy data from C structure to C++ structure
+                    data.data = cData.data;
+                    data.width = cData.width;
+                    data.height = cData.height;
+                    data.channels = cData.channels;
+                    data.textureId = cData.texture_id;
+                }
+            });
+    }
+    else
+    {
+        projectMInstance->SetTextureLoadCallback(nullptr);
+    }
+}
+
 void projectm_set_texture_search_paths(projectm_handle instance,
                                        const char** texture_search_paths,
                                        size_t count)
