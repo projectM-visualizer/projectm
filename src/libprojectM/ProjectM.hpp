@@ -194,6 +194,18 @@ public:
     /// Returns true if the active preset is locked
     auto PresetLocked() const -> bool;
 
+    /**
+     * @brief Sets whether newly loaded presets should start with a clean (black) canvas.
+     * @param enabled True to start with a clean canvas, false to copy the previous frame.
+     */
+    void SetPresetStartClean(bool enabled);
+
+    /**
+     * @brief Returns whether newly loaded presets start with a clean canvas.
+     * @return True if presets start with a clean canvas.
+     */
+    auto PresetStartClean() const -> bool;
+
     auto PCM() -> Audio::PCM&;
 
     auto WindowWidth() -> int;
@@ -290,6 +302,7 @@ private:
 
     bool m_presetLocked{false};         //!< If true, the preset change event will not be sent.
     bool m_presetChangeNotified{false}; //!< Stores whether the user has been notified that projectM wants to switch the preset.
+    bool m_presetStartClean{false};     //!< If true, new presets start with a black canvas instead of the previous frame.
 
     std::unique_ptr<PresetFactoryManager> m_presetFactoryManager; //!< Provides access to all available preset factories.
 
