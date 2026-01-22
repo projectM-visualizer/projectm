@@ -370,6 +370,30 @@ PROJECTM_EXPORT void projectm_set_window_size(projectm_handle instance, size_t w
  */
 PROJECTM_EXPORT void projectm_get_window_size(projectm_handle instance, size_t* width, size_t* height);
 
+/**
+ * @brief Sets whether newly loaded presets should start with a clean (black) canvas.
+ *
+ * By default, when switching presets, the last frame of the previous preset is copied into
+ * the new preset's main texture, creating a visual continuity. Setting this flag to true
+ * will cause each new preset to start with a black canvas instead.
+ *
+ * This is useful for applications that want a clean start for each preset, avoiding the
+ * "ghosting" effect from the previous preset.
+ *
+ * @param instance The projectM instance handle.
+ * @param enabled True to start new presets with a clean canvas, false to copy the previous frame. Default: false
+ * @since 4.2.0
+ */
+PROJECTM_EXPORT void projectm_set_preset_start_clean(projectm_handle instance, bool enabled);
+
+/**
+ * @brief Returns whether newly loaded presets start with a clean canvas.
+ * @param instance The projectM instance handle.
+ * @return True if presets start with a clean canvas, false if the previous frame is copied.
+ * @since 4.2.0
+ */
+PROJECTM_EXPORT bool projectm_get_preset_start_clean(projectm_handle instance);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
