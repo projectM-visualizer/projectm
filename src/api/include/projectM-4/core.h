@@ -38,11 +38,30 @@ extern "C" {
  * If this function returns NULL, in most cases the OpenGL context is not initialized, not made
  * current or insufficient to render projectM visuals.
  *
+ * Note: The OpenGL resolver is initialized on the first call to either projectm_create() or projectm_create_with_opengl_load_proc().
+ * All projectM instances share the same resolver.
+ *
  * @return A projectM handle for the newly created instance that must be used in subsequent API calls.
  *         NULL if the instance could not be created successfully.
  * @since 4.0.0
  */
 PROJECTM_EXPORT projectm_handle projectm_create();
+
+/**
+ * @brief Creates a new projectM instance using the given function to resolve GL api functions.
+ *
+ * The load_proc function accepts a function name and a user data pointer.
+ * If this function returns NULL, in most cases the OpenGL context is not initialized, not made
+ * current or insufficient to render projectM visuals.
+ *
+ * Note: The OpenGL resolver is initialized on the first call to either projectm_create() or projectm_create_with_opengl_load_proc().
+ * All projectM instances share the same resolver, and subsequent calls ignore the provided load_proc.
+ *
+ * @return A projectM handle for the newly created instance that must be used in subsequent API calls.
+ *         NULL if the instance could not be created successfully.
+ * @since 4.2.0
+ */
+PROJECTM_EXPORT projectm_handle projectm_create_with_opengl_load_proc(void* (*load_proc)(const char*, void*), void* user_data);
 
 /**
  * @brief Destroys the given instance and frees the resources.

@@ -5,6 +5,7 @@
 #include <Logging.hpp>
 
 #include <Audio/AudioConstants.hpp>
+#include <Renderer/PlatformGLResolver.hpp>
 
 #include <projectM-4/parameters.h>
 #include <projectM-4/render_opengl.h>
@@ -68,9 +69,26 @@ void projectm_free_string(const char* str)
 
 projectm_handle projectm_create()
 {
+    return projectm_create_with_opengl_load_proc(nullptr, nullptr);
+}
+
+projectm_handle projectm_create_with_opengl_load_proc(void* (*load_proc)(const char*, void*), void* user_data)
+{
     try
     {
-        auto projectMInstance = new libprojectM::projectMWrapper();
+        // obtain shared resolver instance
+        auto& glResolver = libprojectM::Renderer::Platform::GLResolver::Instance();
+
+        // init resolver to discover gl function pointers and init GLAD
+        // Initialize() is guarded internally, may be called multiple times
+        auto success = glResolver.Initialize(load_proc, user_data);
+        if (!success)
+        {
+            return nullptr;
+        }
+
+        // create projectM
+        auto* projectMInstance = new libprojectM::projectMWrapper();
         return reinterpret_cast<projectm_handle>(projectMInstance);
     }
     catch (...)

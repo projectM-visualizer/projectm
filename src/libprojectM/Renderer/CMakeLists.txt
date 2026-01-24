@@ -32,6 +32,12 @@ add_library(Renderer OBJECT
         MilkdropNoise.cpp
         MilkdropNoise.hpp
         OpenGL.h
+        PlatformGLContextCheck.cpp
+        PlatformGLContextCheck.hpp
+        PlatformGLResolver.cpp
+        PlatformGLResolver.hpp
+        PlatformLoader.cpp
+        PlatformLoader.hpp
         Point.hpp
         PresetTransition.cpp
         PresetTransition.hpp
@@ -59,7 +65,7 @@ add_library(Renderer OBJECT
         VertexBufferUsage.hpp
         VertexIndexArray.cpp
         VertexIndexArray.hpp
-        )
+)
 
 target_include_directories(Renderer
         PRIVATE
@@ -76,6 +82,8 @@ target_link_libraries(Renderer
         GLM::GLM
         hlslparser
         SOIL2
+        glad
+        ${PROJECTM_FILESYSTEM_LIBRARY}
         )
 
 set_target_properties(Renderer PROPERTIES
