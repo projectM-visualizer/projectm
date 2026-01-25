@@ -80,20 +80,24 @@ typedef void (*projectm_playlist_preset_switch_failed_event)(const char* preset_
  * - Custom preset storage solutions
  *
  * When this callback is set and returns true, the playlist library will NOT attempt
- * to load the preset file itself. The application is responsible for calling
- * projectm_load_preset_file() or projectm_load_preset_data() with the preset content.
+ * to load the preset file itself and will return immediately without firing any events.
+ * The application takes full responsibility for:
+ * - Calling projectm_load_preset_file() or projectm_load_preset_data() with the preset content
+ * - Handling any loading errors
+ * - Firing the preset_switched_event callback when the preset is ready (if desired)
  *
  * If the callback returns false or is not set, the playlist library will use the
  * default behavior of loading the preset from the filesystem.
  *
  * @note The filename pointer is only valid inside the callback. Make a copy if it needs
  *       to be retained for later use.
+ * @note Do not call any playlist preset-switching functions from within this callback.
  * @param index The playlist index of the preset to be loaded.
  * @param filename The preset filename/URL at this index. Can be used as a key or path.
  * @param hard_cut True if this should be a hard cut, false for a smooth transition.
  * @param user_data A user-defined data pointer that was provided when registering the callback,
  *                  e.g. context information.
- * @return True if the application handled the preset loading, false to use default behavior.
+ * @return True if the application handles preset loading, false to use default behavior.
  * @since 4.2.0
  */
 typedef bool (*projectm_playlist_preset_load_event)(unsigned int index, const char* filename,
