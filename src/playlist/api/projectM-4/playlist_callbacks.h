@@ -76,7 +76,6 @@ typedef void (*projectm_playlist_preset_switch_failed_event)(const char* preset_
  * letting the playlist library load presets from the filesystem. This is useful for:
  * - Loading presets from archives (e.g., ZIP files)
  * - Loading presets from network sources (e.g., HTTP)
- * - Asynchronous preset loading
  * - Custom preset storage solutions
  *
  * When this callback is set and returns true, the playlist library will NOT attempt
@@ -85,6 +84,9 @@ typedef void (*projectm_playlist_preset_switch_failed_event)(const char* preset_
  * - Calling projectm_load_preset_file() or projectm_load_preset_data() with the preset content
  * - Handling any loading errors
  * - Firing the preset_switched_event callback when the preset is ready (if desired)
+ *
+ * Note: If implementing asynchronous loading, the application must complete the load and
+ * fire the preset_switched_event callback itself after the async operation completes.
  *
  * If the callback returns false or is not set, the playlist library will use the
  * default behavior of loading the preset from the filesystem.
