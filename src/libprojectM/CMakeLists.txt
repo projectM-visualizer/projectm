@@ -132,13 +132,20 @@ if(BUILD_SHARED_LIBS)
             )
 
     if(ENABLE_MACOS_FRAMEWORK)
-        # Start with C API headers
-        set(_framework_public_headers ${PROJECTM_PUBLIC_HEADERS})
+        # Get C API headers from the API target
+        get_target_property(_framework_public_headers projectM_api PUBLIC_HEADER)
 
         # Add C++ headers when the C++ interface is enabled
         if(ENABLE_CXX_INTERFACE)
             list(APPEND _framework_public_headers
+                    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioConstants.hpp"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/FrameAudioData.hpp"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Loudness.hpp"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MilkdropFFT.hpp"
                     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/PCM.hpp"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/WaveformAligner.hpp"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/Renderer/RenderContext.hpp"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/Logging.hpp"
                     "${CMAKE_CURRENT_SOURCE_DIR}/ProjectM.hpp"
                     )
         endif()
