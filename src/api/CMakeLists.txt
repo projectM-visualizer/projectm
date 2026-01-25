@@ -40,9 +40,6 @@ if(ENABLE_CXX_INTERFACE)
     list(APPEND PROJECTM_PUBLIC_HEADERS ${PROJECTM_CXX_EXPORT_HEADER})
 endif()
 
-# Make available to parent scope for framework builds
-set(PROJECTM_PUBLIC_HEADERS "${PROJECTM_PUBLIC_HEADERS}" PARENT_SCOPE)
-
 target_sources(projectM_api
         PRIVATE
         ${PROJECTM_PUBLIC_HEADERS}
