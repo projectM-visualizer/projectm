@@ -204,7 +204,7 @@ auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSample
 
             if (tex != 0)
             {
-                uint32_t memoryBytes = width * height * 4;
+                uint32_t memoryBytes = width * height * channels;
                 auto newTexture = std::make_shared<Texture>(unqualifiedName, tex, GL_TEXTURE_2D, width, height, true);
                 m_textures[lowerCaseUnqualifiedName] = newTexture;
                 m_textureStats.insert({lowerCaseUnqualifiedName, {memoryBytes}});
