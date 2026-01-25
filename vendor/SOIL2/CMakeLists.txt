@@ -52,6 +52,11 @@ if(NOT TARGET OpenGL::EGL)
             PRIVATE
             SOIL_NO_EGL
             )
+else()
+    target_link_libraries(SOIL2
+            PUBLIC
+            OpenGL::EGL
+            )
 endif()
 
 set_target_properties(SOIL2 PROPERTIES
