@@ -100,12 +100,16 @@ PROJECTM_EXPORT void projectm_set_preset_switch_failed_event_callback(projectm_h
  * If neither is provided (data is NULL and texture_id is 0), projectM will
  * attempt to load the texture from the filesystem.
  *
+ * @warning When providing a texture_id, projectM takes ownership of the OpenGL texture
+ *          and will delete it (via glDeleteTextures) when it is no longer needed. Do not
+ *          delete the texture yourself or reuse the texture ID after passing it here.
+ *
  * @since 4.2.0
  */
 typedef struct projectm_texture_load_data {
-    const unsigned char* data; /**< Pointer to raw pixel data (RGBA/RGB format, bottom-to-top). Can be NULL. */
-    unsigned int width;        /**< Width of the texture in pixels. */
-    unsigned int height;       /**< Height of the texture in pixels. */
+    const unsigned char* data; /**< Pointer to raw pixel data in standard OpenGL format (first row is bottom of image). Can be NULL. */
+    unsigned int width;        /**< Width of the texture in pixels. Must be > 0 when providing data or texture_id. */
+    unsigned int height;       /**< Height of the texture in pixels. Must be > 0 when providing data or texture_id. */
     unsigned int channels;     /**< Number of color channels (3 for RGB, 4 for RGBA). */
     unsigned int texture_id;   /**< An existing OpenGL texture ID to use. Set to 0 if not used. */
 } projectm_texture_load_data;
@@ -129,6 +133,8 @@ typedef struct projectm_texture_load_data {
  *       it needs to be retained for later use.
  * @note If providing raw pixel data, the data pointer must remain valid until
  *       projectM has finished processing it (i.e., until the callback returns).
+ * @note This callback is always invoked from the same thread that calls projectM
+ *       rendering functions. No additional synchronization is required.
  *
  * @param texture_name The name of the texture being requested, as used in the preset.
  * @param[out] data Pointer to a structure where the application should place texture data.

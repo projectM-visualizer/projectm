@@ -178,7 +178,7 @@ auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSample
         m_textureLoadCallback(unqualifiedName, loadData);
 
         // Check if callback provided an existing OpenGL texture ID
-        if (loadData.textureId != 0)
+        if (loadData.textureId != 0 && loadData.width > 0 && loadData.height > 0)
         {
             auto newTexture = std::make_shared<Texture>(unqualifiedName, loadData.textureId,
                                                         GL_TEXTURE_2D, loadData.width, loadData.height, true);
@@ -187,6 +187,10 @@ auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSample
             m_textureStats.insert({lowerCaseUnqualifiedName, {memoryBytes}});
             LOG_DEBUG("[TextureManager] Loaded texture \"" + unqualifiedName + "\" from callback (texture ID)");
             return {newTexture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
+        }
+        else if (loadData.textureId != 0)
+        {
+            LOG_WARN("[TextureManager] Callback provided texture ID for \"" + unqualifiedName + "\" but width/height are invalid; falling back to filesystem");
         }
 
         // Check if callback provided raw pixel data
@@ -210,6 +214,10 @@ auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSample
                 m_textureStats.insert({lowerCaseUnqualifiedName, {memoryBytes}});
                 LOG_DEBUG("[TextureManager] Loaded texture \"" + unqualifiedName + "\" from callback (pixel data)");
                 return {newTexture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
+            }
+            else
+            {
+                LOG_WARN("[TextureManager] Failed to create OpenGL texture from callback pixel data for \"" + unqualifiedName + "\"; falling back to filesystem");
             }
         }
     }
