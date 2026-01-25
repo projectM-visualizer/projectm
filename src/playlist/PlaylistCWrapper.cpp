@@ -131,12 +131,9 @@ void PlaylistCWrapper::PlayPresetIndex(uint32_t index, bool hardCut, bool resetF
         {
             if (m_presetLoadEventCallback(index, filename.c_str(), hardCut, m_presetLoadEventUserData))
             {
-                // Application handled the load, don't try to load from filesystem.
-                // Only fire switched event if the app's load succeeded.
-                if (!m_lastPresetSwitchFailed && m_presetSwitchedEventCallback != nullptr)
-                {
-                    m_presetSwitchedEventCallback(hardCut, index, m_presetSwitchedEventUserData);
-                }
+                // Application handled the load - return without further action.
+                // The app is responsible for calling projectm_load_preset_file/data,
+                // handling errors, and firing the switched event when ready.
                 return;
             }
         }
