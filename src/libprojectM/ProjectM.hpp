@@ -23,6 +23,7 @@
 #include <projectM-4/projectM_cxx_export.h>
 
 #include <Renderer/RenderContext.hpp>
+#include <Renderer/TextureTypes.hpp>
 
 #include <Audio/PCM.hpp>
 
@@ -112,6 +113,12 @@ public:
     void SetTexturePaths(std::vector<std::string> texturePaths);
 
     void ResetTextures();
+
+    /**
+     * @brief Sets a callback function for loading textures from non-filesystem sources.
+     * @param callback The callback function, or nullptr to disable.
+     */
+    void SetTextureLoadCallback(Renderer::TextureLoadCallback callback);
 
     void RenderFrame(uint32_t targetFramebufferObject = 0);
 
@@ -290,7 +297,8 @@ private:
     float m_texelOffsetX{0.0};       //!< Horizontal warp shader texel offset
     float m_texelOffsetY{0.0};       //!< Vertical warp shader texel offset
 
-    std::vector<std::string> m_textureSearchPaths; ///!< List of paths to search for texture files
+    std::vector<std::string> m_textureSearchPaths;     ///!< List of paths to search for texture files
+    Renderer::TextureLoadCallback m_textureLoadCallback; //!< Optional callback for loading textures from non-filesystem sources.
 
     /** Timing information */
     int m_frameCount{0}; //!< Rendered frame count since start
