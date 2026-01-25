@@ -110,13 +110,24 @@ if(BUILD_SHARED_LIBS)
             )
 
     if(ENABLE_MACOS_FRAMEWORK)
+        # Start with C API headers
+        set(_framework_public_headers ${PROJECTM_PUBLIC_HEADERS})
+
+        # Add C++ headers when the C++ interface is enabled
+        if(ENABLE_CXX_INTERFACE)
+            list(APPEND _framework_public_headers
+                    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/PCM.hpp"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/ProjectM.hpp"
+                    )
+        endif()
+
         set_target_properties(projectM PROPERTIES
                 FRAMEWORK TRUE
                 FRAMEWORK_VERSION A
                 MACOSX_FRAMEWORK_IDENTIFIER com.github.projectm-visualizer.projectM
                 MACOSX_FRAMEWORK_SHORT_VERSION_STRING "${PROJECT_VERSION}"
                 MACOSX_FRAMEWORK_BUNDLE_VERSION "${PROJECT_VERSION}"
-                PUBLIC_HEADER "${PROJECTM_PUBLIC_HEADERS}"
+                PUBLIC_HEADER "${_framework_public_headers}"
                 )
     endif()
 else()
