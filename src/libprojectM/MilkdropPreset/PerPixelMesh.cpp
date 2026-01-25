@@ -230,7 +230,7 @@ void PerPixelMesh::CalculateMesh(const PresetState& presetState, const PerFrameC
             if (perPixelContext.perPixelCodeHandle)
             {
                 *perPixelContext.x = static_cast<double>(curVertex.X() * 0.5f * presetState.renderContext.aspectX + 0.5f);
-                *perPixelContext.y = static_cast<double>(curVertex.Y() * -0.5f * presetState.renderContext.aspectY + 0.5f);
+                *perPixelContext.y = static_cast<double>(curVertex.Y() * 0.5f * presetState.renderContext.aspectY + 0.5f);
                 *perPixelContext.rad = static_cast<double>(curRadiusAngle.radius);
                 *perPixelContext.ang = static_cast<double>(curRadiusAngle.angle);
                 *perPixelContext.zoom = static_cast<double>(*perFrameContext.zoom);
