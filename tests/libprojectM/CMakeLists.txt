@@ -37,7 +37,7 @@ add_executable(projectM-unittest
         $<TARGET_OBJECTS:Renderer>
         $<TARGET_OBJECTS:UserSprites>
         $<TARGET_OBJECTS:hlslparser>
-        $<TARGET_OBJECTS:SOIL2>
+        $<TARGET_OBJECTS:stb_image>
         $<TARGET_OBJECTS:projectM_main>
         )
 
