@@ -75,7 +75,8 @@ target_link_libraries(Renderer
         PUBLIC
         GLM::GLM
         hlslparser
-        SOIL2
+        stb_image
+        ${PROJECTM_OPENGL_LIBRARIES}
         )
 
 set_target_properties(Renderer PROPERTIES

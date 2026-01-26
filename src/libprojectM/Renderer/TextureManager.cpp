@@ -8,7 +8,7 @@
 #include <Logging.hpp>
 #include <Utils.hpp>
 
-#include <SOIL2/stb_image.h>
+#include <stb_image.h>
 
 #include <algorithm>
 #include <cstdlib>

@@ -36,7 +36,7 @@ target_link_libraries(projectM_main
         MilkdropPreset
         Renderer
         hlslparser
-        SOIL2
+        stb_image
         libprojectM::API
         ${PROJECTM_FILESYSTEM_LIBRARY}
         )
@@ -67,7 +67,7 @@ add_library(projectM
         $<TARGET_OBJECTS:Renderer>
         $<TARGET_OBJECTS:UserSprites>
         $<TARGET_OBJECTS:hlslparser>
-        $<TARGET_OBJECTS:SOIL2>
+        $<TARGET_OBJECTS:stb_image>
         $<TARGET_OBJECTS:projectM_main>
         $<TARGET_OBJECTS:projectM::Eval>
         )
