@@ -90,6 +90,8 @@ private:
 
     void ScanTextures();
 
+    static uint32_t TextureFormatFromChannels(int channels);
+
     std::vector<std::string> m_textureSearchPaths;  //!< Search paths to scan for textures.
     std::string m_currentPresetDir;                 //!< Path of the current preset to add to the search list.
     std::vector<ScannedFile> m_scannedTextureFiles; //!< The cached list with scanned texture files.
