@@ -173,9 +173,61 @@ auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSample
 
     ExtractTextureSettings(name, wrapMode, filterMode, unqualifiedName);
 
+    std::string lowerCaseUnqualifiedName = Utils::ToLower(unqualifiedName);
+
+    // Try callback first if registered
+    if (m_textureLoadCallback)
+    {
+        TextureLoadData loadData;
+        m_textureLoadCallback(unqualifiedName, loadData);
+
+        // Check if callback provided an existing OpenGL texture ID
+        if (loadData.textureId != 0 && loadData.width > 0 && loadData.height > 0)
+        {
+            // App-provided textures are not owned by projectM - pass false for ownership
+            auto newTexture = std::make_shared<Texture>(unqualifiedName, loadData.textureId,
+                                                        GL_TEXTURE_2D, loadData.width, loadData.height, true, false);
+            m_textures[lowerCaseUnqualifiedName] = newTexture;
+            uint32_t memoryBytes = loadData.width * loadData.height * (loadData.channels > 0 ? loadData.channels : 4);
+            m_textureStats.insert({lowerCaseUnqualifiedName, {memoryBytes}});
+            LOG_DEBUG("[TextureManager] Loaded texture \"" + unqualifiedName + "\" from callback (texture ID)");
+            return {newTexture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
+        }
+        else if (loadData.textureId != 0)
+        {
+            LOG_WARN("[TextureManager] Callback provided texture ID for \"" + unqualifiedName + "\" but width/height are invalid; falling back to filesystem");
+        }
+
+        // Check if callback provided raw pixel data
+        if (loadData.data != nullptr && loadData.width > 0 && loadData.height > 0)
+        {
+            int width = static_cast<int>(loadData.width);
+            int height = static_cast<int>(loadData.height);
+            int channels = static_cast<int>(loadData.channels > 0 ? loadData.channels : 4);
+
+            auto format = TextureFormatFromChannels(channels);
+            auto newTexture = std::make_shared<Texture>(unqualifiedName,
+                                                        reinterpret_cast<const void*>(loadData.data),
+                                                        GL_TEXTURE_2D, width, height, 0,
+                                                        format, format, GL_UNSIGNED_BYTE, true);
+            if (!newTexture->Empty())
+            {
+                m_textures[lowerCaseUnqualifiedName] = newTexture;
+                uint32_t memoryBytes = width * height * channels;
+                m_textureStats.insert({lowerCaseUnqualifiedName, {memoryBytes}});
+                LOG_DEBUG("[TextureManager] Loaded texture \"" + unqualifiedName + "\" from callback (pixel data)");
+                return {newTexture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
+            }
+            else
+            {
+                LOG_WARN("[TextureManager] Failed to create OpenGL texture from callback pixel data for \"" + unqualifiedName + "\"; falling back to filesystem");
+            }
+        }
+    }
+
+    // Fall back to filesystem loading
     ScanTextures();
 
-    std::string lowerCaseUnqualifiedName = Utils::ToLower(unqualifiedName);
     for (const auto& file : m_scannedTextureFiles)
     {
         if (file.lowerCaseBaseName != lowerCaseUnqualifiedName)
@@ -375,6 +427,11 @@ uint32_t TextureManager::TextureFormatFromChannels(int channels)
         default:
             return 0;
     }
+}
+
+void TextureManager::SetTextureLoadCallback(TextureLoadCallback callback)
+{
+    m_textureLoadCallback = std::move(callback);
 }
 
 } // namespace Renderer

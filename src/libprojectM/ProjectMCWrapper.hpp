@@ -39,6 +39,9 @@ public:
 
     projectm_preset_switch_requested_event m_presetSwitchRequestedEventCallback{nullptr};
     void* m_presetSwitchRequestedEventUserData{nullptr};
+
+    projectm_texture_load_event m_textureLoadEventCallback{nullptr};
+    void* m_textureLoadEventUserData{nullptr};
 };
 
 } // namespace libprojectM

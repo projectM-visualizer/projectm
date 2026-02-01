@@ -175,6 +175,7 @@ if(ENABLE_INSTALL)
 
         install(FILES
                 Renderer/RenderContext.hpp
+                Renderer/TextureTypes.hpp
                 DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4/Renderer"
                 COMPONENT Devel
                 )
