@@ -34,13 +34,14 @@ Texture::Texture(std::string name, GLenum target, int width, int height, int dep
 }
 
 Texture::Texture(std::string name, const GLuint texID, const GLenum target,
-                 const int width, const int height, const bool isUserTexture)
+                 const int width, const int height, const bool isUserTexture, const bool owned)
     : m_textureId(texID)
     , m_target(target)
     , m_name(std::move(name))
     , m_width(width)
     , m_height(height)
     , m_isUserTexture(isUserTexture)
+    , m_owned(owned)
 {
 }
 
@@ -61,7 +62,7 @@ Texture::Texture(std::string name, const void* data, GLenum target, int width, i
 
 Texture::~Texture()
 {
-    if (m_textureId > 0)
+    if (m_textureId > 0 && m_owned)
     {
         glDeleteTextures(1, &m_textureId);
         m_textureId = 0;

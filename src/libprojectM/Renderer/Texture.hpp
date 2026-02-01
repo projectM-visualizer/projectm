@@ -53,17 +53,18 @@ public:
 
     /**
      * @brief Constructor. Creates a new texture instance from an existing OpenGL texture.
-     * The class will take ownership of the texture, e.g. freeing it when destroyed!
      * @param name Optional name of the texture for referencing in Milkdrop shaders.
      * @param texID The OpenGL texture name (ID).
      * @param target The texture target type, e.g. GL_TEXTURE_2D.
      * @param width Width in pixels.
      * @param height Height in pixels.
      * @param isUserTexture true if the texture is an externally-loaded image, false if it's an internal texture.
+     * @param owned If true (default), the class takes ownership and will delete the texture when destroyed.
+     *              If false, the texture is managed externally and won't be deleted.
      */
     explicit Texture(std::string name, GLuint texID, GLenum target,
                      int width, int height,
-                     bool isUserTexture);
+                     bool isUserTexture, bool owned = true);
 
     /**
      * @brief Constructor. Creates a new texture from image data with the given size and format.
@@ -169,6 +170,7 @@ private:
     int m_height{0};             //!< Texture height in pixels.
     int m_depth{0};              //!< Texture depth in pixels. Only used for 3D textures.
     bool m_isUserTexture{false}; //!< true if it's a user texture, false if an internal one.
+    bool m_owned{true};          //!< true if this class owns the texture and should delete it.
 
     GLint m_internalFormat{}; //!< OpenGL internal format, e.g. GL_RGBA8
     GLenum m_format{};        //!< OpenGL color format, e.g. GL_RGBA
