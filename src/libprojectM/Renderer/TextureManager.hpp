@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Renderer/TextureSamplerDescriptor.hpp"
+#include "Renderer/TextureTypes.hpp"
 
 #include <map>
 #include <string>
@@ -58,6 +59,12 @@ public:
      */
     void PurgeTextures();
 
+    /**
+     * @brief Sets a callback function for loading textures from non-filesystem sources.
+     * @param callback The callback function, or nullptr to disable.
+     */
+    void SetTextureLoadCallback(TextureLoadCallback callback);
+
 private:
     /**
      * Texture usage statistics. Used to determine when to purge a texture.
@@ -103,6 +110,8 @@ private:
     std::map<std::string, UsageStats> m_textureStats;                       //!< Map with texture stats for user-loaded files.
     std::vector<std::string> m_randomTextures;
     std::vector<std::string> m_extensions{".jpg", ".jpeg", ".dds", ".png", ".tga", ".bmp", ".dib"};
+
+    TextureLoadCallback m_textureLoadCallback; //!< Optional callback for loading textures from non-filesystem sources.
 };
 
 } // namespace Renderer
