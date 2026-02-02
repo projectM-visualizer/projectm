@@ -132,12 +132,18 @@ if(BUILD_SHARED_LIBS)
             )
 
     if(ENABLE_MACOS_FRAMEWORK)
-        # Get C API headers from the API target
-        get_target_property(_framework_public_headers projectM_api PUBLIC_HEADER)
+        include(MacOSFramework)
 
-        # Add C++ headers when the C++ interface is enabled
+        # Get C API headers from the API target
+        get_target_property(_c_api_headers projectM_api PUBLIC_HEADER)
+        if(NOT _c_api_headers OR _c_api_headers STREQUAL "_c_api_headers-NOTFOUND")
+            message(FATAL_ERROR "projectM_api target has no PUBLIC_HEADER property set")
+        endif()
+
+        # C++ headers with directory structure (only when C++ interface is enabled)
+        set(_cxx_headers "")
         if(ENABLE_CXX_INTERFACE)
-            list(APPEND _framework_public_headers
+            set(_cxx_headers
                     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioConstants.hpp"
                     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/FrameAudioData.hpp"
                     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Loudness.hpp"
@@ -150,14 +156,15 @@ if(BUILD_SHARED_LIBS)
                     )
         endif()
 
-        set_target_properties(projectM PROPERTIES
-                FRAMEWORK TRUE
-                FRAMEWORK_VERSION A
-                MACOSX_FRAMEWORK_IDENTIFIER com.github.projectm-visualizer.projectM
-                MACOSX_FRAMEWORK_SHORT_VERSION_STRING "${PROJECT_VERSION}"
-                MACOSX_FRAMEWORK_BUNDLE_VERSION "${PROJECT_VERSION}"
-                PUBLIC_HEADER "${_framework_public_headers}"
-                )
+        create_macos_framework(
+                TARGET projectM
+                FRAMEWORK_NAME ${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}
+                IDENTIFIER com.github.projectm-visualizer.projectM
+                VERSION "${PROJECT_VERSION}"
+                C_HEADERS ${_c_api_headers}
+                CXX_HEADERS ${_cxx_headers}
+                HEADER_BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
+        )
     endif()
 else()
     target_compile_definitions(projectM_main
@@ -182,92 +189,102 @@ add_library(libprojectM::projectM ALIAS projectM)
 
 if(ENABLE_INSTALL)
 
-    install(TARGETS projectM
-            EXPORT libprojectMTargets
-            LIBRARY DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
-            RUNTIME DESTINATION "${PROJECTM_RUNTIME_DIR}" COMPONENT Runtime
-            ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Devel
-            PUBLIC_HEADER DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4" COMPONENT Devel
-            FRAMEWORK DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
-            )
+    if(ENABLE_MACOS_FRAMEWORK)
+        # Install the manually-built framework
+        install_macos_framework(
+                TARGET projectM
+                DESTINATION "${PROJECTM_LIB_DIR}"
+                COMPONENT Runtime
+        )
+        # Frameworks are used directly without CMake find_package, so skip target exports
+        # Headers are bundled in the framework, so no separate header installation needed
+    else()
+        install(TARGETS projectM
+                EXPORT libprojectMTargets
+                LIBRARY DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
+                RUNTIME DESTINATION "${PROJECTM_RUNTIME_DIR}" COMPONENT Runtime
+                ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Devel
+                PUBLIC_HEADER DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4" COMPONENT Devel
+                )
 
-    if(ENABLE_CXX_INTERFACE)
-        install(FILES
-                Audio/AudioConstants.hpp
-                Audio/FrameAudioData.hpp
-                Audio/Loudness.hpp
-                Audio/MilkdropFFT.hpp
-                Audio/PCM.hpp
-                Audio/WaveformAligner.hpp
-                DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4/Audio"
-                COMPONENT Devel
+        if(ENABLE_CXX_INTERFACE)
+            install(FILES
+                    Audio/AudioConstants.hpp
+                    Audio/FrameAudioData.hpp
+                    Audio/Loudness.hpp
+                    Audio/MilkdropFFT.hpp
+                    Audio/PCM.hpp
+                    Audio/WaveformAligner.hpp
+                    DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4/Audio"
+                    COMPONENT Devel
+                    )
+
+            install(FILES
+                    Renderer/RenderContext.hpp
+                    Renderer/TextureTypes.hpp
+                    DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4/Renderer"
+                    COMPONENT Devel
+                    )
+
+            install(FILES
+                    Logging.hpp
+                    ProjectM.hpp
+                    DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4"
+                    COMPONENT Devel
+                    )
+        endif()
+
+        # CMake target exports
+
+        # For use from a local projectM build tree (without installing)
+        export(TARGETS
+                projectM_api
+                projectM
+                NAMESPACE libprojectM::
+                FILE projectM-exports.cmake
+                )
+
+
+        # For use from an installed package (system install, vcpkg, homebrew etc.)
+        include(CMakePackageConfigHelpers)
+
+        write_basic_package_version_file(
+                "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4ConfigVersion.cmake"
+                VERSION ${PROJECT_VERSION}
+                COMPATIBILITY AnyNewerVersion
+                )
+
+        configure_package_config_file(projectM4Config.cmake.in
+                "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4Config.cmake"
+                INSTALL_DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
+                PATH_VARS PROJECTM_BIN_DIR PROJECTM_INCLUDE_DIR
                 )
 
         install(FILES
-                Renderer/RenderContext.hpp
-                Renderer/TextureTypes.hpp
-                DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4/Renderer"
-                COMPONENT Devel
-                )
-
-        install(FILES
-                Logging.hpp
-                ProjectM.hpp
-                DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4"
-                COMPONENT Devel
-                )
-    endif()
-
-    # CMake target exports
-
-    # For use from a local projectM build tree (without installing)
-    export(TARGETS
-            projectM_api
-            projectM
-            NAMESPACE libprojectM::
-            FILE projectM-exports.cmake
-            )
-
-
-    # For use from an installed package (system install, vcpkg, homebrew etc.)
-    include(CMakePackageConfigHelpers)
-
-    write_basic_package_version_file(
-            "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4ConfigVersion.cmake"
-            VERSION ${PROJECT_VERSION}
-            COMPATIBILITY AnyNewerVersion
-            )
-
-    configure_package_config_file(projectM4Config.cmake.in
-            "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4Config.cmake"
-            INSTALL_DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
-            PATH_VARS PROJECTM_BIN_DIR PROJECTM_INCLUDE_DIR
-            )
-
-    install(FILES
-            "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4ConfigVersion.cmake"
-            "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4Config.cmake"
-            DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
-            COMPONENT Devel
-            )
-
-    if(NOT ENABLE_EMSCRIPTEN AND ENABLE_GLES)
-        install(FILES
-                "${PROJECTM_SOURCE_DIR}/cmake/gles/FindOpenGL.cmake"
+                "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4ConfigVersion.cmake"
+                "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4Config.cmake"
                 DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
                 COMPONENT Devel
                 )
-    endif()
 
-    install(EXPORT libprojectMTargets
-            FILE projectM4Targets.cmake
-            NAMESPACE libprojectM::
-            DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
-            COMPONENT Devel
-            )
+        if(NOT ENABLE_EMSCRIPTEN AND ENABLE_GLES)
+            install(FILES
+                    "${PROJECTM_SOURCE_DIR}/cmake/gles/FindOpenGL.cmake"
+                    DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
+                    COMPONENT Devel
+                    )
+        endif()
 
-    # pkg-config export, only supported on UNIX systems.
-    if(UNIX)
+        install(EXPORT libprojectMTargets
+                FILE projectM4Targets.cmake
+                NAMESPACE libprojectM::
+                DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
+                COMPONENT Devel
+                )
+    endif() # NOT ENABLE_MACOS_FRAMEWORK
+
+    # pkg-config export, only supported on UNIX systems (not for frameworks).
+    if(UNIX AND NOT ENABLE_MACOS_FRAMEWORK)
         include(GeneratePkgConfigFiles)
 
         if(ENABLE_BOOST_FILESYSTEM)
