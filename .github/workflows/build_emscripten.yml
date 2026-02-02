@@ -1,15 +1,6 @@
 name: Emscripten
 
-on:
-  push:
-      branches:
-        - "*"
-      tags:
-        - "*"
-
-  pull_request:
-      branches:
-        - "*"
+on: workflow_dispatch
 
 jobs:
   build:
