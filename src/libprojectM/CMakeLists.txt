@@ -36,7 +36,7 @@ target_link_libraries(projectM_main
         MilkdropPreset
         Renderer
         hlslparser
-        SOIL2
+        stb_image
         libprojectM::API
         ${PROJECTM_FILESYSTEM_LIBRARY}
         )
@@ -67,7 +67,7 @@ add_library(projectM
         $<TARGET_OBJECTS:Renderer>
         $<TARGET_OBJECTS:UserSprites>
         $<TARGET_OBJECTS:hlslparser>
-        $<TARGET_OBJECTS:SOIL2>
+        $<TARGET_OBJECTS:stb_image>
         $<TARGET_OBJECTS:projectM_main>
         $<TARGET_OBJECTS:projectM::Eval>
         )
@@ -76,6 +76,13 @@ target_include_directories(projectM
         PUBLIC
         "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}>"
         )
+
+if(ENABLE_CXX_INTERFACE)
+    target_include_directories(projectM
+            PUBLIC
+            "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}/projectM-4>"
+            )
+endif()
 
 target_link_libraries(projectM
         PUBLIC
@@ -99,19 +106,70 @@ set_target_properties(projectM PROPERTIES
         )
 
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(projectM_main
-            PRIVATE
-            projectM_api_EXPORTS
-            )
+    # If the C++ interface was requested, enable all exports. Otherwise,
+    # we only enable API exports for the C wrapper, and disable it for all other files.
+    if(ENABLE_CXX_INTERFACE)
+        target_compile_definitions(projectM_main
+                PRIVATE
+                projectM_api_EXPORTS
+                )
+    else()
+        # Using PROJECTM_CXX_STATIC_DEFINE has precedence over projectM_api_EXPORTS,
+        # so all PROJECTM_CXX_EXPORT macros are removed.
+        target_compile_definitions(projectM_main
+                PRIVATE
+                PROJECTM_CXX_STATIC_DEFINE
+                )
+
+        set_source_files_properties(ProjectMCWrapper.cpp PROPERTIES
+                COMPILE_DEFINITIONS projectM_api_EXPORTS
+                )
+    endif()
 
     target_link_libraries(projectM
             PUBLIC
             ${CMAKE_DL_LIBS}
             )
+
+    if(ENABLE_MACOS_FRAMEWORK)
+        # Get C API headers from the API target
+        get_target_property(_framework_public_headers projectM_api PUBLIC_HEADER)
+
+        # Add C++ headers when the C++ interface is enabled
+        if(ENABLE_CXX_INTERFACE)
+            list(APPEND _framework_public_headers
+                    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/AudioConstants.hpp"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/FrameAudioData.hpp"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/Loudness.hpp"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/MilkdropFFT.hpp"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/PCM.hpp"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/Audio/WaveformAligner.hpp"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/Renderer/RenderContext.hpp"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/Logging.hpp"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/ProjectM.hpp"
+                    )
+        endif()
+
+        set_target_properties(projectM PROPERTIES
+                FRAMEWORK TRUE
+                FRAMEWORK_VERSION A
+                MACOSX_FRAMEWORK_IDENTIFIER com.github.projectm-visualizer.projectM
+                MACOSX_FRAMEWORK_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+                MACOSX_FRAMEWORK_BUNDLE_VERSION "${PROJECT_VERSION}"
+                PUBLIC_HEADER "${_framework_public_headers}"
+                )
+    endif()
 else()
     target_compile_definitions(projectM_main
             PUBLIC
             PROJECTM_STATIC_DEFINE
+            PROJECTM_CXX_STATIC_DEFINE
+            )
+
+    target_compile_definitions(projectM
+            INTERFACE
+            PROJECTM_STATIC_DEFINE
+            PROJECTM_CXX_STATIC_DEFINE
             )
 
     set_target_properties(projectM PROPERTIES
@@ -129,28 +187,36 @@ if(ENABLE_INSTALL)
             LIBRARY DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
             RUNTIME DESTINATION "${PROJECTM_RUNTIME_DIR}" COMPONENT Runtime
             ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Devel
-            PUBLIC_HEADER DESTINATION "${PROJECTM_INCLUDE_DIR}/libprojectM" COMPONENT Devel
+            PUBLIC_HEADER DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4" COMPONENT Devel
+            FRAMEWORK DESTINATION "${PROJECTM_LIB_DIR}" COMPONENT Runtime
             )
 
     if(ENABLE_CXX_INTERFACE)
         install(FILES
+                Audio/AudioConstants.hpp
+                Audio/FrameAudioData.hpp
+                Audio/Loudness.hpp
+                Audio/MilkdropFFT.hpp
                 Audio/PCM.hpp
+                Audio/WaveformAligner.hpp
+                DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4/Audio"
+                COMPONENT Devel
+                )
+
+        install(FILES
+                Renderer/RenderContext.hpp
+                Renderer/TextureTypes.hpp
+                DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4/Renderer"
+                COMPONENT Devel
+                )
+
+        install(FILES
+                Logging.hpp
                 ProjectM.hpp
                 DESTINATION "${PROJECTM_INCLUDE_DIR}/projectM-4"
                 COMPONENT Devel
                 )
-    else()
-        # Set PROJECTM_STATIC_EXPORT for C++ implementations to use project default visibility
-        # and no dllimport/dllexport.
-        set_source_files_properties(ProjectM.cpp Audio/PCM.cpp PROPERTIES
-                COMPILE_DEFINITIONS PROJECTM_STATIC_DEFINE
-                )
-        target_compile_definitions(projectM
-                INTERFACE
-                PROJECTM_STATIC_DEFINE
-                )
     endif()
-
 
     # CMake target exports
 

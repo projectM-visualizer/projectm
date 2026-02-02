@@ -75,9 +75,30 @@ target_link_libraries(Renderer
         PUBLIC
         GLM::GLM
         hlslparser
-        SOIL2
+        stb_image
+        ${PROJECTM_OPENGL_LIBRARIES}
         )
 
 set_target_properties(Renderer PROPERTIES
         FOLDER libprojectM
         )
+
+if(BUILD_SHARED_LIBS)
+    if(ENABLE_CXX_INTERFACE)
+        target_compile_definitions(Renderer
+                PRIVATE
+                projectM_api_EXPORTS
+                )
+    else()
+        target_compile_definitions(Renderer
+                PRIVATE
+                PROJECTM_CXX_STATIC_DEFINE
+                )
+    endif()
+else()
+    target_compile_definitions(Renderer
+            PRIVATE
+            PROJECTM_STATIC_DEFINE
+            PROJECTM_CXX_STATIC_DEFINE
+            )
+endif()

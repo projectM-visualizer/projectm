@@ -1,5 +1,7 @@
 #pragma once
 
+#include <projectM-4/projectM_cxx_export.h>
+
 #include <cstdint>
 #include <string>
 
@@ -48,38 +50,38 @@ public:
      * Sets the global callback function pointer used across all threads.
      * @param callback A UserCallback struct with the new function and user data pointers.
      */
-    static void SetGlobalCallback(UserCallback callback);
+    PROJECTM_CXX_EXPORT static void SetGlobalCallback(UserCallback callback);
 
     /**
      * Sets the thread-specific callback function pointer only used in the thread which registered it.
      * @param callback A UserCallback struct with the new function and user data pointers.
      */
-    static void SetThreadCallback(UserCallback callback);
+    PROJECTM_CXX_EXPORT static void SetThreadCallback(UserCallback callback);
 
     /**
      * Sets the global log level used across all threads.
      * @param logLevel The log level to use. If set to LogLevel::NotSet, the value of m_defaultLogLevel is used.
      */
-    static void SetGlobalLogLevel(LogLevel logLevel);
+    PROJECTM_CXX_EXPORT static void SetGlobalLogLevel(LogLevel logLevel);
 
     /**
      * Sets the thread-specific log level only used in the thread which set it.
      * @param logLevel The log level to use. If set to LogLevel::NotSet, the value of m_defaultLogLevel is used.
      */
-    static void SetThreadLogLevel(LogLevel logLevel);
+    PROJECTM_CXX_EXPORT static void SetThreadLogLevel(LogLevel logLevel);
 
     /**
      * Returns the effective log level for the current thread.
      * @return The log level set for this thread, or, if LogLevel::NotSet, the global log level.
      *         If no global log level is set, it returns the value of m_defaultLogLevel.
      */
-    static auto GetLogLevel() -> LogLevel;
+    PROJECTM_CXX_EXPORT static auto GetLogLevel() -> LogLevel;
 
     /**
      * Returns whether a callback is registered or not.
      * @return true if a callback is registered for the current thread or globally, false if none is registered.
      */
-    static auto HasCallback() -> bool;
+    PROJECTM_CXX_EXPORT static auto HasCallback() -> bool;
 
     /**
      * @brief Passes a log message with the given severity to the active thread or global callback.
@@ -87,12 +89,12 @@ public:
      * @param message
      * @param severity
      */
-    static void Log(const std::string& message, LogLevel severity);
+    PROJECTM_CXX_EXPORT static void Log(const std::string& message, LogLevel severity);
 
     /**
      * The default log level used if no log level is set (LogLevel::Information)
      */
-    static const LogLevel m_defaultLogLevel;
+    PROJECTM_CXX_EXPORT static const LogLevel m_defaultLogLevel;
 
 private:
     /**
