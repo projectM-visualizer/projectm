@@ -97,6 +97,7 @@ endif()
 cmake_dependent_option(BUILD_SHARED_LIBS "Build and install libprojectM as a shared libraries. If OFF, builds as static libraries." ON "NOT ENABLE_EMSCRIPTEN" OFF)
 cmake_dependent_option(ENABLE_GLES "Enable OpenGL ES support" OFF "NOT ENABLE_EMSCRIPTEN AND NOT CMAKE_SYSTEM_NAME STREQUAL Android" ON)
 cmake_dependent_option(ENABLE_INSTALL "Enable installing projectM libraries and headers." OFF "NOT PROJECT_IS_TOP_LEVEL" ON)
+cmake_dependent_option(ENABLE_MACOS_FRAMEWORK "Build as macOS Framework bundles instead of plain shared libraries." OFF "CMAKE_SYSTEM_NAME STREQUAL Darwin AND BUILD_SHARED_LIBS" OFF)
 
 # Experimental/unsupported features
 option(ENABLE_CXX_INTERFACE "Enable exporting C++ symbols for ProjectM and PCM classes, not only the C API. Warning: This is not very portable." OFF)
@@ -199,16 +200,6 @@ else()
     endif()
 endif()
 
-if(ENABLE_CXX_INTERFACE)
-    set(CMAKE_C_VISIBILITY_PRESET default)
-    set(CMAKE_CXX_VISIBILITY_PRESET default)
-    set(CMAKE_VISIBILITY_INLINES_HIDDEN OFF)
-else()
-    set(CMAKE_C_VISIBILITY_PRESET hidden)
-    set(CMAKE_CXX_VISIBILITY_PRESET hidden)
-    set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
-endif()
-
 # Disable trace/debug logging in release builds unless explicitly requested
 add_compile_definitions(
         $<$<OR:$<CONFIG:Debug>,$<BOOL:${ENABLE_VERBOSE_LOGGING}>>:ENABLE_DEBUG_LOGGING>
@@ -278,6 +269,7 @@ if(ENABLE_SDL_UI)
     message(STATUS "        SDL2 version:            ${SDL2_VERSION}")
 endif()
 message(STATUS "    OpenGL ES:                   ${ENABLE_GLES}")
+message(STATUS "    macOS Framework:             ${ENABLE_MACOS_FRAMEWORK}")
 message(STATUS "    Emscripten:                  ${ENABLE_EMSCRIPTEN}")
 if(CMAKE_SYSTEM_NAME STREQUAL Emscripten)
     message(STATUS "    - PThreads:              ${USE_PTHREADS}")
