@@ -13,13 +13,14 @@ on:
 
 jobs:
   build-shared:
-    name: "Libs: ${{ matrix.libs }}, FS Lib: ${{ matrix.fslib }}, Arch: ${{ matrix.arch }}, Build OS: ${{ matrix.runs-on }}"
+    name: "Libs: ${{ matrix.libs }}, FS Lib: ${{ matrix.fslib }}, Type: ${{ matrix.framework }}, Arch: ${{ matrix.arch }}, Build OS: ${{ matrix.runs-on }}"
     runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
       matrix:
         libs: ['shared', 'static']
         fslib: ['stl', 'boost']
+        framework: ['libs', 'framework']
         arch: ['arm64', 'x86_64']
         runs-on: ['macos-15', 'macos-15-intel']
         exclude:
@@ -48,14 +49,19 @@ jobs:
       - name: Configure Build
         run: |
           if [ "${{ matrix.libs }}" == "shared" ]; then
-          shared_libs=ON
+            shared_libs=ON
           else
-          shared_libs=OFF
+            shared_libs=OFF
           fi
           if [ "${{ matrix.fslib }}" == "boost" ]; then
-          use_boost=ON
+            use_boost=ON
           else
-          use_boost=OFF
+            use_boost=OFF
+          fi
+          if [ "${{ matrix.framework }}" == "framework" ]; then
+            as_framework=ON
+          else
+            as_framework=OFF
           fi
           cmake -G "Ninja Multi-Config" \
             -S "${{ github.workspace }}" \
@@ -64,6 +70,7 @@ jobs:
             -DCMAKE_VERBOSE_MAKEFILE=YES \
             -DBUILD_SHARED_LIBS="${shared_libs}" \
             -DENABLE_BOOST_FILESYSTEM="${use_boost}" \
+            -DENABLE_MACOS_FRAMEWORK="${as_framework}" \
             -DCMAKE_OSX_ARCHITECTURES="${{ matrix.arch }}" \
             -DENABLE_CXX_INTERFACE=YES \
             -DBUILD_TESTING=YES
@@ -96,5 +103,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-            name: projectm-osx-${{ matrix.libs }}-${{ matrix.fslib }}-${{ matrix.arch }}-${{ matrix.runs-on }}
+            name: projectm-osx-${{ matrix.libs }}-${{ matrix.fslib }}-${{ matrix.framework }}-${{ matrix.arch }}-${{ matrix.runs-on }}
             path: install/*
