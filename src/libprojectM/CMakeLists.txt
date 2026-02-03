@@ -151,6 +151,7 @@ if(BUILD_SHARED_LIBS)
                     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/PCM.hpp"
                     "${CMAKE_CURRENT_SOURCE_DIR}/Audio/WaveformAligner.hpp"
                     "${CMAKE_CURRENT_SOURCE_DIR}/Renderer/RenderContext.hpp"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/Renderer/TextureTypes.hpp"
                     "${CMAKE_CURRENT_SOURCE_DIR}/Logging.hpp"
                     "${CMAKE_CURRENT_SOURCE_DIR}/ProjectM.hpp"
                     )

@@ -166,8 +166,8 @@ if(ENABLE_INSTALL)
                 )
     endif()
 
-    # pkg-config export, only supported on UNIX systems.
-    if(UNIX)
+    # pkg-config export, only supported on UNIX systems (not for frameworks).
+    if(UNIX AND NOT ENABLE_MACOS_FRAMEWORK)
         include(GeneratePkgConfigFiles)
 
         if(ENABLE_BOOST_FILESYSTEM)

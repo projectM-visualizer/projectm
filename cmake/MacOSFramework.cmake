@@ -19,7 +19,7 @@
 #       [HEADER_SUBDIR <subdirectory name under Headers, defaults to FRAMEWORK_NAME>]
 #   )
 #
-# The framework will be created in the same directory as the target's output.
+# The framework will be created in CMAKE_CURRENT_BINARY_DIR.
 # C_HEADERS are installed flat under Headers/<header-subdir>/
 # CXX_HEADERS preserve their directory structure relative to HEADER_BASE_DIR.
 #
@@ -175,7 +175,7 @@ function(create_macos_framework)
 
     # Set properties on the framework target for use by install commands
     set_target_properties(${FW_TARGET} PROPERTIES
-        MACOS_FRAMEWORK_LOCATION "${_framework_dir}"
+        MACOS_FRAMEWORK_OUTPUT_DIR "${_framework_dir}"
         MACOS_FRAMEWORK_NAME "${FW_FRAMEWORK_NAME}"
     )
 endfunction()
@@ -213,8 +213,9 @@ function(install_macos_framework)
         set(_component_arg COMPONENT ${FW_COMPONENT})
     endif()
 
+    get_target_property(_framework_dir ${FW_TARGET} MACOS_FRAMEWORK_OUTPUT_DIR)
     install(
-        DIRECTORY "$<TARGET_FILE_DIR:${FW_TARGET}>/${_framework_name}.framework"
+        DIRECTORY "${_framework_dir}"
         DESTINATION "${FW_DESTINATION}"
         ${_component_arg}
         USE_SOURCE_PERMISSIONS

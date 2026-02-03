@@ -117,9 +117,11 @@ test_linkability() {
 
     echo "$test_code" > "$test_file"
 
-    if clang -F "$framework_parent" -I "$include_path" -framework "$framework_name" "$test_file" -o "$test_output" 2>/dev/null; then
+    local compile_errors
+    if compile_errors=$(clang -F "$framework_parent" -I "$include_path" -framework "$framework_name" "$test_file" -o "$test_output" 2>&1); then
         pass "Linkability test for $framework_name.framework"
     else
+        echo "$compile_errors"
         fail "Failed to compile and link against $framework_name.framework"
     fi
 }
@@ -194,12 +196,14 @@ int main() {
         TEMP_FILES+=("$test_file" "$test_output")
         echo "$PLAYLIST_TEST_CODE" > "$test_file"
 
-        if clang -F "$framework_parent" -F "$projectm_parent" \
+        compile_errors=""
+        if compile_errors=$(clang -F "$framework_parent" -F "$projectm_parent" \
               -I "$include_path" -I "$projectm_include_path" \
               -framework "projectM-4-playlist" -framework "projectM-4" \
-              "$test_file" -o "$test_output" 2>/dev/null; then
+              "$test_file" -o "$test_output" 2>&1); then
             pass "Linkability test for projectM-4-playlist.framework"
         else
+            echo "$compile_errors"
             fail "Failed to compile and link against projectM-4-playlist.framework"
         fi
     fi
