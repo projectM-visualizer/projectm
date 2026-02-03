@@ -89,7 +89,7 @@ jobs:
             -B "${{ github.workspace }}/cmake-build-cxx-api" \
             -DCMAKE_OSX_ARCHITECTURES="${{ matrix.arch }}" \
             -DCMAKE_PREFIX_PATH="${{ github.workspace }}/install"
-          
+
           cmake --build "${{ github.workspace }}/cmake-build-cxx-api" --config "Debug"
           cmake --build "${{ github.workspace }}/cmake-build-cxx-api" --config "Release"
 
@@ -97,4 +97,74 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
             name: projectm-osx-${{ matrix.libs }}-${{ matrix.fslib }}-${{ matrix.arch }}-${{ matrix.runs-on }}
+            path: install/*
+
+  build-framework:
+    name: "Framework: ${{ matrix.cxx_interface && 'C + C++' || 'C only' }}, Arch: ${{ matrix.arch }}, Build OS: ${{ matrix.runs-on }}"
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ['arm64', 'x86_64']
+        cxx_interface: [true, false]
+        runs-on: ['macos-15', 'macos-15-intel']
+        exclude:
+          - arch: arm64
+            runs-on: macos-15-intel
+          - arch: x86_64
+            runs-on: macos-15
+
+    steps:
+      - name: Install Packages
+        run: brew install ninja
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Configure Framework Build
+        run: |
+          if [ "${{ matrix.cxx_interface }}" == "true" ]; then
+          cxx_iface=ON
+          else
+          cxx_iface=OFF
+          fi
+          cmake -G "Ninja Multi-Config" \
+            -S "${{ github.workspace }}" \
+            -B "${{ github.workspace }}/cmake-build" \
+            -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" \
+            -DCMAKE_VERBOSE_MAKEFILE=YES \
+            -DBUILD_SHARED_LIBS=ON \
+            -DENABLE_MACOS_FRAMEWORK=ON \
+            -DENABLE_CXX_INTERFACE="${cxx_iface}" \
+            -DCMAKE_OSX_ARCHITECTURES="${{ matrix.arch }}"
+
+      - name: Build Release
+        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --parallel
+
+      - name: Validate Frameworks
+        run: |
+          STRICT=1 bash "${{ github.workspace }}/scripts/test-macos-framework.sh" \
+            "${{ github.workspace }}/cmake-build"
+
+      - name: Install
+        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target install
+
+      - name: Verify Installed Frameworks
+        run: |
+          echo "--- Checking installed framework structure ---"
+          ls -la "${{ github.workspace }}/install/lib/"
+          # Verify frameworks were installed (not bare dylibs)
+          test -d "${{ github.workspace }}/install/lib/projectM-4.framework" \
+            || { echo "FAIL: projectM-4.framework not installed"; exit 1; }
+          test -d "${{ github.workspace }}/install/lib/projectM-4-playlist.framework" \
+            || { echo "FAIL: projectM-4-playlist.framework not installed"; exit 1; }
+          # Run the same validation on installed frameworks
+          STRICT=1 bash "${{ github.workspace }}/scripts/test-macos-framework.sh" \
+            "${{ github.workspace }}/install"
+
+      - name: Upload Framework Artifact
+        uses: actions/upload-artifact@v4
+        with:
+            name: projectm-osx-framework-${{ matrix.cxx_interface && 'cxx' || 'c-only' }}-${{ matrix.arch }}-${{ matrix.runs-on }}
             path: install/*
