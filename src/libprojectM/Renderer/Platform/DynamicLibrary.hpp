@@ -65,7 +65,7 @@ constexpr std::array<const char*, 3> kNativeEglNames = {
     "EGL.dll",
     nullptr};
 
-constexpr std::array<const char*, 2> kNativeGlNames  = {
+constexpr std::array<const char*, 2> kNativeGlNames = {
     "opengl32.dll",
     nullptr};
 
@@ -134,8 +134,7 @@ constexpr std::array<const char*, 3> kNativeGlesNames = {
 constexpr std::array<const char*, 3> kNativeEglNames = {
     "libEGL.so.1",
     "libEGL.so",
-    nullptr
-};
+    nullptr};
 
 /**
  * Linux / GLES:

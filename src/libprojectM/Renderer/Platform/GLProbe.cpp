@@ -24,11 +24,12 @@ namespace {
  */
 enum : std::uint16_t
 {
-    PM_GL_MAJOR_VERSION        = 0x821B,
-    PM_GL_MINOR_VERSION        = 0x821C,
-    PM_GL_CONTEXT_FLAGS        = 0x821E
+    PM_GL_MAJOR_VERSION = 0x821B,
+    PM_GL_MINOR_VERSION = 0x821C,
+    PM_GL_CONTEXT_FLAGS = 0x821E
 #ifndef USE_GLES
-    ,PM_GL_CONTEXT_PROFILE_MASK = 0x9126
+    ,
+    PM_GL_CONTEXT_PROFILE_MASK = 0x9126
 #endif
 };
 
@@ -39,7 +40,7 @@ enum : std::uint16_t
  */
 enum : std::uint32_t
 {
-    PM_GL_CONTEXT_CORE_PROFILE_BIT          = 0x00000001u,
+    PM_GL_CONTEXT_CORE_PROFILE_BIT = 0x00000001u,
     PM_GL_CONTEXT_COMPATIBILITY_PROFILE_BIT = 0x00000002u
 };
 
@@ -51,8 +52,8 @@ enum : std::uint32_t
 enum : std::uint32_t
 {
     PM_GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT = 0x00000001u,
-    PM_GL_CONTEXT_FLAG_DEBUG_BIT              = 0x00000002u,
-    PM_GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT      = 0x00000004u
+    PM_GL_CONTEXT_FLAG_DEBUG_BIT = 0x00000002u,
+    PM_GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT = 0x00000004u
 };
 
 /**
@@ -64,15 +65,14 @@ enum : std::uint32_t
  * - glGetIntegerv is optional; when unavailable, version probing can fall back to parsing
  *   `GL_VERSION`.
  */
-struct ResolvedGLFunctions
-{
-    using GetStringFn   = decltype(+glGetString);
-    using GetErrorFn    = decltype(+glGetError);
+struct ResolvedGLFunctions {
+    using GetStringFn = decltype(+glGetString);
+    using GetErrorFn = decltype(+glGetError);
     using GetIntegervFn = decltype(+glGetIntegerv);
 
-    GetStringFn getString{};            //!< Typed pointer to glGetString (required).
-    GetErrorFn getError{};              //!< Typed pointer to glGetError (required).
-    GetIntegervFn getIntegerv{};        //!< Typed pointer to glGetIntegerv (optional).
+    GetStringFn getString{};     //!< Typed pointer to glGetString (required).
+    GetErrorFn getError{};       //!< Typed pointer to glGetError (required).
+    GetIntegervFn getIntegerv{}; //!< Typed pointer to glGetIntegerv (optional).
 };
 
 /**
@@ -117,8 +117,8 @@ auto ResolveGLFunctions(const GLProbe::GLFunctions& handles,
     }
 
     // Convert opaque procedure addresses into typed function pointers.
-    out.getString   = SymbolToFunction<ResolvedGLFunctions::GetStringFn>(getString);
-    out.getError    = SymbolToFunction<ResolvedGLFunctions::GetErrorFn>(getError);
+    out.getString = SymbolToFunction<ResolvedGLFunctions::GetStringFn>(getString);
+    out.getError = SymbolToFunction<ResolvedGLFunctions::GetErrorFn>(getError);
     out.getIntegerv = SymbolToFunction<ResolvedGLFunctions::GetIntegervFn>(getIntegerv);
 
     if (out.getString == nullptr || out.getError == nullptr)
@@ -236,16 +236,13 @@ auto ApiString(GLApi api) -> const char*
 {
     switch (api)
     {
-        case GLApi::OpenGLES:
-        {
+        case GLApi::OpenGLES: {
             return "GLES";
         }
-        case GLApi::OpenGL:
-        {
+        case GLApi::OpenGL: {
             return "GL";
         }
-        default:
-        {
+        default: {
             return "Any";
         }
     }

@@ -20,41 +20,38 @@ enum class GLApi : std::uint8_t
 /**
  * @brief Requirements to validate against the current GL context.
  */
-struct GLRequirements
-{
-    GLApi api{GLApi::Any};           //!< Required API (Any/OpenGL/OpenGLES)
-    int minMajor{};                  //!< Minimum major version
-    int minMinor{};                  //!< Minimum minor version
-    bool requireCoreProfile{false};  //!< Desktop GL only; ignored for GLES
-    int minShaderMajor{};            //!< Minimum shading language major version (GLSL/ESSL)
-    int minShaderMinor{};            //!< Minimum shading language minor version (GLSL/ESSL)
+struct GLRequirements {
+    GLApi api{GLApi::Any};          //!< Required API (Any/OpenGL/OpenGLES)
+    int minMajor{};                 //!< Minimum major version
+    int minMinor{};                 //!< Minimum minor version
+    bool requireCoreProfile{false}; //!< Desktop GL only; ignored for GLES
+    int minShaderMajor{};           //!< Minimum shading language major version (GLSL/ESSL)
+    int minShaderMinor{};           //!< Minimum shading language minor version (GLSL/ESSL)
 };
 
 /**
  * @brief Compact information about the current GL context.
  */
-struct GLInfo
-{
-    GLApi api{GLApi::Any};    //!< Detected API (WebGL is treated as GLES-like on Emscripten)
-    int major{};              //!< Detected major version
-    int minor{};              //!< Detected minor version
-    std::string versionStr;   //!< GL_VERSION
-    std::string glslStr;      //!< GL_SHADING_LANGUAGE_VERSION
-    std::string vendor;       //!< GL_VENDOR
-    std::string renderer;     //!< GL_RENDERER
-    std::string profile;      //!< "core", "compat", "unknown", "n/a"
-    std::string flags;        //!< "debug,fwd,robust", "none", "n/a"
+struct GLInfo {
+    GLApi api{GLApi::Any};  //!< Detected API (WebGL is treated as GLES-like on Emscripten)
+    int major{};            //!< Detected major version
+    int minor{};            //!< Detected minor version
+    std::string versionStr; //!< GL_VERSION
+    std::string glslStr;    //!< GL_SHADING_LANGUAGE_VERSION
+    std::string vendor;     //!< GL_VENDOR
+    std::string renderer;   //!< GL_RENDERER
+    std::string profile;    //!< "core", "compat", "unknown", "n/a"
+    std::string flags;      //!< "debug,fwd,robust", "none", "n/a"
 };
 
 /**
  * @brief Result of a GL context check.
  */
-struct GLProbeResult
-{
-    bool success{false};            //!< True if requirements are met
-    std::string reason;             //!< Failure reason (empty on success)
-    GLRequirements req;             //!< Requirements used
-    GLInfo info;                    //!< Detected context info
+struct GLProbeResult {
+    bool success{false}; //!< True if requirements are met
+    std::string reason;  //!< Failure reason (empty on success)
+    GLRequirements req;  //!< Requirements used
+    GLInfo info;         //!< Detected context info
 };
 
 /**
@@ -68,16 +65,15 @@ public:
     /**
      * @brief GL function pointer parameter type.
      */
-    struct GLFunctions
-    {
+    struct GLFunctions {
         /**
          * Opaque procedure address.
          */
         using ProcAddress = void*;
 
-        ProcAddress getString{};        //!< glGetString
-        ProcAddress getError{};         //!< glGetError
-        ProcAddress getIntegerv{};      //!< glGetIntegerv
+        ProcAddress getString{};   //!< glGetString
+        ProcAddress getError{};    //!< glGetError
+        ProcAddress getIntegerv{}; //!< glGetIntegerv
     };
 
     /**
@@ -104,7 +100,7 @@ public:
         auto Build(GLInfo& info, std::string& reason) -> bool;
 
     private:
-        GLFunctions m_gl;     //!< GL functions used for checks.
+        GLFunctions m_gl; //!< GL functions used for checks.
     };
 
     /**
@@ -164,7 +160,6 @@ public:
      * @brief Formats GL context info as a compact summary string.
      */
     [[nodiscard]] static auto FormatCompactLine(const GLInfo& info) -> std::string;
-
 };
 
 } // namespace Platform

@@ -8,12 +8,9 @@
 #include <mutex>
 #include <string>
 
-namespace libprojectM
-{
-namespace Renderer
-{
-namespace Platform
-{
+namespace libprojectM {
+namespace Renderer {
+namespace Platform {
 
 /**
  * @brief Backend describing which API/provider the current context appears to be using.
@@ -57,7 +54,7 @@ enum class Backend : std::uint8_t
  * If provided, it is consulted first when resolving procedure addresses.
  * Return nullptr to allow the resolver to continue probing.
  */
-using UserResolver = void* (*)(const char* name, void* userData);
+using UserResolver = void* (*) (const char* name, void* userData);
 
 /**
  * @brief Universal cross-platform runtime GL/GLES procedure resolver.
@@ -321,25 +318,24 @@ public:
     auto VerifyBeforeUse(std::string& reason) const -> bool;
 
 private:
-
     // Basic EGL access signatures.
 
-    using EglProc = void (PLATFORM_EGLAPIENTRY*)();
-    using EglGetProcAddressFn = EglProc (PLATFORM_EGLAPIENTRY*)(const char* name);
-    using EglGetCurrentContextFn = void* (PLATFORM_EGLAPIENTRY*)();
+    using EglProc = void(PLATFORM_EGLAPIENTRY*)();
+    using EglGetProcAddressFn = EglProc(PLATFORM_EGLAPIENTRY*)(const char* name);
+    using EglGetCurrentContextFn = void*(PLATFORM_EGLAPIENTRY*) ();
 
 #ifdef _WIN32
 
     // Basic WGL access signatures.
 
-    using WglGetProcAddressFn = PROC (WINAPI*)(LPCSTR);
-    using WglGetCurrentContextFn = HGLRC (WINAPI*)();
+    using WglGetProcAddressFn = PROC(WINAPI*)(LPCSTR);
+    using WglGetCurrentContextFn = HGLRC(WINAPI*)();
 
 #elif defined(__APPLE__)
 
     // Basic CGL access signatures.
 
-    using CglGetCurrentContextFn = void* (*)();
+    using CglGetCurrentContextFn = void* (*) ();
 
 #elif !defined(__ANDROID__)
 
@@ -348,68 +344,66 @@ private:
     /**
      * glXGetProcAddress/glXGetProcAddressARB return a function pointer.
     */
-    using GlxGetProcAddressFn = void (*(*)(const unsigned char*))();
-    using GlxGetCurrentContextFn = void* (*)();
+    using GlxGetProcAddressFn = void (*(*) (const unsigned char*) )();
+    using GlxGetCurrentContextFn = void* (*) ();
 
 #endif
 
     /**
      * Current GL context probe results.
      */
-    struct CurrentContextProbe
-    {
-        bool eglLibOpened{false};                   //!< True if an EGL library was opened.
-        bool eglAvailable{false};                   //!< True if EGL entry points were resolved.
-        bool eglCurrent{false};                     //!< True if an EGL context appears current.
-        bool eglGetProcAddressAvailable{false};     //!< True if eglGetProcAddress is available (non-null).
+    struct CurrentContextProbe {
+        bool eglLibOpened{false};               //!< True if an EGL library was opened.
+        bool eglAvailable{false};               //!< True if EGL entry points were resolved.
+        bool eglCurrent{false};                 //!< True if an EGL context appears current.
+        bool eglGetProcAddressAvailable{false}; //!< True if eglGetProcAddress is available (non-null).
 
-        bool glxLibOpened{false};                   //!< True if a GLX library was opened.
-        bool glxAvailable{false};                   //!< True if GLX entry points were resolved.
-        bool glxCurrent{false};                     //!< True if a GLX context appears current.
+        bool glxLibOpened{false}; //!< True if a GLX library was opened.
+        bool glxAvailable{false}; //!< True if GLX entry points were resolved.
+        bool glxCurrent{false};   //!< True if a GLX context appears current.
 
-        bool wglLibOpened{false};                   //!< True if a WGL library was opened.
-        bool wglAvailable{false};                   //!< True if WGL entry points were resolved.
-        bool wglCurrent{false};                     //!< True if a WGL context appears current.
+        bool wglLibOpened{false}; //!< True if a WGL library was opened.
+        bool wglAvailable{false}; //!< True if WGL entry points were resolved.
+        bool wglCurrent{false};   //!< True if a WGL context appears current.
 
         bool cglLibOpened{false};
-        bool cglAvailable{false};                   //!< True if CGL entry points were resolved.
-        bool cglCurrent{false};                     //!< True if a CGL context appears current.
+        bool cglAvailable{false}; //!< True if CGL entry points were resolved.
+        bool cglCurrent{false};   //!< True if a CGL context appears current.
 
-        bool webglAvailable{false};                 //!< True if WebGL entry points were resolved.
-        bool webglCurrent{false};                   //!< True if a WebGL context appears current.
+        bool webglAvailable{false}; //!< True if WebGL entry points were resolved.
+        bool webglCurrent{false};   //!< True if a WebGL context appears current.
     };
 
     /**
      * All values needed for the resolver are encapsulated in this struct to keep them immutable later.
      */
-    struct ResolverState
-    {
-        Backend m_backend{ Backend::None };                             //!< Detected GL backend.
+    struct ResolverState {
+        Backend m_backend{Backend::None}; //!< Detected GL backend.
 
-        UserResolver m_userResolver{nullptr};                           //!< User provided function resolver. Optional, may be null.
-        void* m_userData{nullptr};                                      //!< User data to pass to user provided function resolver.
+        UserResolver m_userResolver{nullptr}; //!< User provided function resolver. Optional, may be null.
+        void* m_userData{nullptr};            //!< User data to pass to user provided function resolver.
 
-        DynamicLibrary m_eglLib;                                        //!< EGL library handle. Optional, may be empty.
-        DynamicLibrary m_glLib;                                         //!< GL library handle. Optional, may be empty.
-        DynamicLibrary m_glxLib;                                        //!< GLX library handle. Optional, may be empty.
+        DynamicLibrary m_eglLib; //!< EGL library handle. Optional, may be empty.
+        DynamicLibrary m_glLib;  //!< GL library handle. Optional, may be empty.
+        DynamicLibrary m_glxLib; //!< GLX library handle. Optional, may be empty.
 
-        EglGetProcAddressFn m_eglGetProcAddress{nullptr};               //!< eglGetProcAddress handle.
-        bool m_eglGetAllProcAddresses{false};                           //!< True if EGL_KHR_get_all_proc_addresses (or client variant) is advertised.
-        EglGetCurrentContextFn m_eglGetCurrentContext{nullptr};         //!< eglGetCurrentContext handle.
+        EglGetProcAddressFn m_eglGetProcAddress{nullptr};       //!< eglGetProcAddress handle.
+        bool m_eglGetAllProcAddresses{false};                   //!< True if EGL_KHR_get_all_proc_addresses (or client variant) is advertised.
+        EglGetCurrentContextFn m_eglGetCurrentContext{nullptr}; //!< eglGetCurrentContext handle.
 
 #ifdef _WIN32
 
-        WglGetProcAddressFn m_wglGetProcAddress{nullptr};               //!< wglGetProcAddress handle.
-        WglGetCurrentContextFn m_wglGetCurrentContext{nullptr};         //!< wglGetCurrentContext handle.
+        WglGetProcAddressFn m_wglGetProcAddress{nullptr};       //!< wglGetProcAddress handle.
+        WglGetCurrentContextFn m_wglGetCurrentContext{nullptr}; //!< wglGetCurrentContext handle.
 
 #elif defined(__APPLE__)
 
-        CglGetCurrentContextFn m_cglGetCurrentContext{nullptr};         //!< CGLGetCurrentContext handle.
+        CglGetCurrentContextFn m_cglGetCurrentContext{nullptr}; //!< CGLGetCurrentContext handle.
 
 #elif !defined(__ANDROID__)
 
-        GlxGetProcAddressFn m_glxGetProcAddress{nullptr};               //!< glXGetProcAddress* handle.
-        GlxGetCurrentContextFn m_glxGetCurrentContext{nullptr};         //!< glXGetCurrentContext handle.
+        GlxGetProcAddressFn m_glxGetProcAddress{nullptr};       //!< glXGetProcAddress* handle.
+        GlxGetCurrentContextFn m_glxGetCurrentContext{nullptr}; //!< glXGetCurrentContext handle.
 
 #else
 
@@ -427,12 +421,12 @@ private:
     static auto VerifyBeforeUse(const ResolverState& state, std::string& reason) -> bool;
     static auto ResolveProcAddress(const ResolverState& state, const char* name) -> void*;
 
-    mutable std::mutex m_mutex;                                     //!< Mutex to synchronize initialization and access.
-    bool m_loaded{false};                                           //!< True if the resolver is initialized.
-    bool m_initializing{false};                                     //!< True while an Initialize() attempt is in-flight.
-    mutable std::condition_variable m_initCv;                       //!< Signals completion of Initialize().
+    mutable std::mutex m_mutex;               //!< Mutex to synchronize initialization and access.
+    bool m_loaded{false};                     //!< True if the resolver is initialized.
+    bool m_initializing{false};               //!< True while an Initialize() attempt is in-flight.
+    mutable std::condition_variable m_initCv; //!< Signals completion of Initialize().
 
-    std::shared_ptr<const ResolverState> m_state;                   //!< Resolver properties and resolved pointers.
+    std::shared_ptr<const ResolverState> m_state; //!< Resolver properties and resolved pointers.
 };
 
 /**
@@ -445,32 +439,25 @@ inline auto BackendToString(Backend backend) -> const char*
 {
     switch (backend)
     {
-        case Backend::None:
-        {
+        case Backend::None: {
             return "None";
         }
-        case Backend::EGL:
-        {
+        case Backend::EGL: {
             return "EGL";
         }
-        case Backend::GLX:
-        {
+        case Backend::GLX: {
             return "GLX";
         }
-        case Backend::WGL:
-        {
+        case Backend::WGL: {
             return "WGL";
         }
-        case Backend::WebGL:
-        {
+        case Backend::WebGL: {
             return "WebGL";
         }
-        case Backend::CGL:
-        {
+        case Backend::CGL: {
             return "CGL";
         }
-        default:
-        {
+        default: {
             return "Unknown";
         }
     }

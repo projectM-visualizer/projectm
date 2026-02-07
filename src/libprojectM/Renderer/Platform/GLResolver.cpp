@@ -6,8 +6,8 @@
 #include <array>
 #include <cstdint>
 #include <cstdio>
-#include <cstring>
 #include <cstdlib>
+#include <cstring>
 
 #ifdef _WIN32
 
@@ -348,16 +348,16 @@ auto GLResolver::Initialize(UserResolver resolver, void* userData) -> bool
     if (EnableGLResolverTraceLogging())
     {
         LOG_INFO(std::string("[GLResolver] Probe  ") +
-                         " egl_current=\"" + (currentContext.eglCurrent ? "yes" : "no") + "\"" +
-                         " glx_current=\"" + (currentContext.glxCurrent ? "yes" : "no") + "\"" +
-                         " wgl_current=\"" + (currentContext.wglCurrent ? "yes" : "no") + "\"" +
-                         " cgl_current=\"" + (currentContext.cglCurrent ? "yes" : "no") + "\"" +
-                         " webgl_current=\"" + (currentContext.webglCurrent ? "yes" : "no") + "\"" +
-                         " egl_available=\"" + (currentContext.eglAvailable ? "yes" : "no") + "\"" +
-                         " glx_available=\"" + (currentContext.glxAvailable ? "yes" : "no") + "\"" +
-                         " wgl_available=\"" + (currentContext.wglAvailable ? "yes" : "no") + "\"" +
-                         " cgl_available=\"" + (currentContext.cglAvailable ? "yes" : "no") + "\"" +
-                         " webgl_available=\"" + (currentContext.webglAvailable ? "yes" : "no") + "\"");
+                 " egl_current=\"" + (currentContext.eglCurrent ? "yes" : "no") + "\"" +
+                 " glx_current=\"" + (currentContext.glxCurrent ? "yes" : "no") + "\"" +
+                 " wgl_current=\"" + (currentContext.wglCurrent ? "yes" : "no") + "\"" +
+                 " cgl_current=\"" + (currentContext.cglCurrent ? "yes" : "no") + "\"" +
+                 " webgl_current=\"" + (currentContext.webglCurrent ? "yes" : "no") + "\"" +
+                 " egl_available=\"" + (currentContext.eglAvailable ? "yes" : "no") + "\"" +
+                 " glx_available=\"" + (currentContext.glxAvailable ? "yes" : "no") + "\"" +
+                 " wgl_available=\"" + (currentContext.wglAvailable ? "yes" : "no") + "\"" +
+                 " cgl_available=\"" + (currentContext.cglAvailable ? "yes" : "no") + "\"" +
+                 " webgl_available=\"" + (currentContext.webglAvailable ? "yes" : "no") + "\"");
     }
 
     lock.lock();
@@ -397,7 +397,6 @@ auto GLResolver::Initialize(UserResolver resolver, void* userData) -> bool
 #elif !defined(__APPLE__) && !defined(__ANDROID__) && !defined(__EMSCRIPTEN__)
 
         diag += std::string(" glx_get_proc=\"") + (state.m_glxGetProcAddress != nullptr ? "yes" : "no") + "\"";
-
         diag += " glx_policy=\"";
         diag += AllowGlxCoreGetProcAddressFallback() ? "ext+fallback" : "ext-only";
         diag += "\"";
@@ -410,7 +409,8 @@ auto GLResolver::Initialize(UserResolver resolver, void* userData) -> bool
         if (state.m_eglGetAllProcAddresses)
         {
             diag += "all";
-        } else
+        }
+        else
         {
             diag += AllowEglCoreGetProcAddressFallback() ? "ext+fallback" : "ext-only";
         }
@@ -428,12 +428,7 @@ auto GLResolver::Initialize(UserResolver resolver, void* userData) -> bool
     {
         m_loaded = false;
 
-        LOG_ERROR(std::string("[GLResolver] No current GL backend detected: ")
-                              + "egl_current=\"" + (currentContext.eglCurrent ? "yes" : "no") + "\"" 
-                              + " wgl_current=\"" + (currentContext.wglCurrent ? "yes" : "no") + "\"" 
-                              + " glx_current=\"" + (currentContext.glxCurrent ? "yes" : "no") + "\"" 
-                              + " cgl_current=\"" + (currentContext.cglCurrent ? "yes" : "no") + "\"" 
-                              + " webgl_current=\"" + (currentContext.webglCurrent ? "yes" : "no") + "\"");
+        LOG_ERROR(std::string("[GLResolver] No current GL backend detected: ") + "egl_current=\"" + (currentContext.eglCurrent ? "yes" : "no") + "\"" + " wgl_current=\"" + (currentContext.wglCurrent ? "yes" : "no") + "\"" + " glx_current=\"" + (currentContext.glxCurrent ? "yes" : "no") + "\"" + " cgl_current=\"" + (currentContext.cglCurrent ? "yes" : "no") + "\"" + " webgl_current=\"" + (currentContext.webglCurrent ? "yes" : "no") + "\"");
 
         LOG_ERROR("[GLResolver] Failed to detect an active GL backend for the current context");
         return false;
@@ -530,7 +525,7 @@ auto GLResolver::VerifyBeforeUse(const ResolverState& state, std::string& reason
         if (StrictContextGateEnabled())
         {
             reason = std::string("Context for detected backend is not available (backend=") +
-                      BackendToString(state.m_backend) + ")";
+                     BackendToString(state.m_backend) + ")";
 
             return false;
         }
@@ -538,7 +533,7 @@ auto GLResolver::VerifyBeforeUse(const ResolverState& state, std::string& reason
         if (EnableGLResolverTraceLogging())
         {
             LOG_INFO(std::string("[GLResolver] Strict context gate disabled; continuing despite backend mismatch (backend=") +
-                  BackendToString(state.m_backend) + ")");
+                     BackendToString(state.m_backend) + ")");
         }
 
         return true;
@@ -580,7 +575,7 @@ auto GLResolver::GetProcAddress(const char* name) const -> void*
 
     {
         std::string reason;
-        if (!VerifyBeforeUse(*state,reason))
+        if (!VerifyBeforeUse(*state, reason))
         {
             LOG_ERROR(std::string("[GLResolver] Resolver state error: ") + reason);
             return nullptr;
@@ -601,7 +596,7 @@ auto GLResolver::GetProcAddress(const char* name) const -> void*
 void GLResolver::OpenNativeLibraries(ResolverState& state)
 {
 #ifdef __EMSCRIPTEN__
-    (void)state;
+    (void) state;
 #else
 
     std::string reason;
@@ -635,7 +630,7 @@ void GLResolver::OpenNativeLibraries(ResolverState& state)
     // Select GL lib names to use based on GL api
 #ifdef USE_GLES
     const auto* glNames = kNativeGlesNames.data();
-#else // #ifdef USE_GLES
+#else  // #ifdef USE_GLES
     const auto* glNames = kNativeGlNames.data();
 #endif // #ifdef USE_GLES else
 
@@ -656,7 +651,7 @@ void GLResolver::OpenNativeLibraries(ResolverState& state)
 void GLResolver::ResolveProviderFunctions(ResolverState& state)
 {
 #ifdef __EMSCRIPTEN__
-    (void)state;
+    (void) state;
 #else
     // EGL
     {
@@ -831,16 +826,16 @@ void GLResolver::ResolveProviderFunctions(ResolverState& state)
     if (EnableGLResolverTraceLogging())
     {
         LOG_INFO(std::string("[GLResolver] EGL     handle=") +
-                  std::to_string(reinterpret_cast<std::uintptr_t>(state.m_eglLib.Handle())) +
-                  " lib=\"" + state.m_eglLib.LoadedName() + "\"");
+                 std::to_string(reinterpret_cast<std::uintptr_t>(state.m_eglLib.Handle())) +
+                 " lib=\"" + state.m_eglLib.LoadedName() + "\"");
 
         LOG_INFO(std::string("[GLResolver] GL      handle=") +
-                  std::to_string(reinterpret_cast<std::uintptr_t>(state.m_glLib.Handle())) +
-                  " lib=\"" + state.m_glLib.LoadedName() + "\"");
+                 std::to_string(reinterpret_cast<std::uintptr_t>(state.m_glLib.Handle())) +
+                 " lib=\"" + state.m_glLib.LoadedName() + "\"");
 
         LOG_INFO(std::string("[GLResolver] GLX     handle=") +
-                  std::to_string(reinterpret_cast<std::uintptr_t>(state.m_glxLib.Handle())) +
-                  " lib=\"" + state.m_glxLib.LoadedName() + "\"");
+                 std::to_string(reinterpret_cast<std::uintptr_t>(state.m_glxLib.Handle())) +
+                 " lib=\"" + state.m_glxLib.LoadedName() + "\"");
     }
 #endif // #ifdef __EMSCRIPTEN__ #else
 }
@@ -851,7 +846,7 @@ auto GLResolver::ProbeCurrentContext(const ResolverState& state) -> CurrentConte
 
 #ifdef __EMSCRIPTEN__
 
-    (void)state;
+    (void) state;
 
     result.webglAvailable = true;
 
@@ -909,31 +904,31 @@ auto GLResolver::ProbeCurrentContext(const ResolverState& state) -> CurrentConte
 
 #endif
 
-        // If more than one backend appears current, emit a warning for diagnostics. This can occur on layered
-        // stacks (e.g. EGL/ANGLE on macOS, EGLGLX on Linux) and is resolved by policy in DetectBackend().
-        const auto currentCount =
-            (result.eglCurrent ? 1 : 0) +
-            (result.glxCurrent ? 1 : 0) +
-            (result.wglCurrent ? 1 : 0) +
-            (result.cglCurrent ? 1 : 0);
+    // If more than one backend appears current, emit a warning for diagnostics. This can occur on layered
+    // stacks (e.g. EGL/ANGLE on macOS, EGLGLX on Linux) and is resolved by policy in DetectBackend().
+    const auto currentCount =
+        (result.eglCurrent ? 1 : 0) +
+        (result.glxCurrent ? 1 : 0) +
+        (result.wglCurrent ? 1 : 0) +
+        (result.cglCurrent ? 1 : 0);
 
-        if (currentCount > 1)
-        {
-            std::string warnMsg = std::string("[GLResolver] Multiple current contexts detected:") +
-                     " egl_current=\"" + (result.eglCurrent ? "yes" : "no") + "\"" +
-                     " egl_getproc=\"" + (result.eglGetProcAddressAvailable ? "yes" : "no") + "\"" +
-                     " glx_current=\"" + (result.glxCurrent ? "yes" : "no") + "\"" +
-                     " wgl_current=\"" + (result.wglCurrent ? "yes" : "no") + "\"" +
-                     " cgl_current=\"" + (result.cglCurrent ? "yes" : "no") + "\"" +
-                     " policy=";
+    if (currentCount > 1)
+    {
+        std::string warnMsg = std::string("[GLResolver] Multiple current contexts detected:") +
+                              " egl_current=\"" + (result.eglCurrent ? "yes" : "no") + "\"" +
+                              " egl_getproc=\"" + (result.eglGetProcAddressAvailable ? "yes" : "no") + "\"" +
+                              " glx_current=\"" + (result.glxCurrent ? "yes" : "no") + "\"" +
+                              " wgl_current=\"" + (result.wglCurrent ? "yes" : "no") + "\"" +
+                              " cgl_current=\"" + (result.cglCurrent ? "yes" : "no") + "\"" +
+                              " policy=";
 #ifdef __APPLE__
-            warnMsg += "\"";
-            warnMsg += (PreferCglOnMacos() ? "prefer_cgl" : "prefer_egl");
-            warnMsg += "\"";
+        warnMsg += "\"";
+        warnMsg += (PreferCglOnMacos() ? "prefer_cgl" : "prefer_egl");
+        warnMsg += "\"";
 #else
-            warnMsg += "\"prefer_egl\"";
+        warnMsg += "\"prefer_egl\"";
 #endif
-            LOG_WARN(warnMsg);
+        LOG_WARN(warnMsg);
     }
 
     return result;
@@ -1053,25 +1048,25 @@ auto GLResolver::DetectBackend(const CurrentContextProbe& probe) -> Backend
 
 #if defined(__APPLE__)
 
-// macOS can host both native CGL and EGL (e.g. ANGLE) depending on how the context was created.
-//
-// Policy note (production-hardening):
-// - If both EGL and CGL appear current, prefer EGL when eglGetProcAddress is available. This avoids selecting CGL on
-//   layered stacks (ANGLE) where CGL can appear current even though EGL is the intended API surface.
-// - GLRESOLVER_MACOS_PREFER_CGL still applies when only CGL appears current (or when EGL is current but unusable).
-if (probe.cglCurrent && probe.eglCurrent)
-{
-    if (!probe.eglGetProcAddressAvailable && PreferCglOnMacos())
+    // macOS can host both native CGL and EGL (e.g. ANGLE) depending on how the context was created.
+    //
+    // Policy note (production-hardening):
+    // - If both EGL and CGL appear current, prefer EGL when eglGetProcAddress is available. This avoids selecting CGL on
+    //   layered stacks (ANGLE) where CGL can appear current even though EGL is the intended API surface.
+    // - GLRESOLVER_MACOS_PREFER_CGL still applies when only CGL appears current (or when EGL is current but unusable).
+    if (probe.cglCurrent && probe.eglCurrent)
+    {
+        if (!probe.eglGetProcAddressAvailable && PreferCglOnMacos())
+        {
+            return Backend::CGL;
+        }
+        return Backend::EGL;
+    }
+
+    if (probe.cglCurrent && PreferCglOnMacos())
     {
         return Backend::CGL;
     }
-    return Backend::EGL;
-}
-
-if (probe.cglCurrent && PreferCglOnMacos())
-{
-    return Backend::CGL;
-}
 
 #endif // #if defined(__APPLE__)
 

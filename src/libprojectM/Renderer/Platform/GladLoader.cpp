@@ -43,30 +43,30 @@ auto GladLoader::CheckGLRequirements() -> bool
 
 #ifdef USE_GLES
 
-        glCheck
-            .WithApi(GLApi::OpenGLES)
-            .WithMinimumVersion(3, 0)
-            .WithMinimumShaderLanguageVersion(3, 0)
-            .WithRequireCoreProfile(false);
+    glCheck
+        .WithApi(GLApi::OpenGLES)
+        .WithMinimumVersion(3, 0)
+        .WithMinimumShaderLanguageVersion(3, 0)
+        .WithRequireCoreProfile(false);
 
 #else
 
-        glCheck
-            .WithApi(GLApi::OpenGL)
-            .WithMinimumVersion(3, 3)
-            .WithMinimumShaderLanguageVersion(3, 30)
-            // Accept both core and compatibility contexts. A 3.3+ compatibility context is a valid
-            // configuration on many drivers/stacks, and profile filtering would reject it unnecessarily.
-            .WithRequireCoreProfile(false);
+    glCheck
+        .WithApi(GLApi::OpenGL)
+        .WithMinimumVersion(3, 3)
+        .WithMinimumShaderLanguageVersion(3, 30)
+        // Accept both core and compatibility contexts. A 3.3+ compatibility context is a valid
+        // configuration on many drivers/stacks, and profile filtering would reject it unnecessarily.
+        .WithRequireCoreProfile(false);
 
 #endif
 
     auto glDetails = glCheck.Check();
 
     LOG_INFO(std::string("[GladLoader] GLInfo  ") +
-                 GLProbe::FormatCompactLine(glDetails.info) +
-                 " backend=\"" + BackendToString(GLResolver::Instance().CurrentBackend()) + "\"" +
-                 " user_resolver=\"" + (GLResolver::Instance().HasUserResolver() ? "yes" : "no") + "\"");
+             GLProbe::FormatCompactLine(glDetails.info) +
+             " backend=\"" + BackendToString(GLResolver::Instance().CurrentBackend()) + "\"" +
+             " user_resolver=\"" + (GLResolver::Instance().HasUserResolver() ? "yes" : "no") + "\"");
 
     if (!glDetails.success)
     {
@@ -76,7 +76,6 @@ auto GladLoader::CheckGLRequirements() -> bool
     return glDetails.success;
 
 #endif // #ifndef __EMSCRIPTEN__
-
 }
 
 
@@ -147,6 +146,6 @@ auto GladLoader::Initialize() -> bool
 #endif
 }
 
-}
-}
-}
+} // namespace Platform
+} // namespace Renderer
+} // namespace libprojectM

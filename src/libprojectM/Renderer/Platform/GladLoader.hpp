@@ -44,10 +44,10 @@ private:
     auto CheckGLRequirements() -> bool;
 
 
-    bool m_isLoaded{false};                 //!< Flag indicating whether GLAD has been loaded.
-    mutable std::mutex m_mutex;             //!< Mutex to synchronize initialization.
+    bool m_isLoaded{false};     //!< Flag indicating whether GLAD has been loaded.
+    mutable std::mutex m_mutex; //!< Mutex to synchronize initialization.
 };
 
-}
-}
-}
+} // namespace Platform
+} // namespace Renderer
+} // namespace libprojectM

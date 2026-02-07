@@ -67,7 +67,7 @@ add_library(Renderer OBJECT
         VertexBufferUsage.hpp
         VertexIndexArray.cpp
         VertexIndexArray.hpp
-)
+        )
 
 target_include_directories(Renderer
         PRIVATE
