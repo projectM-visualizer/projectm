@@ -213,6 +213,13 @@ auto FunctionToInteger(Fn func) -> std::uintptr_t
  */
 auto EnvFlagEnabled(const char* name, bool defaultValue) -> bool;
 
+/**
+ * @brief Reads feature flag from GLRESOLVER_TRACE_LOGGING environment variable.
+ *
+ * @return true if trace logging is enabled.
+ */
+auto EnableGLResolverTraceLogging() -> bool;
+
 #ifdef _WIN32
 
 /**
@@ -382,12 +389,171 @@ public:
     static auto FindGlobalSymbol(const char* name) -> void*;
 
 private:
-    LibHandle m_handle{};           //!< Library handle used to access the system library.
-    std::string m_loadedName;       //!< Successfully opened library name.
-    bool m_closeOnDestruct{false};  //!< If true, Close() is called from the destructor.
+    LibHandle m_handle{};          //!< Library handle used to access the system library.
+    std::string m_loadedName;      //!< Successfully opened library name.
+    bool m_closeOnDestruct{false}; //!< If true, Close() is called from the destructor.
 };
 
-#endif // #ifdef __EMSCRIPTEN__
+/**
+ * @brief Retrieves a function pointer from a dynamic library or the global symbol table.
+ *
+ * Attempts to resolve a symbol named @p funcName as a function of type @p Fn.
+ * If the library is open, it first searches the library itself; if that fails,
+ * it falls back to searching the global symbol table.
+ *
+ * When the symbol is found, it is converted to the requested function type using
+ * SymbolToFunction(). If the conversion fails or the symbol cannot be located,
+ * a descriptive error message may be written to @p reason.
+ *
+ * @tparam Fn Function pointer type to convert the resolved symbol to.
+ *
+ * @param lib Dynamic library to search for the symbol.
+ * @param funcName Name of the symbol to resolve.
+ * @param reason Output parameter populated with a failure description when resolution fails.
+ *
+ * @return A function pointer of type @p Fn if the symbol is found and successfully converted;
+ *         otherwise, nullptr.
+ */
+template<typename Fn>
+auto GetProcAddressFromLibraryFallback(const DynamicLibrary& lib, const char* funcName, std::string& reason) -> Fn
+{
+    void* sym = nullptr;
+    if (lib.IsOpen())
+    {
+        sym = lib.GetSymbol(funcName);
+    }
+    if (sym == nullptr)
+    {
+        sym = DynamicLibrary::FindGlobalSymbol(funcName);
+    }
+    if (sym != nullptr)
+    {
+        auto typed = SymbolToFunction<Fn>(sym);
+        if (typed == nullptr)
+        {
+            reason = std::string(funcName) + " found in " + lib.LoadedName() + " but could not be converted to a function pointer";
+        }
+        return typed;
+    }
+
+    if (lib.IsOpen())
+    {
+        reason = std::string(funcName) + " not found (" + lib.LoadedName() + " loaded but missing symbol)";
+    }
+
+    return nullptr;
+}
+
+/**
+ * @brief Resolve a function pointer by searching up to two already-open dynamic libraries, then falling back
+ *        to a global symbol lookup.
+ *
+ * This helper attempts to locate a symbol by name and return it as a strongly-typed function pointer
+ * of type @p Fn.
+ *
+ * Lookup order:
+ * 1. If @p lib1 is open, query @p funcName1 and (optionally) @p funcName2 from @p lib1.
+ * 2. If not found and @p lib2 is open, query @p funcName1 and (optionally) @p funcName2 from @p lib2.
+ * 3. If still not found, attempt a process-wide (global) lookup via DynamicLibrary::FindGlobalSymbol()
+ *    for @p funcName1 and (optionally) @p funcName2. This is useful when the host process has already
+ *    loaded a relevant library (e.g., GLX/EGL) and exported the symbol globally.
+ *
+ * If a symbol is found but cannot be converted to a function pointer of type @p Fn (via SymbolToFunction),
+ * the function returns nullptr and updates @p reason accordingly.
+ *
+ * @tparam Fn Function pointer type to convert the resolved symbol to.
+ *
+ * @param lib1        Primary dynamic library handle to search (preferred when available).
+ * @param lib2        Secondary dynamic library handle to search if not found in @p lib1.
+ * @param funcName1   Primary symbol name to resolve. Must not be nullptr.
+ * @param funcName2   Optional alternate symbol name to try if @p funcName1 is not found (may be nullptr).
+ * @param reason      Output string describing why resolution failed. On success, the content is unchanged.
+ *
+ * @return A function pointer of type @p Fn if resolution and conversion succeed; otherwise nullptr.
+ *
+ * @note If @p funcName1 is nullptr, this function returns nullptr immediately and does not modify @p reason.
+ */
+template<typename Fn>
+auto GetProcAddressFromLibrariesFallback(const DynamicLibrary& lib1, const DynamicLibrary& lib2, const char* funcName1, const char* funcName2, std::string& reason) -> Fn
+{
+    void* sym = nullptr;
+
+    if (funcName1 == nullptr)
+    {
+        return nullptr;
+    }
+
+    // Prefer explicit library handles when we have them.
+    if (lib1.IsOpen())
+    {
+        sym = lib1.GetSymbol(funcName1);
+        if (sym == nullptr && funcName2 != nullptr)
+        {
+            sym = lib1.GetSymbol(funcName2);
+        }
+    }
+    if (sym == nullptr && lib2.IsOpen())
+    {
+        sym = lib2.GetSymbol(funcName1);
+        if (sym == nullptr && funcName2 != nullptr)
+        {
+            sym = lib2.GetSymbol(funcName2);
+        }
+    }
+
+    // Finally, try global lookup.
+    if (sym == nullptr)
+    {
+        sym = DynamicLibrary::FindGlobalSymbol(funcName1);
+        if (sym == nullptr && funcName2 != nullptr)
+        {
+            sym = DynamicLibrary::FindGlobalSymbol(funcName2);
+        }
+    }
+
+    if (sym != nullptr)
+    {
+        Fn typed = SymbolToFunction<Fn>(sym);
+        if (typed == nullptr)
+        {
+            reason = std::string(funcName1);
+            if (funcName2 != nullptr)
+            {
+                reason += " / ";
+                reason += funcName2;
+            }
+            reason = " found but could not be converted to a function pointer";
+        }
+        return typed;
+    }
+
+    std::string openLibs;
+    if (lib1.IsOpen())
+    {
+        openLibs = lib1.LoadedName();
+    }
+    if (lib2.IsOpen())
+    {
+        if (!openLibs.empty())
+        {
+            openLibs += " / ";
+        }
+        openLibs = lib2.LoadedName();
+    }
+    reason = std::string(funcName1);
+    if (funcName2 != nullptr)
+    {
+        reason += " / ";
+        reason += funcName2;
+    }
+    if (!openLibs.empty())
+    {
+        reason += " not found (" + openLibs + " loaded but missing symbol)";
+    }
+    return nullptr;
+}
+
+#endif // #ifdef __EMSCRIPTEN__ #else
 
 } // namespace Platform
 } // namespace Renderer

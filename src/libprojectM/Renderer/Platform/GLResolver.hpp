@@ -86,12 +86,22 @@ using UserResolver = void* (*)(const char* name, void* userData);
  *
  * Environment variables:
  *
- *  - GLRESOLVER_STRICT_CONTEXT_GATE=0
- *      Disable the per-call check that the detected backend is still current when resolving symbols.
- *      Default is 1 (enabled). Useful for debugging unusual context switching in host apps.
+ *
+ * - GLRESOLVER_DYLIB_DIR=path
+ *     macOS-only: if dlopen() fails for a *bare* library name (no path separators and no @rpath/@loader_path tokens),
+ *     retry dlopen() with @p path prepended. This is intended as an escape hatch for app-bundle deployments where
+ *     @rpath-based discovery is not sufficient; prefer LC_RPATH/install-name based deployment when possible.
  *
  *  - GLRESOLVER_MACOS_PREFER_CGL=0
  *      On macOS, prefer CGL when both EGL and CGL appear current. Default is 1 (prefer CGL).
+ *
+*  - GLRESOLVER_STRICT_CONTEXT_GATE=0
+ *      Disable the per-call check that the detected backend is still current when resolving symbols.
+ *      Default is 1 (enabled). Useful for debugging unusual context switching in host apps.
+ *
+*  - GLRESOLVER_TRACE_LOGGING=0
+ *      Enable trace logging for resolver details.
+ *      Default is 1 (enabled). Useful for debugging the resolver path.
  *
  *  - GLRESOLVER_EGL_ALLOW_CORE_GETPROCADDRESS_FALLBACK=1
  *      Enable a non-portable fallback that asks eglGetProcAddress() for core (non-extension) "gl*"
@@ -102,10 +112,6 @@ using UserResolver = void* (*)(const char* name, void* userData);
  *     Enable GLX fallback for resolving non-extension gl* names via glXGetProcAddress*.
  *     Disabled by default.
  *
- * - GLRESOLVER_DYLIB_DIR=path
- *     macOS-only: if dlopen() fails for a *bare* library name (no path separators and no @rpath/@loader_path tokens),
- *     retry dlopen() with @p path prepended. This is intended as an escape hatch for app-bundle deployments where
- *     @rpath-based discovery is not sufficient; prefer LC_RPATH/install-name based deployment when possible.
  *
  * Compile-time switches:
  *
@@ -150,7 +156,7 @@ using UserResolver = void* (*)(const char* name, void* userData);
  *
  *  5) GetProcAddress fallback
  *     - EGL: Try to resolve function via eglGetProcAddress as fallback.
- *            Always enabled.
+ *            Optional, enabled via GLRESOLVER_EGL_ALLOW_CORE_GETPROCADDRESS_FALLBACK.
  *     - GLX: Try to resolve function via glXGetProcAddress as fallback.
  *            Optional, enabled via GLRESOLVER_GLX_ALLOW_CORE_GETPROCADDRESS_FALLBACK.
  *

@@ -262,7 +262,7 @@ auto HasBasicGLEntrypoints(const ResolvedGLFunctions& gl, std::string& reason) -
 {
     if (gl.getString == nullptr || gl.getError == nullptr)
     {
-        reason = "GL entrypoints not loaded (call gladLoadGL/GLES with a current context first)";
+        reason = "GL entrypoints not loaded";
         return false;
     }
     return true;
@@ -711,7 +711,7 @@ auto GLProbe::FormatCompactLine(const GLInfo& info) -> std::string
 {
     std::ostringstream oss;
 
-    oss << "api=\"" << ApiString(info.api) << "\""
+    oss << "api=\"" << (info.api == GLApi::Any ? "None" : ApiString(info.api)) << "\""
         << " ver=\"" << FormatVersion(info.major, info.minor) << "\""
         << " profile=\"" << info.profile << "\""
         << " flags=\"" << info.flags << "\"";

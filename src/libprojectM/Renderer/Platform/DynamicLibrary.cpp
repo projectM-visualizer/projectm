@@ -49,9 +49,7 @@
 //
 // Define GLRESOLVER_ALLOW_UNSAFE_DLL_SEARCH=1 to re-enable the legacy fallback.
 #ifndef GLRESOLVER_ALLOW_UNSAFE_DLL_SEARCH
-
 #define GLRESOLVER_ALLOW_UNSAFE_DLL_SEARCH 0
-
 #endif
 
 #else // #ifdef _WIN32
@@ -128,6 +126,12 @@ auto EnvFlagEnabled(const char* name, bool defaultValue) -> bool
     return defaultValue;
 }
 
+auto EnableGLResolverTraceLogging() -> bool
+{
+    static const bool enabled = EnvFlagEnabled("GLRESOLVER_TRACE_LOGGING", true);
+    return enabled;
+}
+
 #ifndef __EMSCRIPTEN__
 
 DynamicLibrary::~DynamicLibrary()
@@ -181,7 +185,10 @@ DynamicLibrary::~DynamicLibrary()
                 continue;
             }
 
-            LOG_DEBUG(std::string("[DynLibrary] Try     ") + name);
+            if (EnableGLResolverTraceLogging())
+            {
+                LOG_INFO(std::string("[DynLibrary] Try     ") + name);
+            }
 
 #ifdef _WIN32
 
@@ -374,6 +381,7 @@ DynamicLibrary::~DynamicLibrary()
             m_handle = ::dlopen(name, RTLD_NOW | RTLD_LOCAL);
 
 #ifdef __APPLE__
+
             // Allow callers to specify an explicit search directory for bundled dylibs
             // (e.g., ANGLE's libEGL.dylib / libGLESv2.dylib inside a macOS app bundle).
             // This is an optional override for deployments where @rpath-based discovery is not sufficient.
@@ -403,7 +411,10 @@ DynamicLibrary::~DynamicLibrary()
                 {
                     if (!isBareLibraryName(name))
                     {
-                        LOG_DEBUG(std::string("[DynLibrary] GLRESOLVER_DYLIB_DIR ignored for non-bare name: ") + name);
+                        if (EnableGLResolverTraceLogging())
+                        {
+                            LOG_INFO(std::string("[DynLibrary] GLRESOLVER_DYLIB_DIR ignored for non-bare name: ") + name);
+                        }
                         // Do not attempt directory prepending when the name already encodes a path or @rpath token.
                         // Fall through to the standard search below.
                     }
@@ -414,7 +425,10 @@ DynamicLibrary::~DynamicLibrary()
                         TrimTrailingWhitespace(baseDir);
 
                         std::string full(baseDir);
-                        LOG_DEBUG(std::string("[DynLibrary] using GLRESOLVER_DYLIB_DIR=\"") + baseDir + "\" to locate: " + name);
+                        if (EnableGLResolverTraceLogging())
+                        {
+                            LOG_INFO(std::string("[DynLibrary] using GLRESOLVER_DYLIB_DIR=\"") + baseDir + "\" to locate: " + name);
+                        }
                         if (!full.empty() && full.back() != '/')
                         {
                             full.push_back('/');
@@ -427,7 +441,10 @@ DynamicLibrary::~DynamicLibrary()
                         if (m_handle != nullptr)
                         {
                             m_loadedName = full;
-                            LOG_DEBUG(std::string("[DynLibrary] Opened  ") + m_loadedName);
+                            if (EnableGLResolverTraceLogging())
+                            {
+                                LOG_INFO(std::string("[DynLibrary] Opened  ") + m_loadedName);
+                            }
                             return true;
                         }
                     }
@@ -441,7 +458,10 @@ DynamicLibrary::~DynamicLibrary()
             if (m_handle != nullptr)
             {
                 m_loadedName = name;
-                LOG_DEBUG(std::string("[DynLibrary] Opened  ") + m_loadedName);
+                if (EnableGLResolverTraceLogging())
+                {
+                    LOG_INFO(std::string("[DynLibrary] Opened  ") + m_loadedName);
+                }
                 return true;
             }
 
@@ -493,9 +513,9 @@ DynamicLibrary::~DynamicLibrary()
 
         } // for loop
 
-        if (!reason.empty())
+        if (!reason.empty() && EnableGLResolverTraceLogging())
         {
-            LOG_DEBUG(std::string("[DynLibrary] Failed  ") + reason);
+            LOG_INFO(std::string("[DynLibrary] Failed  ") + reason);
         }
         return false;
     }
