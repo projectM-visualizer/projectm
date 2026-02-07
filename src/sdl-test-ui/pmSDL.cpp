@@ -32,6 +32,14 @@
 
 #include <vector>
 
+namespace {
+auto loadProcDispatch(const char* name, void* userData) -> void*
+{
+    // Dispatch load proc to SDL
+    return SDL_GL_GetProcAddress(name);
+}
+} // namespace
+
 projectMSDL::projectMSDL(SDL_GLContext glCtx, const std::string& presetPath)
     : _openGlContext(glCtx)
     , _projectM(projectm_create())
@@ -41,6 +49,8 @@ projectMSDL::projectMSDL(SDL_GLContext glCtx, const std::string& presetPath)
     projectm_playlist_set_preset_switched_event_callback(_playlist, &projectMSDL::presetSwitchedEvent, static_cast<void*>(this));
     projectm_playlist_add_path(_playlist, presetPath.c_str(), true, false);
     projectm_playlist_set_shuffle(_playlist, _shuffle);
+    dumpOpenGLInfo();
+    enableGLDebugOutput();
 }
 
 projectMSDL::~projectMSDL()

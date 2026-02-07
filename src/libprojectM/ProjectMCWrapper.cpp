@@ -1,10 +1,13 @@
 #include "ProjectMCWrapper.hpp"
 
+#include "Renderer/Platform/GladLoader.hpp"
+
 #include <projectM-4/projectM.h>
 
 #include <Logging.hpp>
 
 #include <Audio/AudioConstants.hpp>
+#include <Renderer/Platform/GLResolver.hpp>
 
 #include <projectM-4/parameters.h>
 #include <projectM-4/render_opengl.h>
@@ -68,9 +71,28 @@ void projectm_free_string(const char* str)
 
 projectm_handle projectm_create()
 {
+    return projectm_create_with_opengl_load_proc(nullptr, nullptr);
+}
+
+projectm_handle projectm_create_with_opengl_load_proc(void* (*load_proc)(const char*, void*), void* user_data)
+{
     try
     {
-        auto projectMInstance = new libprojectM::projectMWrapper();
+        // Init resolver to discover gl function pointers (guarded internally, valid to call multiple times)
+        // Note: only the initial load_proc will be used, parameters on subsequent calls are ignored
+        if (!libprojectM::Renderer::Platform::GLResolver::Instance().Initialize(load_proc, user_data))
+        {
+            return nullptr;
+        }
+
+        // Check GL requirements and init GLAD (guarded internally, valid to call multiple times)
+        if (!libprojectM::Renderer::Platform::GladLoader::Instance().Initialize())
+        {
+            return nullptr;
+        }
+
+        // create projectM
+        auto* projectMInstance = new libprojectM::projectMWrapper();
         return reinterpret_cast<projectm_handle>(projectMInstance);
     }
     catch (...)
