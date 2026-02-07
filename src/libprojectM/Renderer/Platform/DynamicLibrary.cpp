@@ -596,20 +596,10 @@ DynamicLibrary::~DynamicLibrary()
         }
 
         // If the host has already loaded EGL/GLES provider DLLs (e.g., ANGLE), probe those modules as well.
-        // This is a enhancement for applications embedding this library where we may not have
+        // This is an enhancement for applications embedding this library where we may not have
         // opened the provider libraries ourselves.
         {
-            static constexpr std::array<const char*, 6> moduleNames =
-            {
-                "libEGL.dll",
-                "EGL.dll",
-                "libGLESv2.dll",
-                "GLESv2.dll",
-                "libGLESv3.dll",
-                "GLESv3.dll"
-            };
-
-            for (const auto& m : moduleNames)
+            for (const auto& m : kAllEglModuleNames)
             {
                 if (HMODULE mod = ::GetModuleHandleA(m))
                 {

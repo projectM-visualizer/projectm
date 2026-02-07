@@ -53,104 +53,7 @@ auto AllowEglCoreGetProcAddressFallback() -> bool
     return enabled;
 }
 
-#ifdef _WIN32
-
-// Windows GL/EGL library name candidates
-
-constexpr std::array<const char*, 3> kNativeEglNames = {
-    "libEGL.dll",
-    "EGL.dll",
-    nullptr};
-
-constexpr std::array<const char*, 2> kNativeGlNames  = {
-    "opengl32.dll",
-    nullptr};
-
-constexpr std::array<const char*, 5> kNativeGlesNames = {
-    "libGLESv3.dll",
-    "GLESv3.dll",
-    "libGLESv2.dll",
-    "GLESv2.dll",
-    nullptr};
-
-#elif defined(__APPLE__)
-
-// macOS GL/EGL library name candidates
-// macOS native OpenGL uses CGL (OpenGL.framework). ANGLE (and other portability layers).
-// commonly provide EGL/GLES dylibs in the application bundle / @rpath.
-
-constexpr std::array<const char*, 6> kNativeEglNames = {
-    "@rpath/libEGL.dylib",
-    "@rpath/libEGL.1.dylib",
-    "libEGL.dylib",
-    "libEGL.1.dylib",
-    "EGL",
-    nullptr};
-
-constexpr std::array<const char*, 2> kNativeGlNames = {
-    "/System/Library/Frameworks/OpenGL.framework/OpenGL",
-    nullptr};
-
-constexpr std::array<const char*, 7> kNativeGlesNames = {
-    "@rpath/libGLESv3.dylib",
-    "@rpath/libGLESv2.dylib",
-    "@rpath/libGLESv2_with_capture.dylib",
-    "libGLESv3.dylib",
-    "libGLESv2.dylib",
-    "libGLESv2_with_capture.dylib",
-    nullptr};
-#elif defined(__ANDROID__)
-
-    // Android EGL + GLES (no desktop libGL / GLX) library name candidates
-
-    constexpr std::array<const char*, 2> kNativeEglNames = {
-        "libEGL.so",
-        nullptr};
-
-    constexpr std::array<const char*, 3> kNativeGlesNames = {
-        "libGLESv3.so",
-        "libGLESv2.so",
-        nullptr};
-
-#else // #ifdef _WIN32
-
-// Unix GL/EGL library name candidates
-
-constexpr std::array<const char*, 3> kNativeEglNames = {"libEGL.so.1", "libEGL.so", nullptr};
-
-/**
- * Linux / GLES:
- * Prefer libGLESv3/libGLESv2 sonames. Core GLES entry points are expected
- * to be available as library exports. eglGetProcAddress is not guaranteed
- * to return core symbols unless EGL_KHR_get_all_proc_addresses (or its
- * client variant) is advertised.
- */
-constexpr std::array<const char*, 6> kNativeGlesNames = {
-    "libGLESv3.so.3",
-    "libGLESv3.so",
-    "libGLESv2.so.2",
-    "libGLESv2.so.1",
-    "libGLESv2.so",
-    nullptr};
-
-/**
- * Linux / GLVND note:
- * Many modern distributions use GLVND, which splits OpenGL entry points (libOpenGL) from
- * window-system glue such as GLX (libGLX). Prefer GLVND-facing libs first, but keep legacy
- * libGL names in the candidate list for compatibility with older or non-GLVND stacks.
- */
-constexpr std::array<const char*, 6> kNativeGlNames = {
-    "libOpenGL.so.1", // GLVND OpenGL dispatcher (core gl* entry points)
-    "libOpenGL.so.0", // older GLVND soname
-    "libGL.so.1",     // legacy/compat umbrella (often provided by GLVND)
-    "libGL.so.0",     // sometimes shipped as .so.0
-    "libGL.so",
-    nullptr};
-
-constexpr std::array<const char*, 3> kNativeGlxNames = {
-    "libGLX.so.1", // GLVND GLX dispatcher (glXGetProcAddress*)
-    "libGLX.so.0", // older GLVND soname
-    nullptr};
+#if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__)
 
 /**
  * GLX fallback for resolving non-extension gl* names via glXGetProcAddress*.
@@ -169,7 +72,7 @@ auto AllowGlxCoreGetProcAddressFallback() -> bool
     return enabled;
 }
 
-#endif // #ifdef _WIN32
+#endif // #if !defined(_WIN32) && !defined(__APPLE__) && !defined(__ANDROID__)
 
 #ifdef __APPLE__
 
@@ -484,8 +387,7 @@ auto GLResolver::Initialize(UserResolver resolver, void* userData) -> bool
                            " egl=\"" + state.m_eglLib.LoadedName() + "\"" +
                            " gl=\"" + state.m_glLib.LoadedName() + "\"" +
                            " glx=\"" + state.m_glxLib.LoadedName() + "\"" +
-                           " egl_get_proc=\"" + (state.m_eglGetProcAddress != nullptr ? "yes" : "no") + "\"" +
-                           " egl_all_proc=\"" + (state.m_eglGetAllProcAddresses ? "yes" : "no") + "\""
+                           " egl_get_proc=\"" + (state.m_eglGetProcAddress != nullptr ? "yes" : "no") + "\""
 
 #endif
             ;
@@ -496,21 +398,22 @@ auto GLResolver::Initialize(UserResolver resolver, void* userData) -> bool
 
         diag += std::string(" glx_get_proc=\"") + (state.m_glxGetProcAddress != nullptr ? "yes" : "no") + "\"";
 
-        if (AllowGlxCoreGetProcAddressFallback())
-        {
-            diag += " glx_policy=\"ext+fallback\"";
-        }
-        else
-        {
-            diag += " glx_policy=\"ext-only\"";
-        }
+        diag += " glx_policy=\"";
+        diag += AllowGlxCoreGetProcAddressFallback() ? "ext+fallback" : "ext-only";
+        diag += "\"";
 
 #endif // #ifdef _WIN32
 
 #ifndef __EMSCRIPTEN__
 
-        diag += " egl_fallback=\"";
-        diag += AllowEglCoreGetProcAddressFallback() ? "yes" : "no";
+        diag += " egl_policy=\"";
+        if (state.m_eglGetAllProcAddresses)
+        {
+            diag += "all";
+        } else
+        {
+            diag += AllowEglCoreGetProcAddressFallback() ? "ext+fallback" : "ext-only";
+        }
         diag += "\"";
 
 #endif // #ifndef __EMSCRIPTEN__
@@ -1341,7 +1244,6 @@ auto GLResolver::ResolveProcAddress(const ResolverState& state, const char* name
 #endif // #ifndef _WIN32 #else
 
     // 4) Global symbol table (works if the process already linked/loaded GL libs).
-    // NOTE: After initialization completes, native libraries are not mutated; m_mutex not needed here.
     void* global = DynamicLibrary::FindGlobalSymbol(name);
     if (global != nullptr)
     {
