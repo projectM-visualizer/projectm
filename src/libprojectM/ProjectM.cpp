@@ -25,10 +25,11 @@
 #include "Preset.hpp"
 #include "PresetFactoryManager.hpp"
 #include "TimeKeeper.hpp"
+#include "Renderer/Backend/OpenGL/OpenGLPresetTransition.hpp"
 
 #include <Audio/PCM.hpp>
 
-#include <Renderer/CopyTexture.hpp>
+#include <Renderer/Backend/OpenGL/OpenGLCopyTexture.hpp>
 #include <Renderer/PresetTransition.hpp>
 #include <Renderer/ShaderCache.hpp>
 #include <Renderer/TextureManager.hpp>
@@ -222,7 +223,7 @@ void ProjectM::Initialize()
 
     m_transitionShaderManager = std::make_unique<Renderer::TransitionShaderManager>();
 
-    m_textureCopier = std::make_unique<Renderer::CopyTexture>();
+    m_textureCopier = std::make_unique<Renderer::Backend::OpenGL::OpenGLCopyTexture>();
 
     m_spriteManager = std::make_unique<UserSprites::SpriteManager>();
 
@@ -305,7 +306,11 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
     {
         m_transitioningPreset = std::move(preset);
         m_timeKeeper->StartSmoothing();
-        m_transition = std::make_unique<Renderer::PresetTransition>(m_transitionShaderManager->RandomTransition(), m_softCutDuration, m_timeKeeper->GetFrameTime());
+        m_transition = std::make_unique<Renderer::Backend::OpenGL::OpenGLPresetTransition>(
+            m_transitionShaderManager->RandomTransition(),
+            m_softCutDuration,
+            m_timeKeeper->GetFrameTime()
+        );
     }
 }
 

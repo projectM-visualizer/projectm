@@ -4,7 +4,7 @@
 #include "MilkdropShader.hpp"
 #include "VideoEcho.hpp"
 
-#include <Renderer/Mesh.hpp>
+#include <Renderer/Backend/OpenGL/OpenGLRenderItem.hpp>
 
 #include <memory>
 
@@ -14,10 +14,12 @@ namespace MilkdropPreset {
 /**
  * @brief Draws the final composite effect, either a shader or Milkdrop 1 effects.
  */
-class FinalComposite
+class FinalComposite : public libprojectM::Renderer::Backend::OpenGL::OpenGLRenderItem
 {
 public:
     FinalComposite();
+
+    void InitVertexAttrib() override;
 
     /**
      * @brief Loads the composite shader, if the preset uses one.
