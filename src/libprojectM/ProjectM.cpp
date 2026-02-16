@@ -21,6 +21,7 @@
 
 #include "ProjectM.hpp"
 
+#include "ExpressionVariableWatcher.hpp"
 #include "Logging.hpp"
 #include "Preset.hpp"
 #include "PresetFactoryManager.hpp"
@@ -40,6 +41,7 @@ namespace libprojectM {
 
 ProjectM::ProjectM()
     : m_presetFactoryManager(std::make_unique<PresetFactoryManager>())
+    , m_variableWatcher(std::make_unique<ExpressionVariableWatcher>())
 {
     Initialize();
 }
