@@ -32,6 +32,14 @@ add_library(Renderer OBJECT
         MilkdropNoise.cpp
         MilkdropNoise.hpp
         OpenGL.h
+        Platform/DynamicLibrary.cpp
+        Platform/DynamicLibrary.hpp
+        Platform/GladLoader.cpp
+        Platform/GladLoader.hpp
+        Platform/GLProbe.cpp
+        Platform/GLProbe.hpp
+        Platform/GLResolver.cpp
+        Platform/GLResolver.hpp
         Point.hpp
         PresetTransition.cpp
         PresetTransition.hpp
@@ -76,8 +84,16 @@ target_link_libraries(Renderer
         GLM::GLM
         hlslparser
         stb_image
+        glad
         ${PROJECTM_OPENGL_LIBRARIES}
         )
+
+if(PROJECTM_FILESYSTEM_USE_BOOST)
+    target_link_libraries(Renderer
+        PRIVATE
+        ${PROJECTM_FILESYSTEM_LIBRARY}
+    )
+endif()
 
 set_target_properties(Renderer PROPERTIES
         FOLDER libprojectM

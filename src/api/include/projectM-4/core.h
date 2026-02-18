@@ -33,16 +33,49 @@ extern "C" {
 #endif
 
 /**
+ * @brief Callback function for resolving function pointers.
+ *
+ * This callback functions is used to resolve platform-dependent GL function pointers.
+ *
+ * @param name The name of the function to resolve.
+ * @param user_data A user-defined data pointer that is passed along with the load proc call,
+ *                  e.g. context information.
+ * @since 4.2.0
+ */
+typedef void* (*projectm_load_proc)(const char* name, void* user_data);
+
+/**
  * @brief Creates a new projectM instance.
  *
  * If this function returns NULL, in most cases the OpenGL context is not initialized, not made
  * current or insufficient to render projectM visuals.
+ *
+ * The OpenGL resolver is initialized on the first call to either projectm_create() or projectm_create_with_opengl_load_proc().
+ * All projectM instances share the same resolver.
  *
  * @return A projectM handle for the newly created instance that must be used in subsequent API calls.
  *         NULL if the instance could not be created successfully.
  * @since 4.0.0
  */
 PROJECTM_EXPORT projectm_handle projectm_create();
+
+/**
+ * @brief Creates a new projectM instance using the given function to resolve GL api functions.
+ *
+ * The load_proc function accepts a function name and a user data pointer.
+ * If this function returns NULL, in most cases the OpenGL context is not initialized, not made
+ * current or insufficient to render projectM visuals.
+ *
+ * The OpenGL resolver is initialized on the first call to either projectm_create() or projectm_create_with_opengl_load_proc().
+ * All projectM instances share the same resolver, and subsequent calls ignore the provided load_proc.
+ *
+ * @param load_proc Callback function used to resolve OpenGL function pointers. Optional, may be NULL.
+ * @param user_data Custom user data pointer to pass along to the load_proc call, e.g. context information. Optional, may be NULL.
+ * @return A projectM handle for the newly created instance that must be used in subsequent API calls.
+ *         NULL if the instance could not be created successfully.
+ * @since 4.2.0
+ */
+PROJECTM_EXPORT projectm_handle projectm_create_with_opengl_load_proc(projectm_load_proc load_proc, void* user_data);
 
 /**
  * @brief Destroys the given instance and frees the resources.

@@ -4,12 +4,6 @@
   "description": "projectM is an open-source project that reimplements the esteemed Winamp Milkdrop by Geiss in a more modern, cross-platform reusable library.",
   "homepage": "https://github.com/projectM-visualizer/projectm",
   "license": "LGPL-2.1-only",
-  "dependencies": [
-    {
-      "name": "glew",
-      "platform": "windows"
-    }
-  ],
   "default-features": [
     "external-glm",
     "external-evallib"

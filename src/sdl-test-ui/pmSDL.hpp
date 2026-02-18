@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include "opengl.h"
 #include <SDL2/SDL.h>
 
 // Disable LOOPBACK and FAKE audio to enable microphone input
@@ -45,7 +46,6 @@
 // projectM SDL
 #include "audioCapture.hpp"
 #include "loopback.hpp"
-#include "opengl.h"
 #include "setup.hpp"
 
 
@@ -72,8 +72,8 @@
 #include <stdio.h>
 
 
-#define LOG(format, ...) wprintf(format L"\n", __VA_ARGS__)
-#define ERR(format, ...) LOG(L"Error: " format, __VA_ARGS__)
+#define LOG(format, ...) wprintf(format L"\n", ##__VA_ARGS__)
+#define ERR(format, ...) LOG(L"Error: " format, ##__VA_ARGS__)
 
 #endif /** WASAPI_LOOPBACK */
 
