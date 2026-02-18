@@ -6,6 +6,10 @@ add_compile_definitions(
         $<IF:$<PLATFORM_ID:Windows>,STBI_NO_DDS,>
         )
 
+include_directories(
+        "${PROJECTM_SOURCE_DIR}/vendor/glad/include"
+        )
+
 add_subdirectory(Audio)
 add_subdirectory(MilkdropPreset)
 add_subdirectory(Renderer)
@@ -70,6 +74,7 @@ add_library(projectM
         $<TARGET_OBJECTS:stb_image>
         $<TARGET_OBJECTS:projectM_main>
         $<TARGET_OBJECTS:projectM::Eval>
+        $<TARGET_OBJECTS:glad_obj>
         )
 
 target_include_directories(projectM
@@ -84,6 +89,7 @@ if(ENABLE_CXX_INTERFACE)
             )
 endif()
 
+# PROJECTM_OPENGL_LIBRARIES is present for WIN32/Desktop GL only
 target_link_libraries(projectM
         PUBLIC
         ${PROJECTM_OPENGL_LIBRARIES}
@@ -261,20 +267,12 @@ if(ENABLE_INSTALL)
                 PATH_VARS PROJECTM_BIN_DIR PROJECTM_INCLUDE_DIR
                 )
 
-        install(FILES
-                "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4ConfigVersion.cmake"
-                "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4Config.cmake"
-                DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
-                COMPONENT Devel
-                )
-
-        if(NOT ENABLE_EMSCRIPTEN AND ENABLE_GLES)
-            install(FILES
-                    "${PROJECTM_SOURCE_DIR}/cmake/gles/FindOpenGL.cmake"
-                    DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
-                    COMPONENT Devel
-                    )
-        endif()
+    install(FILES
+            "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4ConfigVersion.cmake"
+            "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/projectM4Config.cmake"
+            DESTINATION "${PROJECTM_LIB_DIR}/cmake/projectM4"
+            COMPONENT Devel
+            )
 
         install(EXPORT libprojectMTargets
                 FILE projectM4Targets.cmake

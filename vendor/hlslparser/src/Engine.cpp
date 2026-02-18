@@ -1,7 +1,7 @@
 
 #include "Engine.h"
 
-#include "libprojectM/Logging.hpp"
+//#include "libprojectM/Logging.hpp"
 
 #include <cstdio>  // vsnprintf
 #include <cstring> // strcmp, strcasecmp
@@ -117,14 +117,14 @@ void Log_Error(const char * format, ...) {
 }
 
 void Log_ErrorArgList(const char * format, va_list args) {
-    using libprojectM::Logging;
+    //using libprojectM::Logging;
 
     va_list tmp;
     va_copy(tmp, args);
     std::vector<char> buffer(static_cast<size_t>(std::vsnprintf(nullptr, 0, format, tmp)) + 1, '\0');
     va_end(tmp);
     vsnprintf(buffer.data(), buffer.size(), format, args );
-    LOG_ERROR("[HLSLParser] " + std::string(buffer.data()));
+    //LOG_ERROR("[HLSLParser] " + std::string(buffer.data()));
 }
 
 
