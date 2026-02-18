@@ -1,3 +1,4 @@
+add_subdirectory(glad)
 if(NOT ENABLE_SYSTEM_GLM)
     add_subdirectory(glm)
 endif()
