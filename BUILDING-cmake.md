@@ -11,7 +11,6 @@ Required tools and dependencies:
 - CMake 3.21 or higher.
 - A working toolchain, e.g. Visual Studio on Windows or the `build-essentials` package on Ubuntu Linux.
 - Main OpenGL libraries and development files.
-- The `GLEW` Library on Windows.
 
 To use the library in other projects, it is required to install it. Use `CMAKE_INSTALL_PREFIX` to specify the
 installation directory.

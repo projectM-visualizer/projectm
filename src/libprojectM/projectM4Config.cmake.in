@@ -19,9 +19,6 @@ if("@ENABLE_BOOST_FILESYSTEM@") # ENABLE_BOOST_FILESYSTEM
 
     find_dependency(Boost CONFIG NO_MODULE COMPONENTS Filesystem)
 endif()
-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-     find_dependency(GLEW)
-endif()
 
 set(_projectM4_FIND_PARTS_REQUIRED)
 if(projectM4_FIND_REQUIRED)
