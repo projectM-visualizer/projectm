@@ -95,9 +95,9 @@ auto Playlist::AddPath(const std::string& path, uint32_t index, bool recursive, 
 
     if (recursive)
     {
-        try
+        for (const auto& entry : recursive_directory_iterator(path))
         {
-            for (const auto& entry : recursive_directory_iterator(path))
+            try
             {
                 if (is_regular_file(entry) && entry.path().extension() == ".milk")
                 {
@@ -106,17 +106,17 @@ auto Playlist::AddPath(const std::string& path, uint32_t index, bool recursive, 
                     {
                         currentIndex = index + presetsAdded;
                     }
-                    if (AddItem(entry.path().string(), currentIndex, allowDuplicates))
+                    if (AddItem(entry.path().u8string(), currentIndex, allowDuplicates))
                     {
                         presetsAdded++;
                     }
                 }
             }
-        }
-        catch (std::exception&)
-        {
-            // Todo: Add failure feedback
-            return presetsAdded;
+            catch (std::exception&)
+            {
+                // Todo: Add failure feedback
+                continue;
+            }
         }
     }
     else
@@ -130,7 +130,7 @@ auto Playlist::AddPath(const std::string& path, uint32_t index, bool recursive, 
                 {
                     currentIndex = index + presetsAdded;
                 }
-                if (AddItem(entry.path().string(), currentIndex, allowDuplicates))
+                if (AddItem(entry.path().u8string(), currentIndex, allowDuplicates))
                 {
                     presetsAdded++;
                 }
@@ -222,8 +222,8 @@ void Playlist::Sort(uint32_t startIndex, uint32_t count,
                           break;
 
                       case SortPredicate::FilenameOnly: {
-                          leftFilename = path(left.Filename()).filename().string();
-                          rightFilename = path(right.Filename()).filename().string();
+                          leftFilename = path(left.Filename()).filename().u8string();
+                          rightFilename = path(right.Filename()).filename().u8string();
                           break;
                       }
                   }
