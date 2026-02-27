@@ -9,10 +9,9 @@ namespace MilkdropPreset {
 
 Border::Border(PresetState& presetState)
     : m_presetState(presetState)
-    , m_borderMesh(Renderer::VertexBufferUsage::StreamDraw)
 {
-    m_borderMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::Triangles);
-    m_borderMesh.SetVertexCount(8);
+    Init();
+}
 
     m_borderMesh.Indices().Set({
     {
