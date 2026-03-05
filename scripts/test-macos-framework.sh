@@ -247,6 +247,7 @@ if [ -n "$PROJECTM_FRAMEWORK" ] && [ -d "$PROJECTM_FRAMEWORK" ]; then
         "memory.h"
         "parameters.h"
         "render_opengl.h"
+        "textures.h"
         "touch.h"
         "types.h"
         "user_sprites.h"
