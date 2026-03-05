@@ -3,6 +3,7 @@ find_package(GTest 1.10 REQUIRED NO_MODULE)
 add_executable(projectM-unittest
         WaveformAlignerTest.cpp
         PresetFileParserTest.cpp
+        MilkdropShaderCommentParsingTest.cpp
 
         $<TARGET_OBJECTS:Audio>
         $<TARGET_OBJECTS:MilkdropPreset>
