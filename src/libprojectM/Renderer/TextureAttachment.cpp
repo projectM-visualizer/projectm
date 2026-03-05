@@ -118,7 +118,7 @@ void TextureAttachment::ReplaceTexture(int width, int height)
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    m_texture = std::make_shared<class Texture>("", textureId, GL_TEXTURE_2D, width, height, false);
+    m_texture = std::make_shared<class Texture>("", textureId, GL_TEXTURE_2D, width, height, Texture::Source::Internal);
 }
 
 } // namespace Renderer

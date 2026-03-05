@@ -42,6 +42,9 @@ public:
 
     projectm_texture_load_event m_textureLoadEventCallback{nullptr};
     void* m_textureLoadEventUserData{nullptr};
+
+    projectm_texture_unload_event m_textureUnloadEventCallback{nullptr};
+    void* m_textureUnloadEventUserData{nullptr};
 };
 
 } // namespace libprojectM

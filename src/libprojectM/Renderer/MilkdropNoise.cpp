@@ -12,32 +12,32 @@ namespace Renderer {
 
 auto MilkdropNoise::LowQuality() -> std::shared_ptr<Texture>
 {
-    return std::make_shared<Texture>("noise_lq", generate2D(256, 1).data(), GL_TEXTURE_2D, 256, 256, 0, GL_RGBA8, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, false);
+    return std::make_shared<Texture>("noise_lq", generate2D(256, 1).data(), GL_TEXTURE_2D, 256, 256, 0, GL_RGBA8, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, Texture::Source::Internal);
 }
 
 auto MilkdropNoise::LowQualityLite() -> std::shared_ptr<Texture>
 {
-    return std::make_shared<Texture>("noise_lq_lite", generate2D(32, 1).data(), GL_TEXTURE_2D, 32, 32, 0, GL_RGBA8, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, false);
+    return std::make_shared<Texture>("noise_lq_lite", generate2D(32, 1).data(), GL_TEXTURE_2D, 32, 32, 0, GL_RGBA8, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, Texture::Source::Internal);
 }
 
 auto MilkdropNoise::MediumQuality() -> std::shared_ptr<Texture>
 {
-    return std::make_shared<Texture>("noise_mq", generate2D(256, 4).data(), GL_TEXTURE_2D, 256, 256, 0, GL_RGBA8, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, false);
+    return std::make_shared<Texture>("noise_mq", generate2D(256, 4).data(), GL_TEXTURE_2D, 256, 256, 0, GL_RGBA8, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, Texture::Source::Internal);
 }
 
 auto MilkdropNoise::HighQuality() -> std::shared_ptr<Texture>
 {
-    return std::make_shared<Texture>("noise_hq", generate2D(256, 8).data(), GL_TEXTURE_2D, 256, 256, 0, GL_RGBA8, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, false);
+    return std::make_shared<Texture>("noise_hq", generate2D(256, 8).data(), GL_TEXTURE_2D, 256, 256, 0, GL_RGBA8, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, Texture::Source::Internal);
 }
 
 auto MilkdropNoise::LowQualityVolume() -> std::shared_ptr<Texture>
 {
-    return std::make_shared<Texture>("noisevol_lq", generate3D(32, 1).data(), GL_TEXTURE_3D, 32, 32, 32, GL_RGBA8, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, false);
+    return std::make_shared<Texture>("noisevol_lq", generate3D(32, 1).data(), GL_TEXTURE_3D, 32, 32, 32, GL_RGBA8, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, Texture::Source::Internal);
 }
 
 auto MilkdropNoise::HighQualityVolume() -> std::shared_ptr<Texture>
 {
-    return std::make_shared<Texture>("noisevol_hq", generate3D(32, 4).data(), GL_TEXTURE_3D, 32, 32, 32, GL_RGBA8, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, false);
+    return std::make_shared<Texture>("noisevol_hq", generate3D(32, 4).data(), GL_TEXTURE_3D, 32, 32, 32, GL_RGBA8, GetPreferredInternalFormat(), GL_UNSIGNED_BYTE, Texture::Source::Internal);
 }
 
 auto MilkdropNoise::GetPreferredInternalFormat() -> int

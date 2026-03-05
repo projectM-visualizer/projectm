@@ -93,6 +93,10 @@ void ProjectM::SetTexturePaths(std::vector<std::string> texturePaths)
     {
         m_textureManager->SetTextureLoadCallback(m_textureLoadCallback);
     }
+    if (m_textureUnloadCallback)
+    {
+        m_textureManager->SetTextureUnloadCallback(m_textureUnloadCallback);
+    }
 }
 
 void ProjectM::ResetTextures()
@@ -101,6 +105,10 @@ void ProjectM::ResetTextures()
     if (m_textureLoadCallback)
     {
         m_textureManager->SetTextureLoadCallback(m_textureLoadCallback);
+    }
+    if (m_textureUnloadCallback)
+    {
+        m_textureManager->SetTextureUnloadCallback(m_textureUnloadCallback);
     }
 }
 
@@ -111,6 +119,55 @@ void ProjectM::SetTextureLoadCallback(Renderer::TextureLoadCallback callback)
     {
         m_textureManager->SetTextureLoadCallback(m_textureLoadCallback);
     }
+}
+
+void ProjectM::SetTextureUnloadCallback(Renderer::TextureUnloadCallback callback)
+{
+    m_textureUnloadCallback = std::move(callback);
+    if (m_textureManager)
+    {
+        m_textureManager->SetTextureUnloadCallback(m_textureUnloadCallback);
+    }
+}
+
+auto ProjectM::LoadExternalTextureRaw(const std::string& name, const uint8_t* data,
+                                      uint32_t width, uint32_t height, uint32_t channels) -> bool
+{
+    if (!m_textureManager)
+    {
+        return false;
+    }
+    return m_textureManager->LoadExternalTextureRaw(name, data, width, height, channels);
+}
+
+auto ProjectM::LoadExternalTextureID(const std::string& name, uint32_t textureId,
+                                     uint32_t width, uint32_t height) -> bool
+{
+    if (!m_textureManager)
+    {
+        return false;
+    }
+    // Pass 4 channels as default for memory estimation when using GL texture IDs
+    return m_textureManager->LoadExternalTextureID(name, textureId, width, height, 4);
+}
+
+auto ProjectM::LoadExternalTextureFile(const std::string& name, const uint8_t* data,
+                                       size_t dataLength) -> bool
+{
+    if (!m_textureManager)
+    {
+        return false;
+    }
+    return m_textureManager->LoadExternalTextureFile(name, data, dataLength);
+}
+
+auto ProjectM::UnloadExternalTexture(const std::string& name) -> bool
+{
+    if (!m_textureManager)
+    {
+        return false;
+    }
+    return m_textureManager->UnloadExternalTexture(name);
 }
 
 void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)

@@ -120,6 +120,53 @@ public:
      */
     void SetTextureLoadCallback(Renderer::TextureLoadCallback callback);
 
+    /**
+     * @brief Sets a callback function for notifying when textures are unloaded.
+     * @param callback The callback function, or nullptr to disable.
+     */
+    void SetTextureUnloadCallback(Renderer::TextureUnloadCallback callback);
+
+    /**
+     * @brief Loads a texture from raw, uncompressed pixel data.
+     * @param name The texture name (case-insensitive).
+     * @param data Pointer to raw pixel data (RGB or RGBA).
+     * @param width Width in pixels.
+     * @param height Height in pixels.
+     * @param channels Number of color channels (3 or 4).
+     * @return true if loaded successfully.
+     */
+    auto LoadExternalTextureRaw(const std::string& name, const uint8_t* data,
+                                uint32_t width, uint32_t height, uint32_t channels) -> bool;
+
+    /**
+     * @brief Loads a texture from an existing OpenGL texture ID.
+     * projectM will not take ownership of the texture.
+     * @param name The texture name (case-insensitive).
+     * @param textureId A valid OpenGL texture ID.
+     * @param width Width in pixels.
+     * @param height Height in pixels.
+     * @return true if loaded successfully.
+     */
+    auto LoadExternalTextureID(const std::string& name, uint32_t textureId,
+                               uint32_t width, uint32_t height) -> bool;
+
+    /**
+     * @brief Loads a texture from compressed/encoded image file data.
+     * @param name The texture name (case-insensitive).
+     * @param data Pointer to the image file contents.
+     * @param dataLength Length of the data buffer in bytes.
+     * @return true if loaded and decoded successfully.
+     */
+    auto LoadExternalTextureFile(const std::string& name, const uint8_t* data,
+                                 size_t dataLength) -> bool;
+
+    /**
+     * @brief Unloads a previously loaded external texture.
+     * @param name The texture name (case-insensitive).
+     * @return true if the texture was found and removed.
+     */
+    auto UnloadExternalTexture(const std::string& name) -> bool;
+
     void RenderFrame(uint32_t targetFramebufferObject = 0);
 
     /**
@@ -311,6 +358,7 @@ private:
 
     std::vector<std::string> m_textureSearchPaths;     ///!< List of paths to search for texture files
     Renderer::TextureLoadCallback m_textureLoadCallback; //!< Optional callback for loading textures from non-filesystem sources.
+    Renderer::TextureUnloadCallback m_textureUnloadCallback; //!< Optional callback for notifying when textures are unloaded.
 
     /** Timing information */
     int m_frameCount{0}; //!< Rendered frame count since start

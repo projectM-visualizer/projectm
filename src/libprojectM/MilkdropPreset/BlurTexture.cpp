@@ -44,7 +44,7 @@ BlurTexture::BlurTexture()
             textureName = "blur" + std::to_string(i / 2 + 1);
         }
 
-        m_blurTextures[i] = std::make_shared<Renderer::Texture>(textureName, 0, GL_TEXTURE_2D, 0, 0, false);
+        m_blurTextures[i] = std::make_shared<Renderer::Texture>(textureName, 0, GL_TEXTURE_2D, 0, 0, Renderer::Texture::Source::Internal);
     }
 }
 
@@ -370,7 +370,7 @@ void BlurTexture::AllocateTextures(const Renderer::Texture& sourceTexture)
         }
 
         // This will automatically replace any old texture.
-        m_blurTextures[i] = std::make_shared<Renderer::Texture>(textureName, width2, height2, false);
+        m_blurTextures[i] = std::make_shared<Renderer::Texture>(textureName, width2, height2, Renderer::Texture::Source::Internal);
     }
 
     m_sourceTextureWidth = sourceTexture.Width();

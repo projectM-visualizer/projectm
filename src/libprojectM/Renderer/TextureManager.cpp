@@ -175,6 +175,9 @@ void TextureManager::PurgeTextures()
     enum Texture::Source source = textureToEvict->second->Source();
     m_textures.erase(textureToEvict);
     m_textureStats.erase(m_textureStats.find(biggestName));
+    m_purgeableTextures.erase(
+        std::remove(m_purgeableTextures.begin(), m_purgeableTextures.end(), biggestName),
+        m_purgeableTextures.end());
 
     if (m_textureUnloadCallback && source != Texture::Source::PresetRequested)
     {
@@ -187,6 +190,11 @@ void TextureManager::PurgeTextures()
 void TextureManager::SetTextureLoadCallback(TextureLoadCallback callback)
 {
     m_textureLoadCallback = std::move(callback);
+}
+
+void TextureManager::SetTextureUnloadCallback(TextureUnloadCallback callback)
+{
+    m_textureUnloadCallback = std::move(callback);
 }
 
 auto TextureManager::LoadExternalTextureRaw(const std::string& unqualifiedName, const uint8_t* data, uint32_t width, uint32_t height, uint32_t channels) -> bool
@@ -203,6 +211,14 @@ auto TextureManager::LoadExternalTextureRaw(const std::string& unqualifiedName, 
         return false;
     }
 
+    std::string lowerCaseUnqualifiedName = Utils::ToLower(unqualifiedName);
+
+    if (m_textures.find(lowerCaseUnqualifiedName) != m_textures.end())
+    {
+        LOG_WARN("[TextureManager] Texture \"" + unqualifiedName + "\" already loaded, skipping.");
+        return false;
+    }
+
     auto format = TextureFormatFromChannels(channels);
     auto newTexture = std::make_shared<Texture>(unqualifiedName,
                                                 reinterpret_cast<const void*>(data),
@@ -213,11 +229,13 @@ auto TextureManager::LoadExternalTextureRaw(const std::string& unqualifiedName, 
         m_textures[lowerCaseUnqualifiedName] = newTexture;
         uint32_t memoryBytes = width * height * channels;
         m_textureStats.insert({lowerCaseUnqualifiedName, {memoryBytes}});
-        LOG_DEBUG("[TextureManager] Loaded texture \"" + unqualifiedName + "\" from callback (pixel data)");
-        return {newTexture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
+        m_purgeableTextures.push_back(lowerCaseUnqualifiedName);
+        LOG_DEBUG("[TextureManager] Loaded texture \"" + unqualifiedName + "\" from raw pixel data");
+        return true;
     }
 
-    LOG_WARN("[TextureManager] Failed to create OpenGL texture from callback pixel data for \"" + unqualifiedName + "\"; falling back to filesystem");
+    LOG_WARN("[TextureManager] Failed to create OpenGL texture from pixel data for \"" + unqualifiedName + "\"");
+    return false;
 }
 
 auto TextureManager::LoadExternalTextureID(const std::string& unqualifiedName, GLuint textureId, uint32_t width, uint32_t height, uint32_t channels) -> bool
@@ -236,24 +254,118 @@ auto TextureManager::LoadExternalTextureID(const std::string& unqualifiedName, G
 
     std::string lowerCaseUnqualifiedName = Utils::ToLower(unqualifiedName);
 
+    if (m_textures.find(lowerCaseUnqualifiedName) != m_textures.end())
+    {
+        LOG_WARN("[TextureManager] Texture \"" + unqualifiedName + "\" already loaded, skipping.");
+        return false;
+    }
+
     // App-provided textures are not owned by projectM
     auto newTexture = std::make_shared<Texture>(unqualifiedName, textureId,
                                                 GL_TEXTURE_2D, width, height, Texture::Source::ExternalTexture);
     m_textures[lowerCaseUnqualifiedName] = newTexture;
     uint32_t memoryBytes = width * height * channels;
     m_textureStats.insert({lowerCaseUnqualifiedName, {memoryBytes}});
-    LOG_DEBUG("[TextureManager] Loaded external texture \"" + unqualifiedName + "\" from texture ID)");
+    m_purgeableTextures.push_back(lowerCaseUnqualifiedName);
+    LOG_DEBUG("[TextureManager] Loaded external texture \"" + unqualifiedName + "\" from texture ID");
 
     return true;
 }
 
-auto TextureManager::LoadExternalTextureFile(const std::string& unqualifiedName, const uint8_t* data) -> bool
+auto TextureManager::LoadExternalTextureFile(const std::string& unqualifiedName, const uint8_t* data, size_t dataLength) -> bool
 {
+    if (data == nullptr || dataLength == 0)
+    {
+        LOG_ERROR("[TextureManager] No image data provided for texture \"" + unqualifiedName + "\"");
+        return false;
+    }
 
+    std::string lowerCaseUnqualifiedName = Utils::ToLower(unqualifiedName);
+
+    if (m_textures.find(lowerCaseUnqualifiedName) != m_textures.end())
+    {
+        LOG_WARN("[TextureManager] Texture \"" + unqualifiedName + "\" already loaded, skipping.");
+        return false;
+    }
+
+    int width{};
+    int height{};
+    int channels{};
+
+    std::unique_ptr<stbi_uc, decltype(&free)> imageData(
+        stbi_load_from_memory(data, static_cast<int>(dataLength), &width, &height, &channels, 4),
+        free);
+
+    if (imageData.get() == nullptr)
+    {
+        LOG_WARN("[TextureManager] Failed to decode compressed image data for \"" + unqualifiedName + "\"");
+        return false;
+    }
+
+    auto format = TextureFormatFromChannels(4);
+    auto newTexture = std::make_shared<Texture>(unqualifiedName,
+                                                reinterpret_cast<const void*>(imageData.get()),
+                                                GL_TEXTURE_2D, width, height, 0,
+                                                format, format, GL_UNSIGNED_BYTE, Texture::Source::ExternalImage);
+
+    if (newTexture->Empty())
+    {
+        LOG_WARN("[TextureManager] Failed to create OpenGL texture from compressed image data for \"" + unqualifiedName + "\"");
+        return false;
+    }
+
+    uint32_t memoryBytes = width * height * 4;
+    m_textures[lowerCaseUnqualifiedName] = newTexture;
+    m_textureStats.insert({lowerCaseUnqualifiedName, {memoryBytes}});
+    m_purgeableTextures.push_back(lowerCaseUnqualifiedName);
+    LOG_DEBUG("[TextureManager] Loaded texture \"" + unqualifiedName + "\" from compressed image data");
+
+    return true;
 }
 
 auto TextureManager::UnloadExternalTexture(const std::string& unqualifiedName) -> bool
 {
+    std::string lowerCaseUnqualifiedName = Utils::ToLower(unqualifiedName);
+
+    auto textureIt = m_textures.find(lowerCaseUnqualifiedName);
+    if (textureIt == m_textures.end())
+    {
+        LOG_WARN("[TextureManager] Texture \"" + unqualifiedName + "\" not found, cannot unload.");
+        return false;
+    }
+
+    // Only allow unloading externally provided textures
+    if (textureIt->second && textureIt->second->Source() == Texture::Source::Internal)
+    {
+        LOG_WARN("[TextureManager] Cannot unload internal texture \"" + unqualifiedName + "\".");
+        return false;
+    }
+
+    enum Texture::Source source = textureIt->second ? textureIt->second->Source() : Texture::Source::ExternalImage;
+
+    // Remove from texture map. The shared_ptr will keep the texture alive if any
+    // preset still references it, preventing rendering issues.
+    m_textures.erase(textureIt);
+
+    auto statsIt = m_textureStats.find(lowerCaseUnqualifiedName);
+    if (statsIt != m_textureStats.end())
+    {
+        m_textureStats.erase(statsIt);
+    }
+
+    // Remove from purgeable list if present
+    m_purgeableTextures.erase(
+        std::remove(m_purgeableTextures.begin(), m_purgeableTextures.end(), lowerCaseUnqualifiedName),
+        m_purgeableTextures.end());
+
+    // Notify via callback for externally-provided textures
+    if (m_textureUnloadCallback && source != Texture::Source::PresetRequested)
+    {
+        m_textureUnloadCallback(lowerCaseUnqualifiedName);
+    }
+
+    LOG_DEBUG("[TextureManager] Unloaded external texture \"" + unqualifiedName + "\"");
+    return true;
 }
 
 auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSamplerDescriptor
@@ -269,49 +381,20 @@ auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSample
     // Try callback first if registered
     if (m_textureLoadCallback)
     {
-        TextureLoadData loadData;
-        m_textureLoadCallback(lowerCaseUnqualifiedName, loadData);
+        bool loaded = m_textureLoadCallback(lowerCaseUnqualifiedName);
 
-        // Check if callback provided an existing OpenGL texture ID
-        if (loadData.textureId != 0 && loadData.width > 0 && loadData.height > 0)
+        if (loaded)
         {
-            // App-provided textures are not owned by projectM
-            auto newTexture = std::make_shared<Texture>(unqualifiedName, loadData.textureId,
-                                                        GL_TEXTURE_2D, loadData.width, loadData.height, Texture::Source::ExternalTexture);
-            m_textures[lowerCaseUnqualifiedName] = newTexture;
-            uint32_t memoryBytes = loadData.width * loadData.height * (loadData.channels > 0 ? loadData.channels : 4);
-            m_textureStats.insert({lowerCaseUnqualifiedName, {memoryBytes}});
-            LOG_DEBUG("[TextureManager] Loaded texture \"" + unqualifiedName + "\" from callback (texture ID)");
-            return {newTexture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
-        }
-
-        if (loadData.textureId != 0)
-        {
-            LOG_WARN("[TextureManager] Callback provided texture ID for \"" + unqualifiedName + "\" but width/height are invalid; falling back to filesystem");
-        }
-
-        // Check if callback provided raw pixel data
-        if (loadData.data != nullptr && loadData.width > 0 && loadData.height > 0)
-        {
-            int width = static_cast<int>(loadData.width);
-            int height = static_cast<int>(loadData.height);
-            int channels = static_cast<int>(loadData.channels > 0 ? loadData.channels : 4);
-
-            auto format = TextureFormatFromChannels(channels);
-            auto newTexture = std::make_shared<Texture>(unqualifiedName,
-                                                        reinterpret_cast<const void*>(loadData.data),
-                                                        GL_TEXTURE_2D, width, height, 0,
-                                                        format, format, GL_UNSIGNED_BYTE, Texture::Source::ExternalImage);
-            if (!newTexture->Empty())
+            // The callback should have called one of the LoadExternal* methods.
+            // Check if the texture is now available.
+            auto it = m_textures.find(lowerCaseUnqualifiedName);
+            if (it != m_textures.end())
             {
-                m_textures[lowerCaseUnqualifiedName] = newTexture;
-                uint32_t memoryBytes = width * height * channels;
-                m_textureStats.insert({lowerCaseUnqualifiedName, {memoryBytes}});
-                LOG_DEBUG("[TextureManager] Loaded texture \"" + unqualifiedName + "\" from callback (pixel data)");
-                return {newTexture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
+                LOG_DEBUG("[TextureManager] Loaded texture \"" + unqualifiedName + "\" via callback");
+                return {it->second, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
             }
 
-            LOG_WARN("[TextureManager] Failed to create OpenGL texture from callback pixel data for \"" + unqualifiedName + "\"; falling back to filesystem");
+            LOG_WARN("[TextureManager] Callback returned true for \"" + unqualifiedName + "\" but texture was not loaded; falling back to filesystem");
         }
     }
 
@@ -366,6 +449,7 @@ auto TextureManager::LoadTexture(const ScannedFile& file) -> std::shared_ptr<Tex
     uint32_t const memoryBytes = width * height * 4; // RGBA, unsigned byte color channels.
     m_textures[file.lowerCaseBaseName] = newTexture;
     m_textureStats.insert({file.lowerCaseBaseName, {memoryBytes}});
+    m_purgeableTextures.push_back(file.lowerCaseBaseName);
 
     return newTexture;
 }

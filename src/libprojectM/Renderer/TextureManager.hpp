@@ -66,6 +66,12 @@ public:
     void SetTextureLoadCallback(TextureLoadCallback callback);
 
     /**
+     * @brief Sets a callback function for notifying when textures are unloaded.
+     * @param callback The callback function, or nullptr to disable.
+     */
+    void SetTextureUnloadCallback(TextureUnloadCallback callback);
+
+    /**
      * @brief Loads a texture with the given name from an uncompressed raw memory bitmap.
      * @note The @a data buffer must at least contain width*height*channels bytes!
      * @param unqualifiedName The unqualified texture name, e.g. without and wrap/filtering prefixes. Can be mixed-case.
@@ -94,7 +100,7 @@ public:
      * @param data The original image file contents.
      * @return true if the texture was loaded successfully, false if an error occurred or the texture was already loaded.
      */
-    auto LoadExternalTextureFile(const std::string& unqualifiedName, const uint8_t* data) -> bool;
+    auto LoadExternalTextureFile(const std::string& unqualifiedName, const uint8_t* data, size_t dataLength) -> bool;
 
     /**
      * @brief Unloads an externally loaded texture.
