@@ -147,28 +147,99 @@ void projectm_set_texture_load_event_callback(projectm_handle instance,
 
     if (callback != nullptr)
     {
-        // Create a wrapper lambda that bridges C callback to C++ callback
+        // Create a wrapper lambda that bridges C callback to C++ callback.
+        // The C callback can call projectm_texture_load_* functions from within.
         projectMInstance->SetTextureLoadCallback(
-            [projectMInstance](const std::string& textureName, libprojectM::Renderer::TextureLoadData& data) {
+            [instance, projectMInstance](const std::string& textureName) -> bool {
                 if (projectMInstance->m_textureLoadEventCallback)
                 {
-                    projectm_texture_load_data cData{};
-                    projectMInstance->m_textureLoadEventCallback(
-                        textureName.c_str(), &cData, projectMInstance->m_textureLoadEventUserData);
-
-                    // Copy data from C structure to C++ structure
-                    data.data = cData.data;
-                    data.width = cData.width;
-                    data.height = cData.height;
-                    data.channels = cData.channels;
-                    data.textureId = cData.texture_id;
+                    return projectMInstance->m_textureLoadEventCallback(
+                        instance, textureName.c_str(), projectMInstance->m_textureLoadEventUserData);
                 }
+                return false;
             });
     }
     else
     {
         projectMInstance->SetTextureLoadCallback(nullptr);
     }
+}
+
+void projectm_set_texture_unload_event_callback(projectm_handle instance,
+                                                 projectm_texture_unload_event callback, void* user_data)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->m_textureUnloadEventCallback = callback;
+    projectMInstance->m_textureUnloadEventUserData = user_data;
+
+    if (callback != nullptr)
+    {
+        projectMInstance->SetTextureUnloadCallback(
+            [projectMInstance](const std::string& textureName) {
+                if (projectMInstance->m_textureUnloadEventCallback)
+                {
+                    projectMInstance->m_textureUnloadEventCallback(
+                        textureName.c_str(), projectMInstance->m_textureUnloadEventUserData);
+                }
+            });
+    }
+    else
+    {
+        projectMInstance->SetTextureUnloadCallback(nullptr);
+    }
+}
+
+bool projectm_texture_load_raw_data(projectm_handle instance,
+                                     const char* texture_name,
+                                     const unsigned char* data,
+                                     unsigned int width,
+                                     unsigned int height,
+                                     unsigned int channels)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    if (!texture_name || !data)
+    {
+        return false;
+    }
+    return projectMInstance->LoadExternalTextureRaw(texture_name, data, width, height, channels);
+}
+
+bool projectm_texture_load_gl_texture(projectm_handle instance,
+                                       const char* texture_name,
+                                       unsigned int texture_id,
+                                       unsigned int width,
+                                       unsigned int height)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    if (!texture_name || texture_id == 0)
+    {
+        return false;
+    }
+    return projectMInstance->LoadExternalTextureID(texture_name, texture_id, width, height);
+}
+
+bool projectm_texture_load_compressed_image(projectm_handle instance,
+                                             const char* texture_name,
+                                             const unsigned char* data,
+                                             size_t data_length)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    if (!texture_name || !data || data_length == 0)
+    {
+        return false;
+    }
+    return projectMInstance->LoadExternalTextureFile(texture_name, data, data_length);
+}
+
+bool projectm_texture_unload(projectm_handle instance,
+                              const char* texture_name)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    if (!texture_name)
+    {
+        return false;
+    }
+    return projectMInstance->UnloadExternalTexture(texture_name);
 }
 
 void projectm_set_texture_search_paths(projectm_handle instance,

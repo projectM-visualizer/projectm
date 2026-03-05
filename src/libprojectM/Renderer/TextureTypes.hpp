@@ -7,22 +7,16 @@ namespace libprojectM {
 namespace Renderer {
 
 /**
- * @brief Structure containing texture data provided by a callback.
- */
-struct TextureLoadData {
-    const unsigned char* data{nullptr}; //!< Pointer to raw pixel data (RGBA/RGB format).
-    unsigned int width{0};              //!< Width of the texture in pixels.
-    unsigned int height{0};             //!< Height of the texture in pixels.
-    unsigned int channels{0};           //!< Number of color channels (3 for RGB, 4 for RGBA).
-    unsigned int textureId{0};          //!< An existing OpenGL texture ID to use.
-};
-
-/**
  * @brief Callback function type for loading textures.
+ *
+ * Called when projectM needs a texture. The callback should use the TextureManager's
+ * LoadExternal* methods to provide the texture data, then return true.
+ * Return false to fall back to filesystem loading.
+ *
  * @param textureName The name of the texture being requested.
- * @param[out] data Structure to fill with texture data.
+ * @return true if the texture was loaded by the callback, false to fall back to filesystem.
  */
-using TextureLoadCallback = std::function<void(const std::string& textureName, TextureLoadData& data)>;
+using TextureLoadCallback = std::function<bool(const std::string& textureName)>;
 
 /**
  * @brief Callback function type for unloading textures.
