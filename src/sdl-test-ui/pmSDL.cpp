@@ -351,6 +351,7 @@ void projectMSDL::pollEvent()
                 break;
             case SDL_MOUSEWHEEL:
                 scrollHandler(&evt);
+                break;
 
             case SDL_KEYDOWN:
                 keyHandler(&evt);
