@@ -26,6 +26,7 @@ add_library(Renderer OBJECT
         FileScanner.hpp
         Framebuffer.cpp
         Framebuffer.hpp
+        GLStateGuard.hpp
         IdleTextures.hpp
         Mesh.cpp
         Mesh.hpp

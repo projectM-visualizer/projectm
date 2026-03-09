@@ -78,6 +78,11 @@ void Framebuffer::Unbind()
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
+void Framebuffer::Unbind(GLuint defaultFramebufferObject)
+{
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, defaultFramebufferObject);
+}
+
 bool Framebuffer::SetSize(int width, int height)
 {
     if (width == 0 || height == 0 ||
@@ -85,6 +90,9 @@ bool Framebuffer::SetSize(int width, int height)
     {
         return false;
     }
+
+    GLint previousFramebuffer{};
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &previousFramebuffer);
 
     m_width = width;
     m_height = height;
@@ -98,7 +106,7 @@ bool Framebuffer::SetSize(int width, int height)
             glFramebufferTexture2D(GL_FRAMEBUFFER, texture.first, GL_TEXTURE_2D, texture.second->Texture()->TextureID(), 0);
         }
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, previousFramebuffer);
 
     return true;
 }
@@ -202,6 +210,9 @@ void Framebuffer::CreateColorAttachment(int framebufferIndex, int attachmentInde
         return;
     }
 
+    GLint previousFramebuffer{};
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &previousFramebuffer);
+
     auto textureAttachment = std::make_shared<TextureAttachment>(internalFormat, format, type, m_width, m_height);
     const auto texture = textureAttachment->Texture();
     m_attachments.at(framebufferIndex).insert({GL_COLOR_ATTACHMENT0 + attachmentIndex, std::move(textureAttachment)});
@@ -212,7 +223,7 @@ void Framebuffer::CreateColorAttachment(int framebufferIndex, int attachmentInde
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachmentIndex, GL_TEXTURE_2D, texture->TextureID(), 0);
     }
     UpdateDrawBuffers(framebufferIndex);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, previousFramebuffer);
 }
 
 void Framebuffer::RemoveColorAttachment(int framebufferIndex, int attachmentIndex)
@@ -243,6 +254,9 @@ void Framebuffer::CreateDepthAttachment(int framebufferIndex)
         return;
     }
 
+    GLint previousFramebuffer{};
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &previousFramebuffer);
+
     auto textureAttachment = std::make_shared<TextureAttachment>(TextureAttachment::AttachmentType::Depth, m_width, m_height);
     const auto texture = textureAttachment->Texture();
     m_attachments.at(framebufferIndex).insert({GL_DEPTH_ATTACHMENT, std::move(textureAttachment)});
@@ -253,7 +267,7 @@ void Framebuffer::CreateDepthAttachment(int framebufferIndex)
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture->TextureID(), 0);
     }
     UpdateDrawBuffers(framebufferIndex);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, previousFramebuffer);
 }
 
 void Framebuffer::RemoveDepthAttachment(int framebufferIndex)
@@ -268,6 +282,9 @@ void Framebuffer::CreateStencilAttachment(int framebufferIndex)
         return;
     }
 
+    GLint previousFramebuffer{};
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &previousFramebuffer);
+
     auto textureAttachment = std::make_shared<TextureAttachment>(TextureAttachment::AttachmentType::Stencil, m_width, m_height);
     const auto texture = textureAttachment->Texture();
     m_attachments.at(framebufferIndex).insert({GL_STENCIL_ATTACHMENT, std::move(textureAttachment)});
@@ -278,7 +295,7 @@ void Framebuffer::CreateStencilAttachment(int framebufferIndex)
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texture->TextureID(), 0);
     }
     UpdateDrawBuffers(framebufferIndex);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, previousFramebuffer);
 }
 
 void Framebuffer::RemoveStencilAttachment(int framebufferIndex)
@@ -293,6 +310,9 @@ void Framebuffer::CreateDepthStencilAttachment(int framebufferIndex)
         return;
     }
 
+    GLint previousFramebuffer{};
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &previousFramebuffer);
+
     auto textureAttachment = std::make_shared<TextureAttachment>(TextureAttachment::AttachmentType::DepthStencil, m_width, m_height);
     const auto texture = textureAttachment->Texture();
     m_attachments.at(framebufferIndex).insert({GL_DEPTH_STENCIL_ATTACHMENT, std::move(textureAttachment)});
@@ -303,7 +323,7 @@ void Framebuffer::CreateDepthStencilAttachment(int framebufferIndex)
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texture->TextureID(), 0);
     }
     UpdateDrawBuffers(framebufferIndex);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, previousFramebuffer);
 }
 
 void Framebuffer::RemoveDepthStencilAttachment(int framebufferIndex)

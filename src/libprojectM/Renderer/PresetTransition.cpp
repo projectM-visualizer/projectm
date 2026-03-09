@@ -124,7 +124,7 @@ void PresetTransition::Draw(const Preset& oldPreset,
 
     for (int i = 2; i < textureUnit; i++)
     {
-        noiseDescriptors[i - 2].Unbind(textureUnit);
+        noiseDescriptors[i - 2].Unbind(i);
     }
 
     Mesh::Unbind();

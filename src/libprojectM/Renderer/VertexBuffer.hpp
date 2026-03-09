@@ -284,6 +284,7 @@ void VertexBuffer<VT>::Update()
 
     if (m_vertices.empty())
     {
+        Unbind();
         return;
     }
 
@@ -296,6 +297,8 @@ void VertexBuffer<VT>::Update()
         glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(sizeof(VT) * m_vertices.size()), m_vertices.data(), VertexBufferUsageToGL(m_vboUsage));
         m_vboSize = m_vertices.size();
     }
+
+    Unbind();
 }
 
 template<class VT>
