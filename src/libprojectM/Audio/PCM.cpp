@@ -17,9 +17,10 @@ void PCM::AddToBuffer(
         return;
     }
 
+    size_t const writeStart = m_start.load(std::memory_order_relaxed);
     for (size_t i = 0; i < sampleCount; i++)
     {
-        size_t const bufferOffset = (m_start + i) % AudioBufferSamples;
+        size_t const bufferOffset = (writeStart + i) % AudioBufferSamples;
         m_inputBufferL[bufferOffset] = 128.0f * (static_cast<float>(samples[0 + i * channels]) - float(signalOffset)) / float(signalAmplitude);
         if (channels > 1)
         {
@@ -30,7 +31,8 @@ void PCM::AddToBuffer(
             m_inputBufferR[bufferOffset] = m_inputBufferL[bufferOffset];
         }
     }
-    m_start = (m_start + sampleCount) % AudioBufferSamples;
+    // Release fence ensures all buffer writes are visible before the updated index is published to readers.
+    m_start.store((writeStart + sampleCount) % AudioBufferSamples, std::memory_order_release);
 }
 
 void PCM::Add(float const* const samples, uint32_t channels, size_t const count)
@@ -110,7 +112,8 @@ void PCM::UpdateSpectrum(const WaveformBuffer& waveformData, SpectrumBuffer& spe
 
 void PCM::CopyNewWaveformData(const WaveformBuffer& source, WaveformBuffer& destination)
 {
-    auto const bufferStartIndex = m_start.load();
+    // Acquire fence pairs with the release store in AddToBuffer, ensuring we see completed writes.
+    auto const bufferStartIndex = m_start.load(std::memory_order_acquire);
 
     for (size_t i = 0; i < AudioBufferSamples; i++)
     {

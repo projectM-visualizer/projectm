@@ -156,7 +156,20 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
         const float a = static_cast<float>(*m_perFrameContext.a);
 
 #ifdef PRJM_ENABLE_OPENMP
+        // Only parallelize when the iteration count justifies thread spawn overhead (~5-10 FLOPs/iter).
+        // Benchmarks show fork/join cost exceeds gains below ~1000 samples on typical hardware.
+        if (sampleCount >= 1000)
+        {
 #pragma omp parallel for schedule(static)
+            for (int sample = 0; sample < sampleCount; sample++)
+            {
+                float const value1 = sampleDataL[sample];
+                float const value2 = sampleDataR[sample];
+                points[sample] = Renderer::Point(value1 * 2.0f * invAspectX, value2 * -2.0f * invAspectY);
+                colors[sample] = Renderer::Color::Modulo(Renderer::Color(r, g, b, a));
+            }
+        }
+        else
 #endif
         for (int sample = 0; sample < sampleCount; sample++)
         {
@@ -309,7 +322,8 @@ void CustomWaveform::SmoothWave(const std::vector<Renderer::Point>& points, cons
     auto& outColors = m_mesh.Colors();
 
 #ifdef PRJM_ENABLE_OPENMP
-#pragma omp parallel for schedule(static)
+    // Only parallelize large waveforms; fork overhead exceeds gain below ~1000 vertices.
+#pragma omp parallel for schedule(static) if(vertexCount >= 1000)
 #endif
     for (size_t inputIndex = 0; inputIndex < vertexCount - 1; inputIndex++)
     {
