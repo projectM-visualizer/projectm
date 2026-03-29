@@ -24,11 +24,11 @@ Framebuffer::~Framebuffer()
 {
     if (!m_framebufferIds.empty())
     {
-        // Delete attached textures first
-        m_attachments.clear();
-
+        // Delete FBOs first — this also releases driver references to attached textures.
         glDeleteFramebuffers(static_cast<int>(m_framebufferIds.size()), m_framebufferIds.data());
         m_framebufferIds.clear();
+
+        m_attachments.clear();
     }
 }
 
@@ -94,6 +94,8 @@ bool Framebuffer::SetSize(int width, int height)
         Bind(attachments.first);
         for (auto& texture : attachments.second)
         {
+            // Detach old texture, resize (destroys old and creates new), reattach new.
+            glFramebufferTexture2D(GL_FRAMEBUFFER, texture.first, GL_TEXTURE_2D, 0, 0);
             texture.second->SetSize(width, height);
             glFramebufferTexture2D(GL_FRAMEBUFFER, texture.first, GL_TEXTURE_2D, texture.second->Texture()->TextureID(), 0);
         }
