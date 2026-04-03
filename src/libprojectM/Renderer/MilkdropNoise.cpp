@@ -7,6 +7,10 @@
 #include <memory>
 #include <random>
 
+#ifdef PRJM_ENABLE_OPENMP
+#include <omp.h>
+#endif
+
 namespace libprojectM {
 namespace Renderer {
 
@@ -90,6 +94,9 @@ auto MilkdropNoise::generate2D(int size, int zoomFactor) -> std::vector<uint32_t
         dst = textureData.data();
 
         // first go ACROSS, blending cubically on X, but only on the main lines.
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
         for (auto y = 0; y < size; y += zoomFactor)
         {
             for (auto x = 0; x < size; x++)
@@ -113,6 +120,9 @@ auto MilkdropNoise::generate2D(int size, int zoomFactor) -> std::vector<uint32_t
         }
 
         // next go down, doing cubic interp along Y, on every line.
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
         for (auto x = 0; x < size; x++)
         {
             for (auto y = 0; y < size; y++)
@@ -180,6 +190,9 @@ auto MilkdropNoise::generate3D(int size, int zoomFactor) -> std::vector<uint32_t
     {
         // first go ACROSS, blending cubically on X, but only on the main lines.
         auto dst = textureData.data();
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
         for (auto z = 0; z < size; z += zoomFactor)
         {
             for (auto y = 0; y < size; y += zoomFactor)
@@ -206,6 +219,9 @@ auto MilkdropNoise::generate3D(int size, int zoomFactor) -> std::vector<uint32_t
         }
 
         // next go down, doing cubic interp along Y, on the main slices.
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
         for (auto z = 0; z < size; z += zoomFactor)
         {
             for (auto x = 0; x < size; x++)
@@ -232,6 +248,9 @@ auto MilkdropNoise::generate3D(int size, int zoomFactor) -> std::vector<uint32_t
         }
 
         // next go through, doing cubic interp along Z, everywhere.
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
         for (auto x = 0; x < size; x++)
         {
             for (auto y = 0; y < size; y++)

@@ -99,6 +99,11 @@ if(PROJECTM_FILESYSTEM_USE_BOOST)
     )
 endif()
 
+if(ENABLE_OPENMP AND OpenMP_CXX_FOUND)
+    target_link_libraries(Renderer PUBLIC OpenMP::OpenMP_CXX)
+    target_compile_definitions(Renderer PUBLIC PRJM_ENABLE_OPENMP)
+endif()
+
 set_target_properties(Renderer PROPERTIES
         FOLDER libprojectM
         )
