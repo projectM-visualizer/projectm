@@ -1,10 +1,13 @@
 #include "ProjectMCWrapper.hpp"
 
+#include "Renderer/Platform/GladLoader.hpp"
+
 #include <projectM-4/projectM.h>
 
 #include <Logging.hpp>
 
 #include <Audio/AudioConstants.hpp>
+#include <Renderer/Platform/GLResolver.hpp>
 
 #include <projectM-4/parameters.h>
 #include <projectM-4/render_opengl.h>
@@ -68,9 +71,28 @@ void projectm_free_string(const char* str)
 
 projectm_handle projectm_create()
 {
+    return projectm_create_with_opengl_load_proc(nullptr, nullptr);
+}
+
+projectm_handle projectm_create_with_opengl_load_proc(void* (*load_proc)(const char*, void*), void* user_data)
+{
     try
     {
-        auto projectMInstance = new libprojectM::projectMWrapper();
+        // Init resolver to discover gl function pointers (guarded internally, valid to call multiple times)
+        // Note: only the initial load_proc will be used, parameters on subsequent calls are ignored
+        if (!libprojectM::Renderer::Platform::GLResolver::Instance().Initialize(load_proc, user_data))
+        {
+            return nullptr;
+        }
+
+        // Check GL requirements and init GLAD (guarded internally, valid to call multiple times)
+        if (!libprojectM::Renderer::Platform::GladLoader::Instance().Initialize())
+        {
+            return nullptr;
+        }
+
+        // create projectM
+        auto* projectMInstance = new libprojectM::projectMWrapper();
         return reinterpret_cast<projectm_handle>(projectMInstance);
     }
     catch (...)
@@ -114,6 +136,39 @@ void projectm_set_preset_switch_failed_event_callback(projectm_handle instance,
     auto projectMInstance = handle_to_instance(instance);
     projectMInstance->m_presetSwitchFailedEventCallback = callback;
     projectMInstance->m_presetSwitchFailedEventUserData = user_data;
+}
+
+void projectm_set_texture_load_event_callback(projectm_handle instance,
+                                              projectm_texture_load_event callback, void* user_data)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->m_textureLoadEventCallback = callback;
+    projectMInstance->m_textureLoadEventUserData = user_data;
+
+    if (callback != nullptr)
+    {
+        // Create a wrapper lambda that bridges C callback to C++ callback
+        projectMInstance->SetTextureLoadCallback(
+            [projectMInstance](const std::string& textureName, libprojectM::Renderer::TextureLoadData& data) {
+                if (projectMInstance->m_textureLoadEventCallback)
+                {
+                    projectm_texture_load_data cData{};
+                    projectMInstance->m_textureLoadEventCallback(
+                        textureName.c_str(), &cData, projectMInstance->m_textureLoadEventUserData);
+
+                    // Copy data from C structure to C++ structure
+                    data.data = cData.data;
+                    data.width = cData.width;
+                    data.height = cData.height;
+                    data.channels = cData.channels;
+                    data.textureId = cData.texture_id;
+                }
+            });
+    }
+    else
+    {
+        projectMInstance->SetTextureLoadCallback(nullptr);
+    }
 }
 
 void projectm_set_texture_search_paths(projectm_handle instance,
@@ -382,6 +437,18 @@ void projectm_set_window_size(projectm_handle instance, size_t width, size_t hei
 {
     auto projectMInstance = handle_to_instance(instance);
     projectMInstance->SetWindowSize(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+}
+
+void projectm_set_preset_start_clean(projectm_handle instance, bool enabled)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->SetPresetStartClean(enabled);
+}
+
+bool projectm_get_preset_start_clean(projectm_handle instance)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    return projectMInstance->PresetStartClean();
 }
 
 unsigned int projectm_pcm_get_max_samples()

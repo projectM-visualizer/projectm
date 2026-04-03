@@ -89,11 +89,28 @@ void ProjectM::SetTexturePaths(std::vector<std::string> texturePaths)
 {
     m_textureSearchPaths = std::move(texturePaths);
     m_textureManager = std::make_unique<Renderer::TextureManager>(m_textureSearchPaths);
+    if (m_textureLoadCallback)
+    {
+        m_textureManager->SetTextureLoadCallback(m_textureLoadCallback);
+    }
 }
 
 void ProjectM::ResetTextures()
 {
     m_textureManager = std::make_unique<Renderer::TextureManager>(m_textureSearchPaths);
+    if (m_textureLoadCallback)
+    {
+        m_textureManager->SetTextureLoadCallback(m_textureLoadCallback);
+    }
+}
+
+void ProjectM::SetTextureLoadCallback(Renderer::TextureLoadCallback callback)
+{
+    m_textureLoadCallback = std::move(callback);
+    if (m_textureManager)
+    {
+        m_textureManager->SetTextureLoadCallback(m_textureLoadCallback);
+    }
 }
 
 void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
@@ -173,6 +190,18 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
     m_activePreset->RenderFrame(audioData, renderContext);
 
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(targetFramebufferObject));
+    glViewport(0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY);
+
+#ifdef USE_GLES
+    // On WebGL2 / Chrome ANGLE, the default framebuffer's draw buffer must
+    // be explicitly set to GL_BACK after preset rendering, which may leave
+    // per-FBO draw buffer state that leaks into FBO 0 on some drivers.
+    if (targetFramebufferObject == 0)
+    {
+        GLenum backBuf = GL_BACK;
+        glDrawBuffers(1, &backBuf);
+    }
+#endif
 
     if (m_transition != nullptr && m_transitioningPreset != nullptr)
     {
@@ -274,7 +303,7 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
         m_transition.reset();
     }
 
-    if (m_activePreset)
+    if (m_activePreset && !m_presetStartClean)
     {
         preset->DrawInitialImage(m_activePreset->OutputTexture(), GetRenderContext());
     }
@@ -365,6 +394,16 @@ void ProjectM::SetPresetLocked(bool locked)
 auto ProjectM::PresetLocked() const -> bool
 {
     return m_presetLocked;
+}
+
+void ProjectM::SetPresetStartClean(bool enabled)
+{
+    m_presetStartClean = enabled;
+}
+
+auto ProjectM::PresetStartClean() const -> bool
+{
+    return m_presetStartClean;
 }
 
 void ProjectM::SetFrameTime(double secondsSinceStart)

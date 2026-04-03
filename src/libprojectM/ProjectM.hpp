@@ -23,6 +23,7 @@
 #include <projectM-4/projectM_cxx_export.h>
 
 #include <Renderer/RenderContext.hpp>
+#include <Renderer/TextureTypes.hpp>
 
 #include <Audio/PCM.hpp>
 
@@ -113,6 +114,12 @@ public:
 
     void ResetTextures();
 
+    /**
+     * @brief Sets a callback function for loading textures from non-filesystem sources.
+     * @param callback The callback function, or nullptr to disable.
+     */
+    void SetTextureLoadCallback(Renderer::TextureLoadCallback callback);
+
     void RenderFrame(uint32_t targetFramebufferObject = 0);
 
     /**
@@ -200,6 +207,18 @@ public:
 
     /// Returns true if the active preset is locked
     auto PresetLocked() const -> bool;
+
+    /**
+     * @brief Sets whether newly loaded presets should start with a clean (black) canvas.
+     * @param enabled True to start with a clean canvas, false to copy the previous frame.
+     */
+    void SetPresetStartClean(bool enabled);
+
+    /**
+     * @brief Returns whether newly loaded presets start with a clean canvas.
+     * @return True if presets start with a clean canvas.
+     */
+    auto PresetStartClean() const -> bool;
 
     auto PCM() -> Audio::PCM&;
 
@@ -290,13 +309,15 @@ private:
     float m_texelOffsetX{0.0};       //!< Horizontal warp shader texel offset
     float m_texelOffsetY{0.0};       //!< Vertical warp shader texel offset
 
-    std::vector<std::string> m_textureSearchPaths; ///!< List of paths to search for texture files
+    std::vector<std::string> m_textureSearchPaths;     ///!< List of paths to search for texture files
+    Renderer::TextureLoadCallback m_textureLoadCallback; //!< Optional callback for loading textures from non-filesystem sources.
 
     /** Timing information */
     int m_frameCount{0}; //!< Rendered frame count since start
 
     bool m_presetLocked{false};         //!< If true, the preset change event will not be sent.
     bool m_presetChangeNotified{false}; //!< Stores whether the user has been notified that projectM wants to switch the preset.
+    bool m_presetStartClean{false};     //!< If true, new presets start with a black canvas instead of the previous frame.
 
     std::unique_ptr<PresetFactoryManager> m_presetFactoryManager; //!< Provides access to all available preset factories.
 

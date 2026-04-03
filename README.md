@@ -35,7 +35,7 @@ soon as we've finished the current modernization of libprojectM, we'll release n
 frontends listed below, while we may remove or replace some of those which are no longer maintained by their original
 developers.
 
-##### Windows
+#### Windows
 
 - Standalone (currently only available as
   a [development preview](https://github.com/kblaschke/frontend-sdl2/releases/tag/2.0-windows-pre3))
@@ -248,3 +248,7 @@ please check all parts of the software to be compatible with your specific proje
 
 More information for developers is available from
 the [projectM Wiki](https://github.com/projectM-visualizer/projectm/wiki).
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=projectM-visualizer/projectm&type=Date)](https://star-history.com/#projectM-visualizer/projectm&Date)

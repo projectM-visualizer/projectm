@@ -9,9 +9,9 @@
 
 #include "image_DXT.h"
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 /*	set this =1 if you want to use the covarince matrix method...
 	which is better than my method of using standard deviations

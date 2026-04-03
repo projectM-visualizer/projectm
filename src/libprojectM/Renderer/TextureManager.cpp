@@ -5,12 +5,13 @@
 #include "Renderer/MilkdropNoise.hpp"
 #include "Renderer/Texture.hpp"
 
+#include <Logging.hpp>
 #include <Utils.hpp>
 
-#include <Logging.hpp>
-#include <SOIL2/SOIL2.h>
+#include <stb_image.h>
 
 #include <algorithm>
+#include <cstdlib>
 #include <memory>
 #include <random>
 #include <vector>
@@ -70,24 +71,27 @@ void TextureManager::Preload()
 
     int width{};
     int height{};
+    int channels{};
 
-    unsigned int tex = SOIL_load_OGL_texture_from_memory(
-        M_data,
-        M_bytes,
-        SOIL_LOAD_AUTO,
-        SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA);
+    {
+        std::unique_ptr<stbi_uc, decltype(&free)> const imageData(stbi_load_from_memory(M_data, M_bytes, &width, &height, &channels, 0), free);
 
-    m_textures["idlem"] = std::make_shared<Texture>("idlem", tex, GL_TEXTURE_2D, width, height, false);;
+        if (imageData.get() != nullptr)
+        {
+            auto format = TextureFormatFromChannels(channels);
+            m_textures["idlem"] = std::make_shared<Texture>("idlem", reinterpret_cast<const void*>(imageData.get()), GL_TEXTURE_2D, width, height, 0, format, format, GL_UNSIGNED_BYTE, false);
+        }
+    }
 
-    tex = SOIL_load_OGL_texture_from_memory(
-        headphones_data,
-        headphones_bytes,
-        SOIL_LOAD_AUTO,
-        SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MULTIPLY_ALPHA);
+    {
+        std::unique_ptr<stbi_uc, decltype(&free)> const imageData(stbi_load_from_memory(headphones_data, headphones_bytes, &width, &height, &channels, 0), free);
 
-    m_textures["idleheadphones"] = std::make_shared<Texture>("idleheadphones", tex, GL_TEXTURE_2D, width, height, false);;
+        if (imageData.get() != nullptr)
+        {
+            auto format = TextureFormatFromChannels(channels);
+            m_textures["idleheadphones"] = std::make_shared<Texture>("idleheadphones", reinterpret_cast<const void*>(imageData.get()), GL_TEXTURE_2D, width, height, 0, format, format, GL_UNSIGNED_BYTE, false);
+        }
+    }
 
     // Noise textures
     m_textures["noise_lq_lite"] = MilkdropNoise::LowQualityLite();
@@ -169,9 +173,61 @@ auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSample
 
     ExtractTextureSettings(name, wrapMode, filterMode, unqualifiedName);
 
+    std::string lowerCaseUnqualifiedName = Utils::ToLower(unqualifiedName);
+
+    // Try callback first if registered
+    if (m_textureLoadCallback)
+    {
+        TextureLoadData loadData;
+        m_textureLoadCallback(unqualifiedName, loadData);
+
+        // Check if callback provided an existing OpenGL texture ID
+        if (loadData.textureId != 0 && loadData.width > 0 && loadData.height > 0)
+        {
+            // App-provided textures are not owned by projectM - pass false for ownership
+            auto newTexture = std::make_shared<Texture>(unqualifiedName, loadData.textureId,
+                                                        GL_TEXTURE_2D, loadData.width, loadData.height, true, false);
+            m_textures[lowerCaseUnqualifiedName] = newTexture;
+            uint32_t memoryBytes = loadData.width * loadData.height * (loadData.channels > 0 ? loadData.channels : 4);
+            m_textureStats.insert({lowerCaseUnqualifiedName, {memoryBytes}});
+            LOG_DEBUG("[TextureManager] Loaded texture \"" + unqualifiedName + "\" from callback (texture ID)");
+            return {newTexture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
+        }
+        else if (loadData.textureId != 0)
+        {
+            LOG_WARN("[TextureManager] Callback provided texture ID for \"" + unqualifiedName + "\" but width/height are invalid; falling back to filesystem");
+        }
+
+        // Check if callback provided raw pixel data
+        if (loadData.data != nullptr && loadData.width > 0 && loadData.height > 0)
+        {
+            int width = static_cast<int>(loadData.width);
+            int height = static_cast<int>(loadData.height);
+            int channels = static_cast<int>(loadData.channels > 0 ? loadData.channels : 4);
+
+            auto format = TextureFormatFromChannels(channels);
+            auto newTexture = std::make_shared<Texture>(unqualifiedName,
+                                                        reinterpret_cast<const void*>(loadData.data),
+                                                        GL_TEXTURE_2D, width, height, 0,
+                                                        format, format, GL_UNSIGNED_BYTE, true);
+            if (!newTexture->Empty())
+            {
+                m_textures[lowerCaseUnqualifiedName] = newTexture;
+                uint32_t memoryBytes = width * height * channels;
+                m_textureStats.insert({lowerCaseUnqualifiedName, {memoryBytes}});
+                LOG_DEBUG("[TextureManager] Loaded texture \"" + unqualifiedName + "\" from callback (pixel data)");
+                return {newTexture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
+            }
+            else
+            {
+                LOG_WARN("[TextureManager] Failed to create OpenGL texture from callback pixel data for \"" + unqualifiedName + "\"; falling back to filesystem");
+            }
+        }
+    }
+
+    // Fall back to filesystem loading
     ScanTextures();
 
-    std::string lowerCaseUnqualifiedName = Utils::ToLower(unqualifiedName);
     for (const auto& file : m_scannedTextureFiles)
     {
         if (file.lowerCaseBaseName != lowerCaseUnqualifiedName)
@@ -184,7 +240,7 @@ auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSample
         if (texture)
         {
             LOG_DEBUG("[TextureManager] Loaded texture \"" + unqualifiedName + "\" from file: " + file.filePath);
-            return {texture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};;
+            return {texture, m_samplers.at({wrapMode, filterMode}), name, unqualifiedName};
         }
     }
 
@@ -196,8 +252,6 @@ auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSample
 
 auto TextureManager::LoadTexture(const ScannedFile& file) -> std::shared_ptr<Texture>
 {
-    std::string unqualifiedName;
-
     if (m_textures.find(file.lowerCaseBaseName) != m_textures.end())
     {
         return m_textures.at(file.lowerCaseBaseName);
@@ -205,32 +259,21 @@ auto TextureManager::LoadTexture(const ScannedFile& file) -> std::shared_ptr<Tex
 
     int width{};
     int height{};
-    int channels{};
 
-    std::unique_ptr<unsigned char, decltype(&SOIL_free_image_data)> imageData(SOIL_load_image(file.filePath.c_str(), &width, &height, &channels, SOIL_LOAD_RGBA), SOIL_free_image_data);
+    std::unique_ptr<stbi_uc, decltype(&free)> imageData(stbi_load(file.filePath.c_str(), &width, &height, nullptr, 4), free);
 
-    if (imageData == nullptr)
+    if (imageData.get() == nullptr)
     {
         LOG_DEBUG("[TextureManager] Failed to decode image data.");
         return {};
     }
 
-    unsigned int const tex = SOIL_create_OGL_texture(
-        imageData.get(),
-        &width, &height, SOIL_LOAD_RGBA,
-        SOIL_CREATE_NEW_ID,
-        SOIL_FLAG_MULTIPLY_ALPHA);
+    auto format = TextureFormatFromChannels(4);
+    auto newTexture = std::make_shared<Texture>(file.lowerCaseBaseName, reinterpret_cast<const void*>(imageData.get()), GL_TEXTURE_2D, width, height, 0, format, format, GL_UNSIGNED_BYTE, true);
 
     imageData.reset();
 
-    if (tex == 0)
-    {
-        LOG_DEBUG("[TextureManager] Failed to create GPU texture from image data.");
-        return {};
-    }
-
-    uint32_t memoryBytes = width * height * 4; // RGBA, unsigned byte color channels.
-    auto newTexture = std::make_shared<Texture>(unqualifiedName, tex, GL_TEXTURE_2D, width, height, true);
+    uint32_t const memoryBytes = width * height * 4; // RGBA, unsigned byte color channels.
     m_textures[file.lowerCaseBaseName] = newTexture;
     m_textureStats.insert({file.lowerCaseBaseName, {memoryBytes}});
 
@@ -367,6 +410,28 @@ void TextureManager::ScanTextures()
         fileScanner.Scan(std::bind(&TextureManager::AddTextureFile, this, _1, _2));
         m_filesScanned = true;
     }
+}
+
+uint32_t TextureManager::TextureFormatFromChannels(int channels)
+{
+    switch (channels)
+    {
+        case 1:
+            return GL_RED;
+        case 2:
+            return GL_RG;
+        case 3:
+            return GL_RGB;
+        case 4:
+            return GL_RGBA;
+        default:
+            return 0;
+    }
+}
+
+void TextureManager::SetTextureLoadCallback(TextureLoadCallback callback)
+{
+    m_textureLoadCallback = std::move(callback);
 }
 
 } // namespace Renderer

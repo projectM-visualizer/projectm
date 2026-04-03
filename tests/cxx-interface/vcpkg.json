@@ -4,12 +4,6 @@
   "description": "Tests the projectM C++ interface.",
   "homepage": "https://github.com/projectM-visualizer/projectm",
   "license": "LGPL-2.1-only",
-  "dependencies": [
-    {
-      "name": "glew",
-      "platform": "windows"
-    }
-  ],
   "features": {
     "boost-filesystem": {
       "description": "Force using boost::filesystem instead of std::filesystem",

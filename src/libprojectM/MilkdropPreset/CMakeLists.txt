@@ -140,7 +140,6 @@ target_link_libraries(MilkdropPreset
         PUBLIC
         hlslparser
         GLM::GLM
-        ${PROJECTM_OPENGL_LIBRARIES}
         )
 
 if(ENABLE_OPENMP AND OpenMP_CXX_FOUND)
