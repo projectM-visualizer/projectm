@@ -346,20 +346,23 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
 
     // Find "sampler_state" overrides and remove them first, as they're not supported by GLSL.
     // The logic isn't totally fool-proof, but should work in general.
-    found = program.find("sampler_state");
+    // Use a comment-stripped copy for searching so commented-out sampler_state blocks are skipped.
+    // StripComments preserves string length, so positions map 1:1 to the original.
+    std::string stripped = Utils::StripComments(program);
+    found = stripped.find("sampler_state");
     while (found != std::string::npos)
     {
         // Now go backwards and find the assignment
-        found = program.rfind('=', found);
+        found = stripped.rfind('=', found);
         auto startPos = found;
 
         // Find closing brace and semicolon
-        found = program.find('}', found);
-        found = program.find(';', found);
+        found = stripped.find('}', found);
+        found = stripped.find(';', found);
 
         if (found != std::string::npos)
         {
-            program.replace(startPos, found - startPos, "");
+            stripped.replace(startPos, found - startPos, "");
         }
         else
         {
@@ -367,11 +370,12 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
             break;
         }
 
-        found = program.find("sampler_state");
+        found = stripped.find("sampler_state");
     }
 
     // replace shader_body with entry point function
-    found = program.find("shader_body");
+    // Use the stripped copy so a commented-out shader_body is not matched.
+    found = stripped.find("shader_body");
     if (found != std::string::npos)
     {
         if (m_type == ShaderType::WarpShader)
@@ -438,13 +442,26 @@ void PS(float4 _vDiffuse : COLOR,
         switch (program.at(pos))
         {
             case '/':
-                // Skip comments until EoL to prevent false counting
+                // Skip line comments until EoL to prevent false counting
                 if (pos < program.length() - 1 && program.at(pos + 1) == '/')
                 {
                     for (; pos < program.length(); ++pos)
                     {
                         if (program.at(pos) == '\n')
                         {
+                            break;
+                        }
+                    }
+                }
+                // Skip block comments to prevent false counting
+                else if (pos < program.length() - 1 && program.at(pos + 1) == '*')
+                {
+                    pos += 2;
+                    for (; pos < program.length() - 1; ++pos)
+                    {
+                        if (program.at(pos) == '*' && program.at(pos + 1) == '/')
+                        {
+                            ++pos; // skip past '/'
                             break;
                         }
                     }
@@ -500,16 +517,19 @@ void MilkdropShader::GetReferencedSamplers(const std::string& program)
     // "main" should always be present.
     m_samplerNames.insert("main");
 
+    // Strip comments so that commented-out sampler/texsize declarations are not matched.
+    std::string const stripped = Utils::StripComments(program);
+
     // Search for sampler usage
-    auto found = program.find("sampler_", 0);
+    auto found = stripped.find("sampler_", 0);
     while (found != std::string::npos)
     {
         found += 8;
-        size_t const end = program.find_first_of(" ;,\n\r)", found);
+        size_t const end = stripped.find_first_of(" ;,\n\r)", found);
 
         if (end != std::string::npos)
         {
-            std::string const sampler = program.substr(static_cast<int>(found), static_cast<int>(end - found));
+            std::string const sampler = stripped.substr(static_cast<int>(found), static_cast<int>(end - found));
             // Skip "sampler_state", as it's a reserved word and not a sampler.
             if (sampler != "state")
             {
@@ -517,23 +537,23 @@ void MilkdropShader::GetReferencedSamplers(const std::string& program)
             }
         }
 
-        found = program.find("sampler_", found);
+        found = stripped.find("sampler_", found);
     }
 
     // Also search for texsize usage, some presets don't reference the sampler.
-    found = program.find("texsize_", 0);
+    found = stripped.find("texsize_", 0);
     while (found != std::string::npos)
     {
         found += 8;
-        size_t const end = program.find_first_of(" ;,.\n\r)", found);
+        size_t const end = stripped.find_first_of(" ;,.\n\r)", found);
 
         if (end != std::string::npos)
         {
-            std::string const sampler = program.substr(static_cast<int>(found), static_cast<int>(end - found));
+            std::string const sampler = stripped.substr(static_cast<int>(found), static_cast<int>(end - found));
             m_samplerNames.insert(sampler);
         }
 
-        found = program.find("texsize_", found);
+        found = stripped.find("texsize_", found);
     }
 
     {
@@ -563,15 +583,15 @@ void MilkdropShader::GetReferencedSamplers(const std::string& program)
         }
     }
 
-    if (program.find("GetBlur3") != std::string::npos)
+    if (stripped.find("GetBlur3") != std::string::npos)
     {
         UpdateMaxBlurLevel(BlurTexture::BlurLevel::Blur3);
     }
-    else if (program.find("GetBlur2") != std::string::npos)
+    else if (stripped.find("GetBlur2") != std::string::npos)
     {
         UpdateMaxBlurLevel(BlurTexture::BlurLevel::Blur2);
     }
-    else if (program.find("GetBlur1") != std::string::npos)
+    else if (stripped.find("GetBlur1") != std::string::npos)
     {
         UpdateMaxBlurLevel(BlurTexture::BlurLevel::Blur1);
     }
