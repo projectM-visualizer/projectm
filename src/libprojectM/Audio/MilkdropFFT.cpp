@@ -33,7 +33,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <omp.h>
 #endif
 
+#if __cplusplus >= 202002L
 #include <span>
+#endif
 
 namespace libprojectM {
 namespace Audio {
@@ -164,28 +166,40 @@ void MilkdropFFT::InitCosSinTable()
 
 void MilkdropFFT::TimeToFrequencyDomain(const std::vector<float>& waveformData, std::vector<float>& spectralData)
 {
+#if __cplusplus >= 202002L
     if (m_bitRevTable.empty() || m_cosSinTable.empty() || waveformData.size() < m_samplesIn) [[unlikely]]
+#else
+    if (m_bitRevTable.empty() || m_cosSinTable.empty() || waveformData.size() < m_samplesIn)
+#endif
     {
         spectralData.clear();
         return;
     }
 
-    // Use a std::span view for zero-overhead bounds-safe access to the input samples.
-    std::span<const float> waveSpan(waveformData.data(), m_samplesIn);
-    std::span<const float> envelopeSpan(m_envelope.data(), m_samplesIn);
-
     // 1. Set up input to the FFT
     std::vector<std::complex<float>> spectrumData(m_numFrequencies, std::complex<float>());
+#if __cplusplus >= 202002L
+    // std::span: zero-overhead bounds-safe view into the input and envelope arrays.
+    std::span<const float> waveSpan(waveformData.data(), m_samplesIn);
+    std::span<const float> envelopeSpan(m_envelope.data(), m_samplesIn);
+#endif
 #ifdef PRJM_ENABLE_OPENMP
 #pragma omp parallel for schedule(static)
 #endif
     for (size_t i = 0; i < m_numFrequencies; i++)
     {
         size_t const idx{m_bitRevTable[i]};
+#if __cplusplus >= 202002L
         if (idx < m_samplesIn) [[likely]]
         {
             spectrumData[i].real(waveSpan[idx] * envelopeSpan[idx]);
         }
+#else
+        if (idx < m_samplesIn)
+        {
+            spectrumData[i].real(waveformData[idx] * m_envelope[idx]);
+        }
+#endif
     }
 
     // 2. Perform FFT (not parallelized - stage-dependent iterations)
