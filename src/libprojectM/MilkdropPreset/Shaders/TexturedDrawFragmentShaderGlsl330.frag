@@ -1,5 +1,3 @@
-precision mediump float;
-
 in vec4 fragment_color;
 in vec2 fragment_texture;
 
