@@ -141,11 +141,14 @@ void PerPixelMesh::InitializeMesh(const PresetState& presetState)
 
     // Either viewport size or mesh size changed, reinitialize the vertices.
     auto& vertices = m_warpMesh.Vertices();
-    int vertexIndex{0};
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
     for (int gridY = 0; gridY <= m_gridSizeY; gridY++)
     {
         for (int gridX = 0; gridX <= m_gridSizeX; gridX++)
         {
+            const int vertexIndex = gridY * (m_gridSizeX + 1) + gridX;
             const float x = static_cast<float>(gridX) / static_cast<float>(m_gridSizeX) * 2.0f - 1.0f;
             const float y = static_cast<float>(gridY) / static_cast<float>(m_gridSizeY) * 2.0f - 1.0f;
             vertices[vertexIndex] = {x, y};
@@ -160,8 +163,6 @@ void PerPixelMesh::InitializeMesh(const PresetState& presetState)
             {
                 m_radiusAngleBuffer[vertexIndex].angle = atan2f(y * aspectY, x * aspectX);
             }
-
-            vertexIndex++;
         }
     }
 

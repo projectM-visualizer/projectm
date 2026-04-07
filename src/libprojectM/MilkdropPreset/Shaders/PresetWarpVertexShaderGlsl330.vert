@@ -1,5 +1,3 @@
-precision mediump float;
-
 #define pos vertex_position
 #define radius rad_ang.x
 #define angle rad_ang.y

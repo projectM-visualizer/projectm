@@ -7,6 +7,10 @@
 
 #include <cstddef>
 
+#ifdef PRJM_ENABLE_OPENMP
+#include <omp.h>
+#endif
+
 namespace libprojectM {
 namespace MilkdropPreset {
 
@@ -145,6 +149,9 @@ void FinalComposite::InitializeMesh(const PresetState& presetState)
     auto& vertices = m_compositeMesh.Vertices();
     auto& uvs = m_compositeMesh.UVs();
 
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
     for (int gridY = 0; gridY < compositeGridHeight; gridY++)
     {
         int const gridY2 = gridY - gridY / (compositeGridHeight / 2);

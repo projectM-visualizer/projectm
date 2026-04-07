@@ -65,8 +65,38 @@ auto MilkdropNoise::generate2D(int size, int zoomFactor) -> std::vector<uint32_t
     textureData.resize(size * size);
 
     // write to the bits...
-    auto dst = textureData.data();
     auto RANGE = (zoomFactor > 1) ? 216 : 256;
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel
+    {
+        // Per-thread RNG: XOR seed with a Knuth hash of the thread index so each
+        // thread produces an independent sequence even if random_device repeats.
+        std::default_random_engine threadRng(randomSeed ^ static_cast<uint32_t>(omp_get_thread_num() * 2654435761u));
+        std::uniform_int_distribution<int> threadDist(0, INT32_MAX);
+#pragma omp for schedule(static)
+        for (auto y = 0; y < size; y++)
+        {
+            auto rowDst = textureData.data() + y * size;
+            for (auto x = 0; x < size; x++)
+            {
+                rowDst[x] = (static_cast<uint32_t>((threadDist(threadRng) % RANGE) + RANGE / 2) << 24) |
+                             (static_cast<uint32_t>((threadDist(threadRng) % RANGE) + RANGE / 2) << 16) |
+                             (static_cast<uint32_t>((threadDist(threadRng) % RANGE) + RANGE / 2) << 8) |
+                             (static_cast<uint32_t>((threadDist(threadRng) % RANGE) + RANGE / 2));
+            }
+            // swap some pixels randomly within this row, to improve 'randomness'
+            for (auto x = 0; x < size; x++)
+            {
+                auto x1 = threadDist(threadRng) % size;
+                auto x2 = threadDist(threadRng) % size;
+                auto temp = rowDst[x2];
+                rowDst[x2] = rowDst[x1];
+                rowDst[x1] = temp;
+            }
+        }
+    }
+#else
+    auto dst = textureData.data();
     for (auto y = 0; y < size; y++)
     {
         for (auto x = 0; x < size; x++)
@@ -87,6 +117,7 @@ auto MilkdropNoise::generate2D(int size, int zoomFactor) -> std::vector<uint32_t
         }
         dst += size;
     }
+#endif
 
     // smoothing
     if (zoomFactor > 1)
@@ -160,6 +191,38 @@ auto MilkdropNoise::generate3D(int size, int zoomFactor) -> std::vector<uint32_t
 
     // write to the bits...
     int RANGE = (zoomFactor > 1) ? 216 : 256;
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel
+    {
+        std::default_random_engine threadRng(randomSeed ^ static_cast<uint32_t>(omp_get_thread_num() * 2654435761u));
+        std::uniform_int_distribution<int> threadDist(0, INT32_MAX);
+#pragma omp for schedule(static)
+        for (auto z = 0; z < size; z++)
+        {
+            auto sliceDst = textureData.data() + z * size * size;
+            for (auto y = 0; y < size; y++)
+            {
+                auto rowDst = sliceDst + y * size;
+                for (auto x = 0; x < size; x++)
+                {
+                    rowDst[x] = ((static_cast<uint32_t>(threadDist(threadRng) % RANGE) + RANGE / 2) << 24) |
+                                ((static_cast<uint32_t>(threadDist(threadRng) % RANGE) + RANGE / 2) << 16) |
+                                ((static_cast<uint32_t>(threadDist(threadRng) % RANGE) + RANGE / 2) << 8) |
+                                ((static_cast<uint32_t>(threadDist(threadRng) % RANGE) + RANGE / 2));
+                }
+                // swap some pixels randomly within this row, to improve 'randomness'
+                for (auto x = 0; x < size; x++)
+                {
+                    auto x1 = threadDist(threadRng) % size;
+                    auto x2 = threadDist(threadRng) % size;
+                    auto temp = rowDst[x2];
+                    rowDst[x2] = rowDst[x1];
+                    rowDst[x1] = temp;
+                }
+            }
+        }
+    }
+#else
     for (auto z = 0; z < size; z++)
     {
         auto dst = (textureData.data()) + z * size * size;
@@ -184,6 +247,7 @@ auto MilkdropNoise::generate3D(int size, int zoomFactor) -> std::vector<uint32_t
             dst += size;
         }
     }
+#endif
 
     // smoothing
     if (zoomFactor > 1)

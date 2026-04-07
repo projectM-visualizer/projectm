@@ -73,9 +73,15 @@ void TextureAttachment::ReplaceTexture(int width, int height)
         case AttachmentType::Color:
             if (m_internalFormat == 0)
             {
+#ifdef PROJECTM_HDR_RENDERING
+                internalFormat = GL_RGBA16F;
+                textureFormat  = GL_RGBA;
+                pixelFormat    = GL_HALF_FLOAT;
+#else
                 internalFormat = GL_RGBA;
-                textureFormat = GL_RGBA;
-                pixelFormat = GL_UNSIGNED_BYTE;
+                textureFormat  = GL_RGBA;
+                pixelFormat    = GL_UNSIGNED_BYTE;
+#endif
             }
             else
             {
@@ -85,7 +91,7 @@ void TextureAttachment::ReplaceTexture(int width, int height)
             }
             break;
         case AttachmentType::Depth:
-            internalFormat = GL_DEPTH_COMPONENT16;
+            internalFormat = GL_DEPTH_COMPONENT24;
             textureFormat = GL_DEPTH_COMPONENT;
             pixelFormat = GL_FLOAT;
             break;

@@ -4,14 +4,12 @@ namespace libprojectM {
 namespace Renderer {
 
 #ifdef USE_GLES
-static constexpr char ShaderVersion[] = "#version 300 es\n\n";
+static constexpr char ShaderVersion[] = "#version 300 es\n\nprecision highp float;\nprecision highp int;\n";
 #else
 static constexpr char ShaderVersion[] = "#version 330\n\n";
 #endif
 
 static constexpr char CopyTextureVertexShader[] = R"(
-precision mediump float;
-
 layout(location = 0) in vec2 position;
 layout(location = 2) in vec2 tex_coord;
 
@@ -26,8 +24,6 @@ void main() {
 )";
 
 static constexpr char CopyTextureFragmentShader[] = R"(
-precision mediump float;
-
 in vec2 fragment_tex_coord;
 
 uniform sampler2D texture_sampler;

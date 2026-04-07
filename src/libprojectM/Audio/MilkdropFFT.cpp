@@ -33,6 +33,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <omp.h>
 #endif
 
+#include <span>
+
 namespace libprojectM {
 namespace Audio {
 
@@ -162,11 +164,15 @@ void MilkdropFFT::InitCosSinTable()
 
 void MilkdropFFT::TimeToFrequencyDomain(const std::vector<float>& waveformData, std::vector<float>& spectralData)
 {
-    if (m_bitRevTable.empty() || m_cosSinTable.empty() || waveformData.size() < m_samplesIn)
+    if (m_bitRevTable.empty() || m_cosSinTable.empty() || waveformData.size() < m_samplesIn) [[unlikely]]
     {
         spectralData.clear();
         return;
     }
+
+    // Use a std::span view for zero-overhead bounds-safe access to the input samples.
+    std::span<const float> waveSpan(waveformData.data(), m_samplesIn);
+    std::span<const float> envelopeSpan(m_envelope.data(), m_samplesIn);
 
     // 1. Set up input to the FFT
     std::vector<std::complex<float>> spectrumData(m_numFrequencies, std::complex<float>());
@@ -176,9 +182,9 @@ void MilkdropFFT::TimeToFrequencyDomain(const std::vector<float>& waveformData, 
     for (size_t i = 0; i < m_numFrequencies; i++)
     {
         size_t const idx{m_bitRevTable[i]};
-        if (idx < m_samplesIn)
+        if (idx < m_samplesIn) [[likely]]
         {
-            spectrumData[i].real(waveformData[idx] * m_envelope[idx]);
+            spectrumData[i].real(waveSpan[idx] * envelopeSpan[idx]);
         }
     }
 

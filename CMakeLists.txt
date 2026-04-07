@@ -7,7 +7,7 @@ include(CheckSymbolExists)
 set(PROJECTM_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(PROJECTM_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_POSITION_INDEPENDENT_CODE YES)
 
@@ -30,6 +30,8 @@ option(ENABLE_VERBOSE_LOGGING "Enables TRACE and DEBUG logging even in release b
 option(BUILD_TESTING "Build the libprojectM test suite" OFF)
 option(BUILD_DOCS "Build documentation" OFF)
 option(ENABLE_OPENMP "Enable OpenMP parallelization for performance-critical sections" OFF)
+option(ENABLE_HDR_RENDERING "Enable 16-bit float (GL_RGBA16F) framebuffer for HDR rendering with Reinhard tone-mapping" OFF)
+option(ENABLE_HDR_P3 "Enable Display-P3 wide-gamut output after sRGB tone-mapping (requires ENABLE_HDR_RENDERING)" OFF)
 
 # Enable vcpkg manifest features according to the build options set
 if(ENABLE_SYSTEM_GLM)

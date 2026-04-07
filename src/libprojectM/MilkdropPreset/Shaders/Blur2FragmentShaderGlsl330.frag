@@ -1,5 +1,3 @@
-precision mediump float;
-
 in vec2 fragment_texture;
 
 uniform sampler2D texture_sampler;
