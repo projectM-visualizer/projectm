@@ -77,6 +77,10 @@ void TextureAttachment::ReplaceTexture(int width, int height)
                 internalFormat = GL_RGBA16F;
                 textureFormat  = GL_RGBA;
                 pixelFormat    = GL_HALF_FLOAT;
+#elif defined(PROJECTM_SRGB_FRAMEBUFFER)
+                internalFormat = GL_SRGB8_ALPHA8;
+                textureFormat  = GL_RGBA;
+                pixelFormat    = GL_UNSIGNED_BYTE;
 #else
                 internalFormat = GL_RGBA;
                 textureFormat  = GL_RGBA;
