@@ -105,49 +105,49 @@ public:
      * @brief Returns the OpenGL texture name/ID.
      * @return The OpenGL texture name/ID.
      */
-    auto TextureID() const -> GLuint;
+    auto TextureID() const noexcept -> GLuint;
 
     /**
      * @brief Returns the texture name, e.g. base filename.
      * @return The texture name, for referencing the texture in shader code etc.
      */
-    auto Name() const -> const std::string&;
+    auto Name() const noexcept -> const std::string&;
 
     /**
      * @brief Returns the OpenGL texture type.
      * @return The texture type, e.g. GL_TEXTURE_2D.
      */
-    auto Type() const -> GLenum;
+    auto Type() const noexcept -> GLenum;
 
     /**
      * @brief Returns the width of the texture image in pixels.
      * @return The width of the texture image in pixels.
      */
-    auto Width() const -> int;
+    auto Width() const noexcept -> int;
 
     /**
      * @brief Returns the height of the texture image in pixels.
      * @return The height of the texture image in pixels.
      */
-    auto Height() const -> int;
+    auto Height() const noexcept -> int;
 
     /**
      * @brief Returns the depth of the texture image in pixels.
      * @return The depth of the texture image in pixels.
      */
-    auto Depth() const -> int;
+    auto Depth() const noexcept -> int;
 
     /**
      * @brief Returns if the texture is user-defined, e.g. loaded from an image.
      * @return true if the texture is a user texture, false if it's an internally generated texture.
      */
-    auto IsUserTexture() const -> bool;
+    auto IsUserTexture() const noexcept -> bool;
 
     /**
      * @brief Returns true if the texture is empty/unallocated.
      * @return true if the texture is not yet allocated (e.g. the ID 0), false if the object contains a valid texture.
      */
-    auto Empty() const -> bool;
+    auto Empty() const noexcept -> bool;
 
     /**
      * @brief Uploads new image data for the texture.

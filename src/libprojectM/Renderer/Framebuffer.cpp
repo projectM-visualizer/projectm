@@ -46,6 +46,10 @@ void Framebuffer::Bind(int framebufferIndex)
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferIds.at(framebufferIndex));
 
+#if defined(PROJECTM_SRGB_FRAMEBUFFER) && !defined(USE_GLES)
+    glEnable(GL_FRAMEBUFFER_SRGB);
+#endif
+
     m_readFramebuffer = m_drawFramebuffer = framebufferIndex;
 }
 
@@ -75,6 +79,9 @@ void Framebuffer::BindDraw(int framebufferIndex)
 
 void Framebuffer::Unbind()
 {
+#if defined(PROJECTM_SRGB_FRAMEBUFFER) && !defined(USE_GLES)
+    glDisable(GL_FRAMEBUFFER_SRGB);
+#endif
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 

@@ -18,7 +18,11 @@ BlurTexture::BlurTexture()
     : m_blurMesh(Renderer::VertexBufferUsage::StaticDraw, false, true)
     , m_blurSampler(std::make_shared<Renderer::Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR))
 {
+#ifdef PROJECTM_HDR_RENDERING
+    m_blurFramebuffer.CreateColorAttachment(0, 0, GL_RGBA16F, GL_RGBA, GL_HALF_FLOAT);
+#else
     m_blurFramebuffer.CreateColorAttachment(0, 0);
+#endif
 
     // Initialize blur mesh with a single fullscreen quad.
     m_blurMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::TriangleStrip);
@@ -370,7 +374,11 @@ void BlurTexture::AllocateTextures(const Renderer::Texture& sourceTexture)
         }
 
         // This will automatically replace any old texture.
+#ifdef PROJECTM_HDR_RENDERING
+        m_blurTextures[i] = std::make_shared<Renderer::Texture>(textureName, GL_TEXTURE_2D, width2, height2, 0, GL_RGBA16F, GL_RGBA, GL_HALF_FLOAT, false);
+#else
         m_blurTextures[i] = std::make_shared<Renderer::Texture>(textureName, width2, height2, false);
+#endif
     }
 
     m_sourceTextureWidth = sourceTexture.Width();

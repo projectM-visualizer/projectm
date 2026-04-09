@@ -84,7 +84,7 @@ public:
      * @param validationMessage The error message if validation failed.
      * @return true if the shader program is valid and can run, false if it broken.
      */
-    bool Validate(std::string& validationMessage) const;
+    [[nodiscard]] bool Validate(std::string& validationMessage) const;
 
     /**
      * Binds the program into the current context.
@@ -182,7 +182,7 @@ public:
      * not properly initialized or the context not made current.
      * @return The parsed version, or {0,0} if the version could not be parsed.
      */
-    static auto GetShaderLanguageVersion() -> GlslVersion;
+    [[nodiscard]] static auto GetShaderLanguageVersion() -> GlslVersion;
 
 private:
     /**

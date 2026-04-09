@@ -108,7 +108,7 @@ public:
      * This is twice the value of samplesOut passed to Init().
      * @return The number of frequency samples calculated.
      */
-    auto NumFrequencies() const -> size_t
+    auto NumFrequencies() const noexcept -> size_t
     {
         return m_numFrequencies;
     };

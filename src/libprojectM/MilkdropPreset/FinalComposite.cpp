@@ -351,6 +351,12 @@ void FinalComposite::ApplyHueShaderColors(const PresetState& presetState)
     auto& vertices = m_compositeMesh.Vertices();
     auto& colors = m_compositeMesh.Colors();
 
+    // All (gridX, gridY) pairs are independent: vertexIndex = gridX + gridY*width is unique,
+    // reads are from vertices[] (read-only here) and shade[] (read-only), writes only to
+    // colors[vertexIndex]. collapse(2) distributes 32×64 = 2048 iterations across threads.
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for collapse(2) schedule(static)
+#endif
     for (int gridY = 0; gridY < compositeGridHeight; gridY++)
     {
         for (int gridX = 0; gridX < compositeGridWidth; gridX++)

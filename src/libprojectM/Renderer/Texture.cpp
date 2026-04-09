@@ -86,42 +86,42 @@ void Texture::Unbind(GLint slot) const
     glBindTexture(m_target, 0);
 }
 
-auto Texture::TextureID() const -> GLuint
+auto Texture::TextureID() const noexcept -> GLuint
 {
     return m_textureId;
 }
 
-auto Texture::Name() const -> const std::string&
+auto Texture::Name() const noexcept -> const std::string&
 {
     return m_name;
 }
 
-auto Texture::Type() const -> GLenum
+auto Texture::Type() const noexcept -> GLenum
 {
     return m_target;
 }
 
-auto Texture::Width() const -> int
+auto Texture::Width() const noexcept -> int
 {
     return m_width;
 }
 
-auto Texture::Height() const -> int
+auto Texture::Height() const noexcept -> int
 {
     return m_height;
 }
 
-auto Texture::Depth() const -> int
+auto Texture::Depth() const noexcept -> int
 {
     return m_depth;
 }
 
-auto Texture::IsUserTexture() const -> bool
+auto Texture::IsUserTexture() const noexcept -> bool
 {
     return m_isUserTexture;
 }
 
-auto Texture::Empty() const -> bool
+auto Texture::Empty() const noexcept -> bool
 {
     return m_textureId == 0;
 }

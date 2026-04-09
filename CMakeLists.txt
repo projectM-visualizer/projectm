@@ -32,6 +32,7 @@ option(BUILD_DOCS "Build documentation" OFF)
 option(ENABLE_OPENMP "Enable OpenMP parallelization for performance-critical sections" OFF)
 option(ENABLE_HDR_RENDERING "Enable 16-bit float (GL_RGBA16F) framebuffer for HDR rendering with Reinhard tone-mapping" OFF)
 option(ENABLE_HDR_P3 "Enable Display-P3 wide-gamut output after sRGB tone-mapping (requires ENABLE_HDR_RENDERING)" OFF)
+option(ENABLE_SRGB_FRAMEBUFFER "Enable GL_SRGB8_ALPHA8 framebuffer with hardware sRGB encode/decode (SDR path only, incompatible with ENABLE_HDR_RENDERING)" OFF)
 
 # Enable vcpkg manifest features according to the build options set
 if(ENABLE_SYSTEM_GLM)
@@ -156,7 +157,7 @@ if(ENABLE_EMSCRIPTEN)
             )
 
     add_link_options(
-            "SHELL:-std=c++17 -O3 -rtlib=compiler-rt-mt -mtune=wasm32 -s SHARED_MEMORY=1 -s WASM_WORKERS=1 -pthread "
+            "SHELL:-std=c++20 -O3 -rtlib=compiler-rt-mt -mtune=wasm32 -s SHARED_MEMORY=1 -s WASM_WORKERS=1 -pthread "
             "SHELL:-s MIN_WEBGL_VERSION=2 "
             "SHELL:-s MAX_WEBGL_VERSION=2 "
             "SHELL:-s USE_WEBGL2=1 -s FULL_ES2=0 -s FULL_ES3=1 -s GL_POOL_TEMP_BUFFERS=0 -s GL_MAX_TEMP_BUFFER_SIZE=33177600 -s GL_TRACK_ERRORS=0 "
