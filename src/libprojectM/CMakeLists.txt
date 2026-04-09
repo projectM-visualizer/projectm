@@ -58,6 +58,10 @@ if(ENABLE_HDR_P3 AND ENABLE_HDR_RENDERING)
     target_compile_definitions(projectM_main PUBLIC PROJECTM_HDR_P3=1)
 endif()
 
+if(ENABLE_SRGB_FRAMEBUFFER AND NOT ENABLE_HDR_RENDERING)
+    target_compile_definitions(projectM_main PUBLIC PROJECTM_SRGB_FRAMEBUFFER=1)
+endif()
+
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     target_link_libraries(projectM_main
             PUBLIC

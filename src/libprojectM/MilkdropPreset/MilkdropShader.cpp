@@ -425,8 +425,21 @@ void PS(float4 _vDiffuse : COLOR,
     found = program.rfind('}');
     if (found != std::string::npos)
     {
-        program.replace(int(found), 1, "_return_value = float4(ret.xyz, 1.0);\n"
-                                       "}\n");
+#ifdef PROJECTM_HDR_RENDERING
+        // Composite shader: apply Reinhard tone-mapping + sRGB gamma encode at the final
+        // output stage. This is the correct place — the warp shader output stays linear so
+        // the feedback loop operates in linear light, and tone-mapping only runs once here.
+        if (m_type == ShaderType::CompositeShader)
+        {
+            program.replace(int(found), 1, "_return_value = float4(_prjm_hdr_out(ret.xyz), 1.0);\n"
+                                           "}\n");
+        }
+        else
+#endif
+        {
+            program.replace(int(found), 1, "_return_value = float4(ret.xyz, 1.0);\n"
+                                           "}\n");
+        }
     }
     else
     {
@@ -502,6 +515,35 @@ void PS(float4 _vDiffuse : COLOR,
                           "#define uv _uv.xy\n"
                           "#define uv_orig _uv.xy\n"
                           "#define hue_shader _vDiffuse.xyz\n");
+
+#ifdef PROJECTM_HDR_RENDERING
+        // Inject HDR tone-mapping helpers into the composite shader (HLSL syntax).
+        // _prjm_hdr_out is called on ret.xyz just before the output assignment,
+        // converting linear light to tone-mapped, sRGB-gamma-encoded display output.
+        // The transpiler converts saturate→clamp, lerp→mix, mul→matrix multiply, etc.
+        fullSource.append(
+            "float3 _prjm_reinhard(float3 c) {\n"
+            "    float lum = dot(c, float3(0.2126, 0.7152, 0.0722));\n"
+            "    return c * (lum / ((1.0 + lum) * max(lum, 0.0001)));\n"
+            "}\n"
+            "float3 _prjm_linear_to_srgb(float3 c) {\n"
+            "    float3 lo = c * 12.92;\n"
+            "    float3 hi = 1.055 * pow(saturate(c), 1.0 / 2.4) - 0.055;\n"
+            "    return lerp(lo, hi, step(0.0031308, c));\n"
+            "}\n"
+            "float3 _prjm_hdr_out(float3 c) {\n"
+            "    c = _prjm_linear_to_srgb(_prjm_reinhard(c));\n"
+#ifdef PROJECTM_HDR_P3
+            // BT.709 → Display-P3 (D65) color matrix, row-major HLSL convention.
+            "    float3x3 _bt709_to_p3 = float3x3(\n"
+            "        0.8225, 0.1774, 0.0003,\n"
+            "        0.0331, 0.9669, 0.0003,\n"
+            "        0.0171, 0.0724, 0.9108);\n"
+            "    c = saturate(mul(_bt709_to_p3, c));\n"
+#endif
+            "    return c;\n"
+            "}\n");
+#endif
     }
 
     fullSource.append(program);
