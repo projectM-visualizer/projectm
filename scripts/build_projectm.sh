@@ -94,7 +94,7 @@ echo "=== Building final WASM/JS wrapper with emcc ==="
 cd "${PROJECT_DIR}"
 
 export JVM_HEAP_SIZE=${JVM_HEAP_SIZE}
-source "${EMSDK_ENV}"
+source "/root/emsdk/emsdk_env.sh"
 
 emcc projectM_emscripten.cpp \
     -I /usr/local/include \
