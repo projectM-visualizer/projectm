@@ -49,7 +49,7 @@ mkdir -p build
 cd build
 
 export JVM_HEAP_SIZE=${JVM_HEAP_SIZE}
-source "${EMSDK_ENV}" || { echo "ERROR: Could not source emsdk_env.sh – is EMSDK installed at ${BASE_DIR}/emsdk ?"; exit 1; }
+source ~/emsdk/emsdk_env.sh || { echo "ERROR: Could not source emsdk_env.sh – is EMSDK installed at ${BASE_DIR}/emsdk ?"; exit 1; }
 
 cmake ..
 make install -j${BUILD_JOBS}
