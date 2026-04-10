@@ -27,6 +27,8 @@ cd "${BASE_DIR}"
 
 # 1. Install system dependencies
 echo "=== Installing system dependencies ==="
+sudo apt update -y
+sudo apt install aptitude -y
 sudo aptitude update -y || sudo apt update -y
 sudo aptitude install -y cmake-curses-gui qtbase5-dev llvm-dev libvisual-0.4-dev ninja-build \
     || sudo apt install -y cmake-curses-gui qtbase5-dev llvm-dev libvisual-0.4-dev ninja-build
@@ -49,7 +51,8 @@ mkdir -p build
 cd build
 
 export JVM_HEAP_SIZE=${JVM_HEAP_SIZE}
-source ~/emsdk/emsdk_env.sh || { echo "ERROR: Could not source emsdk_env.sh – is EMSDK installed at ${BASE_DIR}/emsdk ?"; exit 1; }
+
+source '/home/*/emsdk/emsdk_env.sh'
 
 cmake ..
 make install -j${BUILD_JOBS}
