@@ -1,0 +1,114 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5.000000
+fGammaAdj=1.000
+fDecay=0.950
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=1.002
+fWaveSmoothing=0.261
+fWaveParam=0.000
+fModWaveAlphaStart=0.500
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=1.000
+fWarpScale=1.331
+fZoomExponent=1.0
+fShader=0.0
+zoom=1.0
+rot=0.0
+cx=0.5
+cy=0.5
+dx=0.0
+dy=0.0
+warp=1.0
+sx=1.0
+sy=1.0
+wave_r=0.5
+wave_g=0.5
+wave_b=0.5
+wave_x=0.5
+wave_y=0.5
+ob_size=0.01
+ob_r=0.0
+ob_g=0.0
+ob_b=0.0
+ob_a=1.0
+ib_size=0.01
+ib_r=0.0
+ib_g=0.0
+ib_b=0.0
+ib_a=1.0
+mv_x=64.0
+mv_y=48.0
+mv_dx=0.0
+mv_dy=0.0
+mv_l=0.9
+mv_r=1.0
+mv_g=1.0
+mv_b=1.0
+mv_a=0.0
+per_frame_1=decay = 0.98;
+per_frame_2=vol = bass + mid + treb;
+per_frame_3=q1 = time;
+per_frame_4=q2 = vol * 0.1;
+warp_1=`shader_body {
+warp_2=`float2 center_uv = float2(0.5, 0.5);
+warp_3=`float3 background_color = float3(0.0, 0.0, 0.1);
+warp_4=`ret = background_color;
+warp_5=`
+warp_6=`// Pulsing Moon
+warp_7=`float moon_pulse = 1.0 + 0.2 * sin(time * 2.0) * q2;
+warp_8=`float2 moon_uv = uv - center_uv;
+warp_9=`float moon_radius = 0.2 * moon_pulse;
+warp_10=`float moon_dist = length(moon_uv);
+warp_11=`float moon_shape = smoothstep(moon_radius, moon_radius - 0.01, moon_dist);
+warp_12=`float cutout_radius = 0.18 * moon_pulse;
+warp_13=`float2 cutout_offset = float2(0.08 * moon_pulse, 0.0);
+warp_14=`float cutout_dist = length(moon_uv - cutout_offset);
+warp_15=`float cutout_shape = smoothstep(cutout_radius, cutout_radius - 0.01, cutout_dist);
+warp_16=`float final_moon = saturate(moon_shape - cutout_shape);
+warp_17=`float3 moon_color = float3(0.9, 0.9, 0.7);
+warp_18=`ret = lerp(ret, moon_color, final_moon);
+warp_19=`
+warp_20=`// Swirling, Twinkling Stars
+warp_21=`float2 star_uv = uv;
+warp_22=`float angle = time * 0.1 + (bass_att * 0.05);
+warp_23=`float s = sin(angle);
+warp_24=`float c = cos(angle);
+warp_25=`star_uv -= center_uv;
+warp_26=`star_uv = float2(star_uv.x * c - star_uv.y * s, star_uv.x * s + star_uv.y * c);
+warp_27=`star_uv += center_uv;
+warp_28=`float star_brightness = 0.0;
+warp_29=`float3 star_color = float3(1.0, 1.0, 1.0);
+warp_30=`float2 grid = floor(star_uv * 100.0);
+warp_31=`float2 grid_frac = frac(star_uv * 100.0);
+warp_32=`float hash = frac(sin(dot(grid, float2(12.9898, 78.233))) * 43758.5453);
+warp_33=`if (hash > 0.99) {
+warp_34=`    float star_twinkle = 0.5 + 0.5 * sin(time * 5.0 + hash * 100.0) * (1.0 + treb_att * 2.0);
+warp_35=`    float star_size = 0.01 + hash * 0.02;
+warp_36=`    float star_dist = length(grid_frac - float2(0.5, 0.5));
+warp_37=`    star_brightness = smoothstep(star_size, 0.0, star_dist) * star_twinkle;
+warp_38=`    float3 twinkle_color = float3(sin(time + hash), sin(time + hash + 2.0), sin(time + hash + 4.0));
+warp_39=`    twinkle_color = 0.5 + 0.5 * twinkle_color;
+warp_40=`    star_color = lerp(float3(1.0,1.0,1.0), twinkle_color, saturate(treb_att * 2.0));
+warp_41=`}
+warp_42=`ret = lerp(ret, star_color, star_brightness);
+warp_43=`}
