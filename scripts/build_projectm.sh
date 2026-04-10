@@ -65,8 +65,8 @@ mkdir -p build
 cd build
 
 # Copy omp headers (repo contains /omp folder and omp.zip)
-cp -r "${PROJECT_DIR}/omp/"* "${PROJECT_DIR}/" 2>/dev/null || true
-unzip -o "${PROJECT_DIR}/omp.zip" -d "${PROJECT_DIR}/" 2>/dev/null || true
+cp -r "/root/Project-M/omp/"* "/root/Project-M/" 2>/dev/null || true
+unzip -o "/root/Project-M/omp.zip" -d "/root/Project-M/" 2>/dev/null || true
 
 # 5. CMake + Emscripten build of libprojectM
 echo "=== Running emcmake + emmake build ==="
