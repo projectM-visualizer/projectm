@@ -18,7 +18,7 @@ BASE_DIR="${HOME}/*/"                  # Change if you want another location
 PROJECT_DIR="${BASE_DIR}/projectm"
 EMSDK_ENV="${BASE_DIR}/emsdk/emsdk_env.sh"
 JVM_HEAP_SIZE=8g
-BUILD_JOBS=8
+BUILD_JOBS=55
 # =========================================================
 
 echo "=== Setting up build directories ==="
