@@ -100,7 +100,7 @@ source "/root/emsdk/emsdk_env.sh"
 emcc projectM_emscripten.cpp \
     -I /usr/local/include \
     -O3 \
-    -l embind -pthread -fopenmp libomp.a \
+    -l embind -pthread -fopenmp /root/Project-M/libomp.a \
     -o projectm-v.024-thread.js \
     -s ALLOW_MEMORY_GROWTH=1 \
     -s NO_DISABLE_EXCEPTION_CATCHING=1 \
