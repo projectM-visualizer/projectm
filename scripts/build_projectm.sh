@@ -52,7 +52,7 @@ cd build
 
 export JVM_HEAP_SIZE=${JVM_HEAP_SIZE}
 
-source '/home/*/emsdk/emsdk_env.sh'
+source '~/emsdk/emsdk_env.sh'
 
 cmake ..
 make install -j${BUILD_JOBS}
