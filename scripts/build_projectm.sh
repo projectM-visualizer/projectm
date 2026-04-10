@@ -43,6 +43,11 @@ else
 fi
 cd "${PROJECT_DIR}"
 
+# Copy omp headers (repo contains /omp folder and omp.zip)
+cp -r "/root/Project-M/omp/"* "/root/Project-M/" 2>/dev/null || true
+unzip -o "/root/Project-M/omp.zip" -d "/root/Project-M/" 2>/dev/null || true
+
+
 # 3. Build vendor/projectm-eval
 echo "=== Building projectm-eval ==="
 cd "${PROJECT_DIR}/vendor/projectm-eval"
@@ -64,9 +69,6 @@ rm -rf build 2>/dev/null || true
 mkdir -p build
 cd build
 
-# Copy omp headers (repo contains /omp folder and omp.zip)
-cp -r "/root/Project-M/omp/"* "/root/Project-M/" 2>/dev/null || true
-unzip -o "/root/Project-M/omp.zip" -d "/root/Project-M/" 2>/dev/null || true
 
 # 5. CMake + Emscripten build of libprojectM
 echo "=== Running emcmake + emmake build ==="
