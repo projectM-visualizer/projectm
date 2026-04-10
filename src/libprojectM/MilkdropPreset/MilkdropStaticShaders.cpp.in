@@ -16,7 +16,9 @@ MilkdropStaticShaders::MilkdropStaticShaders(bool useGLES)
     if (m_useGLES)
     {
         // If GLES is enabled, use the embedded specification language variant.
-        m_versionHeader = "#version 300 es";
+        // Include precision qualifiers — GLES 3.0 fragment shaders have no default
+        // float precision, so every shader that uses float/vec/mat types requires one.
+        m_versionHeader = "#version 300 es\n\nprecision highp float;\nprecision highp int;\nprecision highp sampler2D;\nprecision highp sampler3D;";
         m_GLSLGeneratorVersion = M4::GLSLGenerator::Version::Version_300_ES;
     }
     else
