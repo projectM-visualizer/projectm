@@ -52,7 +52,7 @@ cd build
 
 export JVM_HEAP_SIZE=${JVM_HEAP_SIZE}
 
-source "${EMSDK_ENV}"
+source "/root/emsdk/emsdk_env.sh"
 
 cmake ..
 make install -j${BUILD_JOBS}
@@ -70,7 +70,7 @@ unzip -o "${PROJECT_DIR}/omp.zip" -d "${PROJECT_DIR}/" 2>/dev/null || true
 
 # 5. CMake + Emscripten build of libprojectM
 echo "=== Running emcmake + emmake build ==="
-source "${EMSDK_ENV}"
+source "/root/emsdk/emsdk_env.sh"
 
 # The original Colab line was incomplete; we set CMAKE_MODULE_PATH properly
 emcmake cmake .. \
