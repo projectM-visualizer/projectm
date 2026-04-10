@@ -125,9 +125,8 @@ emcc projectM_emscripten.cpp \
 echo "=== Running optimize.sh and iconv conversions ==="
 bash "${PROJECT_DIR}/optimize.sh" || echo "Warning: optimize.sh returned non-zero (may be expected)"
 
-iconv -f UTF-8 -t UTF-16 "${PROJECT_DIR}/projectm-v.024-thread.js" -o "${PROJECT_DIR}/projectm-v.024-thread.1ijs"
-iconv -f UTF-8 -t UTF-32 "${PROJECT_DIR}/projectm-v.024-thread.js" -o "${PROJECT_DIR}/projectm-v.024-thread.3ijs"
+iconv -f UTF-8 -t UTF-16 "/root/Project-M/projectm-v.024-thread.js" -o "/root/Project-M/projectm-v.024-thread.1ijs"
+iconv -f UTF-8 -t UTF-32 "/root/Project-M/projectm-v.024-thread.js" -o "/root/Project-M/projectm-v.024-thread.3ijs"
 
 echo "=== Build completed successfully! ==="
-echo "Output files are in: ${PROJECT_DIR}"
-ls -lh "${PROJECT_DIR}"/projectm-v.024-thread.* 2>/dev/null || true
+echo "Output files are in: /root/Project-M/"
