@@ -412,6 +412,7 @@ document.querySelector('#mcanvas').width=window.innerHeight;
 var $sngs=[];
 var $shds=[];
 var $texs=[];
+var $customMilk=[];
 
 function textures(xml){
 const nparser=new DOMParser();
@@ -457,6 +458,74 @@ textures(this);
 }};
 nxhttp.open('GET','textures/',true);
 nxhttp.send();
+}
+
+function customMilkShds(xml){
+const nparser=new DOMParser();
+const htmlDocs=nparser.parseFromString(xml.responseText,'text/html');
+const preList=htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
+var currentOrigin=window.location.origin;
+$customMilk=[];
+for(var i=0;i<preList.length;i++){
+var txxt=preList[i].href;
+txxt=txxt.replace(currentOrigin,'');
+if(txxt.indexOf('.milk')!==-1){
+$customMilk.push('https://glsl.1ink.us/custom_milk'+txxt);
+}
+}
+console.log('Scanned '+$customMilk.length+' custom milk presets.');
+if($customMilk.length>0){
+setTimeout(function(){ getCustomMilkShaders(); },3000);
+}
+}
+
+function scanCustomMilk(){
+const nxhttp=new XMLHttpRequest();
+nxhttp.onreadystatechange=function(){
+if(this.readyState==4&&this.status==200){ customMilkShds(this); }
+};
+nxhttp.open('GET','https://glsl.1ink.us/custom_milk/',true);
+nxhttp.send();
+}
+
+function getCustomMilkShaders(){
+for(var i=0;i<$customMilk.length;i++){
+(function(src,idx){
+const ff=new XMLHttpRequest();
+ff.open('GET',src,true);
+ff.responseType='arraybuffer';
+document.querySelector('#stat').innerHTML='Downloading Custom Preset';
+document.querySelector('#stat').style.backgroundColor='yellow';
+ff.addEventListener("load",function(){
+var buf=ff.response;
+if(buf){
+FS.writeFile("/presets/custmilk_"+idx+".milk",new Uint8ClampedArray(buf));
+console.log('Got custom preset: custmilk_'+idx+'.milk from '+src);
+}
+});
+ff.send(null);
+})($customMilk[i],i);
+}
+setTimeout(function(){
+Module.addCustomMilkPaths($customMilk.length);
+document.querySelector('#stat').innerHTML='Custom Presets Ready';
+document.querySelector('#stat').style.backgroundColor='blue';
+},2500);
+}
+
+function loadRandomCustomMilk(){
+if($customMilk.length===0){
+console.log('No custom milk presets available yet.');
+document.querySelector('#stat').innerHTML='Custom presets loading...';
+document.querySelector('#stat').style.backgroundColor='orange';
+return;
+}
+var idx=Math.floor(Math.random()*$customMilk.length);
+var fname='/presets/custmilk_'+idx+'.milk';
+Module.loadPresetFile(fname);
+document.querySelector('#stat').innerHTML='Loaded: custmilk_'+idx+'.milk';
+document.querySelector('#stat').style.backgroundColor='green';
+console.log('Loading random custom milk: '+fname);
 }
 
 function shds(xml){
@@ -587,7 +656,7 @@ snd();
 });
 
 document.querySelector('#milkBtn').addEventListener('click',function(){
-Module.getCustomShader();
+loadRandomCustomMilk();
 });
 
 document.querySelector('#createSpriteBtn').addEventListener('click',function(){
@@ -612,6 +681,7 @@ var pth=document.querySelector('#milkPath').innerHTML;
 scanTextures();
 scanSongs();
 scanShaders();
+scanCustomMilk();
 document.querySelector('#meshSize').addEventListener('change', (event) => {
 let meshValue = event.target.value;
 // Split the value into two numbers
@@ -793,6 +863,16 @@ projectm_playlist_add_preset(app_data.playlist, preset_file, false);
 return;
 }
 
+void add_custom_milk_paths(int count){
+char preset_file[256];
+for(int i=0;i<count;++i){
+snprintf(preset_file,sizeof(preset_file),"/presets/custmilk_%d.milk",i);
+projectm_playlist_add_preset(app_data.playlist,preset_file,false);
+}
+printf("Added %d custom milk presets to playlist.\n",count);
+return;
+}
+
 void set_mesh(int w,int h){
 projectm_set_mesh_size(pm,w,h);
 return;
@@ -841,6 +921,7 @@ function("setWindowSize", &set_window_size);
 function("setMesh", &set_mesh);
 function("getShader", &getShader);
 function("addPath", &add_preset_path);
+function("addCustomMilkPaths", &add_custom_milk_paths);
 function("projectm_pcm_add_float", &projectm_pcm_add_float_from_js_array_wrapper);
 function("pl", &pl);
 function("createSprite", &create_sprite);
