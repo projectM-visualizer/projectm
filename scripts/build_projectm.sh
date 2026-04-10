@@ -44,9 +44,8 @@ fi
 cd "${PROJECT_DIR}"
 
 # Copy omp headers (repo contains /omp folder and omp.zip)
-cp -r "/root/Project-M/omp/"* "/root/Project-M/" 2>/dev/null || true
-unzip -o "/root/Project-M/omp.zip" -d "/root/Project-M/" 2>/dev/null || true
-
+cp -r "/root/Project-M/omp/"* "/root/Project-M/"
+unzip -o "/root/Project-M/omp.zip" -d "/root/Project-M/"
 
 # 3. Build vendor/projectm-eval
 echo "=== Building projectm-eval ==="
