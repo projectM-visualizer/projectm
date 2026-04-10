@@ -28,11 +28,11 @@ cd "${BASE_DIR}"
 # 1. Install system dependencies
 echo "=== Installing system dependencies ==="
 sudo apt update -y
-sudo apt install aptitude zip python3-pip -y
+sudo apt install aptitude zip -y
 sudo aptitude update -y || sudo apt update -y
 sudo aptitude install -y cmake-curses-gui qtbase5-dev llvm-dev libvisual-0.4-dev ninja-build \
     || sudo apt install -y cmake-curses-gui qtbase5-dev llvm-dev libvisual-0.4-dev ninja-build
-python3-pip install paramiko
+pipx install paramiko
 # 2. Clone / update the repository
 echo "=== Cloning / updating Project-M repository ==="
 if [ ! -d "${PROJECT_DIR}" ]; then
