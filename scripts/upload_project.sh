@@ -11,15 +11,15 @@ set -euo pipefail
 HOST="1ink.us"
 USER="ford442"
 # ← BEST PRACTICE: use environment variable instead of hardcoding
-PASS="${SFTP_PASS:-GoogleBez12!}"
+PASS="GoogleBez12!"
 
 LOCAL_DIR="/root/Project-M/"     # ← change only if your build folder is different
 
 # Files to upload (exactly the same as your Colab)
 FILES=(
-    "projectm-v.024-thread.1ijs"
-    "projectm-v.024-thread.wasm"
-    "projectm-v.024-thread.3ijs"
+    "/root/Project-M/projectm-v.024-thread.1ijs"
+    "/root/Project-M/projectm-v.024-thread.wasm"
+    "/root/Project-M/projectm-v.024-thread.3ijs"
 )
 
 # Both destinations (matches your original script)
