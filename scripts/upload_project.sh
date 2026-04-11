@@ -13,7 +13,7 @@ USER="ford442"
 # ← BEST PRACTICE: use environment variable instead of hardcoding
 PASS="${SFTP_PASS:-GoogleBez12!}"
 
-LOCAL_DIR="${HOME}/build_space/projectm"     # ← change only if your build folder is different
+LOCAL_DIR="/root/Project-M/"     # ← change only if your build folder is different
 
 # Files to upload (exactly the same as your Colab)
 FILES=(
