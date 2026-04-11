@@ -13,13 +13,13 @@ USER="ford442"
 # ← BEST PRACTICE: use environment variable instead of hardcoding
 PASS="GoogleBez12!"
 
-LOCAL_DIR="/root/Project-M/"     # ← change only if your build folder is different
+LOCAL_DIR="~/Project-M/"     # ← change only if your build folder is different
 
 # Files to upload (exactly the same as your Colab)
 FILES=(
-    "/root/Project-M/projectm-v.024-thread.1ijs"
-    "/root/Project-M/projectm-v.024-thread.wasm"
-    "/root/Project-M/projectm-v.024-thread.3ijs"
+    "~/Project-M/projectm-v.024-thread.1ijs"
+    "~/Project-M/projectm-v.024-thread.wasm"
+    "~/Project-M/projectm-v.024-thread.3ijs"
 )
 
 # Both destinations (matches your original script)
