@@ -14,7 +14,7 @@
 set -e  # Exit on any error
 
 # ========================= CONFIG =========================
-BASE_DIR="~/"                  # Change if you want another location
+BASE_DIR="~"                  # Change if you want another location
 PROJECT_DIR="${BASE_DIR}/Project-M"
 EMSDK_ENV="${BASE_DIR}/emsdk/emsdk_env.sh"
 JVM_HEAP_SIZE=8g
