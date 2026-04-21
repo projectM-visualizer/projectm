@@ -34,6 +34,13 @@ generate_export_header(projectM_api
         EXPORT_FILE_NAME "${PROJECTM_EXPORT_HEADER}"
         )
 
+if(NOT BUILD_SHARED_LIBS)
+    target_compile_definitions(projectM_api
+            INTERFACE
+            PROJECTM_STATIC_DEFINE
+            )
+endif()
+
 add_library(libprojectM::API ALIAS projectM_api)
 
 
