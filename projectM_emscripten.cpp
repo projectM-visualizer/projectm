@@ -329,25 +329,16 @@ return;
 
 void on_preset_switch_requested(bool is_hard_cut, void* user_data) {
 printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ? "true" : "false");
-// EM_ASM({
-// const randIndex = Math.floor(Math.random()*25);
-// Module.loadPresetFile('/presets/preset_'+randIndex+'.milk');
-// });
-
-
- //   emscripten_pause_main_loop();
-// app_data.loading=EM_TRUE;
-
-
 char *str = (char*)EM_ASM_PTR({
 const randIndex = Math.floor(Math.random()*100);
 var jsString = '/presets/preset_'+randIndex+'.milk';
-var lengthBytes = lengthBytesUTF8(jsString)+1;
 return stringToNewUTF8(jsString);
 });
 AppData* app_datas = (AppData*)user_data;
 projectm_playlist_add_preset(app_datas->playlist,str,false);
-uint32_t indx = projectm_playlist_play_next(app_data.playlist,true);
+free(str);
+// Use soft cut (false) so the 17-second smooth transition is applied on both auto and manual switches.
+uint32_t indx = projectm_playlist_play_next(app_data.playlist, false);
 return;
 }
 
@@ -714,21 +705,8 @@ webgl_attrs.preserveDrawingBuffer=EM_FALSE;
 webgl_attrs.enableExtensionsByDefault=EM_TRUE;
 webgl_attrs.powerPreference=EM_WEBGL_POWER_PREFERENCE_HIGH_PERFORMANCE;
 display=eglGetDisplay(EGL_DEFAULT_DISPLAY);
-PFNEGLGETCONFIGATTRIBPROC eglGetConfigAttribHI = reinterpret_cast<PFNEGLGETCONFIGATTRIBPROC>(eglGetProcAddress("eglGetConfigAttribHI"));
 eglInitialize(display,&major,&minor);
-eglGetConfigAttrib(display,eglconfig,EGL_SAMPLES,&numSamples);
-eglGetConfigAttrib(display,eglconfig,EGL_COVERAGE_BUFFERS_NV,&numSamplesNV);
-eglGetConfigAttrib(display,eglconfig,EGL_SAMPLE_BUFFERS,&numMBuffers);
-eglGetConfigAttrib(display,eglconfig,EGL_RED_SIZE,&numRed);
-eglGetConfigAttrib(display,eglconfig,EGL_GREEN_SIZE,&numGreen);
-eglGetConfigAttrib(display,eglconfig,EGL_BLUE_SIZE,&numBlue);
-eglGetConfigAttrib(display,eglconfig,EGL_ALPHA_SIZE,&numAlpha);
-eglGetConfigAttrib(display,eglconfig,EGL_DEPTH_SIZE,&numDepth);
-eglGetConfigAttrib(display,eglconfig,EGL_STENCIL_SIZE,&numStencil);
-eglGetConfigAttrib(display,eglconfig,EGL_BUFFER_SIZE,&numBuffer);
-eglGetConfigAttrib(display,eglconfig,EGL_COVERAGE_BUFFERS_NV,&numBuffersNV);
-eglGetConfigAttrib(display,eglconfig,EGL_GL_COLORSPACE,&colorSpace);
-eglGetConfigAttrib(display,eglconfig,EGL_COLOR_FORMAT_HI,&colorFormat);
+// eglconfig is not yet initialized here; query attributes after eglChooseConfig selects a config.
 
 static EGLint ctx_att[]={
 EGL_CONTEXT_CLIENT_TYPE,EGL_OPENGL_ES_API,
@@ -890,8 +868,7 @@ return;
 
 void load_preset_file(std::string filename) {
 if (!pm) return;
-    // XXX: smooth_transition true does not work
-projectm_load_preset_file(pm, filename.c_str(), false);
+projectm_load_preset_file(pm, filename.c_str(), true);
 return;
 }
 
