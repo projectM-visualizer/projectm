@@ -17,6 +17,8 @@ add_subdirectory(UserSprites)
 
 add_library(projectM_main OBJECT
         "${PROJECTM_EXPORT_HEADER}"
+        ExpressionVariableWatcher.cpp
+        ExpressionVariableWatcher.hpp
         Logging.cpp
         Logging.hpp
         Preset.hpp
