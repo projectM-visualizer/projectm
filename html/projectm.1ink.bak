@@ -1217,12 +1217,12 @@ setTimeout(function(){
 Module=createModule();
 Module.onRuntimeInitialized=function(){
 Module.init();
-updateLayout();
+updateCanvasSize();
 };
 },1000);
 });
 
-updateLayout();
+initCanvasSize();
 
 setTimeout(function(){
 document.querySelector('#splash2').style.zIndex=3000;
@@ -1304,7 +1304,24 @@ link.click();
 
 let isBezelMode = true;
 
-function updateLayout() {
+function initCanvasSize() {
+    const sz = window.innerHeight;
+    const mcanvas = document.querySelector('#mcanvas');
+    const scanvas = document.querySelector('#scanvas');
+    const contain1 = document.querySelector('#contain1');
+    if (mcanvas && scanvas && contain1) {
+        mcanvas.style.width = sz + 'px';
+        mcanvas.style.height = sz + 'px';
+        scanvas.style.width = sz + 'px';
+        scanvas.style.height = sz + 'px';
+        contain1.style.width = sz + 'px';
+        contain1.style.height = sz + 'px';
+        contain1.style.left = 'calc(50vw - ' + (sz / 2) + 'px)';
+        contain1.style.position = 'absolute';
+    }
+}
+
+function updateCanvasSize() {
     const mcanvas = document.querySelector('#mcanvas');
     const scanvas = document.querySelector('#scanvas');
     const wrap = document.querySelector('#wrap');
@@ -1333,14 +1350,23 @@ function updateLayout() {
         }
         if (contain1a) contain1a.style.display = 'block';
 
+        mcanvas.style.width = sz + 'px';
+        mcanvas.style.height = sz + 'px';
         mcanvas.style.left = '0';
         mcanvas.style.top = '0';
         mcanvas.style.margin = '0';
         mcanvas.style.padding = '0';
+        scanvas.style.width = sz + 'px';
+        scanvas.style.height = sz + 'px';
         scanvas.style.left = '0';
         scanvas.style.top = '0';
         scanvas.style.margin = '0';
         scanvas.style.padding = '0';
+
+        mcanvas.width = sz;
+        mcanvas.height = sz;
+        scanvas.width = sz;
+        scanvas.height = sz;
 
         document.querySelector('#circle').style.display = 'block';
         document.querySelector('#gl').style.display = 'block';
@@ -1363,6 +1389,17 @@ function updateLayout() {
         pmImages.forEach(img => img.style.display = 'block');
         if (menu) menu.style.display = 'block';
 
+        if (typeof Module !== 'undefined' && Module.setWindowSize) {
+            Module.setWindowSize(sz, sz);
+            // Re-apply CSS sizes after Module resize to prevent any override
+            mcanvas.style.width = sz + 'px';
+            mcanvas.style.height = sz + 'px';
+            scanvas.style.width = sz + 'px';
+            scanvas.style.height = sz + 'px';
+        }
+        if (typeof Module !== 'undefined' && Module.setAspectCorrection) {
+            Module.setAspectCorrection(true);
+        }
         draw();
     } else {
         // === FULL RECTANGULAR MODE ===
@@ -1381,14 +1418,23 @@ function updateLayout() {
         }
         if (contain1a) contain1a.style.display = 'none';
 
+        mcanvas.style.width = vw + 'px';
+        mcanvas.style.height = vh + 'px';
         mcanvas.style.left = '0';
         mcanvas.style.top = '0';
         mcanvas.style.margin = '0';
         mcanvas.style.padding = '0';
+        scanvas.style.width = vw + 'px';
+        scanvas.style.height = vh + 'px';
         scanvas.style.left = '0';
         scanvas.style.top = '0';
         scanvas.style.margin = '0';
         scanvas.style.padding = '0';
+
+        mcanvas.width = vw;
+        mcanvas.height = vh;
+        scanvas.width = vw;
+        scanvas.height = vh;
 
         document.querySelector('#circle').style.display = 'none';
         document.querySelector('#gl').style.display = 'none';
@@ -1410,46 +1456,19 @@ function updateLayout() {
         customMilkBtn.nextElementSibling.style.bottom = '17%';
         pmImages.forEach(img => img.style.display = 'none');
         if (menu) menu.style.display = 'none';
-    }
-}
-
-// ResizeObserver handles internal canvas resolution and Module window size.
-// It fires once immediately on observation, guaranteeing the initial size
-// is synced with the final CSS layout before the Emscripten module loads.
-const resizeObserver = new ResizeObserver((entries) => {
-    for (const entry of entries) {
-        const dpr = window.devicePixelRatio || 1;
-        const cssWidth = entry.contentRect.width;
-        const cssHeight = entry.contentRect.height;
-        const w = Math.max(1, Math.round(cssWidth * dpr));
-        const h = Math.max(1, Math.round(cssHeight * dpr));
-
-        const mcanvas = document.querySelector('#mcanvas');
-        const scanvas = document.querySelector('#scanvas');
-        if (!mcanvas || !scanvas) continue;
-
-        mcanvas.width = w;
-        mcanvas.height = h;
-        scanvas.width = w;
-        scanvas.height = h;
-
-        mcanvas.style.width = cssWidth + 'px';
-        mcanvas.style.height = cssHeight + 'px';
-        scanvas.style.width = cssWidth + 'px';
-        scanvas.style.height = cssHeight + 'px';
 
         if (typeof Module !== 'undefined' && Module.setWindowSize) {
-            Module.setWindowSize(w, h);
+            Module.setWindowSize(vw, vh);
+            // Re-apply CSS sizes after Module resize to prevent any override
+            mcanvas.style.width = vw + 'px';
+            mcanvas.style.height = vh + 'px';
+            scanvas.style.width = vw + 'px';
+            scanvas.style.height = vh + 'px';
         }
         if (typeof Module !== 'undefined' && Module.setAspectCorrection) {
-            Module.setAspectCorrection(isBezelMode);
+            Module.setAspectCorrection(false);
         }
     }
-});
-
-const contain1El = document.querySelector('#contain1');
-if (contain1El) {
-    resizeObserver.observe(contain1El);
 }
 
 document.getElementById("randomPresetBtn").addEventListener('click', function() {
@@ -1460,19 +1479,21 @@ document.getElementById("randomPresetBtn").addEventListener('click', function() 
 
 document.getElementById("toggleBezelBtn").addEventListener('click', function() {
     isBezelMode = !isBezelMode;
-    updateLayout();
+    updateCanvasSize();
     if (!isBezelMode) draw();
 });
 
-// ResizeObserver subsumes viewport resize for the canvases themselves,
-// but in bezel mode contain1 has a fixed pixel size derived from
-// window.innerHeight, so we still need to recompute layout on resize.
+let _resizeTimer;
 window.addEventListener('resize', () => {
-    updateLayout();
-    if (isBezelMode) {
-        // Redraw circular bezel overlay to fit new dimensions
-        document.querySelector('#di').click();
-    }
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(() => {
+        updateCanvasSize();
+        if (isBezelMode) {
+            // Redraw circular bezel overlay to fit new dimensions
+            document.querySelector('#di').click();
+        }
+        console.log('Window resized:', window.innerWidth, window.innerHeight);
+    }, 100);
 });
 
 

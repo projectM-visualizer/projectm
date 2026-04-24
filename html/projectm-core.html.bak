@@ -78,7 +78,24 @@ let isBezelMode = true;
 let Module;
 
 // ====== CANVAS SIZE MANAGEMENT ======
-function updateLayout() {
+function initCanvasSize() {
+    const sz = window.innerHeight;
+    const mcanvas = document.querySelector('#mcanvas');
+    const scanvas = document.querySelector('#scanvas');
+    const contain1 = document.querySelector('#contain1');
+    if (mcanvas && scanvas && contain1) {
+        mcanvas.style.width = sz + 'px';
+        mcanvas.style.height = sz + 'px';
+        scanvas.style.width = sz + 'px';
+        scanvas.style.height = sz + 'px';
+        contain1.style.width = sz + 'px';
+        contain1.style.height = sz + 'px';
+        contain1.style.left = 'calc(50vw - ' + (sz / 2) + 'px)';
+        contain1.style.position = 'absolute';
+    }
+}
+
+function updateCanvasSize() {
     const mcanvas = document.querySelector('#mcanvas');
     const scanvas = document.querySelector('#scanvas');
     const wrap = document.querySelector('#wrap');
@@ -100,13 +117,33 @@ function updateLayout() {
             contain1.style.position = 'absolute';
         }
 
+        mcanvas.style.width = sz + 'px';
+        mcanvas.style.height = sz + 'px';
         mcanvas.style.left = '0';
         mcanvas.style.top = '0';
+        scanvas.style.width = sz + 'px';
+        scanvas.style.height = sz + 'px';
         scanvas.style.left = '0';
         scanvas.style.top = '0';
 
+        mcanvas.width = sz;
+        mcanvas.height = sz;
+        scanvas.width = sz;
+        scanvas.height = sz;
+
         document.querySelector('#circle').style.display = 'block';
         if (bezelFrame) bezelFrame.style.display = 'block';
+
+        if (typeof Module !== 'undefined' && Module.setWindowSize) {
+            Module.setWindowSize(sz, sz);
+            mcanvas.style.width = sz + 'px';
+            mcanvas.style.height = sz + 'px';
+            scanvas.style.width = sz + 'px';
+            scanvas.style.height = sz + 'px';
+        }
+        if (typeof Module !== 'undefined' && Module.setAspectCorrection) {
+            Module.setAspectCorrection(true);
+        }
     } else {
         // === FULLSCREEN MODE ===
         const vw = window.innerWidth;
@@ -123,53 +160,34 @@ function updateLayout() {
             contain1.style.position = 'fixed';
         }
 
+        mcanvas.style.width = vw + 'px';
+        mcanvas.style.height = vh + 'px';
         mcanvas.style.left = '0';
         mcanvas.style.top = '0';
+        scanvas.style.width = vw + 'px';
+        scanvas.style.height = vh + 'px';
         scanvas.style.left = '0';
         scanvas.style.top = '0';
 
+        mcanvas.width = vw;
+        mcanvas.height = vh;
+        scanvas.width = vw;
+        scanvas.height = vh;
+
         document.querySelector('#circle').style.display = 'none';
         if (bezelFrame) bezelFrame.style.display = 'none';
-    }
-}
-
-// ResizeObserver handles internal canvas resolution and Module window size.
-// It fires once immediately on observation, guaranteeing the initial size
-// is synced with the final CSS layout before the Emscripten module loads.
-const resizeObserver = new ResizeObserver((entries) => {
-    for (const entry of entries) {
-        const dpr = window.devicePixelRatio || 1;
-        const cssWidth = entry.contentRect.width;
-        const cssHeight = entry.contentRect.height;
-        const w = Math.max(1, Math.round(cssWidth * dpr));
-        const h = Math.max(1, Math.round(cssHeight * dpr));
-
-        const mcanvas = document.querySelector('#mcanvas');
-        const scanvas = document.querySelector('#scanvas');
-        if (!mcanvas || !scanvas) continue;
-
-        mcanvas.width = w;
-        mcanvas.height = h;
-        scanvas.width = w;
-        scanvas.height = h;
-
-        mcanvas.style.width = cssWidth + 'px';
-        mcanvas.style.height = cssHeight + 'px';
-        scanvas.style.width = cssWidth + 'px';
-        scanvas.style.height = cssHeight + 'px';
 
         if (typeof Module !== 'undefined' && Module.setWindowSize) {
-            Module.setWindowSize(w, h);
+            Module.setWindowSize(vw, vh);
+            mcanvas.style.width = vw + 'px';
+            mcanvas.style.height = vh + 'px';
+            scanvas.style.width = vw + 'px';
+            scanvas.style.height = vh + 'px';
         }
         if (typeof Module !== 'undefined' && Module.setAspectCorrection) {
-            Module.setAspectCorrection(isBezelMode);
+            Module.setAspectCorrection(false);
         }
     }
-});
-
-const contain1El = document.querySelector('#contain1');
-if (contain1El) {
-    resizeObserver.observe(contain1El);
 }
 
 // ====== UI CONTROLS ======
@@ -181,19 +199,33 @@ document.getElementById("randomPresetBtn").addEventListener('click', function() 
 
 document.getElementById("toggleBezelBtn").addEventListener('click', function() {
     isBezelMode = !isBezelMode;
-    updateLayout();
+    updateCanvasSize();
+    // Force Module to update with actual drawable dimensions
+    setTimeout(() => {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const sz = window.innerHeight;
+        const dims = isBezelMode ? sz : vw;
+        const height = isBezelMode ? sz : vh;
+        if (typeof Module !== 'undefined' && Module.setWindowSize) {
+            Module.setWindowSize(dims, height);
+        }
+    }, 50);
 });
 
 // ====== WINDOW RESIZE HANDLER ======
-// ResizeObserver subsumes viewport resize for the canvases themselves,
-// but in bezel mode contain1 has a fixed pixel size derived from
-// window.innerHeight, so we still need to recompute layout on resize.
-window.addEventListener('resize', updateLayout);
+let _resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(() => {
+        updateCanvasSize();
+        console.log('Window resized:', window.innerWidth, 'x', window.innerHeight);
+    }, 100);
+});
 
 // ====== MODULE INITIALIZATION ======
-// Initialize layout immediately. ResizeObserver will fire once
-// with the correct CSS-computed size and set internal resolution.
-updateLayout();
+// Initialize canvas size immediately
+initCanvasSize();
 
 // Hide splash screens after a delay
 setTimeout(function(){
@@ -217,9 +249,9 @@ setTimeout(function(){
         Module = createModule();
         Module.onRuntimeInitialized = function(){
             Module.init();
-            updateLayout();
-            const mcanvas = document.querySelector('#mcanvas');
-            Module.startRender(mcanvas.width, mcanvas.height);
+            updateCanvasSize();
+            const sz = window.innerHeight;
+            Module.startRender(sz, sz);
         };
     }, 1000);
 }, 750);
