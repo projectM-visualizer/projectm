@@ -519,34 +519,40 @@ document.querySelector('#stat').style.backgroundColor='green';
 console.log('Loading random custom milk: '+fname);
 }
 
-function shds(xml){
+var $milkLrg=[];
+var $milkMed=[];
+var $milkSml=[];
+
+function parseMilkDir(xml,baseUrl,array){
 const nparser=new DOMParser();
 const htmlDocs=nparser.parseFromString(xml.responseText,'text/html');
 const preList=htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
-$shds[0]=preList.length;
 for(var i=1;i<preList.length;i++){
 var txxt=preList[i].href;
-let pathName = 'https://glsl.1ink.us/milk';
-let currentOrigin = window.location.origin;
-let lastSlashIndex = pathName.lastIndexOf('/');
-let basePath = pathName.substring(0, lastSlashIndex);
+let currentOrigin=window.location.origin;
 txxt=txxt.replace(currentOrigin,'');
-$shds[i]=basePath+'/milk'+txxt;
+array.push(baseUrl+txxt);
 }
-console.log('Scanned '+$shds[0]+' Shaders.');
-setTimeout(function(){
-getShaders();
-},2500);
-};
+console.log('Scanned '+array.length+' presets from '+baseUrl);
+}
 
-function scanShaders(){
+function scanMilkDir(url,array){
 const nxhttp=new XMLHttpRequest();
 nxhttp.onreadystatechange=function(){
 if(this.readyState==4&&this.status==200){
-shds(this);
+parseMilkDir(this,url,array);
 }};
-nxhttp.open('GET','https://glsl.1ink.us/milk/',true);
+nxhttp.open('GET',url,true);
 nxhttp.send();
+}
+
+function scanAllMilkDirs(){
+scanMilkDir('https://glsl.1ink.us/milkLRG/',$milkLrg);
+scanMilkDir('https://glsl.1ink.us/milkMED/',$milkMed);
+scanMilkDir('https://glsl.1ink.us/milkSML/',$milkSml);
+setTimeout(function(){
+getShaders();
+},3500);
 }
 
 function sngs(xml){
@@ -650,19 +656,35 @@ document.querySelector('#milkBtn').addEventListener('click',function(){
 loadRandomCustomMilk();
 });
 
+document.querySelector('#customMilkBtn').addEventListener('click',function(){
+loadRandomCustomMilk();
+});
+
 document.querySelector('#createSpriteBtn').addEventListener('click',function(){
 Module.createSprite();
 });
 
 function getShaders(){
-for (var i=0;i<100;i++){
-var randShd=Math.floor(($shds[0]-5)*Math.random());
-var milkSrc=$shds[randShd+5];
+var total=99;
+var perSource=Math.floor(total/3);
+var idx=0;
+
+function downloadFromArray(arr,count,startIdx){
+for(var i=0;i<count&&i<arr.length;i++){
+var randShd=Math.floor(arr.length*Math.random());
+var milkSrc=arr[randShd];
 document.querySelector('#milkPath').innerHTML=milkSrc;
-Module.getShader(i);
-// Module.loadPresetFile('/presets/preset_'+randShd+'.milk');
-console.log('Got '+'/presets/preset_'+i+'.milk from '+milkSrc+'.');
+Module.getShader(startIdx+i);
+console.log('Got /presets/preset_'+(startIdx+i)+'.milk from '+milkSrc+'.');
 }
+}
+
+downloadFromArray($milkLrg,perSource,idx);
+idx+=perSource;
+downloadFromArray($milkMed,perSource,idx);
+idx+=perSource;
+downloadFromArray($milkSml,total-(perSource*2),idx);
+
 Module.addPath();
 setTimeout(function(){
 Module.startRender(window.innerHeight, window.innerHeight);
@@ -671,7 +693,7 @@ Module.startRender(window.innerHeight, window.innerHeight);
 var pth=document.querySelector('#milkPath').innerHTML;
 scanTextures();
 scanSongs();
-scanShaders();
+scanAllMilkDirs();
 scanCustomMilk();
 document.querySelector('#meshSize').addEventListener('change', (event) => {
 let meshValue = event.target.value;
@@ -892,6 +914,7 @@ return;
 
 void set_window_size(int width, int height) {
 if (!pm) return;
+emscripten_set_canvas_element_size("#mcanvas", width, height);
 glViewport(0,0,width,height);
 glScissor(0,0,width,height);
 projectm_set_window_size(pm, width, height);
