@@ -289,21 +289,21 @@ eglSwapBuffers(display,surface);
 return;
 }
 
-void start_render(int size){
+void start_render(int width, int height){
 // glClearColor( 1.0, 1.0, 1.0, 0.0 );
 glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
-printf("Setting window size: %i\n", size);
+printf("Setting window size: %i x %i\n", width, height);
 glViewport(0,0,8192,8192);  //  viewport/scissor after UsePrg runs at full resolution
-glViewport(0,0,size,size);  //  viewport/scissor after UsePrg runs at full resolution
+glViewport(0,0,width,height);  //  viewport/scissor after UsePrg runs at full resolution
 glEnable(GL_SCISSOR_TEST);
-glScissor(0,0,size,size);
+glScissor(0,0,width,height);
 glHint(GL_FRAGMENT_SHADER_DERIVATIVE_HINT,GL_NICEST);
 glHint(GL_GENERATE_MIPMAP_HINT,GL_NICEST);
 glDisable(GL_DITHER);
 glFrontFace(GL_CW);
 glCullFace(GL_BACK);
 app_data.loading=EM_FALSE;
-projectm_set_window_size(pm,size,size);
+projectm_set_window_size(pm,width,height);
 emscripten_set_main_loop((void (*)())renderLoop,0,0);
 
 
@@ -665,7 +665,7 @@ console.log('Got '+'/presets/preset_'+i+'.milk from '+milkSrc+'.');
 }
 Module.addPath();
 setTimeout(function(){
-Module.startRender(window.innerHeight);
+Module.startRender(window.innerHeight, window.innerHeight);
 },1000);
 }
 var pth=document.querySelector('#milkPath').innerHTML;
@@ -866,6 +866,12 @@ gl_ctx = NULL;
 return;
 }
 
+void switch_preset() {
+if (!app_data.playlist) return;
+projectm_playlist_play_next(app_data.playlist, false);
+return;
+}
+
 void load_preset_file(std::string filename) {
 if (!pm) return;
 projectm_load_preset_file(pm, filename.c_str(), true);
@@ -880,9 +886,8 @@ return;
 
 void set_window_size(int width, int height) {
 if (!pm) return;
-glViewport(0,0,height,height);
-// glScissor(0,0,height,height);
-projectm_set_window_size(pm, height, height);
+glViewport(0,0,width,height);
+projectm_set_window_size(pm, width, height);
 return;
 }
 
@@ -892,6 +897,7 @@ function("getProjectmHandle", &get_projectm_handle);
 function("init", &init);
 function("getCustomShader", &getCustomShader);
 function("loadPresetFile", &load_preset_file);
+function("switchPreset", &switch_preset);
 function("renderFrame", &render_frame);
 function("startRender", &start_render);
 function("setWindowSize", &set_window_size);
