@@ -199,6 +199,11 @@ Random Preset
 Toggle Fullscreen
 </div>
 
+<input type=button id=customMilkBtn style='background-color:purple;position:absolute;display:block;left:3%;bottom:45%;z-index:3300;border:6px solid green;border-radius:20%;' />
+<div style='position:absolute;display:block;left:6%;bottom:45%;z-index:3300;font-family: "Lucida Console", "Courier New", monospace;font-size: 20px;color:lightgrey;'>
+Random Custom
+</div>
+
 <input class="button" type=button id=lockPresetBtn style='background-color:green;position:fixed;display:none;width:6vh;height:5vh;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;'></input>
 <input class="button" type=button id=createSpriteBtn style='background-color:purple;position:fixed;display:none;width:6vh;height:5vh;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;'></input>
 
@@ -1297,16 +1302,27 @@ let isBezelMode = true;
 function updateCanvasSize() {
     const mcanvas = document.querySelector('#mcanvas');
     const scanvas = document.querySelector('#scanvas');
+    const wrap = document.querySelector('#wrap');
+    const contain1 = document.querySelector('#contain1');
+    const contain1a = document.querySelector('#contain1a');
     const musicBtn = document.querySelector('#musicBtn');
     const randomPresetBtn = document.querySelector('#randomPresetBtn');
     const toggleBezelBtn = document.querySelector('#toggleBezelBtn');
+    const customMilkBtn = document.querySelector('#customMilkBtn');
     const pmImages = document.querySelectorAll('#pm');
     const menu = document.querySelector('#menu');
     if (isBezelMode) {
+        if (wrap) { wrap.style.width = ''; wrap.style.height = ''; wrap.style.position = ''; wrap.style.top = ''; wrap.style.left = ''; }
+        if (contain1) { contain1.style.width = ''; contain1.style.height = ''; }
+        if (contain1a) contain1a.style.display = 'block';
         mcanvas.style.width = '100vh';
         mcanvas.style.height = '100vh';
+        mcanvas.style.left = '';
+        mcanvas.style.top = '0';
         scanvas.style.width = '100vh';
         scanvas.style.height = '100vh';
+        scanvas.style.left = '';
+        scanvas.style.top = '0';
         mcanvas.width = window.innerHeight;
         mcanvas.height = window.innerHeight;
         scanvas.width = window.innerHeight;
@@ -1325,6 +1341,10 @@ function updateCanvasSize() {
         randomPresetBtn.nextElementSibling.style.bottom = '25%';
         toggleBezelBtn.nextElementSibling.style.left = '6%';
         toggleBezelBtn.nextElementSibling.style.bottom = '35%';
+        customMilkBtn.style.left = '3%';
+        customMilkBtn.style.bottom = '45%';
+        customMilkBtn.nextElementSibling.style.left = '6%';
+        customMilkBtn.nextElementSibling.style.bottom = '45%';
         pmImages.forEach(img => img.style.display = 'block');
         if (menu) menu.style.display = 'block';
         if (typeof Module !== 'undefined' && Module.setWindowSize) {
@@ -1335,10 +1355,17 @@ function updateCanvasSize() {
         }
         draw();
     } else {
+        if (wrap) { wrap.style.width = '100vw'; wrap.style.height = '100vh'; wrap.style.position = 'fixed'; wrap.style.top = '0'; wrap.style.left = '0'; }
+        if (contain1) { contain1.style.width = '100vw'; contain1.style.height = '100vh'; }
+        if (contain1a) contain1a.style.display = 'none';
         mcanvas.style.width = '100vw';
         mcanvas.style.height = '100vh';
+        mcanvas.style.left = '0';
+        mcanvas.style.top = '0';
         scanvas.style.width = '100vw';
         scanvas.style.height = '100vh';
+        scanvas.style.left = '0';
+        scanvas.style.top = '0';
         mcanvas.width = window.innerWidth;
         mcanvas.height = window.innerHeight;
         scanvas.width = window.innerWidth;
@@ -1357,6 +1384,10 @@ function updateCanvasSize() {
         randomPresetBtn.nextElementSibling.style.bottom = '7%';
         toggleBezelBtn.nextElementSibling.style.left = '4%';
         toggleBezelBtn.nextElementSibling.style.bottom = '12%';
+        customMilkBtn.style.left = '1%';
+        customMilkBtn.style.bottom = '17%';
+        customMilkBtn.nextElementSibling.style.left = '4%';
+        customMilkBtn.nextElementSibling.style.bottom = '17%';
         pmImages.forEach(img => img.style.display = 'none');
         if (menu) menu.style.display = 'none';
         if (typeof Module !== 'undefined' && Module.setWindowSize) {
