@@ -1094,6 +1094,8 @@ document.querySelector('#mvi').style.transform='scaleX(-1.0)';
 
 <script type="module">
 
+var Module;
+
 document.getElementById("startBtn").addEventListener('click',function(){
 document.getElementById('mvi').play();
 });
@@ -1212,7 +1214,7 @@ scr.defer=true;
 scr.src="./pm/projectm-v.024-thread.1ijs";
 document.body.appendChild(scr);
 setTimeout(function(){
-var Module=createModule();
+Module=createModule();
 Module.onRuntimeInitialized=function(){
 Module.init();
 updateCanvasSize();
@@ -1312,39 +1314,41 @@ function updateCanvasSize() {
     const customMilkBtn = document.querySelector('#customMilkBtn');
     const pmImages = document.querySelectorAll('#pm');
     const menu = document.querySelector('#menu');
-    
+
     if (isBezelMode) {
-        // Bezel mode: centered square
+        // === BEZEL MODE (centered square) ===
+        const sz = window.innerHeight;
+
         if (wrap) { 
             wrap.style.width = ''; wrap.style.height = ''; wrap.style.position = ''; 
             wrap.style.top = ''; wrap.style.left = ''; 
         }
         if (contain1) { 
-            contain1.style.width = '100vh'; 
-            contain1.style.height = '100vh';
-            contain1.style.left = 'calc(50% - 50vh)';
+            contain1.style.width = sz + 'px'; 
+            contain1.style.height = sz + 'px';
+            contain1.style.left = 'calc(50% - ' + (sz / 2) + 'px)';
             contain1.style.position = 'absolute';
         }
         if (contain1a) contain1a.style.display = 'block';
-        
-        mcanvas.style.width = '100vh';
-        mcanvas.style.height = '100vh';
+
+        mcanvas.style.width = sz + 'px';
+        mcanvas.style.height = sz + 'px';
         mcanvas.style.left = '';
         mcanvas.style.top = '0';
         mcanvas.style.margin = '0';
         mcanvas.style.padding = '0';
-        scanvas.style.width = '100vh';
-        scanvas.style.height = '100vh';
+        scanvas.style.width = sz + 'px';
+        scanvas.style.height = sz + 'px';
         scanvas.style.left = '';
         scanvas.style.top = '0';
         scanvas.style.margin = '0';
         scanvas.style.padding = '0';
-        
-        mcanvas.width = window.innerHeight;
-        mcanvas.height = window.innerHeight;
-        scanvas.width = window.innerHeight;
-        scanvas.height = window.innerHeight;
-        
+
+        mcanvas.width = sz;
+        mcanvas.height = sz;
+        scanvas.width = sz;
+        scanvas.height = sz;
+
         document.querySelector('#circle').style.display = 'block';
         document.querySelector('#gl').style.display = 'block';
         musicBtn.style.left = '3%';
@@ -1365,19 +1369,19 @@ function updateCanvasSize() {
         customMilkBtn.nextElementSibling.style.bottom = '45%';
         pmImages.forEach(img => img.style.display = 'block');
         if (menu) menu.style.display = 'block';
-        
+
         if (typeof Module !== 'undefined' && Module.setWindowSize) {
-            Module.setWindowSize(window.innerHeight, window.innerHeight);
+            Module.setWindowSize(sz, sz);
         }
         if (typeof Module !== 'undefined' && Module.setAspectCorrection) {
             Module.setAspectCorrection(true);
         }
         draw();
     } else {
-        // Fullscreen mode: fill entire viewport
+        // === FULL RECTANGULAR MODE ===
         const vw = window.innerWidth;
         const vh = window.innerHeight;
-        
+
         if (wrap) { 
             wrap.style.width = '100vw'; wrap.style.height = '100vh'; 
             wrap.style.position = 'fixed'; wrap.style.top = '0'; wrap.style.left = '0'; 
@@ -1385,29 +1389,29 @@ function updateCanvasSize() {
         if (contain1) { 
             contain1.style.width = '100vw'; 
             contain1.style.height = '100vh';
-            contain1.style.left = '0';        // FIX: override calc(50% - 50vh)
-            contain1.style.position = 'fixed'; // FIX: position at viewport origin
+            contain1.style.left = '0';
+            contain1.style.position = 'fixed';
         }
         if (contain1a) contain1a.style.display = 'none';
-        
-        mcanvas.style.width = '100vw';
-        mcanvas.style.height = '100vh';
+
+        mcanvas.style.width = vw + 'px';
+        mcanvas.style.height = vh + 'px';
         mcanvas.style.left = '0';
         mcanvas.style.top = '0';
         mcanvas.style.margin = '0';
         mcanvas.style.padding = '0';
-        scanvas.style.width = '100vw';
-        scanvas.style.height = '100vh';
+        scanvas.style.width = vw + 'px';
+        scanvas.style.height = vh + 'px';
         scanvas.style.left = '0';
         scanvas.style.top = '0';
         scanvas.style.margin = '0';
         scanvas.style.padding = '0';
-        
+
         mcanvas.width = vw;
         mcanvas.height = vh;
         scanvas.width = vw;
         scanvas.height = vh;
-        
+
         document.querySelector('#circle').style.display = 'none';
         document.querySelector('#gl').style.display = 'none';
         musicBtn.style.left = '1%';
@@ -1428,14 +1432,9 @@ function updateCanvasSize() {
         customMilkBtn.nextElementSibling.style.bottom = '17%';
         pmImages.forEach(img => img.style.display = 'none');
         if (menu) menu.style.display = 'none';
-        
+
         if (typeof Module !== 'undefined' && Module.setWindowSize) {
             Module.setWindowSize(vw, vh);
-            // Re-apply CSS sizes after Module resize to prevent any override
-            mcanvas.style.width = '100vw';
-            mcanvas.style.height = '100vh';
-            scanvas.style.width = '100vw';
-            scanvas.style.height = '100vh';
         }
         if (typeof Module !== 'undefined' && Module.setAspectCorrection) {
             Module.setAspectCorrection(false);
@@ -1450,15 +1449,9 @@ document.getElementById("randomPresetBtn").addEventListener('click', function() 
 });
 
 document.getElementById("toggleBezelBtn").addEventListener('click', function() {
-    // If currently in native fullscreen, exit it first
-    if (document.fullscreenElement) {
-        document.exitFullscreen();
-    }
     isBezelMode = !isBezelMode;
     updateCanvasSize();
-    // Only redraw the bezel overlay when switching back to bezel mode;
-    // calling draw() when entering fullscreen would overwrite #gl display:none
-    if (isBezelMode) draw();
+    if (!isBezelMode) draw();
 });
 
 let _resizeTimer;
@@ -1476,12 +1469,7 @@ window.addEventListener('resize', () => {
     }, 100);
 });
 
-// Keep canvas sized correctly when the browser enters/exits native fullscreen
-document.addEventListener('fullscreenchange', () => {
-    if (!isBezelMode) {
-        updateCanvasSize();
-    }
-});
+
 
 
 
