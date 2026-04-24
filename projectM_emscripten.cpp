@@ -687,7 +687,7 @@ downloadFromArray($milkSml,total-(perSource*2),idx);
 
 Module.addPath();
 setTimeout(function(){
-Module.startRender(window.innerHeight, window.innerHeight);
+Module.startRender(window.innerWidth, window.innerHeight);
 },1000);
 }
 var pth=document.querySelector('#milkPath').innerHTML;
