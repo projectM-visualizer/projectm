@@ -1,3 +1,4 @@
+git pull
 git add .
 git commit -m "codespace"
 git push
