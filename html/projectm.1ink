@@ -189,6 +189,16 @@ mySelect.value = firstValue;
 Start / Change Song
 </div>
 
+<input type=button id=randomPresetBtn style='background-color:orange;position:absolute;display:block;left:3%;bottom:25%;z-index:3300;border:6px solid green;border-radius:20%;' />
+<div style='position:absolute;display:block;left:6%;bottom:25%;z-index:3300;font-family: "Lucida Console", "Courier New", monospace;font-size: 20px;color:lightgrey;'>
+Random Preset
+</div>
+
+<input type=button id=toggleBezelBtn style='background-color:blue;position:absolute;display:block;left:3%;bottom:35%;z-index:3300;border:6px solid green;border-radius:20%;' />
+<div style='position:absolute;display:block;left:6%;bottom:35%;z-index:3300;font-family: "Lucida Console", "Courier New", monospace;font-size: 20px;color:lightgrey;'>
+Toggle Fullscreen
+</div>
+
 <input class="button" type=button id=lockPresetBtn style='background-color:green;position:fixed;display:none;width:6vh;height:5vh;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;'></input>
 <input class="button" type=button id=createSpriteBtn style='background-color:purple;position:fixed;display:none;width:6vh;height:5vh;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;'></input>
 
@@ -1282,9 +1292,60 @@ link.click();
 // flippedCanvas = null;// Nullify reference
 });
 
+let isBezelMode = true;
+
+function updateCanvasSize() {
+    const mcanvas = document.querySelector('#mcanvas');
+    const scanvas = document.querySelector('#scanvas');
+    if (isBezelMode) {
+        mcanvas.style.width = '100vh';
+        mcanvas.style.height = '100vh';
+        scanvas.style.width = '100vh';
+        scanvas.style.height = '100vh';
+        mcanvas.width = window.innerHeight;
+        mcanvas.height = window.innerHeight;
+        scanvas.width = window.innerHeight;
+        scanvas.height = window.innerHeight;
+        document.querySelector('#circle').style.display = 'block';
+        document.querySelector('#gl').style.display = 'block';
+        if (typeof Module !== 'undefined' && Module.setWindowSize) {
+            Module.setWindowSize(window.innerHeight, window.innerHeight);
+        }
+        draw();
+    } else {
+        mcanvas.style.width = '100vw';
+        mcanvas.style.height = '100vh';
+        scanvas.style.width = '100vw';
+        scanvas.style.height = '100vh';
+        mcanvas.width = window.innerWidth;
+        mcanvas.height = window.innerHeight;
+        scanvas.width = window.innerWidth;
+        scanvas.height = window.innerHeight;
+        document.querySelector('#circle').style.display = 'none';
+        document.querySelector('#gl').style.display = 'none';
+        if (typeof Module !== 'undefined' && Module.setWindowSize) {
+            Module.setWindowSize(window.innerWidth, window.innerHeight);
+        }
+    }
+}
+
+document.getElementById("randomPresetBtn").addEventListener('click', function() {
+    if (typeof Module !== 'undefined' && Module.switchPreset) {
+        Module.switchPreset();
+    }
+});
+
+document.getElementById("toggleBezelBtn").addEventListener('click', function() {
+    isBezelMode = !isBezelMode;
+    updateCanvasSize();
+});
+
 window.addEventListener('resize', (event) => {
-document.querySelector('#di').click();
-console.log('Window resized:', window.innerWidth, window.innerHeight);
+    if (!isBezelMode) {
+        updateCanvasSize();
+    }
+    document.querySelector('#di').click();
+    console.log('Window resized:', window.innerWidth, window.innerHeight);
 });
 
 
