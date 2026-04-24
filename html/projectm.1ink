@@ -1215,6 +1215,7 @@ setTimeout(function(){
 var Module=createModule();
 Module.onRuntimeInitialized=function(){
 Module.init();
+updateCanvasSize();
 };
 },1000);
 });
@@ -1330,10 +1331,14 @@ function updateCanvasSize() {
         mcanvas.style.height = '100vh';
         mcanvas.style.left = '';
         mcanvas.style.top = '0';
+        mcanvas.style.margin = '0';
+        mcanvas.style.padding = '0';
         scanvas.style.width = '100vh';
         scanvas.style.height = '100vh';
         scanvas.style.left = '';
         scanvas.style.top = '0';
+        scanvas.style.margin = '0';
+        scanvas.style.padding = '0';
         
         mcanvas.width = window.innerHeight;
         mcanvas.height = window.innerHeight;
@@ -1389,10 +1394,14 @@ function updateCanvasSize() {
         mcanvas.style.height = '100vh';
         mcanvas.style.left = '0';
         mcanvas.style.top = '0';
+        mcanvas.style.margin = '0';
+        mcanvas.style.padding = '0';
         scanvas.style.width = '100vw';
         scanvas.style.height = '100vh';
         scanvas.style.left = '0';
         scanvas.style.top = '0';
+        scanvas.style.margin = '0';
+        scanvas.style.padding = '0';
         
         mcanvas.width = vw;
         mcanvas.height = vh;
