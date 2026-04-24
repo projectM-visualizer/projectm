@@ -293,10 +293,10 @@ Random Custom
 <div id=wrap>
 <canvas id="circle" style='position:absolute;zIndex:3300;top:0px;'></canvas>
 
-<div id=contain1 style='position:absolute;'>
+<div id=contain1 style='position:absolute;'><div id=contain1>
 
-<canvas class=emscripten id=mcanvas style='pointer-events:auto;display:block;position:absolute;z-index:3001;background-color:rgba(0,0,0,0.0);top:0;left:0;image-rendering:auto;transform:scaleY(1.0);'></canvas>
-<canvas class=emscripten id=scanvas style='pointer-events:auto;display:block;position:absolute;z-index:3000;background-color:rgba(0,0,0,1.0);top:0;left:0;image-rendering:auto;transform:scaleY(-1.0);'></canvas>
+<canvas class=emscripten id=mcanvas style='pointer-events:auto;display:block;position:absolute;z-index:3001;background-color:rgba(0,0,0,0.0);top:0;height:100vh;width:100vh;image-rendering:auto;transform:scaleY(1.0);'></canvas>
+<canvas class=emscripten id=scanvas style='pointer-events:auto;display:block;position:absolute;z-index:3000;background-color:rgba(0,0,0,1.0);top:0;height:100vh;width:100vh;image-rendering:auto;transform:scaleY(-1.0);'></canvas>
 <div id=contain1a style='height:75%;width:75%;'>
 </div>
 </div>
@@ -1338,12 +1338,12 @@ function updateCanvasSize() {
         // === BEZEL MODE (centered square) ===
         const sz = window.innerHeight;
 
-        if (wrap) { 
-            wrap.style.width = ''; wrap.style.height = ''; wrap.style.position = ''; 
-            wrap.style.top = ''; wrap.style.left = ''; 
+        if (wrap) {
+            wrap.style.width = ''; wrap.style.height = ''; wrap.style.position = '';
+            wrap.style.top = ''; wrap.style.left = '';
         }
-        if (contain1) { 
-            contain1.style.width = sz + 'px'; 
+        if (contain1) {
+            contain1.style.width = sz + 'px';
             contain1.style.height = sz + 'px';
             contain1.style.left = 'calc(50vw - ' + (sz / 2) + 'px)';
             contain1.style.position = 'absolute';
@@ -1406,12 +1406,12 @@ function updateCanvasSize() {
         const vw = window.innerWidth;
         const vh = window.innerHeight;
 
-        if (wrap) { 
-            wrap.style.width = '100vw'; wrap.style.height = '100vh'; 
-            wrap.style.position = 'fixed'; wrap.style.top = '0'; wrap.style.left = '0'; 
+        if (wrap) {
+            wrap.style.width = '100vw'; wrap.style.height = '100vh';
+            wrap.style.position = 'fixed'; wrap.style.top = '0'; wrap.style.left = '0';
         }
-        if (contain1) { 
-            contain1.style.width = '100vw'; 
+        if (contain1) {
+            contain1.style.width = '100vw';
             contain1.style.height = '100vh';
             contain1.style.left = '0';
             contain1.style.position = 'fixed';
@@ -1480,17 +1480,6 @@ document.getElementById("randomPresetBtn").addEventListener('click', function() 
 document.getElementById("toggleBezelBtn").addEventListener('click', function() {
     isBezelMode = !isBezelMode;
     updateCanvasSize();
-    // Force Module to update with actual drawable dimensions
-    setTimeout(() => {
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        const sz = window.innerHeight;
-        const dims = isBezelMode ? sz : vw;
-        const height = isBezelMode ? sz : vh;
-        if (typeof Module !== 'undefined' && Module.setWindowSize) {
-            Module.setWindowSize(dims, height);
-        }
-    }, 50);
     if (!isBezelMode) draw();
 });
 
