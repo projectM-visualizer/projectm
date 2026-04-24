@@ -1,0 +1,164 @@
+/* ====== CORE PROJECTM VISUALIZATION STYLES ====== */
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: black;
+  overflow: hidden;
+}
+
+/* ====== MAIN CONTAINER ====== */
+#wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  padding: 0;
+  pointer-events: none;
+}
+
+#contain1 {
+  position: absolute;
+  padding: 0;
+  background-color: rgba(255, 255, 255, 0.0);
+}
+
+/* ====== CANVAS ELEMENTS ====== */
+canvas.emscripten {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+#circle {
+  pointer-events: none;
+  border: 0;
+  position: absolute;
+  overflow: hidden;
+  z-index: 3200;
+  display: block;
+  background-color: rgba(255, 255, 255, 0.0);
+}
+
+#mcanvas {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+#scanvas {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* ====== UI OVERLAY ====== */
+#ui-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 3300;
+}
+
+/* Logos */
+img[id^="logo"] {
+  pointer-events: none;
+  display: block;
+}
+
+#bezel-frame {
+  pointer-events: none;
+  display: block;
+}
+
+/* ====== CONTROL BUTTONS ====== */
+.control-btn {
+  position: absolute;
+  width: 6vh;
+  height: 5vh;
+  z-index: 3300;
+  border: 6px solid #e7e7e7;
+  border-radius: 20%;
+  cursor: pointer;
+  pointer-events: auto;
+  font-weight: bold;
+  font-size: 11px;
+  color: white;
+  transition: all 0.2s ease;
+  display: block;
+}
+
+.control-btn:hover {
+  transform: scale(1.05);
+}
+
+.control-btn:active {
+  transform: scale(0.95);
+}
+
+.btn-label {
+  display: block;
+  position: absolute;
+  left: calc(100% + 10px);
+  bottom: 0;
+  white-space: nowrap;
+  font-family: "Lucida Console", "Courier New", monospace;
+  font-size: 16px;
+  color: lightgrey;
+  font-weight: normal;
+  pointer-events: none;
+}
+
+/* Responsive button positioning for bezel mode */
+@media (min-height: 600px) {
+  .control-btn {
+    width: 6vh;
+    height: 5vh;
+  }
+}
+
+/* ====== AUDIO ELEMENT ====== */
+audio {
+  display: none;
+  pointer-events: none;
+}
+
+/* ====== SCROLLBAR HIDING ====== */
+body {
+  overflow: hidden;
+}
+
+/* Ensure no scrollbars appear */
+html {
+  overflow: hidden;
+}
+
+/* ====== IMAGE QUALITY OPTIMIZATION ====== */
+canvas {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+/* Prevent zoom on double-tap */
+input, button {
+  font-size: 16px;
+}
