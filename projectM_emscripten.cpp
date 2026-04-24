@@ -893,6 +893,7 @@ return;
 void set_window_size(int width, int height) {
 if (!pm) return;
 glViewport(0,0,width,height);
+glScissor(0,0,width,height);
 projectm_set_window_size(pm, width, height);
 return;
 }

@@ -1301,6 +1301,7 @@ function updateCanvasSize() {
     const randomPresetBtn = document.querySelector('#randomPresetBtn');
     const toggleBezelBtn = document.querySelector('#toggleBezelBtn');
     const pmImages = document.querySelectorAll('#pm');
+    const menu = document.querySelector('#menu');
     if (isBezelMode) {
         mcanvas.style.width = '100vh';
         mcanvas.style.height = '100vh';
@@ -1325,6 +1326,7 @@ function updateCanvasSize() {
         toggleBezelBtn.nextElementSibling.style.left = '6%';
         toggleBezelBtn.nextElementSibling.style.bottom = '35%';
         pmImages.forEach(img => img.style.display = 'block');
+        if (menu) menu.style.display = 'block';
         if (typeof Module !== 'undefined' && Module.setWindowSize) {
             Module.setWindowSize(window.innerHeight, window.innerHeight);
         }
@@ -1356,6 +1358,7 @@ function updateCanvasSize() {
         toggleBezelBtn.nextElementSibling.style.left = '4%';
         toggleBezelBtn.nextElementSibling.style.bottom = '12%';
         pmImages.forEach(img => img.style.display = 'none');
+        if (menu) menu.style.display = 'none';
         if (typeof Module !== 'undefined' && Module.setWindowSize) {
             Module.setWindowSize(window.innerWidth, window.innerHeight);
         }
