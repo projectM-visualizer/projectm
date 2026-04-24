@@ -330,7 +330,7 @@ return;
 void on_preset_switch_requested(bool is_hard_cut, void* user_data) {
 printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ? "true" : "false");
 char *str = (char*)EM_ASM_PTR({
-const randIndex = Math.floor(Math.random()*100);
+const randIndex = Math.floor(Math.random()*20);
 var jsString = '/presets/preset_'+randIndex+'.milk';
 return stringToNewUTF8(jsString);
 });
@@ -519,6 +519,7 @@ document.querySelector('#stat').style.backgroundColor='green';
 console.log('Loading random custom milk: '+fname);
 }
 
+var $milk=[];
 var $milkLrg=[];
 var $milkMed=[];
 var $milkSml=[];
@@ -547,9 +548,8 @@ nxhttp.send();
 }
 
 function scanAllMilkDirs(){
-scanMilkDir('https://glsl.1ink.us/milkLRG/',$milkLrg);
-scanMilkDir('https://glsl.1ink.us/milkMED/',$milkMed);
-scanMilkDir('https://glsl.1ink.us/milkSML/',$milkSml);
+// Scan only /milk/ locally; larger dirs are served via API
+scanMilkDir('https://glsl.1ink.us/milk/',$milk);
 setTimeout(function(){
 getShaders();
 },3500);
@@ -665,8 +665,7 @@ Module.createSprite();
 });
 
 function getShaders(){
-var total=99;
-var perSource=Math.floor(total/3);
+var total=20;
 var idx=0;
 
 function downloadFromArray(arr,count,startIdx){
@@ -679,11 +678,7 @@ console.log('Got /presets/preset_'+(startIdx+i)+'.milk from '+milkSrc+'.');
 }
 }
 
-downloadFromArray($milkLrg,perSource,idx);
-idx+=perSource;
-downloadFromArray($milkMed,perSource,idx);
-idx+=perSource;
-downloadFromArray($milkSml,total-(perSource*2),idx);
+downloadFromArray($milk,total,idx);
 
 Module.addPath();
 setTimeout(function(){

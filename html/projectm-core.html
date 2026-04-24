@@ -54,6 +54,10 @@ body { margin: 0; padding: 0; background-color: black; overflow: hidden; }
   <button id="customMilkBtn" class="control-btn" style="background-color:purple;left:3%;bottom:45%;">
     <span class="btn-label">Random Custom</span>
   </button>
+
+  <button id="apiRandomPresetBtn" class="control-btn" style="background-color:teal;left:3%;bottom:55%;">
+    <span class="btn-label">Random Preset (API)</span>
+  </button>
 </div>
 
 <!-- Hidden data containers -->
@@ -176,6 +180,30 @@ if (contain1El) {
 document.getElementById("randomPresetBtn").addEventListener('click', function() {
     if (typeof Module !== 'undefined' && Module.switchPreset) {
         Module.switchPreset();
+    }
+});
+
+document.getElementById("apiRandomPresetBtn").addEventListener('click', async function() {
+    if (typeof Module === 'undefined' || !Module.loadPresetFile) {
+        console.error('Module not ready');
+        return;
+    }
+    const apiBase = 'https://storage.noahcohn.com';
+    try {
+        const res = await fetch(`${apiBase}/api/presets/random?dir=any`);
+        if (!res.ok) throw new Error('API error: ' + res.status);
+        const data = await res.json();
+        const milkRes = await fetch(data.url);
+        if (!milkRes.ok) throw new Error('Failed to fetch milk: ' + milkRes.status);
+        const buffer = await milkRes.arrayBuffer();
+        const bytes = new Uint8ClampedArray(buffer);
+        const safeName = data.filename.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const vfsPath = `/presets/api_${data.dir}_${safeName}`;
+        FS.writeFile(vfsPath, bytes);
+        Module.loadPresetFile(vfsPath);
+        console.log('Loaded API preset:', data.filename, 'from', data.dir);
+    } catch (e) {
+        console.error('Failed to load API preset:', e);
     }
 });
 
