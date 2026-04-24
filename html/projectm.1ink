@@ -293,10 +293,10 @@ Random Custom
 <div id=wrap>
 <canvas id="circle" style='position:absolute;zIndex:3300;top:0px;'></canvas>
 
-<div id=contain1>
+<div id=contain1 style='position:absolute;'>
 
-<canvas class=emscripten id=mcanvas style='pointer-events:auto;display:block;position:absolute;z-index:3001;background-color:rgba(0,0,0,0.0);top:0;height:100vh;width:100vh;image-rendering:auto;transform:scaleY(1.0);'></canvas>
-<canvas class=emscripten id=scanvas style='pointer-events:auto;display:block;position:absolute;z-index:3000;background-color:rgba(0,0,0,1.0);top:0;height:100vh;width:100vh;image-rendering:auto;transform:scaleY(-1.0);'></canvas>
+<canvas class=emscripten id=mcanvas style='pointer-events:auto;display:block;position:absolute;z-index:3001;background-color:rgba(0,0,0,0.0);top:0;left:0;image-rendering:auto;transform:scaleY(1.0);'></canvas>
+<canvas class=emscripten id=scanvas style='pointer-events:auto;display:block;position:absolute;z-index:3000;background-color:rgba(0,0,0,1.0);top:0;left:0;image-rendering:auto;transform:scaleY(-1.0);'></canvas>
 <div id=contain1a style='height:75%;width:75%;'>
 </div>
 </div>
@@ -1222,6 +1222,8 @@ updateCanvasSize();
 },1000);
 });
 
+initCanvasSize();
+
 setTimeout(function(){
 document.querySelector('#splash2').style.zIndex=3000;
 document.querySelector('#splash2').style.display='none';
@@ -1301,6 +1303,23 @@ link.click();
 });
 
 let isBezelMode = true;
+
+function initCanvasSize() {
+    const sz = window.innerHeight;
+    const mcanvas = document.querySelector('#mcanvas');
+    const scanvas = document.querySelector('#scanvas');
+    const contain1 = document.querySelector('#contain1');
+    if (mcanvas && scanvas && contain1) {
+        mcanvas.style.width = sz + 'px';
+        mcanvas.style.height = sz + 'px';
+        scanvas.style.width = sz + 'px';
+        scanvas.style.height = sz + 'px';
+        contain1.style.width = sz + 'px';
+        contain1.style.height = sz + 'px';
+        contain1.style.left = 'calc(50vw - ' + (sz / 2) + 'px)';
+        contain1.style.position = 'absolute';
+    }
+}
 
 function updateCanvasSize() {
     const mcanvas = document.querySelector('#mcanvas');
