@@ -1222,8 +1222,6 @@ updateLayout();
 },1000);
 });
 
-updateLayout();
-
 setTimeout(function(){
 document.querySelector('#splash2').style.zIndex=3000;
 document.querySelector('#splash2').style.display='none';
@@ -1475,11 +1473,7 @@ window.addEventListener('resize', () => {
     }
 });
 
-
-
-
-
-
+updateLayout();
 
 </script>
 
