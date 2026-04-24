@@ -1475,11 +1475,7 @@ window.addEventListener('resize', () => {
     }
 });
 
-
-
-
-
-
+updateLayout();
 
 </script>
 
