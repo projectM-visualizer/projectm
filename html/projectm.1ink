@@ -1,0 +1,1295 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel='preconnect' href='https://wasm.noahcohn.com'>
+<link rel='preconnect' href='https://js.1ink.us'>
+<link rel='preconnect' href='https://glsl.1ink.us'>
+<link rel='preconnect' href='https://css.1ink.us'>
+<title>B3HD</title>
+<link rel="stylesheet" charset="UTF-8"href="./assets/depth2.css">
+
+<link charset=utf-8 crossorigin rel='stylesheet' href='https://css.1ink.us/sh1.1iss'/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Audiowide">
+<style>
+.custom-file-upload {
+display: block;
+padding: 10px 20px;
+background-color: #4CAF50; /* Green */
+color: white;
+cursor: pointer;
+border: none;
+z-index: 5000;
+top:10vh;
+left:50vh;
+position:absolute;
+border-radius: 5px;
+pointer-events: none;
+}
+/*
+.button {
+/* Initial button styles */
+background-color: #007bff; /* Blue */
+color: white;
+border: none;
+padding: 10px 20px;
+cursor: pointer;
+transition: all 0.2s ease; /* Add smooth transition for all properties */
+}
+*/
+.button:active {
+/* Styles when the button is clicked/held down */
+background-color: #0056b3; /* Darker blue */
+transform: translateY(2px); /* Move down slightly */
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+}
+</style>
+</head>
+<body style="background-color:black;">
+<img id=splash1 src=./image/shroud.jpg style='background-color:rgba(233,233,233,0.0);display:block;position:absolute;height:100vh;width:100vw;z-index:3590;'></img>
+<img id=splash2 src=./image/spinner.gif style='background-color:rgba(47,47,47,1.0);display:block;top:50%;left:50%;transform:translate(-50%,-50%);position:absolute;height:20vh;width:20vh;z-index:3591;'></img>
+<nav id=menu>
+<section class=menu-section id=menu-sections>
+<br>
+<div style='text-align:center;'>
+TIMESLIDER<br>(Seconds between video changes)</div>
+<br><br>
+<ul class=menu-section-list>
+<div id=mnu>
+<br><br>
+
+<div id=slideframe>
+<input type=text id=timeslider>
+</div></div></ul></section>
+
+<div class="vid_mode">
+<select id=b3>
+<option value="Video">Video</option>
+<option value="B3">B3</option>
+<option value="B3_B">B3 B</option>
+</select>
+</div>
+<div class="vid_mode_2">
+<select id=media>
+<option value="vid">Video</option>
+<option value="img">Image</option>
+</select>
+</div>
+<select id=resMode hidden style='position:absolute;z-index:1;pointer-events:auto;'>
+<option value="false">False</option>
+<option value="true">True</option>
+</select>
+
+<div id=slideframe2>
+<input type=text id=srslider>
+</div>
+</div></ul></section>
+<div class="selectboxs">
+<select id=sh1>
+<option value="Random">Random</option>
+<option value="movewithouttracvveling">Move Without Travelling</option>
+<option value="Default">Default</option>
+<option value="crystalineballs">Crystal Palace</option>
+<option value="WOOL">Infinite Wool</option>
+<option value="hovercubes">Demoscene Cube</option>
+<option value="melter">Northern Melt</option>
+<option value="PSYfractal">Psychedelic Fractal</option>
+<option value="EYEgod">The Eye of God</option>
+
+</select>
+</div>
+<br />
+<br />
+<div>
+<select name="build" id="builds">
+<option value="v3001test-1023">v3001test-1023</option>
+
+<optgroup label="Production Builds:">
+<option value=""></option>
+</optgroup>
+<optgroup label="Development Builds:">
+<option value="s3027">s3027</option>
+</optgroup>
+<optgroup label="Testing Builds:">
+<option value="s3027test">s3027test</option>
+<option value="w3001">w3001</option>
+</optgroup>
+</select>
+<script>
+var mySelect = document.getElementById("builds");
+var firstValue = mySelect.options[0].value;
+mySelect.value = firstValue;
+</script>
+</div>
+<div class="selectboxv">
+<select id=vi1>
+<option value="Default">Default</option>
+<option value="https://b3hd.1ink.us/">B3hanced</option>
+<option value="https://test.1ink.us/bbb3/">Bevis and Butthead</option>
+<option value="https://test.1ink.us/1it3/">Lightning</option>
+<option value="https://test.1ink.us/l4zr/">Lazers</option>
+</select>
+</div>
+<br />
+<br />
+
+<div class="selectboxv">
+<select id=vi2>
+<option value="https://b3hd.1ink.us/video">B3hanced</option>
+<option value="https://test.1ink.us/bbb3/video">Bevis and Butthead</option>
+<option value="https://test.1ink.us/1it3/video">Lightning</option>
+<option value="https://test.1ink.us/l4zr/video">Lazers</option>
+</select>
+</div>
+<br />
+<br />
+
+<select id=meshSize style='position:absolute;display:none;z-index:4000;pointer-events:auto;'>
+
+
+<option value="100,100">(100,100)</option>
+
+<option value="32,24">(32,24) Default</option>
+<option value="40,30">(40,30)</option>
+<option value="48,36">(48,36)</option>
+<option value="64,48">(64,48)</option>
+<option value="80,60">(80,60)</option>
+<option value="96,72">(96,72)</option>
+<option value="128,96">(128,96)</option>
+<option value="160,120">(160,120)</option>
+<option value="192,144">(192,144)</option>
+</select>
+<div class="selectboxv">
+<select id=vi3>
+<option value="https://b3hd.1ink.us/video">B3hanced</option>
+<option value="https://test.1ink.us/bbb3/video">Bevis and Butthead</option>
+<option value="https://test.1ink.us/1it3/video">Lightning</option>
+<option value="https://test.1ink.us/l4zr/video">Lazers</option>
+</select>
+</div>
+</nav>
+<main id=panel>
+<img src='./python_bar.png' id="progr" style='position:absolute;bottom:12vh;right:25vh;width:20vh;z-index:3300;display:none;'"/>
+<img src='./image/scale4x.png' id="pm" style='position:absolute;top:2vh;right:2vh;height:15vh;z-index:3300;display:block;'"/>
+<img src='./image/1inkusa.png' id="pm" style='position:absolute;top:2vh;left:2vh;height:15vh;z-index:3300;display:block;'"/>
+
+<img src='./bar.png' id="progr1" style='position:absolute;bottom:14vh;right:40vh;width:3vh;z-index:3000;opacity:0.75;'"/>
+<img src='./bar.png' id="progr2" style='position:absolute;bottom:14vh;right:35vh;width:3vh;z-index:3000;opacity:0.75;'"/>
+<img src='./bar.png' id="progr3" style='position:absolute;bottom:14vh;right:30vh;width:3vh;z-index:3000;opacity:0.75;'"/>
+<img src='./bar.png' id="progr4" style='position:absolute;bottom:14vh;right:25vh;width:3vh;z-index:3000;opacity:0.75;'"/>
+
+<input type=button id=startBtn style='background-color:gold;position:absolute;display:none;left:6%;top:9%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
+<img id=btnGif1 src=./image/btn2i.gif style='background-color:rgba(0,0,0,0.0);height:5vh;width:5vh;position:absolute;display:none;right:25%;top:5%;z-index:3300;cursor: pointer;'></img>
+<label for="btnGif1" style="background-color:rgba(0,0,0,0.0);height:5vh;width:5vh;position:absolute;display:none;right:25%;top:3%;z-index:3300;cursor: pointer;"></label>
+<input type=button id=menuBtn style='background-color:black;position:absolute;display:none;left:3%;top:5%;z-index:3300;border:6px solid #e7e7e7;border-radius:20%;' />
+
+<input type=button id=musicBtn style='background-color:cyan;position:absolute;display:block;left:3%;bottom:15%;z-index:3300;border:6px solid green;border-radius:20%;' />
+<div style='position:absolute;display:block;left:6%;bottom:15%;z-index:3300;font-family: "Lucida Console", "Courier New", monospace;font-size: 20px;color:lightgrey;'>
+Start / Change Song
+</div>
+
+<input class="button" type=button id=lockPresetBtn style='background-color:green;position:fixed;display:none;width:6vh;height:5vh;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;'></input>
+<input class="button" type=button id=createSpriteBtn style='background-color:purple;position:fixed;display:none;width:6vh;height:5vh;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;'></input>
+
+<input type=button id=milkBtn style='background-color:yellow;position:absolute;display:none;left:3%;bottom:25%;z-index:3300;border:6px solid green;border-radius:20%;' />
+<input class="button" type=button id=moveFwd style='background-color:gold;position:absolute;display:none;width:6vh;height:5vh;left:47%;bottom:2%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;'></input>
+<div style='position:absolute;display:block;left:6%;bottom:25%;z-index:3300;font-family: "Lucida Console", "Courier New", monospace;font-size: 20px;color:lightgrey;'>
+
+</div>
+<input type=button id=startBtn5 style='background-color:yellow;position:absolute;display:none;left:2%;top:9%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;'></input>
+<input type=button id=startBtn2 style='background-color:gold;position:absolute;display:none;left:9%;top:9%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
+<input type=button id=startBtnC style='background-color:green;position:absolute;display:none;left:5%;top:12%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
+<input type=button id=startBtnB style='background-color:green;position:absolute;display:none;left:5%;top:32%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
+<input type=button id=startBtnH style='background-color:green;position:absolute;display:none;left:7%;top:32%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
+<input type=button id=downloadButton style='background-color:grey;position:absolute;display:none;left:15%;top:22%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
+<input type=button id=startBtnI style='background-color:white;position:absolute;display:none;left:15%;top:12%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
+<input type=button id=pyBtn style='background-color:green;position:absolute;display:none;left:15%;top:6%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
+<input type=button id=pyBtn2 style='background-color:green;position:absolute;display:none;left:18%;top:6%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
+<input type=button id=pyBtn3 style='background-color:yellow;position:absolute;display:none;left:22%;top:6%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
+<input type=button id=pyBtn4 style='background-color:red;position:absolute;display:none;left:22%;top:8%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
+<input type=button id=pyBtn5 style='background-color:red;position:absolute;display:none;right:22%;top:8%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
+<input type=button id=apngBtn style='background-color:green;position:absolute;display:none;left:35%;top:12%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
+<input type=button id=apngBtn2 style='background-color:green;position:absolute;display:none;left:37%;top:12%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
+<input type=button id=mviBtn style='background-color:black;position:absolute;display:none;left:15%;top:9%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
+<input type=button id=uniUp style='background-color:black;position:absolute;display:none;left:3%;top:50%;z-index:3300;border:6px solid #e7e7e7;border-radius:20%;' />
+<input type=button id=uniDown style='background-color:black;position:absolute;display:none;left:7%;top:50%;z-index:3300;border:6px solid #e7e7e7;border-radius:20%;' />
+<input type=button id=viewUp style='background-color:black;position:absolute;display:none;left:5%;top:46%;z-index:3300;border:6px solid #e7e7e7;border-radius:20%;' />
+<input type=button id=viewDown style='background-color:black;position:absolute;display:none;left:5%;top:54%;z-index:3300;border:6px solid #e7e7e7;border-radius:20%;' />
+<input type=button id=sizeUp style='background-color:black;position:absolute;display:none;left:5%;top:86%;z-index:3300;border:6px solid #e7e7e7;border-radius:20%;' />
+<input type=button id=sizeDown style='background-color:black;position:absolute;display:none;left:5%;top:90%;z-index:3300;border:6px solid #e7e7e7;border-radius:20%;' />
+<input type=button id=moveDown style='background-color:black;position:absolute;display:none;right:5%;top:90%;z-index:3300;border:6px solid #e7e7e7;border-radius:20%;' />
+<input type=button id=moveUp style='background-color:black;position:absolute;display:none;right:5%;top:86%;z-index:3300;border:6px solid #e7e7e7;border-radius:20%;' />
+<input type=button id=moveLeft style='background-color:black;position:absolute;display:none;right:3%;top:90%;z-index:3300;border:6px solid #e7e7e7;border-radius:20%;' />
+<input type=button id=moveRight style='background-color:black;position:absolute;display:none;right:7%;top:90%;z-index:3300;border:6px solid #e7e7e7;border-radius:20%;' />
+<input class="button" type=button id=moveFwd style='background-color:gold;position:absolute;display:none;width:6vh;height:5vh;left:47%;bottom:3%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
+<input class="button" type=button id=cruiseFwd style='background-color:red;position:absolute;display:none;width:6vh;height:5vh;left:47%;bottom:7%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
+<input class="button" type=button id=getThree style='background-color:red;position:absolute;display:none;width:6vh;height:5vh;right:7%;bottom:17%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
+
+<input type="file" id="fileInput" style="z-index:5000;position:absolute;right:10vh;top:16vh;display:none;">
+<input type="file" id="fileInput2" style="z-index:5000;position:absolute;right:10vh;top:26vh;display:none;">
+<label for="fileInput" style="z-index:1000;position:absolute;right:10vh;top:23vh;display:none;" class="custom-file-upload">Select File</label>
+
+<div id=outText style="opacity:0.0;background-color:green;position:absolute;top:50vh;left:47vw;z-index:4200;"></div>
+<div id=outText1 style="opacity:0.0;background-color:green;position:absolute;top:52vh;left:47vw;z-index:4200;"></div>
+<div id=outText2 style="opacity:0.0;background-color:green;position:absolute;top:54vh;left:47vw;z-index:4200;"></div>
+<div class=emscripten id=stat style='display:none;'></div>
+<div class=emscripten id=status style='display:none;'></div>
+<div class=emscripten>
+<progress value=0 max=100 id=progress></progress>
+</div>
+<input type=checkbox id="di" hidden />
+<div hidden id=birdsongPath>https://www.noahcohn.com/birdsongs/26HouseFinchSong.mp3</div>
+<div hidden id=imagePath>https://www.noahcohn.com/image/901464_400093426755894_1205176414_o.jpg</div>
+<div hidden id=texturePath>https://www.noahcohn.com/image/901464_400093426755894_1205176414_o.jpg</div>
+<div hidden id=modulePath>https://wasm.noahcohn.com/b3hd/w0-033-mod.3ijs</div>
+<div hidden id=path>https://glsl.1ink.us/wgsl/zipzap.wgsl</div>
+<div hidden id=computePathBird>https://glsl.1ink.us/wgsl/compute_069.wgsl</div>
+<div hidden id=computePath>https://glsl.1ink.us/wgsl/compute_069.wgsl</div>
+<div hidden id=computePathNovid>https://glsl.1ink.us/wgsl/compute_069v.wgsl</div>
+<div hidden id=fragPath>https://glsl.1ink.us/wgsl/fragment_005.wgsl</div>
+<div hidden id=vertPath>https://glsl.1ink.us/wgsl/vertex_003.wgsl</div>
+<div hidden id=milkPath>https://glsl.1ink.us/milk/flexi.milk</div>
+<div hidden id=milkPath2>https://glsl.1ink.us/custom_milk/milk010.milk</div>
+
+<div id=srsiz hidden>1000</div>
+<div id=ffire hidden>0</div>
+<div id=iwid hidden>1920</div>
+<div id=ihig hidden>1080</div>
+<div id=pmhig hidden>0</div>
+<div id=canvasSize hidden>0</div>
+<div id=floatHigh hidden>1</div>
+<div id=wid hidden>1280</div>
+<div id=hig hidden>720</div>
+<div id=tileNum hidden>0</div>
+<div id=vsiz hidden>0</div>
+<div id=lwid hidden>0</div>
+<div id=lhig hidden>0</div>
+<div id=ihid hidden>0</div>
+<div id=tim hidden>8500</div>
+<div id=shut hidden>2</div>
+<div id=isrc hidden>./intro.mp4</div>
+<div id=idur hidden>0</div>
+<div id=itim hidden>0</div>
+<div id=smd hidden>110.10</div>
+<div id=blnnk hidden>0</div>
+
+<div id="lns">1</div>
+<div id=wrap>
+<canvas id="circle" style='position:absolute;zIndex:3300;top:0px;'></canvas>
+
+<div id=contain1>
+
+<canvas class=emscripten id=mcanvas style='pointer-events:auto;display:block;position:absolute;z-index:3001;background-color:rgba(0,0,0,0.0);top:0;height:100vh;width:100vh;image-rendering:auto;transform:scaleY(1.0);'></canvas>
+<canvas class=emscripten id=scanvas style='pointer-events:auto;display:block;position:absolute;z-index:3000;background-color:rgba(0,0,0,1.0);top:0;height:100vh;width:100vh;image-rendering:auto;transform:scaleY(-1.0);'></canvas>
+<div id=contain1a style='height:75%;width:75%;'>
+</div>
+</div>
+<div id=contain2>
+
+<input type="checkbox" id="dance" style="pointer-events:auto;position:absolute;z-index:7300;top:35%;right:5%;height:30px;width:30px;display:none;" >
+
+<button id=lockButton style="position:absolute;z-index:7300;top:37%;right:5%;height:30px;width:30px;display:none;"></button>
+<h3>Depth Anything w/ 🤗 Transformers.js</h3>
+<div id="container">
+<label id="upload-button" for="upload">
+<svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill="#000" d="M3.5 24.3a3 3 0 0 1-1.9-.8c-.5-.5-.8-1.2-.8-1.9V2.9c0-.7.3-1.3.8-1.9.6-.5 1.2-.7 2-.7h18.6c.7 0 1.3.2 1.9.7.5.6.7 1.2.7 2v18.6c0 .7-.2 1.4-.7 1.9a3 3 0 0 1-2 .8H3.6Zm0-2.7h18.7V2.9H3.5v18.7Zm2.7-2.7h13.3c.3 0 .5 0 .6-.3v-.7l-3.7-5a.6.6 0 0 0-.6-.2c-.2 0-.4 0-.5.3l-3.5 4.6-2.4-3.3a.6.6 0 0 0-.6-.3c-.2 0-.4.1-.5.3l-2.7 3.6c-.1.2-.2.4 0 .7.1.2.3.3.6.3Z">
+</path>
+</svg>
+Click to upload image
+<label id="example">(or try example)</label>
+</label>
+</div>
+<label id="status"></label>
+<input id="upload" type="file" style="background-color:white;" accept="image/*" />
+<button id=loadGLTF>Load from glTF</button>
+<button id=savegltf>Save as glTF</button>
+<div hidden id=saveName></div>
+<input id=savedName type=text placeholder="Enter Title:"></input>
+
+<canvas id=bcanvas hidden style='pointer-events:none;display:none;z-index:2100;position:absolute;height:100vh;width:100vh;margin-left:auto;margin-right:auto;background-color:rgba(0,255,0,1.0);top:0;image-rendering:auto;'></canvas>
+<img id=resultImage src=""></img>
+</div>
+<img src='./unglass.png' id="gl" alt="Glass"></img>
+<img src='./bezel.jpg' id="frm" hidden alt="Frame"/>
+<canvas id="tcan" hidden></canvas>
+</div>
+
+</main>
+
+<div>
+
+<div id=images>
+<img src='./image/sd70216.png' id="ivi" hidden alt="Frame"/>
+<img src='./image/sd70216.png' id="lvi" hidden alt="Frame"/>
+
+</div>
+
+<img id="imgAnimPNG" src=""></img>
+<video hidden muted  playsinline id=mvi preload=auto style='pointer-events:none;' />
+</div>
+
+<div style='pointer-events:none;height:100vh;'>
+<video hidden muted  playsinline id=ldv preload=auto style='pointer-events:none;' />
+</div>
+
+<audio crossorigin id=track preload=none hidden style='pointer-events:none;'></audio>
+</body>
+<script>
+
+//  shutter / bezel
+
+let rec;
+let ccs;
+let mw;
+let tc;
+let iww;
+let img;
+let imgb;
+let hi;
+let sht;
+let lns;
+let glas;
+let rr;
+let mdd;
+let gtop;
+let nw;
+let nh;
+let ndiff;
+let bz;
+let fbb;
+let bctx;
+let ttx;
+
+function clo(sz){
+bctx.globalCompositeOperation='source-over';
+bctx.fillStyle='rgba(0,0,0,0.3)';
+shtr(rr-2);
+bctx.fillStyle='rgba(0,0,0,0.1)';
+shtr(rr-1);
+bctx.fillStyle='rgba(0,0,0,0.3)';
+shtr(rr);
+bctx.fillStyle='rgba(0,0,0,0.4)';
+shtr(rr+1);
+shtr(rr);
+bctx.fillStyle='rgba(0,0,0,0.4)';
+shtr(rr+2);
+}
+
+function shtr(sim){
+if(ccs.getContext){
+bctx.beginPath();
+bctx.arc(mw,rr,sim,0,2*Math.PI,false);
+bctx.fill();
+}
+}
+
+function op(sz){
+bctx.globalCompositeOperation='source-over';
+bctx.fillStyle='rgba(168,168,168,1)';
+shtr(rr);
+bctx.globalCompositeOperation='destination-out';
+shtr(sz);
+}
+
+ccs=document.querySelector('#circle');
+
+tc=document.querySelector('#tcan');
+
+const params={
+// colorType:'float32',
+colorSpace:'display-p3',
+alpha:true,
+depth:true,
+stencil:true,
+preserveDrawingBuffer:true,
+premultipliedAlpha:true,
+desynchronized:false,
+lowLatency:false,
+powerPreference:'high-performance',
+antialias:true,
+willReadFrequently:false,
+majorVersion:2,
+minorVersion:0
+};
+
+bctx=ccs.getContext('2d',params);
+ttx=tc.getContext('2d',params);
+
+function draw(){
+hi=window.innerHeight;
+rec=window.innerWidth;
+rec=Math.round(rec);
+document.querySelector('#circle').width=rec;
+document.querySelector('#circle').height=hi;
+imgb=document.querySelector('#gl');
+glas=Math.round(hi*1.133);
+imgb.height=glas;
+imgb.width=glas;
+rr=hi/2;
+rr=Math.round(rr);
+mw=((rec-hi)/2)+rr;
+mw=Math.round(mw);
+tc.height=hi;
+img=document.querySelector('#frm');
+mdd=(rec-glas)/2;
+gtop=Math.round((imgb.height-hi)/2);
+mdd=Math.round(mdd);
+imgb.style.cssText='position:absolute;left:'+mdd+'px;right:'+mdd+'px;z-index:555;top:-'+gtop+'px;';
+nw=img.naturalWidth;
+nh=img.naturalHeight;
+iww=(hi/nh)*nw;
+iww=Math.round(iww);
+ndiff=(iww-rec)/2;
+ndiff=(ndiff*(nh/hi));
+tc.width=rec;
+sht=document.querySelector('#shut').innerHTML;
+lns=document.querySelector('#lns').innerHTML;
+if(ccs.getContext){
+tc.style.cssText="image-rendering:'auto'";
+ccs.style.cssText="image-rendering:'auto'";
+bctx.globalCompositeOperation='source-over';
+ttx.drawImage(img,ndiff,0,nw-(Math.round(nw*0.02)),nh-Math.round((nh*0.02)),0,0,iww,hi);
+bctx.beginPath();
+bctx.fillStyle='black';
+bctx.fillRect(0,0,rec,window.innerHeight);
+bctx.fillStyle=bctx.createPattern(tc,'no-repeat');
+bctx.beginPath();
+bctx.fillRect(0,0,rec,hi);
+bctx.globalCompositeOperation='destination-out';
+shtr(rr);
+bctx.globalCompositeOperation='source-over';
+bctx.fillStyle='rgba(168,168,168,1)';
+shtr(rr);
+if(sht==2){
+if(lns==1){
+for(var sz=0;sz<rr;sz=sz+1){
+setTimeout(function(){
+op(sz);
+},2);};
+document.querySelector('#lns').innerHTML=2;
+}
+bctx.globalCompositeOperation='destination-out';
+shtr(rr);
+}
+if(sht==1){
+if(lns==2){
+for(var sz=0;sz<rr;sz=sz+1){
+setTimeout(function(){
+clo(sz);
+},2);};
+document.querySelector('#lns').innerHTML=1;
+}
+bctx.globalCompositeOperation='source-over';
+bctx.fillStyle='rgba(168,168,168,1)';
+shtr(0);
+}}
+}
+
+document.querySelector('#di').addEventListener('click',function(){
+draw();
+});
+
+var modu="https://noahcohn.com/py/w0-022-apng.js";
+var scr=document.createElement("script");
+scr.async=true;
+scr.charset='utf-8';
+  //  scr.type='text/javascript';
+scr.type='module';
+scr.defer=true;
+scr.src=modu;
+document.body.appendChild(scr);
+
+    // https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js
+const pyChannel = new BroadcastChannel('py_channel');
+const imageChannel = new BroadcastChannel('imageChannel');
+const imgOut = document.getElementById('mvi');
+const pyBtn3 = document.getElementById('pyBtn3');
+const pyBtn4 = document.getElementById('pyBtn4');
+const fileInput = document.getElementById('fileInput'); // Replace 'fileInput' with your input's ID
+const fileInput2 = document.getElementById('fileInput2'); // Replace 'fileInput' with your input's ID
+
+function getDepth(){
+// window.open('./depth.1ink');
+const xhr = new XMLHttpRequest();
+xhr.open('GET', 'https://noahcohn.com/dpt-shader-sml-001.3ijs', true);
+// xhr.open('GET', 'https://wasm.noahcohn.com/b3hd/w0-022-depth.3ijs', true);
+xhr.responseType = 'arraybuffer';
+console.log('got run');
+
+function decodeUTF32(uint8Array, isLittleEndian = true) {
+const dataView = new DataView(uint8Array.buffer);
+let result = "";
+for (let i = 0; i < uint8Array.length; i += 4) {
+let codePoint;
+if (isLittleEndian) {
+codePoint = dataView.getUint32(i, true); // Little-endian
+} else {
+codePoint = dataView.getUint32(i, false); // Big-endian
+}
+result += String.fromCodePoint(codePoint);
+}
+return result;
+}
+
+xhr.onload = function() {
+if (xhr.status === 200) {
+const utf32Data = xhr.response;
+const jsCode = decodeUTF32(new Uint8Array(utf32Data), true); // Assuming little-endian
+const scr = document.createElement('script');
+scr.type = 'module';
+scr.text = jsCode;
+setTimeout(function(){
+document.body.appendChild(scr);
+},200);
+}
+};
+xhr.send();
+
+var imgChan=new BroadcastChannel('imageURL');
+
+imgChan.addEventListener('message',event=>{
+document.querySelector('#imagePath').innerHTML=event.data.data;
+document.querySelector('#example').click();
+});
+
+const loaderChannel = new BroadcastChannel('loaderChannel');
+document.querySelector('#loadGLTF').addEventListener('click',function(){
+document.querySelector('#saveName').innerHTML=document.querySelector('#savedName').value;
+var GLloc=document.querySelector('#saveName').innerHTML;
+loaderChannel.postMessage({GLloc});
+});
+
+document.querySelector('#savegltf').addEventListener('click',function(){
+document.querySelector('#saveName').innerHTML=document.querySelector('#savedName').value;
+});
+
+}
+
+// Add event listener for file selection
+fileInput.addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+     let imageDataURL = e.target.result;
+
+
+      // Create an image element to get dimensions
+      const img = new Image();
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        // Resize if any dimension exceeds 1024
+        let maxi=1200;
+        if (width > maxi || height > maxi) {
+          const scaleFactor = Math.min(maxi / width, maxi / height);
+          width *= scaleFactor;
+          height *= scaleFactor;
+
+          // Create a canvas to resize the image
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width,  height);
+
+          // Update imageDataURL with the resized image
+          imageDataURL = canvas.toDataURL();
+        }
+
+        getDepth();
+        setTimeout(function() {
+          imageChannel.postMessage({ imageDataURL });
+        }, 3500);
+      };
+      img.src = imageDataURL;
+    };
+reader.readAsDataURL(file);
+
+}
+});
+
+pyBtn4.onclick = () => {
+const divElement = document.querySelector('#imagePath'); // Replace 'myDiv' with your div's ID
+const mtext = navigator.clipboard.readText(); // Read text from clipboard
+divElement.textContent = mtext; // Set the div's text content
+document.getElementById("pyBtn").click();
+}
+
+pyBtn3.onclick = () => {
+getDepth();
+setTimeout(function () {
+const canvas = document.createElement('canvas');
+canvas.width = imgOut.width;
+canvas.height = imgOut.height;
+const ctx = canvas.getContext('2d');
+ctx.drawImage(imgOut, 0, 0);
+// window.open('./depth.1ink');
+//window.open('./depth/index.html');
+// const imageDataURL = canvas.toDataURL();
+const imageDataURL = imgOut.src;
+imageChannel.postMessage({imageDataURL});
+}, 4500);
+setTimeout(function(){
+document.querySelector('#tvi').style.position='absolute';
+document.querySelector('#tvi').style.zIndex=3300;
+document.querySelector('#tvi').style.pointerEvents='auto';
+},6500);
+};
+
+pyChannel.addEventListener('message', (event) => {
+const message = event.data;
+console.log('got postmessage');
+});
+
+document.getElementById("pyBtn").addEventListener('click', () => {
+const pth = document.querySelector('#imagePath').innerHTML;
+processImageFromURL(pth);
+});
+
+document.getElementById("pyBtn5").addEventListener('click', () => {
+    getDepth();
+    setTimeout(function () {
+     //   const canvas = document.createElement('canvas');
+     //   canvas.width = imgOut.width;
+     //   canvas.height = imgOut.height;
+    //    const ctx = canvas.getContext('2d');
+     //   ctx.drawImage(imgOut, 0, 0);
+// window.open('./depth.1ink');
+//window.open('./depth/index.html');
+// const imageDataURL = canvas.toDataURL();
+const imageDataURL = imgOut.src;
+imageChannel.postMessage({imageDataURL});
+}, 4500);
+setTimeout(function(){
+document.querySelector('#tvi').style.position='absolute';
+document.querySelector('#tvi').style.zIndex=3300;
+document.querySelector('#tvi').style.pointerEvents='auto';
+},6500);
+});
+
+// Add an event listener to your file input element
+fileInput2.addEventListener('change', (event) => {
+document.querySelector('#scanvas').style.transform='scaleY(-1.0)';
+const file = event.target.files[0];
+if (file) {
+const reader = new FileReader();
+reader.onload = (e) => {
+const imageDataURL = e.target.result;
+processImage(imageDataURL);
+};
+reader.readAsDataURL(file);
+}
+});
+
+let cnv1=document.querySelector('#scanvas');
+let base64Strings=[];
+let currentApngFrame=0;
+
+function AddPNGs_ctx() {
+let apngCtx=cnv1.getContext('2d');
+imageStrings[currentApngFrame]=apngCtx.getImageData(0, 0, cnv1.height, cnv1.height);
+currentApngFrame++;
+if(currentApngFrame<10){
+setTimeout(function(){
+AddPNGs();
+},200);
+}else{
+const pngCanvas=createElement('canvas');
+const pngCtx=pngCanvas.getContext('2d');
+pngCanvas.height=cnv1.height;
+pngCanvas.width=cnv1.height;
+for (var i=0;i<10;i++){
+pngCtx.putImageData(imageStrings[i]);
+base64Strings[i]=pngCtx.toDataURL().split(',')[1];
+}
+MakeAPNG();
+}
+}
+
+function AddPNGs() {
+base64Strings[currentApngFrame]=cnv1.toDataURL().split(',')[1];;
+currentApngFrame++;
+if(currentApngFrame<10){
+setTimeout(function(){
+AddPNGs();
+},200);
+}else{
+MakeAPNG();
+}
+}
+
+let cnv2;
+
+function AddPNGsThreeJS() {
+base64Strings[currentApngFrame]=cnv2.toDataURL().split(',')[1];;
+currentApngFrame++;
+if(currentApngFrame<10){
+setTimeout(function(){
+AddPNGs();
+},200);
+}else{
+MakeAPNG();
+}
+}
+
+async function MakeAPNG() {
+let pyodide = await loadPyodide({ indexURL: "./py", TOTAL_MEMORY: 2 * 1024 * 1024 * 1024 }); // 2GB
+const globals = pyodide.toPy({ imgStrings: base64Strings });
+await pyodide.loadPackage("micropip");
+await pyodide.runPythonAsync(`
+import micropip
+await micropip.install('numpy')
+# await micropip.install('cython')
+await micropip.install('apng')
+await micropip.install('pillow')
+import os
+import js
+import base64
+import pyodide
+from PIL import Image
+import io
+import numpy as np
+from apng import APNG, PNG
+frames_data = []
+apng_animation = APNG()
+for base64_string in imgStrings:
+        img_data = base64.b64decode(base64_string)
+        img = Image.open(io.BytesIO(img_data))
+        img_array = np.array(img)
+        frames_data.append(img_array)
+for frame_data in frames_data:
+        img = Image.fromarray(frame_data)
+        with io.BytesIO() as output:
+            img.save(output, format="PNG")
+            png_bytes = output.getvalue()
+        png_image = PNG.from_bytes(png_bytes)
+        apng_animation.append(png_image, delay=200, delay_den=1000)
+apng_bytes = apng_animation.to_bytes()
+apng_base64 = base64.b64encode(apng_bytes).decode('ascii')
+apng_base64
+`,{globals})
+.then(result => {
+    const apngDataURL = "data:image/apng;base64," + result;
+    const img = document.createElement('img');
+    img.src = apngDataURL;
+    document.body.appendChild(img);
+    const a = document.createElement('a');
+    a.href = apngDataURL;
+    var timestamp = new Date().toISOString().replace(/[-:.]/g, ''); // Format: YYYYMMDDTHHMMSS
+    var filename = `animation_${timestamp}.apng`;
+    a.download = filename;
+    a.click();
+})
+.catch(error => {
+    console.error("Error in Pyodide:", error);
+});
+
+}
+
+async function processImage(imageDataURL) {
+let result;
+let base64String;
+const img = new Image();
+img.src = imageDataURL;
+const maxSize = 1400;
+let newWidth, newHeight, cropX, cropY;
+base64String = imageDataURL.split(',')[1];
+if (img.width > img.height) {
+        newWidth = newHeight = img.height;
+        cropX = (img.width - img.height) / 2;
+        cropY = 0;
+} else if (img.height > img.width) {
+       newHeight = newWidth = img.width;
+        cropX = 0;
+        cropY = (img.width - img.height) / 2;
+}if (newWidth > maxSize) {
+        newWidth = newHeight = maxSize;
+            const canvas = document.createElement('canvas');
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+        img.width = newWidth;
+        img.height = newHeight;
+  //   document.getElementById('vsiz').innerHTML=newHeight;
+const ctx = canvas.getContext('2d', { alpha: true });
+document.getElementById('vsiz').innerHTML=newHeight;
+ctx.drawImage(img, cropX, cropY, newWidth, newHeight, 0, 0, newWidth, newHeight);
+const newImageDataURL = canvas.toDataURL(); // Get the new data URL
+        imageDataURL = newImageDataURL;
+        img.src = imageDataURL;
+}
+
+// async function main() {
+let pyodide = await loadPyodide({ indexURL: "./py", TOTAL_MEMORY: 2 * 1024 * 1024 * 1024 }); // 2GB
+pyodide.globals.set("imageDataPy", imageDataURL);
+await pyodide.loadPackage("micropip");
+await pyodide.runPythonAsync(`
+import micropip
+import os
+#await micropip.install('exodide[all]')
+await micropip.install('numpy')
+await micropip.install('scikit-image')
+#await micropip.install('cython')
+#await micropip.install('audioflux')
+await micropip.install('opencv-python')
+#await micropip.install('exodide')
+#await micropip.install('https://1ink.us/files/exodide-1.0.4-py3-none-any.whl')
+#await micropip.install('apng')
+#await micropip.install('librosa')
+#from apng import APNG
+
+#await micropip.install('https://1ink.us/files/opencv_python-4.10.0+6a181ce-cp311-cp311-emscripten_3_1_45_wasm32.whl')  # Or a newer version if available
+import cv2
+#from cv2 import dnn_superres
+#import cv2_contrib
+# import pyodide
+#from exodide.install import fetch_install
+#await fetch_install('https://1ink.us/files/cv2_contrib-4.10.0.84-cp311-cp311-emscripten_3_1_45_wasm32.whl')  # Or a newer version if available
+
+#await micropip.install('colorama')
+
+#await micropip.install('https://1ink.us/files/essentia-2.1b6.dev1306-cp312-cp312-emscripten_3_1_58_wasm32.whl')
+#await micropip.install('bitarray-3.0.0-cp310-cp310-emscripten_3_1_58_wasm32.whl')
+#await micropip.install('https://1ink.us/files/Lasagne-0.2.dev1-py3-none-any.whl')
+#await micropip.install('https://1ink.us/files/Theano-0.8.2-py3-none-any.whl')
+#await micropip.install('https://1ink.us/files/pytensor-2.25.5+32.ga377c22dd-cp312-cp312-emscripten_3_1_58_wasm32.whl')
+await micropip.install('https://1ink.us/files/image_proc-0.1.1-cp312-cp312-pyodide_2024_0_wasm32.whl')
+
+# import pyximport
+# pyximport.install()
+import js
+from js import document
+bar1 = document.querySelector('#progr1')
+bar2 = document.querySelector('#progr2')
+bar3 = document.querySelector('#progr3')
+bar4 = document.querySelector('#progr4')
+bar1.style.zIndex=3300
+import io
+import base64
+from PIL import Image
+from io import BytesIO
+import matplotlib
+import matplotlib.pyplot as plt
+import numpy as np
+from skimage import data, img_as_float
+from skimage import exposure
+from skimage.filters import unsharp_mask
+from skimage import filters, transform
+import skimage.color as color
+
+#import essentia.standard as es
+bar2.style.zIndex=3300
+
+matplotlib.rcParams['font.size'] = 8
+img_data:bytes = base64.b64decode('${base64String}')
+img: Image.Image = Image.open(io.BytesIO(img_data))
+img_array: np.ndarray = np.array(img)
+p2: float
+p98: float
+p2, p98 = np.percentile(img_array, (2, 98))
+js.console.log('got image PIL')
+#rotated_array = np.rot90(img_array, k=2)
+#flipped_array = np.fliplr(img_array)
+#flipped_array2 = np.flipud(flipped_array)
+# 1. Split the image
+# Define the 8 tiles
+
+original_height, original_width = img_array.shape[:2]
+
+tile_height = img_array.shape[0] // 4  # Divide height into 4
+tile_width = img_array.shape[1] // 2  # Divide width into 2
+
+tile1 = img_array[:tile_height, :tile_width]
+tile2 = img_array[:tile_height, tile_width:]
+tile3 = img_array[tile_height:2*tile_height, :tile_width]
+tile4 = img_array[tile_height:2*tile_height, tile_width:]
+tile5 = img_array[2*tile_height:3*tile_height, :tile_width]
+tile6 = img_array[2*tile_height:3*tile_height, tile_width:]
+tile7 = img_array[3*tile_height:, :tile_width]
+tile8 = img_array[3*tile_height:, tile_width:]
+bar3.style.zIndex=3300
+del img_array  # Release original image data
+
+
+from image_proc import process_tile
+from image_proc import process_tile2
+
+def processed_tile(tile: np.ndarray):
+   dst = process_tile(tile)
+   #js.console.log('rescale_intensity image SKI')
+   img_eq: np.ndarray = process_tile2(dst)
+   del dst
+   #js.console.log('equalize_hist image SKI')
+   resize4x: np.ndarray = transform.rescale(tile, 2)
+   del tile
+   js.console.log('2x resize SKI')
+   result_1: np.ndarray = unsharp_mask(resize4x, radius=1, amount=1)
+   #del resize4x
+   js.console.log('unsharp mask SKI')
+   processed_tile: np.ndarray = transform.pyramid_reduce(resize4x,2)
+   del result_1
+   js.console.log('1x downscale SKI')
+   return processed_tile
+processed_tile1 = processed_tile(tile1)
+del tile1
+processed_tile2 = processed_tile(tile2)
+del tile2
+processed_tile3 = processed_tile(tile3)
+del tile3
+processed_tile4 = processed_tile(tile4)
+del tile4
+processed_tile5 = processed_tile(tile5)
+del tile5
+processed_tile6 = processed_tile(tile6)
+del tile6
+processed_tile7 = processed_tile(tile7)
+del tile7
+processed_tile8 = processed_tile(tile8)
+del tile8
+# 4. Reassemble the image
+row1 = np.hstack((processed_tile1, processed_tile2))
+row2 = np.hstack((processed_tile3, processed_tile4))
+row3 = np.hstack((processed_tile5, processed_tile6))
+row4 = np.hstack((processed_tile7, processed_tile8))
+
+top_half = np.vstack((row1, row2))
+bottom_half = np.vstack((row3, row4))
+
+result_image = np.vstack((top_half, bottom_half))
+final_image = cv2.resize(result_image, (original_width, original_height))
+
+  # 1. Create the superresolution model
+#modelFile = await pyodide.FS.open_url("./model/EDSR_2x.pb", 'rb')
+#sr = cv2.dnn_superres.DnnSuperResImpl_create()
+#sr.readModel(modelFile)
+#sr.setModel("edsr", 2)  # Example: Using EDSR model with a scale factor of 2
+  # 2. Upscale the image using the superresolution model
+#upscaled_img = sr.upsample(resize2x)
+  # 3. Convert the upscaled image back to PIL format for further processing or saving
+#upscaled_img_pil: Image.Image = Image.fromarray((upscaled_img * 255).astype(np.uint8))
+img_eq_pil: Image.Image = Image.fromarray((final_image * 255).astype(np.uint8))
+del result_image
+buf: io.BytesIO = io.BytesIO()
+img_eq_pil.save(buf, format='PNG')
+buf.seek(0)
+img_str:str = base64.b64encode(buf.read()).decode('utf-8')
+buf.close()
+del img_eq_pil
+bar4.style.zIndex=3300
+img_str
+`).then(result => {
+const imgElement = document.getElementById('mvi');
+imgElement.src = "data:image/png;base64," + result;
+imgElement.width=window.innerHeight;
+imgElement.height=window.innerHeight;
+const downloadButton = document.getElementById('downloadButton'); // Assuming you have a button with this ID
+// document.querySelector('#scanvas').style.transform='scaleY(-1.0)';
+// document.getElementById('vsiz').innerHTML=document.getElementById('mvi').height;
+document.querySelector('#startBtnC').click();
+setTimeout(function(){
+// pyBtn3.click();
+},3500);
+downloadButton.addEventListener('click', () => {
+downloadImage(result, 'histogram_eq_image.jpg');
+});
+});
+// }
+// main();
+}
+
+
+async function processAudio(audioData) {
+
+let pyodide = await loadPyodide({ indexURL: "./py", TOTAL_MEMORY: 2 * 1024 * 1024 * 1024 }); // 2GB
+pyodide.globals.set("imageDataPy", imageDataURL);
+await pyodide.loadPackage("micropip");
+await pyodide.runPythonAsync(`
+import js
+from js import document
+bar1 = document.querySelector('#progr1')
+bar2 = document.querySelector('#progr2')
+bar3 = document.querySelector('#progr3')
+bar4 = document.querySelector('#progr4')
+bar1.style.zIndex=3300
+
+await micropip.install('numpy')
+
+await micropip.install('https://1ink.us/files/audio_proc-0.1.0-cp312-cp312-pyodide_2024_0_wasm32.whl')
+
+from audio_proc import process_pitch
+
+bar2.style.zIndex=3300
+
+bar3.style.zIndex=3300
+
+bar4.style.zIndex=3300
+pitch, confidence, onsets = process_pitch('${audioArray}')
+`).then(result => {
+
+});
+
+}
+
+function _arrayBufferToBase64(buffer) {
+let binary = '';
+const bytes = new Uint8Array(buffer);
+const len = bytes.byteLength;
+for (let i = 0; i < len; i++) {
+binary += String.fromCharCode(bytes[i]);
+}
+return window.btoa(binary);
+
+}
+
+function downloadImage(base64String, filename) {
+const link = document.createElement('a');
+link.href = "data:image/jpeg;base64," + base64String;
+link.download = filename;
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
+}
+
+function processImageFromURL(pth) {
+const xhr = new XMLHttpRequest();
+document.querySelector('#mvi').src = pth;
+xhr.open('GET', pth, true);
+xhr.responseType = 'arraybuffer';
+console.log('got py image');
+xhr.onload = function() {
+const imageData = xhr.response;
+processImage(imageData); // Reuse the processImage function
+};
+xhr.send();
+}
+
+document.getElementById("pyBtn2").addEventListener('click',function() {
+document.querySelector('#scanvas').style.transform='scaleY(-1.0)';
+const imageDataUrl = document.getElementById('scanvas').toDataURL('image/jpeg'); // You can change the format if needed
+document.getElementById('mvi').src=imageDataUrl;
+document.querySelector('#mvi').style.transform='scaleY(-1.0)';
+document.querySelector('#mvi').style.transform='scaleX(-1.0)';
+
+});
+
+</script>
+
+<script type="module">
+
+document.getElementById("startBtn").addEventListener('click',function(){
+document.getElementById('mvi').play();
+});
+
+document.getElementById("mviBtn").addEventListener('click',function(){
+document.getElementById('mvi').play();
+});
+
+document.getElementById("apngBtn").addEventListener('click',function(){
+AddPNGs();
+});
+
+document.getElementById("apngBtn2").addEventListener('click',function(){
+cnv2=document.querySelector('#tvi');
+AddPNGsThreeJS();
+});
+
+/*
+document.getElementById("apngBtn2").addEventListener('click',function(){
+
+const xhr = new XMLHttpRequest();
+xhr.open('GET', 'https://wasm.noahcohn.com/b3hd/w0-017-apng.3ijs', true); // Replace with your filename
+xhr.responseType = 'arraybuffer'; // Get raw binary data
+console.log('got run');
+
+function decodeUTF32(uint8Array, isLittleEndian = true) {
+const dataView = new DataView(uint8Array.buffer);
+let result = "";
+for (let i = 0; i < uint8Array.length; i += 4) {
+let codePoint;
+if (isLittleEndian) {
+codePoint = dataView.getUint32(i, true); // Little-endian
+} else {
+codePoint = dataView.getUint32(i, false); // Big-endian
+}
+result += String.fromCodePoint(codePoint);
+}
+return result;
+}
+
+xhr.onload = function() {
+console.log('got load');
+if (xhr.status === 200) {
+console.log('got script');
+const utf32Data = xhr.response;
+//const decoder = new TextDecoder('utf-32'); // Or 'utf-32be'
+const jsCode = decodeUTF32(new Uint8Array(utf32Data), true); // Assuming little-endian
+const scr = document.createElement('script');
+//scr.type = 'module';
+scr.text = jsCode;
+//scr.dataset.moduleUrl = 'https://wasm.noahcohn.com/b3hd/'; // Base URL for module's relative paths
+document.body.appendChild(scr);
+setTimeout(function(){
+var Module = libapng();
+Module.onRuntimeInitialized = function(){
+Module.callMain();
+console.log('call main');
+};
+},2500);
+}
+};
+xhr.send();
+});
+
+*/
+
+document.getElementById("startBtn5").addEventListener('click',function(){
+
+const xhr = new XMLHttpRequest();
+xhr.open('GET', 'https://wasm.noahcohn.com/b3hd/w0-033-load-32.3ijs', true); // Replace with your filename
+xhr.responseType = 'arraybuffer'; // Get raw binary data
+console.log('got run');
+function decodeUTF32(uint8Array, isLittleEndian = true) {
+const dataView = new DataView(uint8Array.buffer);
+let result = "";
+for (let i = 0; i < uint8Array.length; i += 4) {
+let codePoint;
+if (isLittleEndian) {
+codePoint = dataView.getUint32(i, true); // Little-endian
+} else {
+codePoint = dataView.getUint32(i, false); // Big-endian
+}
+result += String.fromCodePoint(codePoint);
+}
+return result;
+}
+xhr.onload = function() {
+console.log('got load');
+if (xhr.status === 200) {
+console.log('got script');
+const utf32Data = xhr.response;
+//const decoder = new TextDecoder('utf-32'); // Or 'utf-32be'
+const jsCode = decodeUTF32(new Uint8Array(utf32Data), true); // Assuming little-endian
+const scr = document.createElement('script');
+//scr.type = 'module';
+scr.text = jsCode;
+//scr.dataset.moduleUrl = 'https://wasm.noahcohn.com/b3hd/'; // Base URL for module's relative paths
+document.body.appendChild(scr);
+setTimeout(function(){
+var Module = libload();
+Module.onRuntimeInitialized = function(){
+Module.callMain();
+console.log('call main');
+};
+},2500);
+}
+};
+xhr.send();
+
+let scr=document.createElement("script");
+scr.async=true;
+scr.charset='utf-8';
+scr.type='text/javascript';
+scr.defer=true;
+// scr.src="https://wasm.noahcohn.com/b3hd/w0-007-mod.1ijs";
+scr.src="./pm/projectm-v.024-thread.1ijs";
+document.body.appendChild(scr);
+setTimeout(function(){
+var Module=createModule();
+Module.onRuntimeInitialized=function(){
+Module.init();
+};
+},1000);
+});
+
+setTimeout(function(){
+document.querySelector('#splash2').style.zIndex=3000;
+document.querySelector('#splash2').style.display='none';
+},5200);
+setTimeout(function(){
+document.querySelector('#splash1').style.zIndex=3000;
+document.querySelector('#splash1').style.display='none';
+},5500);
+
+setTimeout(function(){
+document.getElementById('vsiz').innerHTML=parseInt(window.innerHeight,10);
+// document.getElementById('vsiz').innerHTML=parseInt(window.innerHeight,10)*3.0;
+document.getElementById('startBtn5').click();
+},750);
+
+setTimeout(function(){
+window.scrollTo({
+top: 0,
+left: 0,
+behavior: "smooth",
+});
+},1500);
+
+document.getElementById("getThree").addEventListener('click',function(){
+document.querySelector('#mvi').id='ivi';
+document.querySelector('#scanvas').style.transform='ScaleY(-1.0)';
+
+// document.querySelector('#tvi').style.zIndex=1300;
+document.querySelector('#tvi').hidden=true;
+document.querySelector('#tvi').opacity=0.0;
+document.querySelector('#tvi').id='mvi';
+document.querySelector('#startBtnC').click();
+});
+
+
+document.querySelector('#btnGif1').addEventListener('click', () => {
+document.querySelector('#btnGif1').src = './image/btn2.gif'; // Reset the GIF to the beginning
+var canvas = document.querySelector('#scanvas'); // Replace 'myCanvas' with your canvas ID
+
+var newCanvas = document.createElement('canvas');
+newCanvas.width = canvas.width;
+newCanvas.height = canvas.height;
+newCanvas.id = 'fcan';
+document.body.appendChild(newCanvas);
+
+var flippedCanvas = document.querySelector('#fcan');
+
+var flippedContext = flippedCanvas.getContext('2d');
+
+flippedContext.imageSmoothingEnabled = false;
+flippedContext.save();
+flippedContext.scale(-1,-1);
+
+// var image=flippedContext.getImageData(0,0,canvas.width,canvas.height);
+var image=new Image();
+
+// var image=flipImageData(flippedContext.getImageData(0,0,canvas.width,canvas.height));
+
+// flippedContext.drawImage(image, 0, 0);
+// flippedContext.putImageData(image, 0, 0);
+
+var dataURL2 = canvas.toDataURL('image/jpeg',1.0); // Or 'image/png', 'image/webp', etc.
+image.src=dataURL2;
+flippedContext.drawImage(image, canvas.height*-1, canvas.height*-1,canvas.height,canvas.height);
+
+var dataURL = canvas.toDataURL('image/jpeg',1.0); // Or 'image/png', 'image/webp', etc.
+
+var timestamp = new Date().toISOString().replace(/[-:.]/g, ''); // Format: YYYYMMDDTHHMMSS
+var filename = `Snapshot_${timestamp}.jpg`;
+
+var link = document.createElement('a');
+link.download = filename;// Set the desired filename
+link.href = dataURL2;
+link.click();
+// flippedCanvas.remove(); // Remove from DOM
+// flippedCanvas = null;// Nullify reference
+});
+
+window.addEventListener('resize', (event) => {
+document.querySelector('#di').click();
+console.log('Window resized:', window.innerWidth, window.innerHeight);
+});
+
+
+
+</script>
+
+
+</html>
