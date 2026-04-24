@@ -1438,12 +1438,23 @@ document.getElementById("randomPresetBtn").addEventListener('click', function() 
 document.getElementById("toggleBezelBtn").addEventListener('click', function() {
     isBezelMode = !isBezelMode;
     updateCanvasSize();
+    if (!isBezelMode) {
+        document.documentElement.requestFullscreen().catch(err => console.log('Fullscreen denied:', err));
+    } else {
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        }
+    }
 });
 
-window.addEventListener('resize', (event) => {
-    updateCanvasSize();  // Always update, regardless of mode
+window.addEventListener('resize', () => {
+    if (!isBezelMode) updateCanvasSize();
     document.querySelector('#di').click();
     console.log('Window resized:', window.innerWidth, window.innerHeight);
+});
+
+document.addEventListener('fullscreenchange', () => {
+    if (!isBezelMode) updateCanvasSize();
 });
 
 
