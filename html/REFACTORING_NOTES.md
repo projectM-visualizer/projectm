@@ -79,10 +79,12 @@ The Project M visualization has been refactored to separate core music visualiza
    - Added `image-rendering: crisp-edges` and `image-rendering: pixelated` to canvases
    - Prevents antialiasing artifacts in visualization
 
-2. **Canvas Sizing**
-   - Immediate initialization on page load
-   - Proper fullscreen toggle without visual glitches
-   - Responsive resize handler with debouncing
+2. **Canvas Sizing** (ResizeObserver-based)
+   - Uses `ResizeObserver` on the canvas container for robust initial sizing
+   - Fires once immediately on observation, syncing internal resolution with final CSS layout
+   - Handles `devicePixelRatio` for crisp HiDPI rendering
+   - Fullscreen toggle updates layout; ResizeObserver picks up the change automatically
+   - Removed debounced `window.resize` handler in favor of element-level observation
 
 3. **DOM Size**
    - Removed 100+ unused HTML elements
