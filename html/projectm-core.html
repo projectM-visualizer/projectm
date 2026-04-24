@@ -188,7 +188,7 @@ document.getElementById("apiRandomPresetBtn").addEventListener('click', async fu
         console.error('Module not ready');
         return;
     }
-    const apiBase = 'https://storage.noahcohn.com';
+    const apiBase = localStorage.getItem('apiBase') || 'https://storage.noahcohn.com';
     try {
         const res = await fetch(`${apiBase}/api/presets/random?dir=any`);
         if (!res.ok) throw new Error('API error: ' + res.status);

@@ -1164,6 +1164,7 @@ xhr.send();
 
 document.getElementById("startBtn5").addEventListener('click',function(){
 
+
 let scr=document.createElement("script");
 scr.async=true;
 scr.charset='utf-8';
@@ -1180,6 +1181,11 @@ updateLayout();
 };
 },1000);
 });
+
+let isBezelMode = true;
+
+updateLayout();
+
 
 setTimeout(function(){
 document.querySelector('#splash2').style.zIndex=3000;
@@ -1259,7 +1265,6 @@ link.click();
 // flippedCanvas = null;// Nullify reference
 });
 
-let isBezelMode = true;
 
 function updateLayout() {
     const mcanvas = document.querySelector('#mcanvas');

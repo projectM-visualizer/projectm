@@ -42,6 +42,13 @@ m4/lt~obsolete.m4
 /build
 /dist
 
+# Emscripten build artifacts
+projectm-v.024-thread.*
+
+# Removed large binary
+background.png
+
+
 # Visual Studio w/CMake
 /out
 /.vs
