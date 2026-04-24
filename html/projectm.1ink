@@ -1447,13 +1447,7 @@ document.getElementById("randomPresetBtn").addEventListener('click', function() 
 document.getElementById("toggleBezelBtn").addEventListener('click', function() {
     isBezelMode = !isBezelMode;
     updateCanvasSize();
-    if (!isBezelMode) {
-        document.documentElement.requestFullscreen().catch(err => console.log('Fullscreen denied:', err));
-    } else {
-        if (document.fullscreenElement) {
-            document.exitFullscreen();
-        }
-    }
+    draw();
 });
 
 window.addEventListener('resize', () => {
@@ -1462,9 +1456,7 @@ window.addEventListener('resize', () => {
     console.log('Window resized:', window.innerWidth, window.innerHeight);
 });
 
-document.addEventListener('fullscreenchange', () => {
-    if (!isBezelMode) updateCanvasSize();
-});
+
 
 
 
