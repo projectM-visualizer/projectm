@@ -1326,20 +1326,20 @@ function updateCanvasSize() {
         if (contain1) { 
             contain1.style.width = sz + 'px'; 
             contain1.style.height = sz + 'px';
-            contain1.style.left = 'calc(50% - ' + (sz / 2) + 'px)';
+            contain1.style.left = 'calc(50vw - ' + (sz / 2) + 'px)';
             contain1.style.position = 'absolute';
         }
         if (contain1a) contain1a.style.display = 'block';
 
         mcanvas.style.width = sz + 'px';
         mcanvas.style.height = sz + 'px';
-        mcanvas.style.left = '';
+        mcanvas.style.left = '0';
         mcanvas.style.top = '0';
         mcanvas.style.margin = '0';
         mcanvas.style.padding = '0';
         scanvas.style.width = sz + 'px';
         scanvas.style.height = sz + 'px';
-        scanvas.style.left = '';
+        scanvas.style.left = '0';
         scanvas.style.top = '0';
         scanvas.style.margin = '0';
         scanvas.style.padding = '0';
@@ -1372,6 +1372,11 @@ function updateCanvasSize() {
 
         if (typeof Module !== 'undefined' && Module.setWindowSize) {
             Module.setWindowSize(sz, sz);
+            // Re-apply CSS sizes after Module resize to prevent any override
+            mcanvas.style.width = sz + 'px';
+            mcanvas.style.height = sz + 'px';
+            scanvas.style.width = sz + 'px';
+            scanvas.style.height = sz + 'px';
         }
         if (typeof Module !== 'undefined' && Module.setAspectCorrection) {
             Module.setAspectCorrection(true);
@@ -1435,6 +1440,11 @@ function updateCanvasSize() {
 
         if (typeof Module !== 'undefined' && Module.setWindowSize) {
             Module.setWindowSize(vw, vh);
+            // Re-apply CSS sizes after Module resize to prevent any override
+            mcanvas.style.width = vw + 'px';
+            mcanvas.style.height = vh + 'px';
+            scanvas.style.width = vw + 'px';
+            scanvas.style.height = vh + 'px';
         }
         if (typeof Module !== 'undefined' && Module.setAspectCorrection) {
             Module.setAspectCorrection(false);
@@ -1458,12 +1468,10 @@ let _resizeTimer;
 window.addEventListener('resize', () => {
     clearTimeout(_resizeTimer);
     _resizeTimer = setTimeout(() => {
+        updateCanvasSize();
         if (isBezelMode) {
             // Redraw circular bezel overlay to fit new dimensions
             document.querySelector('#di').click();
-        } else {
-            // Update canvas and render dimensions to match new window size
-            updateCanvasSize();
         }
         console.log('Window resized:', window.innerWidth, window.innerHeight);
     }, 100);
