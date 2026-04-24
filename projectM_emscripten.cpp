@@ -872,6 +872,12 @@ projectm_playlist_play_next(app_data.playlist, false);
 return;
 }
 
+void set_aspect_correction(bool enabled) {
+if (!pm) return;
+projectm_set_aspect_correction(pm, enabled);
+return;
+}
+
 void load_preset_file(std::string filename) {
 if (!pm) return;
 projectm_load_preset_file(pm, filename.c_str(), true);
@@ -898,6 +904,7 @@ function("init", &init);
 function("getCustomShader", &getCustomShader);
 function("loadPresetFile", &load_preset_file);
 function("switchPreset", &switch_preset);
+function("setAspectCorrection", &set_aspect_correction);
 function("renderFrame", &render_frame);
 function("startRender", &start_render);
 function("setWindowSize", &set_window_size);

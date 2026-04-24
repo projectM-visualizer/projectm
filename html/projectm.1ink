@@ -1297,6 +1297,10 @@ let isBezelMode = true;
 function updateCanvasSize() {
     const mcanvas = document.querySelector('#mcanvas');
     const scanvas = document.querySelector('#scanvas');
+    const musicBtn = document.querySelector('#musicBtn');
+    const randomPresetBtn = document.querySelector('#randomPresetBtn');
+    const toggleBezelBtn = document.querySelector('#toggleBezelBtn');
+    const pmImages = document.querySelectorAll('#pm');
     if (isBezelMode) {
         mcanvas.style.width = '100vh';
         mcanvas.style.height = '100vh';
@@ -1308,8 +1312,24 @@ function updateCanvasSize() {
         scanvas.height = window.innerHeight;
         document.querySelector('#circle').style.display = 'block';
         document.querySelector('#gl').style.display = 'block';
+        musicBtn.style.left = '3%';
+        musicBtn.style.bottom = '15%';
+        randomPresetBtn.style.left = '3%';
+        randomPresetBtn.style.bottom = '25%';
+        toggleBezelBtn.style.left = '3%';
+        toggleBezelBtn.style.bottom = '35%';
+        musicBtn.nextElementSibling.style.left = '6%';
+        musicBtn.nextElementSibling.style.bottom = '15%';
+        randomPresetBtn.nextElementSibling.style.left = '6%';
+        randomPresetBtn.nextElementSibling.style.bottom = '25%';
+        toggleBezelBtn.nextElementSibling.style.left = '6%';
+        toggleBezelBtn.nextElementSibling.style.bottom = '35%';
+        pmImages.forEach(img => img.style.display = 'block');
         if (typeof Module !== 'undefined' && Module.setWindowSize) {
             Module.setWindowSize(window.innerHeight, window.innerHeight);
+        }
+        if (typeof Module !== 'undefined' && Module.setAspectCorrection) {
+            Module.setAspectCorrection(true);
         }
         draw();
     } else {
@@ -1323,8 +1343,24 @@ function updateCanvasSize() {
         scanvas.height = window.innerHeight;
         document.querySelector('#circle').style.display = 'none';
         document.querySelector('#gl').style.display = 'none';
+        musicBtn.style.left = '1%';
+        musicBtn.style.bottom = '2%';
+        randomPresetBtn.style.left = '1%';
+        randomPresetBtn.style.bottom = '7%';
+        toggleBezelBtn.style.left = '1%';
+        toggleBezelBtn.style.bottom = '12%';
+        musicBtn.nextElementSibling.style.left = '4%';
+        musicBtn.nextElementSibling.style.bottom = '2%';
+        randomPresetBtn.nextElementSibling.style.left = '4%';
+        randomPresetBtn.nextElementSibling.style.bottom = '7%';
+        toggleBezelBtn.nextElementSibling.style.left = '4%';
+        toggleBezelBtn.nextElementSibling.style.bottom = '12%';
+        pmImages.forEach(img => img.style.display = 'none');
         if (typeof Module !== 'undefined' && Module.setWindowSize) {
             Module.setWindowSize(window.innerWidth, window.innerHeight);
+        }
+        if (typeof Module !== 'undefined' && Module.setAspectCorrection) {
+            Module.setAspectCorrection(false);
         }
     }
 }
