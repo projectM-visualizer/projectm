@@ -1222,6 +1222,8 @@ updateLayout();
 },1000);
 });
 
+let isBezelMode = true;
+
 updateLayout();
 
 setTimeout(function(){
@@ -1301,8 +1303,6 @@ link.click();
 // flippedCanvas.remove(); // Remove from DOM
 // flippedCanvas = null;// Nullify reference
 });
-
-let isBezelMode = true;
 
 function updateLayout() {
     const mcanvas = document.querySelector('#mcanvas');
