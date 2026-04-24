@@ -1480,6 +1480,17 @@ document.getElementById("randomPresetBtn").addEventListener('click', function() 
 document.getElementById("toggleBezelBtn").addEventListener('click', function() {
     isBezelMode = !isBezelMode;
     updateCanvasSize();
+    // Force Module to update with actual drawable dimensions
+    setTimeout(() => {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const sz = window.innerHeight;
+        const dims = isBezelMode ? sz : vw;
+        const height = isBezelMode ? sz : vh;
+        if (typeof Module !== 'undefined' && Module.setWindowSize) {
+            Module.setWindowSize(dims, height);
+        }
+    }, 50);
     if (!isBezelMode) draw();
 });
 
