@@ -1431,6 +1431,11 @@ function updateCanvasSize() {
         
         if (typeof Module !== 'undefined' && Module.setWindowSize) {
             Module.setWindowSize(vw, vh);
+            // Re-apply CSS sizes after Module resize to prevent any override
+            mcanvas.style.width = '100vw';
+            mcanvas.style.height = '100vh';
+            scanvas.style.width = '100vw';
+            scanvas.style.height = '100vh';
         }
         if (typeof Module !== 'undefined' && Module.setAspectCorrection) {
             Module.setAspectCorrection(false);
@@ -1445,15 +1450,37 @@ document.getElementById("randomPresetBtn").addEventListener('click', function() 
 });
 
 document.getElementById("toggleBezelBtn").addEventListener('click', function() {
+    // If currently in native fullscreen, exit it first
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    }
     isBezelMode = !isBezelMode;
     updateCanvasSize();
-    draw();
+    // Only redraw the bezel overlay when switching back to bezel mode;
+    // calling draw() when entering fullscreen would overwrite #gl display:none
+    if (isBezelMode) draw();
 });
 
+let _resizeTimer;
 window.addEventListener('resize', () => {
-    if (!isBezelMode) updateCanvasSize();
-    document.querySelector('#di').click();
-    console.log('Window resized:', window.innerWidth, window.innerHeight);
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(() => {
+        if (isBezelMode) {
+            // Redraw circular bezel overlay to fit new dimensions
+            document.querySelector('#di').click();
+        } else {
+            // Update canvas and render dimensions to match new window size
+            updateCanvasSize();
+        }
+        console.log('Window resized:', window.innerWidth, window.innerHeight);
+    }, 100);
+});
+
+// Keep canvas sized correctly when the browser enters/exits native fullscreen
+document.addEventListener('fullscreenchange', () => {
+    if (!isBezelMode) {
+        updateCanvasSize();
+    }
 });
 
 
