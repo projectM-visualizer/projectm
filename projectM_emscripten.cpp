@@ -256,14 +256,16 @@ g_is_streaming_audio = is_streaming;
 printf("C++: Audio source set to stream: %s\n", is_streaming ? "true" : "false");
 }
 
+EM_JS(void, js_stop_worklet_playback, (), {
+    const workletNode = window.projectMWorkletNode_Global_Cpp;
+    if (workletNode) {
+        workletNode.port.postMessage({ type: 'stopPlayback' });
+    }
+});
+
 EMSCRIPTEN_KEEPALIVE
 void stop_worklet_playback() {
-EM_ASM({
-const workletNode = window.projectMWorkletNode_Global_Cpp;
-if (workletNode) {
-workletNode.port.postMessage({ type: 'stopPlayback' });
-}
-});
+    js_stop_worklet_playback();
 }
 
 } // extern "C"
@@ -327,13 +329,15 @@ return;
 
 }
 
+EM_JS(char*, js_get_random_preset_path, (), {
+    const randIndex = Math.floor(Math.random()*20);
+    var jsString = '/presets/preset_'+randIndex+'.milk';
+    return stringToNewUTF8(jsString);
+});
+
 void on_preset_switch_requested(bool is_hard_cut, void* user_data) {
 printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ? "true" : "false");
-char *str = (char*)EM_ASM_PTR({
-const randIndex = Math.floor(Math.random()*20);
-var jsString = '/presets/preset_'+randIndex+'.milk';
-return stringToNewUTF8(jsString);
-});
+char *str = js_get_random_preset_path();
 AppData* app_datas = (AppData*)user_data;
 projectm_playlist_add_preset(app_datas->playlist,str,false);
 free(str);
@@ -389,9 +393,9 @@ ff.send(null);
 return;
 });
 
-int init() {
+EM_JS(void, js_init_projectm_dom, (), {
 
-EM_ASM({
+
 
 FS.mkdir('/presets');
 FS.mkdir('/textures');
@@ -708,6 +712,8 @@ Module.setMesh(values[0], values[1]);
 
 });
 
+int init() {
+js_init_projectm_dom();
 if (pm) return 0;
 EmscriptenWebGLContextAttributes webgl_attrs;
 emscripten_webgl_init_context_attributes(&webgl_attrs);
