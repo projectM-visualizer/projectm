@@ -270,8 +270,9 @@ setTimeout(function(){
     document.body.appendChild(scr);
 
     setTimeout(function(){
-        Module = createModule();
-        Module.onRuntimeInitialized = async function(){
+        createModule().then(async function(instance) {
+            Module = instance;
+
             Module.init();
             updateLayout();
             const mcanvas = document.querySelector('#mcanvas');
@@ -288,7 +289,7 @@ setTimeout(function(){
             }
 
             Module.startRender(mcanvas.width, mcanvas.height);
-        };
+        });
     }, 1000);
 }, 750);
 
