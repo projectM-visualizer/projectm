@@ -432,7 +432,7 @@ antialias:true,
 willReadFrequently:false,
 majorVersion:2,
 minorVersion:0
-};
+});
 
 bctx=ccs.getContext('2d',params);
 ttx=tc.getContext('2d',params);
@@ -564,7 +564,7 @@ setTimeout(function(){
 document.body.appendChild(scr);
 },200);
 }
-};
+});
 xhr.send();
 
 var imgChan=new BroadcastChannel('imageURL');
@@ -658,7 +658,7 @@ document.querySelector('#tvi').style.position='absolute';
 document.querySelector('#tvi').style.zIndex=3300;
 document.querySelector('#tvi').style.pointerEvents='auto';
 },6500);
-};
+});
 
 pyChannel.addEventListener('message', (event) => {
 const message = event.data;
@@ -700,7 +700,7 @@ const reader = new FileReader();
 reader.onload = (e) => {
 const imageDataURL = e.target.result;
 processImage(imageDataURL);
-};
+});
 reader.readAsDataURL(file);
 }
 });
@@ -1082,7 +1082,7 @@ console.log('got py image');
 xhr.onload = function() {
 const imageData = xhr.response;
 processImage(imageData); // Reuse the processImage function
-};
+});
 xhr.send();
 }
 
@@ -1158,10 +1158,10 @@ var Module = libapng();
 Module.onRuntimeInitialized = function(){
 Module.callMain();
 console.log('call main');
-};
+});
 },2500);
 }
-};
+});
 xhr.send();
 });
 
@@ -1177,8 +1177,9 @@ scr.defer=true;
 scr.src="./pm/projectm-v.024-thread.1ijs";
 document.body.appendChild(scr);
 setTimeout(function(){
-Module=createModule();
-Module.onRuntimeInitialized=async function(){
+createModule().then(async function(instance) {
+Module=instance;
+
 Module.init();
 updateLayout();
 const mcanvas = document.querySelector('#mcanvas');
@@ -1193,7 +1194,7 @@ if (startupPaths.length > 0) {
     Module.switchPreset();
 }
 Module.startRender(mcanvas.width, mcanvas.height);
-};
+});
 },1000);
 });
 
