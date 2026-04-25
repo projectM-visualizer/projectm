@@ -337,11 +337,6 @@ EM_JS(char*, js_get_random_preset_path, (), {
 
 void on_preset_switch_requested(bool is_hard_cut, void* user_data) {
 printf("projectM is requesting a preset switch (hard_cut: %s)!\n", is_hard_cut ? "true" : "false");
-char *str = js_get_random_preset_path();
-AppData* app_datas = (AppData*)user_data;
-projectm_playlist_add_preset(app_datas->playlist,str,false);
-free(str);
-// Use soft cut (false) so the 17-second smooth transition is applied on both auto and manual switches.
 uint32_t indx = projectm_playlist_play_next(app_data.playlist, false);
 return;
 }
@@ -551,14 +546,6 @@ nxhttp.open('GET',url,true);
 nxhttp.send();
 }
 
-function scanAllMilkDirs(){
-// Scan only /milk/ locally; larger dirs are served via API
-scanMilkDir('https://glsl.1ink.us/milk/',$milk);
-setTimeout(function(){
-getShaders();
-},3500);
-}
-
 function sngs(xml){
 const nparser=new DOMParser();
 const htmlDocs=nparser.parseFromString(xml.responseText,'text/html');
@@ -668,31 +655,9 @@ document.querySelector('#createSpriteBtn').addEventListener('click',function(){
 Module.createSprite();
 });
 
-function getShaders(){
-var total=20;
-var idx=0;
-
-function downloadFromArray(arr,count,startIdx){
-for(var i=0;i<count&&i<arr.length;i++){
-var randShd=Math.floor(arr.length*Math.random());
-var milkSrc=arr[randShd];
-document.querySelector('#milkPath').innerHTML=milkSrc;
-Module.getShader(startIdx+i);
-console.log('Got /presets/preset_'+(startIdx+i)+'.milk from '+milkSrc+'.');
-}
-}
-
-downloadFromArray($milk,total,idx);
-
-setTimeout(function(){
-Module.addPath();
-Module.startRender(window.innerHeight, window.innerHeight);
-},2500);
-}
 var pth=document.querySelector('#milkPath').innerHTML;
 scanTextures();
 scanSongs();
-scanAllMilkDirs();
 scanCustomMilk();
 document.querySelector('#meshSize').addEventListener('change', (event) => {
 let meshValue = event.target.value;
@@ -864,6 +829,12 @@ projectm_playlist_add_preset(app_data.playlist, preset_file, false);
 return;
 }
 
+void add_preset_file(std::string path) {
+if (!app_data.playlist) return;
+projectm_playlist_add_preset(app_data.playlist, path.c_str(), false);
+return;
+}
+
 void add_custom_milk_paths(int count){
 char preset_file[256];
 for(int i=0;i<count;++i){
@@ -936,6 +907,7 @@ function("setWindowSize", &set_window_size);
 function("setMesh", &set_mesh);
 function("getShader", &getShader);
 function("addPath", &add_preset_path);
+function("addPresetFile", &add_preset_file);
 function("addCustomMilkPaths", &add_custom_milk_paths);
 function("projectm_pcm_add_float", &projectm_pcm_add_float_from_js_array_wrapper);
 function("pl", &pl);
