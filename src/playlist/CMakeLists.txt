@@ -26,6 +26,8 @@ add_library(projectM_playlist_main OBJECT
         Playlist.hpp
         PlaylistCWrapper.cpp
         PlaylistCWrapper.hpp
+        M3UParser.cpp
+        M3UParser.hpp
         )
 
 target_include_directories(projectM_playlist_main
@@ -188,3 +190,4 @@ if(ENABLE_INSTALL)
     endif()
 
 endif()
+
