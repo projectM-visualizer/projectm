@@ -684,10 +684,10 @@ console.log('Got /presets/preset_'+(startIdx+i)+'.milk from '+milkSrc+'.');
 
 downloadFromArray($milk,total,idx);
 
-Module.addPath();
 setTimeout(function(){
+Module.addPath();
 Module.startRender(window.innerHeight, window.innerHeight);
-},1000);
+},2500);
 }
 var pth=document.querySelector('#milkPath').innerHTML;
 scanTextures();
