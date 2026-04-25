@@ -193,6 +193,11 @@ document.getElementById("apiRandomPresetBtn").addEventListener('click', async fu
         const res = await fetch(`${apiBase}/api/presets/random?dir=any`);
         if (!res.ok) throw new Error('API error: ' + res.status);
         const data = await res.json();
+
+        if (!data.url || !data.filename || !data.dir) {
+            throw new Error('Invalid API response: missing url, filename, or dir');
+        }
+
         const milkRes = await fetch(data.url);
         if (!milkRes.ok) throw new Error('Failed to fetch milk: ' + milkRes.status);
         const buffer = await milkRes.arrayBuffer();
@@ -203,7 +208,10 @@ document.getElementById("apiRandomPresetBtn").addEventListener('click', async fu
         Module.loadPresetFile(vfsPath);
         console.log('Loaded API preset:', data.filename, 'from', data.dir);
     } catch (e) {
-        console.error('Failed to load API preset:', e);
+        console.error('Failed to load API preset, falling back to local preset:', e);
+        if (typeof Module !== 'undefined' && Module.switchPreset) {
+            Module.switchPreset();
+        }
     }
 });
 
