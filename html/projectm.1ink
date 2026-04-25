@@ -298,7 +298,7 @@ Random Preset (API)
 <div id=wrap>
 <canvas id="circle" style='position:absolute;zIndex:3300;top:0px;'></canvas>
 
-<div id=contain1 style='position:absolute;'><div id=contain1>
+<div id=contain1 style='position:absolute;'>
 
 <canvas class=emscripten id=mcanvas style='pointer-events:auto;display:block;position:absolute;z-index:3001;background-color:rgba(0,0,0,0.0);top:0;height:100vh;width:100vh;image-rendering:auto;transform:scaleY(1.0);'></canvas>
 <canvas class=emscripten id=scanvas style='pointer-events:auto;display:block;position:absolute;z-index:3000;background-color:rgba(0,0,0,1.0);top:0;height:100vh;width:100vh;image-rendering:auto;transform:scaleY(-1.0);'></canvas>
@@ -1340,9 +1340,15 @@ function updateLayout() {
             contain1.style.width = sz + 'px';
             contain1.style.height = sz + 'px';
             contain1.style.left = 'calc(50vw - ' + (sz / 2) + 'px)';
+            contain1.style.top = '0';
             contain1.style.position = 'absolute';
         }
         if (contain1a) contain1a.style.display = 'block';
+
+        mcanvas.style.width = '100%';
+        mcanvas.style.height = '100%';
+        scanvas.style.width = '100%';
+        scanvas.style.height = '100%';
 
         mcanvas.style.left = '0';
         mcanvas.style.top = '0';
@@ -1388,9 +1394,15 @@ function updateLayout() {
             contain1.style.width = '100vw';
             contain1.style.height = '100vh';
             contain1.style.left = '0';
+            contain1.style.top = '0';
             contain1.style.position = 'fixed';
         }
         if (contain1a) contain1a.style.display = 'none';
+
+        mcanvas.style.width = '100vw';
+        mcanvas.style.height = '100vh';
+        scanvas.style.width = '100vw';
+        scanvas.style.height = '100vh';
 
         mcanvas.style.left = '0';
         mcanvas.style.top = '0';
