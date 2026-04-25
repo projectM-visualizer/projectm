@@ -204,6 +204,11 @@ Toggle Fullscreen
 Random Custom
 </div>
 
+<input type=button id=apiRandomPresetBtn style='background-color:teal;position:absolute;display:block;left:3%;bottom:55%;z-index:3300;border:6px solid green;border-radius:20%;' />
+<div style='position:absolute;display:block;left:6%;bottom:55%;z-index:3300;font-family: "Lucida Console", "Courier New", monospace;font-size: 20px;color:lightgrey;'>
+Random Preset (API)
+</div>
+
 <input class="button" type=button id=lockPresetBtn style='background-color:green;position:fixed;display:none;width:6vh;height:5vh;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;'></input>
 <input class="button" type=button id=createSpriteBtn style='background-color:purple;position:fixed;display:none;width:6vh;height:5vh;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;'></input>
 
@@ -1163,8 +1168,6 @@ xhr.send();
 */
 
 document.getElementById("startBtn5").addEventListener('click',function(){
-
-
 let scr=document.createElement("script");
 scr.async=true;
 scr.charset='utf-8';
@@ -1175,14 +1178,59 @@ scr.src="./pm/projectm-v.024-thread.1ijs";
 document.body.appendChild(scr);
 setTimeout(function(){
 Module=createModule();
-Module.onRuntimeInitialized=function(){
+Module.onRuntimeInitialized=async function(){
 Module.init();
 updateLayout();
+const mcanvas = document.querySelector('#mcanvas');
+const startupPaths = await loadStartupApiPresets(5);
+if (startupPaths.length > 0) {
+    Module.loadPresetFile(startupPaths[0]);
+    for (let i = 1; i < startupPaths.length; i++) {
+        Module.addPresetFile(startupPaths[i]);
+    }
+} else {
+    console.warn('No startup API presets loaded, falling back to switchPreset');
+    Module.switchPreset();
+}
+Module.startRender(mcanvas.width, mcanvas.height);
 };
 },1000);
 });
 
 let isBezelMode = true;
+
+// ====== API PRESET HELPERS ======
+async function fetchApiPreset(apiBase) {
+    const res = await fetch(`${apiBase}/api/presets/random?dir=any`);
+    if (!res.ok) throw new Error('API error: ' + res.status);
+    const data = await res.json();
+    if (!data.url || !data.filename || !data.dir) {
+        throw new Error('Invalid API response: missing url, filename, or dir');
+    }
+    const milkRes = await fetch(data.url);
+    if (!milkRes.ok) throw new Error('Failed to fetch milk: ' + milkRes.status);
+    const buffer = await milkRes.arrayBuffer();
+    const bytes = new Uint8ClampedArray(buffer);
+    const safeName = data.filename.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const vfsPath = `/presets/api_${data.dir}_${safeName}`;
+    FS.writeFile(vfsPath, bytes);
+    return { vfsPath, filename: data.filename, dir: data.dir };
+}
+
+async function loadStartupApiPresets(count) {
+    const apiBase = localStorage.getItem('apiBase') || 'https://storage.noahcohn.com';
+    const paths = [];
+    for (let i = 0; i < count; i++) {
+        try {
+            const result = await fetchApiPreset(apiBase);
+            paths.push(result.vfsPath);
+            console.log('Startup API preset', i, 'loaded:', result.filename);
+        } catch (e) {
+            console.error('Failed to load startup API preset', i, e);
+        }
+    }
+    return paths;
+}
 
 updateLayout();
 
@@ -1417,6 +1465,24 @@ if (contain1El) {
 document.getElementById("randomPresetBtn").addEventListener('click', function() {
     if (typeof Module !== 'undefined' && Module.switchPreset) {
         Module.switchPreset();
+    }
+});
+
+document.getElementById("apiRandomPresetBtn").addEventListener('click', async function() {
+    if (typeof Module === 'undefined' || !Module.loadPresetFile) {
+        console.error('Module not ready');
+        return;
+    }
+    const apiBase = localStorage.getItem('apiBase') || 'https://storage.noahcohn.com';
+    try {
+        const result = await fetchApiPreset(apiBase);
+        Module.loadPresetFile(result.vfsPath);
+        console.log('Loaded API preset:', result.filename, 'from', result.dir);
+    } catch (e) {
+        console.error('Failed to load API preset, falling back to local preset:', e);
+        if (typeof Module !== 'undefined' && Module.switchPreset) {
+            Module.switchPreset();
+        }
     }
 });
 
