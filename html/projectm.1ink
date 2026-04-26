@@ -1214,7 +1214,8 @@ async function fetchApiPreset(apiBase) {
     const bytes = new Uint8ClampedArray(buffer);
     const safeName = data.filename.replace(/[^a-zA-Z0-9._-]/g, '_');
     const vfsPath = `/presets/api_${data.dir}_${safeName}`;
-    FS.writeFile(vfsPath, bytes);
+    if (!Module.FS) throw new Error('Module.FS not available');
+    Module.FS.writeFile(vfsPath, bytes);
     return { vfsPath, filename: data.filename, dir: data.dir };
 }
 
