@@ -1183,7 +1183,7 @@ Module=instance;
 Module.init();
 updateLayout();
 const mcanvas = document.querySelector('#mcanvas');
-const startupPaths = await loadStartupApiPresets(5);
+const startupPaths = await loadStartupApiPresets(15);
 if (startupPaths.length > 0) {
     Module.loadPresetFile(startupPaths[0]);
     for (let i = 1; i < startupPaths.length; i++) {
@@ -1193,6 +1193,8 @@ if (startupPaths.length > 0) {
     console.warn('No startup API presets loaded, falling back to switchPreset');
     Module.switchPreset();
 }
+await loadRegularMilkPresets();
+addExistingVfsPresets();
 Module.startRender(mcanvas.width, mcanvas.height);
 });
 },1000);
@@ -1232,6 +1234,60 @@ async function loadStartupApiPresets(count) {
         }
     }
     return paths;
+}
+
+async function loadRegularMilkPresets() {
+    try {
+        const response = await fetch('https://glsl.1ink.us/milk/');
+        if (!response.ok) {
+            console.warn('Failed to scan regular milk directory:', response.status);
+            return;
+        }
+        const html = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const links = doc.querySelectorAll('pre a');
+        const presets = [];
+        for (let i = 1; i < links.length; i++) {
+            const href = links[i].getAttribute('href');
+            if (href && href.endsWith('.milk')) {
+                presets.push('https://glsl.1ink.us/milk/' + href);
+            }
+        }
+        console.log('Scanned', presets.length, 'regular milk presets');
+
+        for (let i = 0; i < presets.length; i++) {
+            try {
+                const res = await fetch(presets[i]);
+                if (!res.ok) continue;
+                const buf = await res.arrayBuffer();
+                const bytes = new Uint8ClampedArray(buf);
+                const vfsPath = '/presets/milk_' + i + '.milk';
+                Module.FS.writeFile(vfsPath, bytes);
+                Module.addPresetFile(vfsPath);
+                console.log('Added regular preset:', vfsPath);
+            } catch (e) {
+                console.error('Failed to download regular preset', presets[i], e);
+            }
+        }
+    } catch (e) {
+        console.error('Error loading regular milk presets:', e);
+    }
+}
+
+function addExistingVfsPresets() {
+    let added = 0;
+    for (let i = 0; i <= 100; i++) {
+        const path = '/presets/preset_' + i + '.milk';
+        try {
+            Module.FS.stat(path);
+            Module.addPresetFile(path);
+            added++;
+        } catch (e) {
+            // File does not exist, skip
+        }
+    }
+    console.log('Added', added, 'existing VFS presets');
 }
 
 updateLayout();

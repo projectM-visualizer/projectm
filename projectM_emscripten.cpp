@@ -855,6 +855,20 @@ projectm_playlist_add_preset(app_data.playlist, preset_file, false);
 return;
 }
 
+void add_existing_vfs_presets(){
+char preset_file[256];
+int added = 0;
+for (int i = 0; i <= 100; ++i) {
+snprintf(preset_file, sizeof(preset_file), "/presets/preset_%d.milk", i);
+if (access(preset_file, F_OK) == 0) {
+projectm_playlist_add_preset(app_data.playlist, preset_file, false);
+added++;
+}
+}
+printf("Added %d existing VFS presets to playlist.\n", added);
+return;
+}
+
 void add_preset_file(std::string path) {
 if (!app_data.playlist) return;
 projectm_playlist_add_preset(app_data.playlist, path.c_str(), false);
@@ -933,6 +947,7 @@ function("setWindowSize", &set_window_size);
 function("setMesh", &set_mesh);
 function("getShader", &getShader);
 function("addPath", &add_preset_path);
+function("addExistingVfsPresets", &add_existing_vfs_presets);
 function("addPresetFile", &add_preset_file);
 function("addCustomMilkPaths", &add_custom_milk_paths);
 function("projectm_pcm_add_float", &projectm_pcm_add_float_from_js_array_wrapper);
