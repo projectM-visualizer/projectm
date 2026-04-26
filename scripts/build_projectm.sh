@@ -107,7 +107,7 @@ emcc projectM_emscripten.cpp \
     -s ENVIRONMENT=web,worker \
     -s SHARED_MEMORY=1 \
     -s EXPORTED_FUNCTIONS=_add_audio_data,_main,_pl \
-    -s EXPORTED_RUNTIME_METHODS=ccall \
+    -s EXPORTED_RUNTIME_METHODS=ccall,FS \
     -s EXPORT_NAME=createModule \
     -s PTHREAD_POOL_SIZE=4 \
     -s FULL_ES2=0 \
