@@ -347,8 +347,8 @@ console.log('Getting preset: '+pth);
 const ff=new XMLHttpRequest();
 ff.open('GET',pth,true);
 ff.responseType='arraybuffer';
-document.querySelector('#stat').innerHTML='Downloading Shader';
-document.querySelector('#stat').style.backgroundColor='yellow';
+var statEl5 = document.querySelector('#stat');
+if (statEl5) { statEl5.innerHTML='Downloading Shader'; statEl5.style.backgroundColor='yellow'; }
 ff.addEventListener("load",function(){
 let sarrayBuffer=ff.response;
 if(sarrayBuffer){
@@ -356,8 +356,8 @@ let sfil=new Uint8ClampedArray(sarrayBuffer);
 FS.writeFile("/presets/preset_custom.milk",sfil);
 setTimeout(function(){
 Module.loadPresetFile("/presets/preset_custom.milk");
-document.querySelector('#stat').innerHTML='Downloaded Shader';
-document.querySelector('#stat').style.backgroundColor='blue';
+var statEl6 = document.querySelector('#stat');
+if (statEl6) { statEl6.innerHTML='Downloaded Shader'; statEl6.style.backgroundColor='blue'; }
 },20);
 }
 });
@@ -371,8 +371,8 @@ console.log('Getting preset: '+pth);
 const ff=new XMLHttpRequest();
 ff.open('GET',pth,true);
 ff.responseType='arraybuffer';
-document.querySelector('#stat').innerHTML='Downloading Shader';
-document.querySelector('#stat').style.backgroundColor='yellow';
+var statEl5 = document.querySelector('#stat');
+if (statEl5) { statEl5.innerHTML='Downloading Shader'; statEl5.style.backgroundColor='yellow'; }
 ff.addEventListener("load",function(){
 let sarrayBuffer=ff.response;
 if(sarrayBuffer){
@@ -390,11 +390,26 @@ return;
 
 EM_JS(void, js_init_projectm_dom, (), {
 
+function vfsPathExists(path) {
+    try {
+        FS.stat(path);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
 
+function vfsMkdir(path) {
+    try {
+        FS.mkdir(path);
+    } catch (e) {
+        // Ignore if already exists or other FS errors
+    }
+}
 
-if (!FS.analyzePath('/presets').exists) FS.mkdir('/presets');
-if (!FS.analyzePath('/textures').exists) FS.mkdir('/textures');
-if (!FS.analyzePath('/snd').exists) FS.mkdir('/snd');
+vfsMkdir('/presets');
+vfsMkdir('/textures');
+vfsMkdir('/snd');
 document.querySelector('#scanvas').height=window.innerHeight;
 document.querySelector('#scanvas').width=window.innerWidth;
 document.querySelector('#mcanvas').height=window.innerHeight;
@@ -422,8 +437,8 @@ console.log('$texs['+i+']: ',$texs[i]);
 const ff=new XMLHttpRequest();
 ff.open('GET',$texs[i],true);
 ff.responseType='arraybuffer';
-document.querySelector('#stat').innerHTML='Downloading Texture';
-document.querySelector('#stat').style.backgroundColor='yellow';
+var statEl = document.querySelector('#stat');
+if (statEl) { statEl.innerHTML='Downloading Texture'; statEl.style.backgroundColor='yellow'; }
 ff.addEventListener("load",function(){
 let sarrayBuffer=ff.response;
 if(sarrayBuffer){
@@ -431,8 +446,8 @@ let sfil=new Uint8ClampedArray(sarrayBuffer);
 FS.writeFile("/textures/"+txxt,sfil);
 console.log('got texture: '+txxt+' / '+$texs[i]);
 setTimeout(function(){
-document.querySelector('#stat').innerHTML='Downloaded Texture';
-document.querySelector('#stat').style.backgroundColor='blue';
+var statEl2 = document.querySelector('#stat');
+if (statEl2) { statEl2.innerHTML='Downloaded Texture'; statEl2.style.backgroundColor='blue'; }
 },500);
 }
 });
@@ -484,8 +499,8 @@ for(var i=0;i<$customMilk.length;i++){
 const ff=new XMLHttpRequest();
 ff.open('GET',src,true);
 ff.responseType='arraybuffer';
-document.querySelector('#stat').innerHTML='Downloading Custom Preset';
-document.querySelector('#stat').style.backgroundColor='yellow';
+var statEl3 = document.querySelector('#stat');
+if (statEl3) { statEl3.innerHTML='Downloading Custom Preset'; statEl3.style.backgroundColor='yellow'; }
 ff.addEventListener("load",function(){
 var buf=ff.response;
 if(buf){
@@ -498,8 +513,8 @@ ff.send(null);
 }
 setTimeout(function(){
 Module.addCustomMilkPaths($customMilk.length);
-document.querySelector('#stat').innerHTML='Custom Presets Ready';
-document.querySelector('#stat').style.backgroundColor='blue';
+var statEl4 = document.querySelector('#stat');
+if (statEl4) { statEl4.innerHTML='Custom Presets Ready'; statEl4.style.backgroundColor='blue'; }
 },2500);
 }
 
@@ -579,7 +594,7 @@ fll.addEventListener('message', ea => {
     console.log(`JS Event: Received new song. Writing to unique path: ${uniqueFileName}`);
     const fill = new Uint8Array(ea.data.data);
     FS.writeFile(uniqueFileName, fill);
-    if (lastSongFileName && FS.analyzePath(lastSongFileName).exists) {
+    if (lastSongFileName && vfsPathExists(lastSongFileName)) {
         FS.unlink(lastSongFileName);
         console.log(`JS Event: Cleaned up previous song file: ${lastSongFileName}`);
     }
@@ -600,8 +615,8 @@ function getShader(pth,fname){
 const ff=new XMLHttpRequest();
 ff.open('GET',pth,true);
 ff.responseType='arraybuffer';
-document.querySelector('#stat').innerHTML='Downloading Shader';
-document.querySelector('#stat').style.backgroundColor='yellow';
+var statEl5 = document.querySelector('#stat');
+if (statEl5) { statEl5.innerHTML='Downloading Shader'; statEl5.style.backgroundColor='yellow'; }
 ff.addEventListener("load",function(){
 let sarrayBuffer=ff.response;
 if(sarrayBuffer){
@@ -643,29 +658,38 @@ snd();
 },1550);
 });
 
-document.querySelector('#milkBtn').addEventListener('click',function(){
-loadRandomCustomMilk();
-});
+var milkBtnEl = document.querySelector('#milkBtn');
+if (milkBtnEl) {
+    milkBtnEl.addEventListener('click',function(){
+        loadRandomCustomMilk();
+    });
+}
 
 document.querySelector('#customMilkBtn').addEventListener('click',function(){
 loadRandomCustomMilk();
 });
 
-document.querySelector('#createSpriteBtn').addEventListener('click',function(){
-Module.createSprite();
-});
+var createSpriteBtnEl = document.querySelector('#createSpriteBtn');
+if (createSpriteBtnEl) {
+    createSpriteBtnEl.addEventListener('click',function(){
+        Module.createSprite();
+    });
+}
 
 var pth=document.querySelector('#milkPath').innerHTML;
 scanTextures();
 scanSongs();
 scanCustomMilk();
-document.querySelector('#meshSize').addEventListener('change', (event) => {
-let meshValue = event.target.value;
-// Split the value into two numbers
-let values = meshValue.split(',').map(Number);
-console.log('Setting Mesh:', values[0], values[1]);
-Module.setMesh(values[0], values[1]);
-});
+var meshSizeEl = document.querySelector('#meshSize');
+if (meshSizeEl) {
+    meshSizeEl.addEventListener('change', (event) => {
+        let meshValue = event.target.value;
+        // Split the value into two numbers
+        let values = meshValue.split(',').map(Number);
+        console.log('Setting Mesh:', values[0], values[1]);
+        Module.setMesh(values[0], values[1]);
+    });
+}
 
 
 //  const meshValue = document.querySelector('#meshSize').value;

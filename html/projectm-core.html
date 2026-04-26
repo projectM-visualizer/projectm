@@ -290,6 +290,8 @@ setTimeout(function(){
             }
 
             Module.startRender(mcanvas.width, mcanvas.height);
+        }).catch(function(err) {
+            console.error('projectM module initialization failed:', err);
         });
     }, 1000);
 }, 750);
