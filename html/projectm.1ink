@@ -432,7 +432,7 @@ antialias:true,
 willReadFrequently:false,
 majorVersion:2,
 minorVersion:0
-});
+};
 
 bctx=ccs.getContext('2d',params);
 ttx=tc.getContext('2d',params);
@@ -564,7 +564,7 @@ setTimeout(function(){
 document.body.appendChild(scr);
 },200);
 }
-});
+};
 xhr.send();
 
 var imgChan=new BroadcastChannel('imageURL');
@@ -658,7 +658,7 @@ document.querySelector('#tvi').style.position='absolute';
 document.querySelector('#tvi').style.zIndex=3300;
 document.querySelector('#tvi').style.pointerEvents='auto';
 },6500);
-});
+};
 
 pyChannel.addEventListener('message', (event) => {
 const message = event.data;
@@ -700,7 +700,7 @@ const reader = new FileReader();
 reader.onload = (e) => {
 const imageDataURL = e.target.result;
 processImage(imageDataURL);
-});
+};
 reader.readAsDataURL(file);
 }
 });
@@ -1082,7 +1082,7 @@ console.log('got py image');
 xhr.onload = function() {
 const imageData = xhr.response;
 processImage(imageData); // Reuse the processImage function
-});
+};
 xhr.send();
 }
 
@@ -1214,9 +1214,9 @@ async function fetchApiPreset(apiBase) {
     const bytes = new Uint8ClampedArray(buffer);
     const safeName = data.filename.replace(/[^a-zA-Z0-9._-]/g, '_');
     const vfsPath = `/presets/api_${data.dir}_${safeName}`;
-    if (!Module.FS) throw new Error('Module.FS not available');
-    Module.FS.writeFile(vfsPath, bytes);
-    return { vfsPath, filename: data.filename, dir: data.dir };
+  if (!Module.FS) throw new Error('Module.FS not available');
+  Module.FS.writeFile(vfsPath, bytes);
+  return { vfsPath, filename: data.filename, dir: data.dir };
 }
 
 async function loadStartupApiPresets(count) {
