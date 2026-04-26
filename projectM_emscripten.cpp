@@ -389,6 +389,8 @@ return;
 });
 
 EM_JS(void, js_init_projectm_dom, (), {
+if (window.projectMDOMInitialized) return;
+window.projectMDOMInitialized = true;
 
 function vfsPathExists(path) {
     try {
@@ -702,8 +704,8 @@ if (meshSizeEl) {
 });
 
 int init() {
-js_init_projectm_dom();
 if (pm) return 0;
+js_init_projectm_dom();
 EmscriptenWebGLContextAttributes webgl_attrs;
 emscripten_webgl_init_context_attributes(&webgl_attrs);
 webgl_attrs.majorVersion = 2;
@@ -828,7 +830,7 @@ return 1;
 const char* texture_search_paths[] = {"textures"};
 projectm_set_texture_search_paths(pm, texture_search_paths, 1);
 projectm_set_fps(pm, 60);
-projectm_set_preset_duration(pm, 24.0);
+projectm_set_preset_duration(pm, 30.0);
 projectm_set_soft_cut_duration(pm, 17.0);
 // projectm_set_hard_cut_duration(pm, 48.0);
 // projectm_set_hard_cut_enabled(pm, true);
