@@ -392,9 +392,9 @@ EM_JS(void, js_init_projectm_dom, (), {
 
 
 
-FS.mkdir('/presets');
-FS.mkdir('/textures');
-FS.mkdir('/snd');
+if (!FS.analyzePath('/presets').exists) FS.mkdir('/presets');
+if (!FS.analyzePath('/textures').exists) FS.mkdir('/textures');
+if (!FS.analyzePath('/snd').exists) FS.mkdir('/snd');
 document.querySelector('#scanvas').height=window.innerHeight;
 document.querySelector('#scanvas').width=window.innerWidth;
 document.querySelector('#mcanvas').height=window.innerHeight;
