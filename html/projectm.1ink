@@ -1198,18 +1198,16 @@ Module=instance;
 Module.init();
 updateLayout();
 const mcanvas = document.querySelector('#mcanvas');
-const startupResults = await loadStartupApiPresets(5);
-if (startupResults.length > 0) {
-    Module.loadPresetFile(startupResults[0].vfsPath);
-    updatePresetDisplay(startupResults[0].filename);
-    for (let i = 1; i < startupResults.length; i++) {
-        Module.addPresetFile(startupResults[i].vfsPath);
+const startupPaths = await loadStartupApiPresets(5);
+if (startupPaths.length > 0) {
+    Module.loadPresetFile(startupPaths[0]);
+    for (let i = 1; i < startupPaths.length; i++) {
+        Module.addPresetFile(startupPaths[i]);
     }
 } else {
     console.warn('No startup API presets loaded, falling back to switchPreset');
     Module.switchPreset();
 }
-addExistingVfsPresets();
 Module.startRender(mcanvas.width, mcanvas.height);
 // Background load remaining presets so rendering isn't blocked
 loadRegularMilkPresets();
@@ -1250,73 +1248,17 @@ async function fetchApiPreset(apiBase) {
 
 async function loadStartupApiPresets(count) {
     const apiBase = localStorage.getItem('apiBase') || 'https://storage.noahcohn.com';
-    const results = [];
+    const paths = [];
     for (let i = 0; i < count; i++) {
         try {
             const result = await fetchApiPreset(apiBase);
-            results.push(result);
+            paths.push(result.vfsPath);
             console.log('Startup API preset', i, 'loaded:', result.filename);
-            updatePresetDisplay(result.filename);
         } catch (e) {
             console.error('Failed to load startup API preset', i, e);
         }
     }
-    return results;
-}
-
-async function loadRegularMilkPresets() {
-    try {
-        const response = await fetch('https://glsl.1ink.us/milk/');
-        if (!response.ok) {
-            console.warn('Failed to scan regular milk directory:', response.status);
-            return;
-        }
-        const html = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const links = doc.querySelectorAll('pre a');
-        const presets = [];
-        for (let i = 1; i < links.length; i++) {
-            const href = links[i].getAttribute('href');
-            if (href && href.endsWith('.milk')) {
-                presets.push('https://glsl.1ink.us/milk/' + href);
-            }
-        }
-        console.log('Scanned', presets.length, 'regular milk presets');
-
-        const maxPresets = Math.min(presets.length, 10);
-        for (let i = 0; i < maxPresets; i++) {
-            try {
-                const res = await fetch(presets[i]);
-                if (!res.ok) continue;
-                const buf = await res.arrayBuffer();
-                const bytes = new Uint8ClampedArray(buf);
-                const vfsPath = '/presets/milk_' + i + '.milk';
-                Module.FS.writeFile(vfsPath, bytes);
-                Module.addPresetFile(vfsPath);
-                console.log('Added regular preset:', vfsPath);
-            } catch (e) {
-                console.error('Failed to download regular preset', presets[i], e);
-            }
-        }
-    } catch (e) {
-        console.error('Error loading regular milk presets:', e);
-    }
-}
-
-function addExistingVfsPresets() {
-    let added = 0;
-    for (let i = 0; i <= 100; i++) {
-        const path = '/presets/preset_' + i + '.milk';
-        try {
-            Module.FS.stat(path);
-            Module.addPresetFile(path);
-            added++;
-        } catch (e) {
-            // File does not exist, skip
-        }
-    }
-    console.log('Added', added, 'existing VFS presets');
+    return paths;
 }
 
 updateLayout();
@@ -1576,7 +1518,6 @@ document.getElementById("apiRandomPresetBtn").addEventListener('click', async fu
     try {
         const result = await fetchApiPreset(apiBase);
         Module.loadPresetFile(result.vfsPath);
-        updatePresetDisplay(result.filename);
         console.log('Loaded API preset:', result.filename, 'from', result.dir);
     } catch (e) {
         console.error('Failed to load API preset, falling back to local preset:', e);
@@ -1590,16 +1531,6 @@ document.getElementById("toggleBezelBtn").addEventListener('click', function() {
     isBezelMode = !isBezelMode;
     updateLayout();
     if (!isBezelMode) draw();
-});
-
-// Custom milk button uses global loadRandomCustomMilk() from C++ Module.init()
-
-document.getElementById("customMilkBtn").addEventListener('click', function() {
-    if (typeof loadRandomCustomMilk !== 'undefined') {
-        loadRandomCustomMilk();
-    } else {
-        console.warn('loadRandomCustomMilk not available yet');
-    }
 });
 
 // ResizeObserver subsumes viewport resize for the canvases themselves,
