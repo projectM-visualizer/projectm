@@ -1527,6 +1527,13 @@ document.getElementById("apiRandomPresetBtn").addEventListener('click', async fu
     }
 });
 
+document.addEventListener('keydown', function(event) {
+    if (event.key === ' ' || event.keyCode === 32) {
+        event.preventDefault();
+        document.getElementById('apiRandomPresetBtn').click();
+    }
+});
+
 document.getElementById("toggleBezelBtn").addEventListener('click', function() {
     isBezelMode = !isBezelMode;
     updateLayout();
