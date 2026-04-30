@@ -44,6 +44,19 @@ background-color: #0056b3; /* Darker blue */
 transform: translateY(2px); /* Move down slightly */
 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
 }
+#preset-name {
+position: absolute;
+bottom: 2vh;
+left: 2vh;
+z-index: 3300;
+font-family: "Lucida Console", "Courier New", monospace;
+font-size: 14px;
+color: rgba(200, 200, 200, 0.75);
+pointer-events: none;
+white-space: nowrap;
+text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.85);
+transition: opacity 0.3s ease;
+}
 </style>
 </head>
 <body style="background-color:black;">
@@ -208,6 +221,8 @@ Random Custom
 <div style='position:absolute;display:block;left:6%;bottom:55%;z-index:3300;font-family: "Lucida Console", "Courier New", monospace;font-size: 20px;color:lightgrey;'>
 Random Preset (API)
 </div>
+
+<div id="preset-name">Preset: --</div>
 
 <input class="button" type=button id=lockPresetBtn style='background-color:green;position:fixed;display:none;width:6vh;height:5vh;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;'></input>
 <input class="button" type=button id=createSpriteBtn style='background-color:purple;position:fixed;display:none;width:6vh;height:5vh;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;'></input>
@@ -1183,11 +1198,12 @@ Module=instance;
 Module.init();
 updateLayout();
 const mcanvas = document.querySelector('#mcanvas');
-const startupPaths = await loadStartupApiPresets(15);
-if (startupPaths.length > 0) {
-    Module.loadPresetFile(startupPaths[0]);
-    for (let i = 1; i < startupPaths.length; i++) {
-        Module.addPresetFile(startupPaths[i]);
+const startupResults = await loadStartupApiPresets(15);
+if (startupResults.length > 0) {
+    Module.loadPresetFile(startupResults[0].vfsPath);
+    updatePresetDisplay(startupResults[0].filename);
+    for (let i = 1; i < startupResults.length; i++) {
+        Module.addPresetFile(startupResults[i].vfsPath);
     }
 } else {
     console.warn('No startup API presets loaded, falling back to switchPreset');
@@ -1195,6 +1211,7 @@ if (startupPaths.length > 0) {
 }
 await loadRegularMilkPresets();
 addExistingVfsPresets();
+scanCustomMilk();
 Module.startRender(mcanvas.width, mcanvas.height);
 });
 },1000);
@@ -1203,6 +1220,16 @@ Module.startRender(mcanvas.width, mcanvas.height);
 let isBezelMode = true;
 
 // ====== API PRESET HELPERS ======
+window.updatePresetDisplay = function(name) {
+    if (!name) return;
+    const basename = name.split('/').pop();
+    const el = document.querySelector('#preset-name');
+    if (el) {
+        el.textContent = 'Preset: ' + basename;
+        window.currentPresetName = basename;
+    }
+};
+
 async function fetchApiPreset(apiBase) {
     const res = await fetch(`${apiBase}/api/presets/random?dir=any`);
     if (!res.ok) throw new Error('API error: ' + res.status);
@@ -1223,17 +1250,18 @@ async function fetchApiPreset(apiBase) {
 
 async function loadStartupApiPresets(count) {
     const apiBase = localStorage.getItem('apiBase') || 'https://storage.noahcohn.com';
-    const paths = [];
+    const results = [];
     for (let i = 0; i < count; i++) {
         try {
             const result = await fetchApiPreset(apiBase);
-            paths.push(result.vfsPath);
+            results.push(result);
             console.log('Startup API preset', i, 'loaded:', result.filename);
+            updatePresetDisplay(result.filename);
         } catch (e) {
             console.error('Failed to load startup API preset', i, e);
         }
     }
-    return paths;
+    return results;
 }
 
 async function loadRegularMilkPresets() {
@@ -1547,6 +1575,7 @@ document.getElementById("apiRandomPresetBtn").addEventListener('click', async fu
     try {
         const result = await fetchApiPreset(apiBase);
         Module.loadPresetFile(result.vfsPath);
+        updatePresetDisplay(result.filename);
         console.log('Loaded API preset:', result.filename, 'from', result.dir);
     } catch (e) {
         console.error('Failed to load API preset, falling back to local preset:', e);
@@ -1560,6 +1589,95 @@ document.getElementById("toggleBezelBtn").addEventListener('click', function() {
     isBezelMode = !isBezelMode;
     updateLayout();
     if (!isBezelMode) draw();
+});
+
+// ====== CUSTOM MILK PRESET ROUTINE ======
+var $customMilk = [];
+
+function scanCustomMilk() {
+    const nxhttp = new XMLHttpRequest();
+    nxhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            customMilkShds(this);
+        }
+    };
+    nxhttp.open('GET', 'https://glsl.1ink.us/custom_milk/', true);
+    nxhttp.send();
+}
+
+function customMilkShds(xml) {
+    const nparser = new DOMParser();
+    const htmlDocs = nparser.parseFromString(xml.responseText, 'text/html');
+    const preList = htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
+    var currentOrigin = window.location.origin;
+    $customMilk = [];
+    for (var i = 0; i < preList.length; i++) {
+        var txxt = preList[i].href;
+        txxt = txxt.replace(currentOrigin, '');
+        if (txxt.indexOf('.milk') !== -1) {
+            $customMilk.push('https://glsl.1ink.us/custom_milk' + txxt);
+        }
+    }
+    console.log('Scanned ' + $customMilk.length + ' custom milk presets.');
+    if ($customMilk.length > 0) {
+        setTimeout(function() { getCustomMilkShaders(); }, 3000);
+    }
+}
+
+function getCustomMilkShaders() {
+    var completed = 0;
+    var total = $customMilk.length;
+    var statEl3 = document.querySelector('#stat');
+    if (statEl3) { statEl3.innerHTML = 'Downloading Custom Presets'; statEl3.style.backgroundColor = 'yellow'; }
+    for (var i = 0; i < total; i++) {
+        (function(src, idx) {
+            const ff = new XMLHttpRequest();
+            ff.open('GET', src, true);
+            ff.responseType = 'arraybuffer';
+            ff.addEventListener("load", function() {
+                var buf = ff.response;
+                if (buf) {
+                    Module.FS.writeFile("/presets/custmilk_" + idx + ".milk", new Uint8ClampedArray(buf));
+                    console.log('Got custom preset: custmilk_' + idx + '.milk from ' + src);
+                }
+                completed++;
+                if (completed === total) {
+                    Module.addCustomMilkPaths(total);
+                    if (statEl3) { statEl3.innerHTML = 'Custom Presets Ready'; statEl3.style.backgroundColor = 'blue'; }
+                }
+            });
+            ff.addEventListener("error", function() {
+                console.warn('Failed to download custom preset: ' + src);
+                completed++;
+                if (completed === total) {
+                    Module.addCustomMilkPaths(total);
+                    if (statEl3) { statEl3.innerHTML = 'Custom Presets Ready'; statEl3.style.backgroundColor = 'blue'; }
+                }
+            });
+            ff.send(null);
+        })($customMilk[i], i);
+    }
+}
+
+function loadRandomCustomMilk() {
+    if ($customMilk.length === 0) {
+        console.log('No custom milk presets available yet.');
+        var statEl = document.querySelector('#stat');
+        if (statEl) { statEl.innerHTML = 'Custom presets loading...'; statEl.style.backgroundColor = 'orange'; }
+        return;
+    }
+    var idx = Math.floor(Math.random() * $customMilk.length);
+    var fname = '/presets/custmilk_' + idx + '.milk';
+    var originalName = $customMilk[idx].split('/').pop();
+    Module.loadPresetFile(fname);
+    if (window.updatePresetDisplay) { window.updatePresetDisplay(originalName); }
+    var statEl = document.querySelector('#stat');
+    if (statEl) { statEl.innerHTML = 'Loaded: ' + originalName; statEl.style.backgroundColor = 'green'; }
+    console.log('Loading random custom milk: ' + fname);
+}
+
+document.getElementById("customMilkBtn").addEventListener('click', function() {
+    loadRandomCustomMilk();
 });
 
 // ResizeObserver subsumes viewport resize for the canvases themselves,
