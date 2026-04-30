@@ -298,6 +298,7 @@ Random Preset (API)
 <div hidden id=milkPath2>https://glsl.1ink.us/custom_milk/milk010.milk</div>
 <div hidden id=textureDir>textures/</div>
 <div hidden id=songDir>songs/</div>
+<div hidden id=presetDir>default</div>
 
 <div id=srsiz hidden>1000</div>
 <div id=ffire hidden>0</div>
@@ -1217,8 +1218,7 @@ if (startupPaths.length > 0) {
         Module.addPresetFile(startupPaths[i]);
     }
 } else {
-    console.warn('No startup API presets loaded, falling back to switchPreset');
-    Module.switchPreset();
+    console.warn('No startup API presets loaded');
 }
 Module.startRender(mcanvas.width, mcanvas.height);
 // Background load remaining presets so rendering isn't blocked
@@ -1240,8 +1240,15 @@ window.updatePresetDisplay = function(name) {
     }
 };
 
+function getPresetDir() {
+    const el = document.getElementById('presetDir');
+    const val = el ? el.innerHTML.trim() : 'default';
+    return val === 'default' ? 'any' : val;
+}
+
 async function fetchApiPreset(apiBase) {
-    const res = await fetch(`${apiBase}/api/presets/random?dir=any`);
+    const dir = getPresetDir();
+    const res = await fetch(`${apiBase}/api/presets/random?dir=${encodeURIComponent(dir)}`);
     if (!res.ok) throw new Error('API error: ' + res.status);
     const data = await res.json();
     if (!data.url || !data.filename || !data.dir) {
@@ -1533,13 +1540,7 @@ if (contain1El) {
     resizeObserver.observe(contain1El);
 }
 
-document.getElementById("randomPresetBtn").addEventListener('click', function() {
-    if (typeof Module !== 'undefined' && Module.switchPreset) {
-        Module.switchPreset();
-    }
-});
-
-document.getElementById("apiRandomPresetBtn").addEventListener('click', async function() {
+async function loadRandomApiPreset() {
     if (typeof Module === 'undefined' || !Module.loadPresetFile) {
         console.error('Module not ready');
         return;
@@ -1550,11 +1551,16 @@ document.getElementById("apiRandomPresetBtn").addEventListener('click', async fu
         Module.loadPresetFile(result.vfsPath);
         console.log('Loaded API preset:', result.filename, 'from', result.dir);
     } catch (e) {
-        console.error('Failed to load API preset, falling back to local preset:', e);
-        if (typeof Module !== 'undefined' && Module.switchPreset) {
-            Module.switchPreset();
-        }
+        console.error('Failed to load API preset:', e);
     }
+}
+
+document.getElementById("randomPresetBtn").addEventListener('click', function() {
+    loadRandomApiPreset();
+});
+
+document.getElementById("apiRandomPresetBtn").addEventListener('click', function() {
+    loadRandomApiPreset();
 });
 
 document.addEventListener('keydown', function(event) {

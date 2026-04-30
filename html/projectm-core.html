@@ -68,6 +68,7 @@ body { margin: 0; padding: 0; background-color: black; overflow: hidden; }
   <div id="milkPath">https://glsl.1ink.us/milk/flexi.milk</div>
   <div id="textureDir">textures/</div>
   <div id="songDir">songs/</div>
+  <div id="presetDir">default</div>
   <div id="srsiz">1000</div>
   <div id="wid">1280</div>
   <div id="hig">720</div>
@@ -193,8 +194,15 @@ if (contain1El) {
 }
 
 // ====== API PRESET HELPERS ======
+function getPresetDir() {
+    const el = document.getElementById('presetDir');
+    const val = el ? el.innerHTML.trim() : 'default';
+    return val === 'default' ? 'any' : val;
+}
+
 async function fetchApiPreset(apiBase) {
-    const res = await fetch(`${apiBase}/api/presets/random?dir=any`);
+    const dir = getPresetDir();
+    const res = await fetch(`${apiBase}/api/presets/random?dir=${encodeURIComponent(dir)}`);
     if (!res.ok) throw new Error('API error: ' + res.status);
     const data = await res.json();
     if (!data.url || !data.filename || !data.dir) {
@@ -228,13 +236,7 @@ async function loadStartupApiPresets(count) {
 }
 
 // ====== UI CONTROLS ======
-document.getElementById("randomPresetBtn").addEventListener('click', function() {
-    if (typeof Module !== 'undefined' && Module.switchPreset) {
-        Module.switchPreset();
-    }
-});
-
-document.getElementById("apiRandomPresetBtn").addEventListener('click', async function() {
+async function loadRandomApiPreset() {
     if (typeof Module === 'undefined' || !Module.loadPresetFile) {
         console.error('Module not ready');
         return;
@@ -246,11 +248,16 @@ document.getElementById("apiRandomPresetBtn").addEventListener('click', async fu
         updatePresetDisplay(result.filename);
         console.log('Loaded API preset:', result.filename, 'from', result.dir);
     } catch (e) {
-        console.error('Failed to load API preset, falling back to local preset:', e);
-        if (typeof Module !== 'undefined' && Module.switchPreset) {
-            Module.switchPreset();
-        }
+        console.error('Failed to load API preset:', e);
     }
+}
+
+document.getElementById("randomPresetBtn").addEventListener('click', function() {
+    loadRandomApiPreset();
+});
+
+document.getElementById("apiRandomPresetBtn").addEventListener('click', function() {
+    loadRandomApiPreset();
 });
 
 document.getElementById("toggleBezelBtn").addEventListener('click', function() {
@@ -303,8 +310,7 @@ setTimeout(function(){
                     Module.addPresetFile(startupResults[i].vfsPath);
                 }
             } else {
-                console.warn('No startup API presets loaded, falling back to switchPreset');
-                Module.switchPreset();
+                console.warn('No startup API presets loaded');
             }
 
             Module.startRender(mcanvas.width, mcanvas.height);
