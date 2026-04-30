@@ -291,6 +291,8 @@ Random Preset (API)
 <div hidden id=vertPath>https://glsl.1ink.us/wgsl/vertex_003.wgsl</div>
 <div hidden id=milkPath>https://glsl.1ink.us/milk/flexi.milk</div>
 <div hidden id=milkPath2>https://glsl.1ink.us/custom_milk/milk010.milk</div>
+<div hidden id=textureDir>textures/</div>
+<div hidden id=songDir>songs/</div>
 
 <div id=srsiz hidden>1000</div>
 <div id=ffire hidden>0</div>

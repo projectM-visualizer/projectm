@@ -437,50 +437,64 @@ var $shds=[];
 var $texs=[];
 var $customMilk=[];
 
-function textures(xml){
-const nparser=new DOMParser();
-const htmlDocs=nparser.parseFromString(xml.responseText,'text/html');
-const preList=htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
-$texs[0]=preList.length;
-console.log('scanned: '+$texs[0]+' textures.');
-for(var i=5;i<preList.length;i++){
-var txxt=preList[i].href;
-let currentOrigin = window.location.origin;
-let pathName = currentOrigin+'/textures';
-let lastSlashIndex = pathName.lastIndexOf('/');
-let basePath = pathName.substring(0, lastSlashIndex);
-txxt=txxt.replace(currentOrigin,'');
-$texs[i]=basePath+'/textures'+txxt;
-console.log('$texs['+i+']: ',$texs[i]);
-const ff=new XMLHttpRequest();
-ff.open('GET',$texs[i],true);
-ff.responseType='arraybuffer';
-var statEl = document.querySelector('#stat');
-if (statEl) { statEl.innerHTML='Downloading Texture'; statEl.style.backgroundColor='yellow'; }
-ff.addEventListener("load",function(){
-let sarrayBuffer=ff.response;
-if(sarrayBuffer){
-let sfil=new Uint8ClampedArray(sarrayBuffer);
-FS.writeFile("/textures/"+txxt,sfil);
-console.log('got texture: '+txxt+' / '+$texs[i]);
-setTimeout(function(){
-var statEl2 = document.querySelector('#stat');
-if (statEl2) { statEl2.innerHTML='Downloaded Texture'; statEl2.style.backgroundColor='blue'; }
-},500);
+function getBasePath(id, fallback) {
+    var el = document.querySelector(id);
+    if (el && el.innerHTML && el.innerHTML.trim().length > 0) {
+        var path = el.innerHTML.trim();
+        if (path.charAt(path.length - 1) !== '/') {
+            path += '/';
+        }
+        return path;
+    }
+    return fallback;
 }
-});
-ff.send(null);
-}};
+
+function textures(xml, textureBase){
+    const nparser = new DOMParser();
+    const htmlDocs = nparser.parseFromString(xml.responseText, 'text/html');
+    const preList = htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
+    $texs[0] = preList.length;
+    console.log('scanned: ' + $texs[0] + ' textures from ' + textureBase);
+    for (var i = 5; i < preList.length; i++) {
+        var href = preList[i].href;
+        var fname = preList[i].innerText.trim();
+        var fullUrl = new URL(href, textureBase).href;
+        $texs[i] = fullUrl;
+        console.log('$texs[' + i + ']: ', $texs[i]);
+        (function(filename, url) {
+            const ff = new XMLHttpRequest();
+            ff.open('GET', url, true);
+            ff.responseType = 'arraybuffer';
+            var statEl = document.querySelector('#stat');
+            if (statEl) { statEl.innerHTML = 'Downloading Texture'; statEl.style.backgroundColor = 'yellow'; }
+            ff.addEventListener("load", function(){
+                let sarrayBuffer = ff.response;
+                if (sarrayBuffer) {
+                    let sfil = new Uint8ClampedArray(sarrayBuffer);
+                    FS.writeFile("/textures/" + filename, sfil);
+                    console.log('got texture: ' + filename + ' from ' + url);
+                    setTimeout(function(){
+                        var statEl2 = document.querySelector('#stat');
+                        if (statEl2) { statEl2.innerHTML = 'Downloaded Texture'; statEl2.style.backgroundColor = 'blue'; }
+                    }, 500);
+                }
+            });
+            ff.send(null);
+        })(fname, fullUrl);
+    }
+}
 
 function scanTextures(){
-const nxhttp=new XMLHttpRequest();
-nxhttp.onreadystatechange=function(){
-if(this.readyState==4&&this.status==200){
-console.log('scanning textures.');
-textures(this);
-}};
-nxhttp.open('GET','textures/',true);
-nxhttp.send();
+    var textureBase = getBasePath('#textureDir', 'textures/');
+    const nxhttp = new XMLHttpRequest();
+    nxhttp.onreadystatechange = function(){
+        if (this.readyState == 4 && this.status == 200) {
+            console.log('scanning textures from: ' + textureBase);
+            textures(this, textureBase);
+        }
+    };
+    nxhttp.open('GET', textureBase, true);
+    nxhttp.send();
 }
 
 function customMilkShds(xml){
@@ -591,29 +605,29 @@ nxhttp.open('GET',url,true);
 nxhttp.send();
 }
 
-function sngs(xml){
-const nparser=new DOMParser();
-const htmlDocs=nparser.parseFromString(xml.responseText,'text/html');
-const preList=htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
-$sngs[0]=preList.length;
-for(var i=1;i<preList.length;i++){
-var txxt=preList[i].href;
-let pathName = window.location.pathname;
-let currentOrigin = window.location.origin;
-let lastSlashIndex = pathName.lastIndexOf('/');
-let basePath = pathName.substring(0, lastSlashIndex + 1);
-txxt=txxt.replace(currentOrigin,'');
-$sngs[i]=basePath+'songs'+txxt;
-}};
+function sngs(xml, songBase){
+    const nparser = new DOMParser();
+    const htmlDocs = nparser.parseFromString(xml.responseText, 'text/html');
+    const preList = htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
+    $sngs[0] = preList.length;
+    console.log('scanned: ' + $sngs[0] + ' songs from ' + songBase);
+    for (var i = 1; i < preList.length; i++) {
+        var href = preList[i].href;
+        var fullUrl = new URL(href, songBase).href;
+        $sngs[i] = fullUrl;
+    }
+}
 
 function scanSongs(){
-const nxhttp=new XMLHttpRequest();
-nxhttp.onreadystatechange=function(){
-if(this.readyState==4&&this.status==200){
-sngs(this);
-}};
-nxhttp.open('GET','songs/',true);
-nxhttp.send();
+    var songBase = getBasePath('#songDir', 'songs/');
+    const nxhttp = new XMLHttpRequest();
+    nxhttp.onreadystatechange = function(){
+        if (this.readyState == 4 && this.status == 200) {
+            sngs(this, songBase);
+        }
+    };
+    nxhttp.open('GET', songBase, true);
+    nxhttp.send();
 }
 
 var lastSongFileName = '';
@@ -673,13 +687,17 @@ ff.send(null);
 }
 
 function snd(){
-let randSong=Math.floor(($sngs[0]-5)*Math.random());
-let songSrc=$sngs[randSong+5];
-console.log('Song: ',songSrc);
-document.querySelector('#track').src=songSrc;
-const sng=new BroadcastChannel('sng');
-sng.postMessage({data:songSrc});
-};
+    if ($sngs.length < 6 || !$sngs[0]) {
+        console.log('No songs available yet.');
+        return;
+    }
+    let randSong = Math.floor(($sngs[0] - 5) * Math.random());
+    let songSrc = $sngs[randSong + 5];
+    console.log('Song: ', songSrc);
+    document.querySelector('#track').src = songSrc;
+    const sng = new BroadcastChannel('sng');
+    sng.postMessage({data: songSrc});
+}
 
 document.querySelector('#musicBtn').addEventListener('click',function(){
 window.open('./flac');
