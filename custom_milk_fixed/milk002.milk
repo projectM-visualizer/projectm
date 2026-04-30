@@ -1,6 +1,6 @@
 [preset00]
 fRating=3.0
-fGammaAdj=12.2
+fGammaAdj=2.0
 fDecay=0.98
 fVideoEchoZoom=1.0
 fVideoEchoAlpha=0.0
@@ -67,6 +67,4 @@ per_pixel_15=
 per_pixel_16=// 4. Apply the final brightness boost
 per_pixel_17=boost = 1.2 + 0.8*bass_att;
 per_pixel_18=
-per_pixel_19=red = min(r*boost, 1.0);
-per_pixel_20=grn = min(g*boost, 1.0);
-per_pixel_21=blu = min(b*boost, 1.0);
+per_pixel_19=ret = float3(min(r*boost, 1.0), min(g*boost, 1.0), min(b*boost, 1.0));

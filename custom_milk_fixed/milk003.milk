@@ -78,12 +78,13 @@ per_pixel_16=c = v1+v2+v3;
 per_pixel_17=
 per_pixel_18=// Final color calculation using the combined plasma and audio reactivity
 per_pixel_19=brightness = 0.4 + 0.6*bass_att;
-per_pixel_20=red = min(brightness * (0.5 + 0.5*sin(c*3.1415 + q6)), 1.0);
-per_pixel_21=grn = min(brightness * (0.5 + 0.5*sin(c*3.1415 + q7 + 2.0)), 1.0);
-per_pixel_22=blu = min(brightness * (0.5 + 0.5*sin(dist - 0.5 + c*3.1415 + q8 + 4.0)), 1.0);
+per_pixel_20=float r = min(brightness * (0.5 + 0.5*sin(c*3.1415 + q6)), 1.0);
+per_pixel_21=float g = min(brightness * (0.5 + 0.5*sin(c*3.1415 + q7 + 2.0)), 1.0);
+per_pixel_22=float b = min(brightness * (0.5 + 0.5*sin(dist - 0.5 + c*3.1415 + q8 + 4.0)), 1.0);
 per_pixel_23=
 per_pixel_24=// Add a sparkle on top of it all
-per_pixel_25=sparkle = (1-dist)*step(0.99, sin( (atan(work_uv_y, work_uv_x) + q9)*10))*treb_att;
-per_pixel_26=red = min(red + sparkle, 1.0);
-per_pixel_27=grn = min(grn + sparkle, 1.0);
-per_pixel_28=blu = min(blu + sparkle, 1.0);
+per_pixel_25=float sparkle = (1.0-dist)*step(0.99, sin( (atan2(work_uv_y, work_uv_x) + q9)*10.0))*treb_att;
+per_pixel_26=r = min(r + sparkle, 1.0);
+per_pixel_27=g = min(g + sparkle, 1.0);
+per_pixel_28=b = min(b + sparkle, 1.0);
+per_pixel_29=ret = float3(r, g, b);

@@ -1,6 +1,6 @@
 [preset00]
 fRating=4.0
-fGammaAdj=8.2
+fGammaAdj=2.0
 fDecay=0.98
 fVideoEchoZoom=1.0
 fVideoEchoAlpha=0.0
@@ -87,6 +87,4 @@ per_pixel_34=
 per_pixel_35=// Final audio-reactive brightness boost
 per_pixel_36=boost = 2.2 + 0.8*bass_att;
 per_pixel_37=
-per_pixel_38=red = min(final_r * boost, 1.0);
-per_pixel_39=grn = min(final_g * boost, 1.0);
-per_pixel_40=blu = min(final_b * boost, 1.0);
+per_pixel_38=ret = float3(min(final_r * boost, 1.0), min(final_g * boost, 1.0), min(final_b * boost, 1.0));

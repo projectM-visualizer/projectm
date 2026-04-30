@@ -1,6 +1,6 @@
 [preset00]
 fRating=5.0
-fGammaAdj=6.0
+fGammaAdj=2.0
 fDecay=0.95
 fVideoEchoZoom=1.0
 fVideoEchoAlpha=0.0
@@ -86,11 +86,6 @@ per_frame_24=
 per_frame_25=  instance = instance + 1;
 per_frame_26=);
 
-per_pixel_1=// Create a shifting pattern using x, y, and time
-per_pixel_2=c = 0.5 + 0.5*sin(x*10 + t1*0.2) * cos(y*10 + t1*0.3);
-per_pixel_3=
-per_pixel_4=// Set the pixel color - bright blue/green background
-per_pixel_5=red = min(c*0.05, 1.0);
-per_pixel_6=green = min(c*0.9 + 0.1, 1.0);
-per_pixel_7=blue = min(1.0 - c*0.2, 1.0);
-per_pixel_8=alpha = 1.0;
+per_pixel_1=// Create a shifting pattern using uv and time
+per_pixel_2=float c = 0.5 + 0.5*sin(uv.x*10.0 + t1*0.2) * cos(uv.y*10.0 + t1*0.3);
+per_pixel_3=ret = float3(min(c*0.05, 1.0), min(c*0.9 + 0.1, 1.0), min(1.0 - c*0.2, 1.0));
