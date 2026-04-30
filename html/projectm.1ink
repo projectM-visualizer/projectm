@@ -207,18 +207,23 @@ Start / Change Song
 Random Preset
 </div>
 
-<input type=button id=toggleBezelBtn style='background-color:blue;position:absolute;display:block;left:3%;bottom:35%;z-index:3300;border:6px solid green;border-radius:20%;' />
+<input type=button id=fullWindowBtn style='background-color:blue;position:absolute;display:block;left:3%;bottom:35%;z-index:3300;border:6px solid green;border-radius:20%;' />
 <div style='position:absolute;display:block;left:6%;bottom:35%;z-index:3300;font-family: "Lucida Console", "Courier New", monospace;font-size: 20px;color:lightgrey;'>
-Toggle Fullscreen
+Full Window
 </div>
 
-<input type=button id=customMilkBtn style='background-color:purple;position:absolute;display:block;left:3%;bottom:45%;z-index:3300;border:6px solid green;border-radius:20%;' />
+<input type=button id=fullscreenBtn style='background-color:navy;position:absolute;display:block;left:3%;bottom:45%;z-index:3300;border:6px solid green;border-radius:20%;' />
 <div style='position:absolute;display:block;left:6%;bottom:45%;z-index:3300;font-family: "Lucida Console", "Courier New", monospace;font-size: 20px;color:lightgrey;'>
+Fullscreen
+</div>
+
+<input type=button id=customMilkBtn style='background-color:purple;position:absolute;display:block;left:3%;bottom:55%;z-index:3300;border:6px solid green;border-radius:20%;' />
+<div style='position:absolute;display:block;left:6%;bottom:55%;z-index:3300;font-family: "Lucida Console", "Courier New", monospace;font-size: 20px;color:lightgrey;'>
 Random Custom
 </div>
 
-<input type=button id=apiRandomPresetBtn style='background-color:teal;position:absolute;display:block;left:3%;bottom:55%;z-index:3300;border:6px solid green;border-radius:20%;' />
-<div style='position:absolute;display:block;left:6%;bottom:55%;z-index:3300;font-family: "Lucida Console", "Courier New", monospace;font-size: 20px;color:lightgrey;'>
+<input type=button id=apiRandomPresetBtn style='background-color:teal;position:absolute;display:block;left:3%;bottom:65%;z-index:3300;border:6px solid green;border-radius:20%;' />
+<div style='position:absolute;display:block;left:6%;bottom:65%;z-index:3300;font-family: "Lucida Console", "Courier New", monospace;font-size: 20px;color:lightgrey;'>
 Random Preset (API)
 </div>
 
@@ -1215,7 +1220,7 @@ loadRegularMilkPresets();
 },1000);
 });
 
-let isBezelMode = true;
+let viewMode = 'bezel';
 
 // ====== API PRESET HELPERS ======
 window.updatePresetDisplay = function(name) {
@@ -1351,12 +1356,13 @@ function updateLayout() {
     const contain1a = document.querySelector('#contain1a');
     const musicBtn = document.querySelector('#musicBtn');
     const randomPresetBtn = document.querySelector('#randomPresetBtn');
-    const toggleBezelBtn = document.querySelector('#toggleBezelBtn');
+    const fullWindowBtn = document.querySelector('#fullWindowBtn');
+    const fullscreenBtn = document.querySelector('#fullscreenBtn');
     const customMilkBtn = document.querySelector('#customMilkBtn');
     const pmImages = document.querySelectorAll('#pm');
     const menu = document.querySelector('#menu');
 
-    if (isBezelMode) {
+    if (viewMode === 'bezel') {
         // === BEZEL MODE (centered square) ===
         const sz = window.innerHeight;
 
@@ -1393,18 +1399,22 @@ function updateLayout() {
         musicBtn.style.bottom = '15%';
         randomPresetBtn.style.left = '3%';
         randomPresetBtn.style.bottom = '25%';
-        toggleBezelBtn.style.left = '3%';
-        toggleBezelBtn.style.bottom = '35%';
+        fullWindowBtn.style.left = '3%';
+        fullWindowBtn.style.bottom = '35%';
+        fullscreenBtn.style.left = '3%';
+        fullscreenBtn.style.bottom = '45%';
         musicBtn.nextElementSibling.style.left = '6%';
         musicBtn.nextElementSibling.style.bottom = '15%';
         randomPresetBtn.nextElementSibling.style.left = '6%';
         randomPresetBtn.nextElementSibling.style.bottom = '25%';
-        toggleBezelBtn.nextElementSibling.style.left = '6%';
-        toggleBezelBtn.nextElementSibling.style.bottom = '35%';
+        fullWindowBtn.nextElementSibling.style.left = '6%';
+        fullWindowBtn.nextElementSibling.style.bottom = '35%';
+        fullscreenBtn.nextElementSibling.style.left = '6%';
+        fullscreenBtn.nextElementSibling.style.bottom = '45%';
         customMilkBtn.style.left = '3%';
-        customMilkBtn.style.bottom = '45%';
+        customMilkBtn.style.bottom = '55%';
         customMilkBtn.nextElementSibling.style.left = '6%';
-        customMilkBtn.nextElementSibling.style.bottom = '45%';
+        customMilkBtn.nextElementSibling.style.bottom = '55%';
         pmImages.forEach(img => img.style.display = 'block');
         if (menu) menu.style.display = 'block';
 
@@ -1447,18 +1457,22 @@ function updateLayout() {
         musicBtn.style.bottom = '2%';
         randomPresetBtn.style.left = '1%';
         randomPresetBtn.style.bottom = '7%';
-        toggleBezelBtn.style.left = '1%';
-        toggleBezelBtn.style.bottom = '12%';
+        fullWindowBtn.style.left = '1%';
+        fullWindowBtn.style.bottom = '12%';
+        fullscreenBtn.style.left = '1%';
+        fullscreenBtn.style.bottom = '17%';
         musicBtn.nextElementSibling.style.left = '4%';
         musicBtn.nextElementSibling.style.bottom = '2%';
         randomPresetBtn.nextElementSibling.style.left = '4%';
         randomPresetBtn.nextElementSibling.style.bottom = '7%';
-        toggleBezelBtn.nextElementSibling.style.left = '4%';
-        toggleBezelBtn.nextElementSibling.style.bottom = '12%';
+        fullWindowBtn.nextElementSibling.style.left = '4%';
+        fullWindowBtn.nextElementSibling.style.bottom = '12%';
+        fullscreenBtn.nextElementSibling.style.left = '4%';
+        fullscreenBtn.nextElementSibling.style.bottom = '17%';
         customMilkBtn.style.left = '1%';
-        customMilkBtn.style.bottom = '17%';
+        customMilkBtn.style.bottom = '22%';
         customMilkBtn.nextElementSibling.style.left = '4%';
-        customMilkBtn.nextElementSibling.style.bottom = '17%';
+        customMilkBtn.nextElementSibling.style.bottom = '22%';
         pmImages.forEach(img => img.style.display = 'none');
         if (menu) menu.style.display = 'none';
     }
@@ -1493,7 +1507,7 @@ const resizeObserver = new ResizeObserver((entries) => {
             Module.setWindowSize(w, h);
         }
         if (typeof Module !== 'undefined' && Module.setAspectCorrection) {
-            Module.setAspectCorrection(isBezelMode);
+            Module.setAspectCorrection(viewMode === 'bezel');
         }
     }
 });
@@ -1534,10 +1548,57 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
-document.getElementById("toggleBezelBtn").addEventListener('click', function() {
-    isBezelMode = !isBezelMode;
+function enterFullscreen() {
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+    }
+}
+
+function exitFullscreen() {
+    if (document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+    }
+}
+
+document.getElementById("fullWindowBtn").addEventListener('click', function() {
+    if (viewMode === 'window') {
+        viewMode = 'bezel';
+    } else {
+        viewMode = 'window';
+        if (document.fullscreenElement) {
+            exitFullscreen();
+        }
+    }
     updateLayout();
-    if (!isBezelMode) draw();
+    if (viewMode === 'bezel') draw();
+});
+
+document.getElementById("fullscreenBtn").addEventListener('click', function() {
+    if (viewMode === 'fullscreen') {
+        viewMode = 'bezel';
+        exitFullscreen();
+    } else {
+        viewMode = 'fullscreen';
+        enterFullscreen();
+    }
+    updateLayout();
+    if (viewMode === 'bezel') draw();
+});
+
+document.addEventListener('fullscreenchange', function() {
+    if (!document.fullscreenElement && viewMode === 'fullscreen') {
+        viewMode = 'window';
+        updateLayout();
+    }
 });
 
 // ResizeObserver subsumes viewport resize for the canvases themselves,
@@ -1545,7 +1606,7 @@ document.getElementById("toggleBezelBtn").addEventListener('click', function() {
 // window.innerHeight, so we still need to recompute layout on resize.
 window.addEventListener('resize', () => {
     updateLayout();
-    if (isBezelMode) {
+    if (viewMode === 'bezel') {
         // Redraw circular bezel overlay to fit new dimensions
         document.querySelector('#di').click();
     }
