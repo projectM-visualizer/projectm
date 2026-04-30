@@ -1213,7 +1213,6 @@ addExistingVfsPresets();
 Module.startRender(mcanvas.width, mcanvas.height);
 // Background load remaining presets so rendering isn't blocked
 loadRegularMilkPresets();
-scanCustomMilk();
 });
 },1000);
 });
@@ -1593,93 +1592,14 @@ document.getElementById("toggleBezelBtn").addEventListener('click', function() {
     if (!isBezelMode) draw();
 });
 
-// ====== CUSTOM MILK PRESET ROUTINE ======
-var $customMilk = [];
-
-function scanCustomMilk() {
-    const nxhttp = new XMLHttpRequest();
-    nxhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            customMilkShds(this);
-        }
-    };
-    nxhttp.open('GET', 'https://glsl.1ink.us/custom_milk/', true);
-    nxhttp.send();
-}
-
-function customMilkShds(xml) {
-    const nparser = new DOMParser();
-    const htmlDocs = nparser.parseFromString(xml.responseText, 'text/html');
-    const preList = htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
-    var currentOrigin = window.location.origin;
-    $customMilk = [];
-    for (var i = 0; i < preList.length; i++) {
-        var txxt = preList[i].href;
-        txxt = txxt.replace(currentOrigin, '');
-        if (txxt.indexOf('.milk') !== -1) {
-            $customMilk.push('https://glsl.1ink.us/custom_milk' + txxt);
-        }
-    }
-    console.log('Scanned ' + $customMilk.length + ' custom milk presets.');
-    if ($customMilk.length > 0) {
-        setTimeout(function() { getCustomMilkShaders(); }, 3000);
-    }
-}
-
-function getCustomMilkShaders() {
-    var completed = 0;
-    var total = $customMilk.length;
-    var statEl3 = document.querySelector('#stat');
-    if (statEl3) { statEl3.innerHTML = 'Downloading Custom Presets'; statEl3.style.backgroundColor = 'yellow'; }
-    for (var i = 0; i < total; i++) {
-        (function(src, idx) {
-            const ff = new XMLHttpRequest();
-            ff.open('GET', src, true);
-            ff.responseType = 'arraybuffer';
-            ff.addEventListener("load", function() {
-                var buf = ff.response;
-                if (buf) {
-                    Module.FS.writeFile("/presets/custmilk_" + idx + ".milk", new Uint8ClampedArray(buf));
-                    console.log('Got custom preset: custmilk_' + idx + '.milk from ' + src);
-                }
-                completed++;
-                if (completed === total) {
-                    Module.addCustomMilkPaths(total);
-                    if (statEl3) { statEl3.innerHTML = 'Custom Presets Ready'; statEl3.style.backgroundColor = 'blue'; }
-                }
-            });
-            ff.addEventListener("error", function() {
-                console.warn('Failed to download custom preset: ' + src);
-                completed++;
-                if (completed === total) {
-                    Module.addCustomMilkPaths(total);
-                    if (statEl3) { statEl3.innerHTML = 'Custom Presets Ready'; statEl3.style.backgroundColor = 'blue'; }
-                }
-            });
-            ff.send(null);
-        })($customMilk[i], i);
-    }
-}
-
-function loadRandomCustomMilk() {
-    if ($customMilk.length === 0) {
-        console.log('No custom milk presets available yet.');
-        var statEl = document.querySelector('#stat');
-        if (statEl) { statEl.innerHTML = 'Custom presets loading...'; statEl.style.backgroundColor = 'orange'; }
-        return;
-    }
-    var idx = Math.floor(Math.random() * $customMilk.length);
-    var fname = '/presets/custmilk_' + idx + '.milk';
-    var originalName = $customMilk[idx].split('/').pop();
-    Module.loadPresetFile(fname);
-    if (window.updatePresetDisplay) { window.updatePresetDisplay(originalName); }
-    var statEl = document.querySelector('#stat');
-    if (statEl) { statEl.innerHTML = 'Loaded: ' + originalName; statEl.style.backgroundColor = 'green'; }
-    console.log('Loading random custom milk: ' + fname);
-}
+// Custom milk button uses global loadRandomCustomMilk() from C++ Module.init()
 
 document.getElementById("customMilkBtn").addEventListener('click', function() {
-    loadRandomCustomMilk();
+    if (typeof loadRandomCustomMilk !== 'undefined') {
+        loadRandomCustomMilk();
+    } else {
+        console.warn('loadRandomCustomMilk not available yet');
+    }
 });
 
 // ResizeObserver subsumes viewport resize for the canvases themselves,
