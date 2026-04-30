@@ -192,10 +192,10 @@ mySelect.value = firstValue;
 <img src='./image/scale4x.png' id="pm" style='position:absolute;top:2vh;right:2vh;height:15vh;z-index:3300;display:block;'"/>
 <img src='./image/1inkusa.png' id="pm" style='position:absolute;top:2vh;left:2vh;height:15vh;z-index:3300;display:block;'"/>
 
-<img src='./bar.png' id="progr1" style='position:absolute;bottom:14vh;right:40vh;width:3vh;z-index:3000;opacity:0.75;'"/>
-<img src='./bar.png' id="progr2" style='position:absolute;bottom:14vh;right:35vh;width:3vh;z-index:3000;opacity:0.75;'"/>
-<img src='./bar.png' id="progr3" style='position:absolute;bottom:14vh;right:30vh;width:3vh;z-index:3000;opacity:0.75;'"/>
-<img src='./bar.png' id="progr4" style='position:absolute;bottom:14vh;right:25vh;width:3vh;z-index:3000;opacity:0.75;'"/>
+<img src='./bar.png' id="progr1" style='display:none;position:absolute;bottom:14vh;right:40vh;width:3vh;z-index:3000;opacity:0.75;'"/>
+<img src='./bar.png' id="progr2" style='display:none;position:absolute;bottom:14vh;right:35vh;width:3vh;z-index:3000;opacity:0.75;'"/>
+<img src='./bar.png' id="progr3" style='display:none;position:absolute;bottom:14vh;right:30vh;width:3vh;z-index:3000;opacity:0.75;'"/>
+<img src='./bar.png' id="progr4" style='display:none;position:absolute;bottom:14vh;right:25vh;width:3vh;z-index:3000;opacity:0.75;'"/>
 
 <input type=button id=startBtn style='background-color:gold;position:absolute;display:none;left:6%;top:9%;z-index:3300;border:4px solid #e7e7e7;border-radius:17%;' />
 <img id=btnGif1 src=./image/btn2i.gif style='background-color:rgba(0,0,0,0.0);height:5vh;width:5vh;position:absolute;display:none;right:25%;top:5%;z-index:3300;cursor: pointer;'></img>
@@ -1222,7 +1222,7 @@ if (startupPaths.length > 0) {
 }
 Module.startRender(mcanvas.width, mcanvas.height);
 // Background load remaining presets so rendering isn't blocked
-loadRegularMilkPresets();
+// loadRegularMilkPresets();
 });
 },1000);
 });
