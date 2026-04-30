@@ -1198,7 +1198,7 @@ Module=instance;
 Module.init();
 updateLayout();
 const mcanvas = document.querySelector('#mcanvas');
-const startupResults = await loadStartupApiPresets(15);
+const startupResults = await loadStartupApiPresets(5);
 if (startupResults.length > 0) {
     Module.loadPresetFile(startupResults[0].vfsPath);
     updatePresetDisplay(startupResults[0].filename);
@@ -1209,10 +1209,11 @@ if (startupResults.length > 0) {
     console.warn('No startup API presets loaded, falling back to switchPreset');
     Module.switchPreset();
 }
-await loadRegularMilkPresets();
 addExistingVfsPresets();
-scanCustomMilk();
 Module.startRender(mcanvas.width, mcanvas.height);
+// Background load remaining presets so rendering isn't blocked
+loadRegularMilkPresets();
+scanCustomMilk();
 });
 },1000);
 });
@@ -1284,7 +1285,8 @@ async function loadRegularMilkPresets() {
         }
         console.log('Scanned', presets.length, 'regular milk presets');
 
-        for (let i = 0; i < presets.length; i++) {
+        const maxPresets = Math.min(presets.length, 10);
+        for (let i = 0; i < maxPresets; i++) {
             try {
                 const res = await fetch(presets[i]);
                 if (!res.ok) continue;
