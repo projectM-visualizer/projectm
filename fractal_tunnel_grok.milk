@@ -1,0 +1,144 @@
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+
+// =====================================================
+// FRACTAL ECHO TUNNEL v1.0
+// Hypnotic deep-space infinite tunnel with kaleidoscopic
+// symmetry, bass-pulsing organic walls, rotating energy
+// rings, and trippy glowing light streaks.
+// Heavy shader focus (2026 best practices).
+// =====================================================
+
+// --- Per-frame: heavy lifting + q-variable audio reactivity ---
+per_frame_1=q1=0.85*q1+0.15*bass;
+per_frame_2=q2=0.85*q2+0.15*mid;
+per_frame_3=q3=0.85*q3+0.15*treb;
+per_frame_4=q4=0.90*q4+0.10*(bass+mid+treb)*0.3333;
+per_frame_5=q5=time;
+per_frame_6=q6=0.93*q6+0.07*sin(time*0.22);
+per_frame_7=q7=0.80*q7+0.20*bass_att;
+per_frame_8=q8=0.5+0.5*sin(time*0.18+q3*1.8);
+
+// --- Custom Shape: central glowing energy core (octagon) ---
+shapecode_0_enabled=1
+shapecode_0_sides=8
+shapecode_0_additive=1
+shapecode_0_thick=2
+shapecode_0_x=0.5
+shapecode_0_y=0.5
+shapecode_0_rad=0.085+0.045*q1
+shapecode_0_r=0.92+0.08*sin(q8*1.4)
+shapecode_0_g=0.82+0.18*cos(q8*0.95)
+shapecode_0_b=1.0
+shapecode_0_a=0.62+0.28*q1
+shapecode_0_rot=time*0.28+q2*0.75
+
+// --- Custom Wave: spectrum-reactive pulsing energy ring ---
+wavecode_0_enabled=1
+wavecode_0_mode=0
+wavecode_0_additive=1
+wavecode_0_usedots=0
+wavecode_0_samples=96
+wavecode_0_sep=0.0
+wavecode_0_x=0.5
+wavecode_0_y=0.5
+wavecode_0_r=0.38+0.62*sin(q8+2.1)
+wavecode_0_g=0.58+0.42*cos(q8*1.25)
+wavecode_0_b=0.96
+wavecode_0_a=0.22+0.38*q1
+wavecode_0_scale=1.08+0.42*q2
+wavecode_0_smoothing=0.55
+
+// --- Neutralize legacy MilkDrop transforms (shader takes full control) ---
+fDecay=1.0
+fZoom=1.0
+fRot=0.0
+fWarp=0.0
+fInvX=0
+fInvY=0
+nWaveMode=0
+
+// =====================================================
+// WARP SHADER - Kaleidoscopic Fractal Echo Tunnel
+// 8-fold symmetry + organic bass breathing + forward zoom
+// =====================================================
+warp_1=`float2 uvc = uv - 0.5;
+warp_2=`float r = length(uvc);
+warp_3=`float a = atan2(uvc.y, uvc.x);
+warp_4=`float pi = 3.14159265;
+warp_5=`float folds = 8.0;
+warp_6=`float sector = 6.2831853 / folds;
+warp_7=`a = a + pi;
+warp_8=`a = a - floor(a / sector) * sector;
+warp_9=`a = abs(a - 3.14159265 / folds);
+warp_10=`uvc = float2(cos(a), sin(a)) * r;
+warp_11=`float pulse = 0.012 * q1 * sin(a * 6.0 + q5 * 2.0 + r * 4.0);
+warp_12=`r = r + pulse;
+warp_13=`uvc = normalize(uvc) * r;
+warp_14=`float zoom = 1.018 + 0.032 * q1;
+warp_15=`uvc = uvc * zoom;
+warp_16=`float rot = q5 * (0.007 + 0.015 * q2) + q6 * 0.15;
+warp_17=`float c = cos(rot);
+warp_18=`float s = sin(rot);
+warp_19=`uvc = float2(uvc.x * c - uvc.y * s, uvc.x * s + uvc.y * c);
+warp_20=`float echo_amp = 0.006 * (0.4 + 0.6 * q1);
+warp_21=`float echo = echo_amp * sin(r * 30.0 + a * 3.5 + q5 * 4.0);
+warp_22=`uvc += echo * float2(cos(a + 0.5), sin(a + 1.5));
+warp_23=`uvc += 0.5;
+warp_24=`ret = tex2D(sampler_main, uvc).xyz;
+
+// =====================================================
+// COMPOSITE SHADER - Glowing Overbright Trippy Polish
+// Chromatic aberration + performant glow + 5 energy rings
+// + rotating light streaks + elegant vignette
+// =====================================================
+comp_1=`float2 d = uv - 0.5;
+comp_2=`float r = length(d);
+comp_3=`float a = atan2(d.y, d.x);
+comp_4=`float2 ca = 0.0025 * float2(sin(q5*0.9), cos(q5*0.75)) * (0.3 + 0.7*q3);
+comp_5=`float3 col;
+comp_6=`col.r = tex2D(sampler_main, uv + ca).r;
+comp_7=`col.g = tex2D(sampler_main, uv).g;
+comp_8=`col.b = tex2D(sampler_main, uv - ca*0.8).b;
+comp_9=`float3 glow = float3(0,0,0);
+comp_10=`float2 off = 0.0018 * (1.0 + 3.0 * q1);
+comp_11=`glow += tex2D(sampler_main, uv + float2(off.x, 0)).xyz;
+comp_12=`glow += tex2D(sampler_main, uv - float2(off.x, 0)).xyz;
+comp_13=`glow += tex2D(sampler_main, uv + float2(0, off.y)).xyz;
+comp_14=`glow += tex2D(sampler_main, uv - float2(0, off.y)).xyz;
+comp_15=`glow *= 0.25;
+comp_16=`float glow_str = 0.22 + 0.45 * q2;
+comp_17=`col += glow * glow_str;
+comp_18=`col *= 1.12 + 0.65 * q3;
+comp_19=`col = pow(col, float3(0.90, 0.92, 0.88));
+comp_20=`float ring_b = 0.55 + 0.45 * q1;
+comp_21=`float thick = 0.007 + 0.003 * q2;
+comp_22=`float cc = q8;
+comp_23=`float rr = 0.13 + 0.015*sin(q5*0.35);
+comp_24=`float rc = max(0.0, thick - abs(r - rr)) / thick;
+comp_25=`float3 rcol = float3(0.65+0.35*sin(cc), 0.75+0.25*cos(cc*1.1), 0.95);
+comp_26=`col += rcol * rc * ring_b * 0.65;
+comp_27=`rr = 0.24 + 0.018*sin(q5*0.42 + 1.0);
+comp_28=`rc = max(0.0, thick - abs(r - rr)) / thick;
+comp_29=`rcol = float3(0.70+0.30*sin(cc+1.5), 0.80+0.20*cos(cc*0.8), 0.90+0.10*sin(cc*1.4));
+comp_30=`col += rcol * rc * ring_b * 0.60;
+comp_31=`rr = 0.36 + 0.012*sin(q5*0.28 + 2.0);
+comp_32=`rc = max(0.0, thick - abs(r - rr)) / thick;
+comp_33=`rcol = float3(0.60+0.40*sin(cc*1.2), 0.85+0.15*cos(cc), 1.00);
+comp_34=`col += rcol * rc * ring_b * 0.55;
+comp_35=`rr = 0.48 + 0.020*sin(q5*0.50 + 3.0);
+comp_36=`rc = max(0.0, thick - abs(r - rr)) / thick;
+comp_37=`rcol = float3(0.75+0.25*sin(cc*0.9), 0.70+0.30*cos(cc*1.3), 0.85+0.15*sin(cc));
+comp_38=`col += rcol * rc * ring_b * 0.50;
+comp_39=`rr = 0.61 + 0.016*sin(q5*0.33 + 4.0);
+comp_40=`rc = max(0.0, thick - abs(r - rr)) / thick;
+comp_41=`rcol = float3(0.55+0.45*sin(cc*1.5), 0.90+0.10*cos(cc*0.6), 0.95+0.05*sin(cc*1.1));
+comp_42=`col += rcol * rc * ring_b * 0.45;
+comp_43=`float sn = 12.0;
+comp_44=`float st = pow(abs(sin(a * sn + q5 * 0.6)), 22.0);
+comp_45=`float st_int = 0.18 + 0.32 * q3;
+comp_46=`float3 st_col = float3(1.0, 0.82, 0.55);
+comp_47=`col += st_col * st * st_int * (0.5 + 0.5 * sin(r*6.0 + q5*2.0));
+comp_48=`float vig = smoothstep(0.65, 0.25, r);
+comp_49=`col *= 0.65 + 0.35 * vig;
+comp_50=`ret = col;

@@ -58,6 +58,8 @@ body { margin: 0; padding: 0; background-color: black; overflow: hidden; }
   <button id="apiRandomPresetBtn" class="control-btn" style="background-color:teal;left:3%;bottom:55%;">
     <span class="btn-label">Random Preset (API)</span>
   </button>
+
+  <div id="preset-name">Preset: --</div>
 </div>
 
 <!-- Hidden data containers -->
@@ -80,6 +82,17 @@ body { margin: 0; padding: 0; background-color: black; overflow: hidden; }
 // Initialization flags
 let isBezelMode = true;
 let Module;
+
+// Preset name display helper
+window.updatePresetDisplay = function(name) {
+    if (!name) return;
+    const basename = name.split('/').pop();
+    const el = document.querySelector('#preset-name');
+    if (el) {
+        el.textContent = 'Preset: ' + basename;
+        window.currentPresetName = basename;
+    }
+};
 
 // ====== CANVAS SIZE MANAGEMENT ======
 function updateLayout() {
@@ -198,17 +211,18 @@ async function fetchApiPreset(apiBase) {
 
 async function loadStartupApiPresets(count) {
     const apiBase = localStorage.getItem('apiBase') || 'https://storage.noahcohn.com';
-    const paths = [];
+    const results = [];
     for (let i = 0; i < count; i++) {
         try {
             const result = await fetchApiPreset(apiBase);
-            paths.push(result.vfsPath);
+            results.push(result);
             console.log('Startup API preset', i, 'loaded:', result.filename);
+            updatePresetDisplay(result.filename);
         } catch (e) {
             console.error('Failed to load startup API preset', i, e);
         }
     }
-    return paths;
+    return results;
 }
 
 // ====== UI CONTROLS ======
@@ -227,6 +241,7 @@ document.getElementById("apiRandomPresetBtn").addEventListener('click', async fu
     try {
         const result = await fetchApiPreset(apiBase);
         Module.loadPresetFile(result.vfsPath);
+        updatePresetDisplay(result.filename);
         console.log('Loaded API preset:', result.filename, 'from', result.dir);
     } catch (e) {
         console.error('Failed to load API preset, falling back to local preset:', e);
@@ -278,11 +293,12 @@ setTimeout(function(){
             updateLayout();
             const mcanvas = document.querySelector('#mcanvas');
 
-            const startupPaths = await loadStartupApiPresets(5);
-            if (startupPaths.length > 0) {
-                Module.loadPresetFile(startupPaths[0]);
-                for (let i = 1; i < startupPaths.length; i++) {
-                    Module.addPresetFile(startupPaths[i]);
+            const startupResults = await loadStartupApiPresets(5);
+            if (startupResults.length > 0) {
+                Module.loadPresetFile(startupResults[0].vfsPath);
+                updatePresetDisplay(startupResults[0].filename);
+                for (let i = 1; i < startupResults.length; i++) {
+                    Module.addPresetFile(startupResults[i].vfsPath);
                 }
             } else {
                 console.warn('No startup API presets loaded, falling back to switchPreset');

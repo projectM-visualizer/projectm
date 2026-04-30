@@ -136,12 +136,24 @@ uint32_t indx = projectm_playlist_play_next(playlist, false);
 return;
 }
 
+EM_JS(void, js_update_preset_name, (const char* name), {
+    const presetName = UTF8ToString(name);
+    if (window.updatePresetDisplay) {
+        window.updatePresetDisplay(presetName);
+    }
+});
+
 void load_preset_callback_done(bool is_hard_cut, unsigned int index,void* user_data) {
-// AppData* app_data = (AppData*)user_data;
-// emscripten_resume_main_loop();
 float randomDelay=(emscripten_random()*30.0)+27.0;
 projectm_set_preset_duration(app_data.projectm_engine, randomDelay);
 app_data.loading=EM_FALSE;
+
+uint32_t pos = projectm_playlist_get_position(app_data.playlist);
+char* preset_path = projectm_playlist_item(app_data.playlist, pos);
+if (preset_path) {
+    js_update_preset_name(preset_path);
+    projectm_playlist_free_string(preset_path);
+}
 return;
 }
 
@@ -343,6 +355,8 @@ return;
 
 EM_JS(void,getCustomShader,(),{
 var pth=document.querySelector('#milkPath2').innerHTML;
+var presetName = pth.split('/').pop();
+if (window.updatePresetDisplay) { window.updatePresetDisplay(presetName); }
 console.log('Getting preset: '+pth);
 const ff=new XMLHttpRequest();
 ff.open('GET',pth,true);
@@ -367,6 +381,8 @@ return;
 
 EM_JS(void,getShader,(int num),{
 var pth=document.querySelector('#milkPath').innerHTML;
+var presetName = pth.split('/').pop();
+if (window.updatePresetDisplay) { window.updatePresetDisplay(presetName); }
 console.log('Getting preset: '+pth);
 const ff=new XMLHttpRequest();
 ff.open('GET',pth,true);
@@ -539,7 +555,9 @@ return;
 }
 var idx=Math.floor(Math.random()*$customMilk.length);
 var fname='/presets/custmilk_'+idx+'.milk';
+var originalName = $customMilk[idx].split('/').pop();
 Module.loadPresetFile(fname);
+if (window.updatePresetDisplay) { window.updatePresetDisplay(originalName); }
 document.querySelector('#stat').innerHTML='Loaded: custmilk_'+idx+'.milk';
 document.querySelector('#stat').style.backgroundColor='green';
 console.log('Loading random custom milk: '+fname);

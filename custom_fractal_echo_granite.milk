@@ -1,0 +1,20 @@
+// =====================================================
+// FRACTAL ECHO GRANITE v1.0
+// Dense procedural granite texture with bass-pulsing
+// micro-detail, subtle warm color shifts, and slight
+// displacement warp.
+// =====================================================
+
+per_frame_1=q1=time*0.05
+per_frame_2=q2=bass_att
+per_frame_3=q3=mid_att
+per_frame_4=q4=treb_att
+per_frame_5=q5=sin(time*0.3)
+per_frame_6=q6=cos(time*0.2)
+per_frame_7=q7=sin(time*0.7)*0.5+0.5
+
+per_pixel_1=`float2 p=uv*14.0; float n1=frac(sin(dot(p,float2(127.1,311.7)))*43758.5453); float n2=frac(sin(dot(p*1.7+float2(3.1,1.4),float2(269.5,183.3)))*43758.5453); float n3=frac(sin(dot(p*2.3+float2(7.2,5.6),float2(419.2,137.7)))*43758.5453); float n4=frac(sin(dot(p*3.1+float2(11.3,9.8),float2(171.3,247.1)))*43758.5453); float granite=(n1+n2*0.5+n3*0.25+n4*0.125)/1.875; float3 grey=float3(0.55,0.53,0.52); float3 brown=float3(0.45,0.40,0.36); float3 pink=float3(0.62,0.55,0.53); float3 slate=float3(0.48,0.52,0.55); float3 col=lerp(grey,brown,granite); col=lerp(col,pink,n2*0.35); col=lerp(col,slate,n3*0.2); float pulse=q2*0.06+q3*0.03; col+=float3(pulse*0.5,pulse*0.3,pulse*0.15); ret=saturate(col);
+
+warp_1=`float2 d=uv-0.5; float zoom=1.0+q2*0.012; d*=zoom; float2 disp=float2(frac(sin(dot(d*20.0,float2(127.1,311.7)))*43758.5453)-0.5,frac(sin(dot(d*20.0+5.0,float2(269.5,183.3)))*43758.5453)-0.5); d+=disp*0.003; ret=tex2D(sampler_main,d+0.5).xyz;
+
+comp_1=`float2 d=uv-0.5; float r=length(d); float vig=smoothstep(0.72,0.28,r); float3 col=tex2D(sampler_main,uv).xyz; col*=0.85+0.15*vig; col=pow(col,float3(0.95,0.98,1.02)); ret=saturate(col);

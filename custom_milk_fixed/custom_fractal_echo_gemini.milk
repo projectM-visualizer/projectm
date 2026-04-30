@@ -1,0 +1,187 @@
+[preset00]
+fRating=5.0
+fGammaAdj=1.000
+fDecay=0.980
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.500
+fWaveParam=0.000
+fModWaveAlphaStart=1.000
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.000
+fShader=1.000
+zoom=1.000
+rot=0.000
+cx=0.500
+cy=0.500
+dx=0.000
+dy=0.000
+warp=0.000
+sx=1.000
+sy=1.000
+wave_r=1.000
+wave_g=1.000
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+
+per_frame_init_1=vol = 0;
+per_frame_init_2=mtime = 0;
+
+per_frame_1=vol = (bass + mid + treb) * 0.3333;
+per_frame_2=vol_att = (bass_att + mid_att + treb_att) * 0.3333;
+per_frame_3=mtime = mtime + vol * 0.01;
+per_frame_4=q1 = mtime;
+per_frame_5=q2 = bass_att;
+per_frame_6=q3 = mid_att;
+per_frame_7=q4 = treb_att;
+per_frame_8=zoom = 1.0;
+per_frame_9=warp = 0.0;
+per_frame_10=rot = 0.0;
+per_frame_11=q5 = 0.5 + 0.5*sin(mtime*0.5);
+per_frame_12=q6 = 0.5 + 0.5*sin(mtime*0.61);
+per_frame_13=q7 = 0.5 + 0.5*sin(mtime*0.73);
+
+wavecode_0_enabled=1
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=1
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=1
+wavecode_0_scaling=2.000
+wavecode_0_smoothing=0.500
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=0.600
+wave_0_per_point_1=ang = (sample * 6.2831) + q1;
+wave_0_per_point_2=rad = 0.2 + value1 * 0.2 + q2*0.1;
+wave_0_per_point_3=x = 0.5 + rad * cos(ang);
+wave_0_per_point_4=y = 0.5 + rad * sin(ang);
+wave_0_per_point_5=r = q5;
+wave_0_per_point_6=g = q6;
+wave_0_per_point_7=b = q7;
+
+shapecode_0_enabled=1
+shapecode_0_sides=6
+shapecode_0_additive=1
+shapecode_0_thickOutline=1
+shapecode_0_textured=0
+shapecode_0_num_inst=1
+shapecode_0_x=0.500
+shapecode_0_y=0.500
+shapecode_0_rad=0.300
+shapecode_0_ang=0.000
+shapecode_0_tex_ang=0.000
+shapecode_0_tex_zoom=1.000
+shapecode_0_r=1.000
+shapecode_0_g=1.000
+shapecode_0_b=1.000
+shapecode_0_a=0.000
+shapecode_0_r2=1.000
+shapecode_0_g2=1.000
+shapecode_0_b2=1.000
+shapecode_0_a2=0.500
+shapecode_0_border_r=1.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=1.000
+shapecode_0_border_a=1.000
+shape_0_per_frame_1=rad = 0.3 + q2*0.1;
+shape_0_per_frame_2=ang = q1 * 0.5;
+shape_0_per_frame_3=r = q5; g = q6; b = q7;
+shape_0_per_frame_4=r2 = q7; g2 = q5; b2 = q6;
+shape_0_per_frame_5=border_a = q2 * 0.5;
+
+PSVERSION_WARP=3
+warp_1=`shader_body`
+warp_2=`{`
+warp_3=`    // Move origin to center`
+warp_4=`    float2 uv2 = uv - 0.5;`
+warp_5=`    `
+warp_6=`    // Convert to Polar Coordinates`
+warp_7=`    float rad = length(uv2);`
+warp_8=`    float ang = atan2(uv2.y, uv2.x);`
+warp_9=`    `
+warp_10=`    // Kaleidoscopic Symmetry`
+warp_11=`    float slices = 8.0;`
+warp_12=`    float pi2 = 6.2831853;`
+warp_13=`    ang = fmod(ang + pi2 * 10.0, pi2);`
+warp_14=`    float seg = pi2 / slices;`
+warp_15=`    ang = fmod(ang, seg);`
+warp_16=`    ang = abs(ang - seg/2.0);`
+warp_17=`    `
+warp_18=`    // Tunnel zoom & twist modulated by bass (q2) and time`
+warp_19=`    float zoom = 0.98 - 0.05 * q2;`
+warp_20=`    rad = rad * zoom;`
+warp_21=`    ang += 0.05 * sin(rad * 15.0 - time * 2.0);`
+warp_22=`    `
+warp_23=`    // Convert back to Cartesian`
+warp_24=`    uv2 = float2(cos(ang), sin(ang)) * rad;`
+warp_25=`    uv = uv2 + 0.5;`
+warp_26=`    `
+warp_27=`    // Feedback loop`
+warp_28=`    float3 col = tex2D(sampler_main, uv).xyz;`
+warp_29=`    ret = col * 0.95 - 0.005;`
+warp_30=`}`
+
+PSVERSION_COMP=3
+comp_1=`shader_body`
+comp_2=`{`
+comp_3=`    // Chromatic aberration expanding with mid frequencies (q3)`
+comp_4=`    float2 d = (uv - 0.5) * 0.015 * q3;`
+comp_5=`    float r = tex2D(sampler_main, uv - d).x;`
+comp_6=`    float g = tex2D(sampler_main, uv).y;`
+comp_7=`    float b = tex2D(sampler_main, uv + d).z;`
+comp_8=`    float3 col = float3(r, g, b);`
+comp_9=`    `
+comp_10=`    // Color tinting using per_frame time-based colors`
+comp_11=`    float3 tint = float3(q5, q6, q7);`
+comp_12=`    `
+comp_13=`    // Overbright output driven by treble (q4)`
+comp_14=`    ret = col * 1.4 + col * tint * q4;`
+comp_15=`}`

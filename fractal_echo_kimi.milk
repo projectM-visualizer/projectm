@@ -1,0 +1,135 @@
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+
+fRating=4.000000
+fGammaAdj=1.900000
+fDecay=0.965000
+fVideoEchoZoom=1.006180
+fVideoEchoAlpha=0.000000
+nVideoEchoOrientation=3
+nWaveMode=5
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=4.099998
+fWaveScale=1.285751
+fWaveSmoothing=0.630000
+fWaveParam=0.000000
+fModWaveAlphaStart=0.710000
+fModWaveAlphaEnd=1.300000
+fWarpAnimSpeed=1.000000
+fWarpScale=1.331000
+fZoomExponent=1.000000
+fShader=0.100000
+zoom=0.999900
+rot=0.000000
+cx=0.500000
+cy=0.500000
+dx=0.000000
+dy=0.000000
+warp=0.010000
+sx=0.999900
+sy=0.999900
+wave_r=0.650000
+wave_g=0.650000
+wave_b=0.650000
+wave_x=0.500000
+wave_y=0.500000
+ob_size=0.005000
+ob_r=0.010000
+ob_g=0.000000
+ob_b=0.000000
+ob_a=0.000000
+ib_size=0.250000
+ib_r=0.250000
+ib_g=0.350000
+ib_b=0.650000
+ib_a=0.000000
+nMotionVectorsX=64.000000
+nMotionVectorsY=1.008000
+mv_dx=0.000000
+mv_dy=0.000000
+mv_l=0.500000
+mv_r=0.475000
+mv_g=0.341000
+mv_b=0.690000
+mv_a=0.000000
+
+per_frame_1=q1=time
+per_frame_2=q2=bass_att
+per_frame_3=q3=treb_att
+per_frame_4=q4=mid_att
+per_frame_5=q5=0.5+0.5*sin(time*0.3)
+per_frame_6=q6=8.0
+per_frame_7=q7=4.0
+per_frame_8=q8=mid_att
+per_frame_9=q9=0.5+0.5*sin(time*0.7)
+per_frame_10=q10=0.15
+per_frame_11=q11=1.0+q2*0.2
+per_frame_12=q12=time*0.5
+
+warp_1=`float2 uvc=uv-0.5;
+warp_2=`float r=length(uvc);
+warp_3=`float a=atan2(uvc.y,uvc.x);
+warp_4=`float seg=6.2831853/q6;
+warp_5=`a=a+seg*0.5;
+warp_6=`a=a-floor(a/seg)*seg;
+warp_7=`a=abs(a-seg*0.5);
+warp_8=`a=a+q5*q1;
+warp_9=`float tunnelR=r*(1.0+q2*0.3*sin(q1*2.5));
+warp_10=`tunnelR=pow(tunnelR,0.5+q4*0.5);
+warp_11=`float2 baseUV=float2(cos(a)*tunnelR,sin(a)*tunnelR);
+warp_12=`float2 e0=baseUV+0.5;
+warp_13=`float3 accum=tex2D(sampler_main,e0).xyz*1.0;
+warp_14=`float twist1=q10*sin(q1*0.8+2.094);
+warp_15=`float c1=cos(twist1); float s1=sin(twist1);
+warp_16=`float2 uv1=baseUV*1.8;
+warp_17=`uv1=float2(uv1.x*c1-uv1.y*s1,uv1.x*s1+uv1.y*c1);
+warp_18=`uv1+=0.5;
+warp_19=`accum+=tex2D(sampler_main,uv1).xyz*0.82;
+warp_20=`float twist2=q10*sin(q1*0.8+4.188);
+warp_21=`float c2=cos(twist2); float s2=sin(twist2);
+warp_22=`float2 uv2=baseUV*2.6;
+warp_23=`uv2=float2(uv2.x*c2-uv2.y*s2,uv2.x*s2+uv2.y*c2);
+warp_24=`uv2+=0.5;
+warp_25=`accum+=tex2D(sampler_main,uv2).xyz*0.67;
+warp_26=`float twist3=q10*sin(q1*0.8+6.283);
+warp_27=`float c3=cos(twist3); float s3=sin(twist3);
+warp_28=`float2 uv3=baseUV*3.4;
+warp_29=`uv3=float2(uv3.x*c3-uv3.y*s3,uv3.x*s3+uv3.y*c3);
+warp_30=`uv3+=0.5;
+warp_31=`accum+=tex2D(sampler_main,uv3).xyz*0.55;
+warp_32=`float3 tint=float3(0.4+q8*0.6,0.2+q3*0.5,0.6+q2*0.4);
+warp_33=`accum*=tint*(1.0+q9*0.3);
+warp_34=`ret=accum;
+
+comp_1=`float3 col=tex2D(sampler_main,uv).xyz;
+comp_2=`float2 center=uv-0.5;
+comp_3=`float centerDist=length(center);
+comp_4=`float glow=1.0-smoothstep(0.0,0.45,centerDist);
+comp_5=`glow=pow(glow,2.0);
+comp_6=`float3 glowColor=float3(0.3+q2*0.7,0.15+q8*0.5,0.5+q3*0.5);
+comp_7=`col+=glowColor*glow*(0.15+q3*0.25);
+comp_8=`float ringAngle=atan2(center.y,center.x);
+comp_9=`float ring=sin(ringAngle*3.0+q1*1.5)*0.5+0.5;
+comp_10=`ring*=(1.0-smoothstep(0.1,0.5,centerDist));
+comp_11=`ring*=q3*0.4;
+comp_12=`col+=float3(0.5,0.8,1.0)*ring;
+comp_13=`float vignette=1.0-smoothstep(0.3,0.85,centerDist*(1.0-q2*0.15));
+comp_14=`col*=vignette;
+comp_15=`float luminance=dot(col,float3(0.299,0.587,0.114));
+comp_16=`float overbright=max(luminance-0.7,0.0)*q3*2.0;
+comp_17=`col+=float3(0.8,0.9,1.0)*overbright;
+comp_18=`float3 hueTint=float3(0.5+0.5*sin(q12),0.5+0.5*sin(q12+2.094),0.5+0.5*sin(q12+4.188));
+comp_19=`col*=0.7+hueTint*0.6;
+comp_20=`col*=q11;
+comp_21=`ret=saturate(col);

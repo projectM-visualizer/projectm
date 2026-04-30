@@ -1,0 +1,101 @@
+per_frame_1=fDecay=0.980000
+per_frame_2=zoom=1.000000
+per_frame_3=rot=0.000000
+per_frame_4=sx=1.000000
+per_frame_5=sy=1.000000
+per_frame_6=wave_a=0.000000
+per_frame_7=q1=time*0.12
+per_frame_8=q2=bass_att
+per_frame_9=q3=mid_att
+per_frame_10=q4=treb_att
+per_frame_11=q5=bass
+per_frame_12=q6=0.06+q2*0.03
+per_frame_13=q7=0.12+q3*0.04
+per_frame_14=q8=0.35+q4*0.08
+per_frame_15=q9=0.15+q5*0.06
+per_frame_16=q10=0.25+q2*0.15
+per_frame_17=q11=sin(q1*2.0)
+per_frame_18=q12=0.5+q5*0.4
+
+wavecode_0_enabled=1
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=1
+wavecode_0_bUseDots=1
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=1
+wavecode_0_scaling=1.0
+wavecode_0_smoothing=0.5
+wavecode_0_r=1.0
+wavecode_0_g=0.8
+wavecode_0_b=0.5
+wavecode_0_a=0.7
+wave_0_per_point1=ang=sample*6.2832+q1
+wave_0_per_point2=rad=0.25+value1*0.15
+wave_0_per_point3=x=cos(ang)*rad*0.5+0.5
+wave_0_per_point4=y=sin(ang)*rad*0.5+0.5
+wave_0_per_point5=r=0.9+0.1*sin(q1*3)
+wave_0_per_point6=g=0.5+0.3*sin(q1*2+1)
+wave_0_per_point7=b=0.2+0.2*sin(q1*5+2)
+wave_0_per_point8=a=1
+
+shapecode_0_enabled=1
+shapecode_0_sides=100
+shapecode_0_additive=1
+shapecode_0_thickOutline=0
+shapecode_0_textured=0
+shapecode_0_num_inst=1
+shapecode_0_x=0.5
+shapecode_0_y=0.5
+shapecode_0_rad=0.08
+shapecode_0_r=0.0
+shapecode_0_g=0.0
+shapecode_0_b=0.0
+shapecode_0_a=0.8
+shapecode_0_r2=0.0
+shapecode_0_g2=0.0
+shapecode_0_b2=0.0
+shapecode_0_a2=0.8
+shapecode_0_border_r=1.0
+shapecode_0_border_g=0.6
+shapecode_0_border_b=0.2
+shapecode_0_border_a=0.6
+shape_0_per_frame1=rad=q6+q5*0.02
+shape_0_per_frame2=r=0
+shape_0_per_frame3=g=0
+shape_0_per_frame4=b=0
+shape_0_per_frame5=a=0.9+q5*0.1
+shape_0_per_frame6=border_r=0.9+0.1*sin(q1*4)
+shape_0_per_frame7=border_g=0.5+0.2*sin(q1*3+1)
+shape_0_per_frame8=border_b=0.1+0.1*sin(q1*5+2)
+
+warp_1=`float2 d = uv - 0.5;
+warp_2=`float r = length(d);
+warp_3=`float a = atan2(d.y, d.x);
+warp_4=`float pull = q9 / (r * r + 0.005);
+warp_5=`float sw = q10 * exp(-r * 4.0);
+warp_6=`a += sw + q1 * 0.5;
+warp_7=`r -= pull * 0.003;
+warp_8=`float2 uv2 = float2(cos(a), sin(a)) * r + 0.5;
+warp_9=`ret = tex2D(sampler_main, uv2).xyz;
+warp_10=`ret *= 0.96;
+
+comp_1=`float2 d = uv - 0.5;
+comp_2=`float r = length(d);
+comp_3=`float a = atan2(d.y, d.x);
+comp_4=`float3 col = tex2D(sampler_main, uv).xyz;
+comp_5=`float disk = smoothstep(q7, q7 + 0.04, r) * smoothstep(q8, q8 - 0.08, r);
+comp_6=`float hot = smoothstep(q6, q6 + 0.03, r) * smoothstep(q7, q7 - 0.03, r);
+comp_7=`float ang = a + q1 * 2.0 + q11;
+comp_8=`float doppler = sin(ang) * 0.5 + 0.5;
+comp_9=`float3 acc = lerp(float3(0.9, 0.25, 0.02), float3(0.05, 0.25, 0.8), doppler);
+comp_10=`float3 glow = float3(1.0, 0.85, 0.5);
+comp_11=`float flare = q5 * q5 * 0.4 * exp(-r * 3.0);
+comp_12=`col += acc * disk * q12;
+comp_13=`col += glow * hot * q12 * 1.5;
+comp_14=`col += float3(0.8, 0.5, 0.2) * flare;
+comp_15=`float shadow = smoothstep(q6 + 0.02, q6 - 0.01, r);
+comp_16=`col *= 1.0 - shadow * 0.9;
+comp_17=`float vig = smoothstep(0.8, 0.2, r);
+comp_18=`col *= 0.3 + 0.7 * vig;
+comp_19=`ret = saturate(col);

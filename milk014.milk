@@ -1,0 +1,100 @@
+MILKDROP_PRESET_VERSION=200
+PSVERSION=2
+
+fDecay=0.96
+fGammaAdj=1.1
+fWaveAlpha=0.8
+wave_r=0.2
+wave_g=0.7
+wave_b=1.0
+wave_x=0.5
+wave_y=0.5
+wave_mode=0
+warp=0
+zoom=1
+rot=0
+sx=1
+sy=1
+ob_size=0
+ib_size=0
+
+per_frame_1=q1=time
+per_frame_2=q2=bass_att
+per_frame_3=q3=mid_att
+per_frame_4=q4=treb_att
+per_frame_5=q5=sin(time*0.3)
+per_frame_6=q6=cos(time*0.3)
+per_frame_7=q7=0.5+0.5*sin(time*0.7)
+per_frame_8=q8=0.5+0.5*cos(time*0.5)
+per_frame_9=q9=q2*0.03
+per_frame_10=q10=q3*0.04
+per_frame_11=q11=1.0+q2*0.15
+per_frame_12=q12=time*0.2+q3*0.8
+per_frame_13=wave_r=0.2+0.2*q2
+per_frame_14=wave_g=0.5+0.3*q3
+per_frame_15=wave_b=0.8+0.2*q4
+
+wavecode_0_enabled=1
+wavecode_0_mode=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=1
+wavecode_0_samples=200
+wavecode_0_scaling=1
+wavecode_0_smoothing=0.5
+wavecode_0_r=0.2
+wavecode_0_g=0.8
+wavecode_0_b=1.0
+wavecode_0_a=0.8
+
+shapecode_0_enabled=1
+shapecode_0_sides=6
+shapecode_0_additive=0
+shapecode_0_thickOutline=0
+shapecode_0_textured=0
+shapecode_0_x=0.5
+shapecode_0_y=0.5
+shapecode_0_rad=0.08
+shapecode_0_ang=0
+shapecode_0_r=0.3
+shapecode_0_g=0.6
+shapecode_0_b=0.9
+shapecode_0_a=0.5
+shapecode_0_r2=0.1
+shapecode_0_g2=0.3
+shapecode_0_b2=0.6
+shapecode_0_a2=0.2
+shapecode_0_border_r=0.4
+shapecode_0_border_g=0.7
+shapecode_0_border_b=1.0
+shapecode_0_border_a=0.4
+
+warp_1=`float2 p = uv - 0.5;
+warp_2=`float rot = q12;
+warp_3=`float cr = cos(rot); float sr = sin(rot);
+warp_4=`float2 pr = float2(p.x * cr - p.y * sr, p.x * sr + p.y * cr);
+warp_5=`float sc = 8.0 + q2 * 4.0;
+warp_6=`float d1 = dot(pr, float2(1.0, 0.0)) * sc;
+warp_7=`float d2 = dot(pr, float2(0.5, 0.8660254)) * sc;
+warp_8=`float d3 = dot(pr, float2(-0.5, 0.8660254)) * sc;
+warp_9=`float f1 = abs(d1 - floor(d1 + 0.5));
+warp_10=`float f2 = abs(d2 - floor(d2 + 0.5));
+warp_11=`float f3 = abs(d3 - floor(d3 + 0.5));
+warp_12=`float dist = min(f1, min(f2, f3));
+warp_13=`float lattice = smoothstep(0.12, 0.0, dist);
+warp_14=`float pulse = 1.0 + q9 * sin(dist * 20.0 - q1 * 3.0);
+warp_15=`float2 offset = float2(cos(d1 * 0.5), sin(d2 * 0.5)) * q10 * 0.02;
+warp_16=`float2 refract = pr * pulse + offset + lattice * q2 * 0.03;
+warp_17=`ret = tex2D(sampler_main, refract + 0.5).xyz;
+
+comp_1=`float3 col = tex2D(sampler_main, uv).xyz;
+comp_2=`float vig = length(uv - 0.5);
+comp_3=`vig = smoothstep(0.7, 0.2, vig);
+comp_4=`float3 ice = float3(0.3, 0.6, 1.0);
+comp_5=`col = lerp(col, col * ice * 1.3, 0.4);
+comp_6=`float3 rainbow;
+comp_7=`rainbow.r = sin(q1 * 0.7) * 0.5 + 0.5;
+comp_8=`rainbow.g = sin(q1 * 0.7 + 2.094) * 0.5 + 0.5;
+comp_9=`rainbow.b = sin(q1 * 0.7 + 4.189) * 0.5 + 0.5;
+comp_10=`col += rainbow * (1.0 - vig) * 0.15 * q4;
+comp_11=`col *= 0.9 + 0.1 * q2;
+comp_12=`ret = saturate(col);

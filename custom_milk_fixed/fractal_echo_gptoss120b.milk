@@ -1,0 +1,100 @@
+[preset00]
+MILKDROP_PRESET_VERSION=200
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+
+fDecay=0.97
+fGammaAdj=2.2
+bBrighten=1
+bDarken=0
+bInvert=0
+bSolarize=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+
+per_frame_init_1=BASE_ZOOM=0.95; MAX_ZOOM=1.10; BASE_WARP=0.5; WARP_SENS=0.3; MID_SPEED=0.02; BASS_SENS=0.08; TREB_SENS=0.25;
+
+per_frame_1=q1 = clamp(bass,0,1) * BASS_SENS;
+per_frame_2=q2 = clamp(mid,0,1) * MID_SPEED;
+per_frame_3=q3 = clamp(treb,0,1) * TREB_SENS;
+per_frame_4=zoom = BASE_ZOOM + q1;
+per_frame_5=rot = rot + q2;
+per_frame_6=warp = BASE_WARP + q3;
+
+per_pixel_1=zoom = zoom * (1.0 - rad*0.15);
+per_pixel_2=rot = rot + rad*0.5;
+
+wavecode_0_enabled=1
+wavecode_0_bSpectrum=1
+wavecode_0_samples=256
+wavecode_0_scaling=0.55
+wavecode_0_smoothing=0.6
+wavecode_0_bAdditive=1
+wavecode_0_r=0.9
+wavecode_0_g=0.6
+wavecode_0_b=0.3
+wavecode_0_a=0.8
+
+wave_0_init_1=t1=0;
+
+wave_0_per_frame_1=t1 = t1 + 0.015;
+
+wave_0_per_point_1=ang = sample*2.0*3.14159265 + t1;
+wave_0_per_point_2=rad = 0.25 + 0.15*value1;
+wave_0_per_point_3=x = 0.5 + rad*cos(ang);
+wave_0_per_point_4=y = 0.5 + rad*sin(ang);
+wave_0_per_point_5=r = 0.8 + 0.2*sin(ang + time);
+wave_0_per_point_6=g = 0.5 + 0.5*value1;
+wave_0_per_point_7=b = 0.9 - 0.3*value1;
+
+shapecode_0_enabled=1
+shapecode_0_sides=5
+shapecode_0_num_inst=3
+shapecode_0_rad=0.12
+shapecode_0_x=0.5
+shapecode_0_y=0.5
+shapecode_0_r=0.4
+shapecode_0_g=0.6
+shapecode_0_b=1.0
+shapecode_0_a=0.7
+shapecode_0_border_r=1.0
+shapecode_0_border_g=1.0
+shapecode_0_border_b=1.0
+shapecode_0_border_a=0.5
+shapecode_0_additive=1
+
+shape_0_per_frame_1=t1 = time*0.3;
+shape_0_per_frame_2=inst_off = instance*2.0*3.14159265/num_inst;
+shape_0_per_frame_3=ang = t1 + inst_off;
+shape_0_per_frame_4=x = 0.5 + 0.25*cos(ang);
+shape_0_per_frame_5=y = 0.5 + 0.25*sin(ang);
+shape_0_per_frame_6=rad = 0.12 + 0.04*sin(time + instance);
+shape_0_per_frame_7=r = 0.4 + 0.3*sin(time + instance);
+shape_0_per_frame_8=g = 0.5 + 0.2*cos(time + instance);
+shape_0_per_frame_9=b = 0.8 + 0.1*sin(time*2.0 + instance);
+
+warp_1=`float2 c = uv - 0.5;
+warp_2=`float r = length(c);
+warp_3=`float a = atan2(c.y, c.x);
+warp_4=`float sectors = 6.0;
+warp_5=`a = fmod(a, 2.0*3.14159265/sectors);
+warp_6=`a = abs(a);
+warp_7=`a += time*0.2;
+warp_8=`float radial = r + 0.12*sin(r*12.0 + time)*q1;
+warp_9=`float2 new_uv = 0.5 + radial*float2(cos(a), sin(a));
+warp_10=`uv = lerp(uv_orig, new_uv, warp);
+warp_11=`ret = tex2D(sampler_main, uv).xyz;
+
+comp_1=`float mid = _c3.y;
+comp_2=`float treb = _c3.z;
+comp_3=`float glow = saturate(mid*0.6 + treb*0.4);
+comp_4=`float3 base = hue_shader;
+comp_5=`float3 glowCol = float3(1.0,0.8,0.6) * glow;
+comp_6=`float3 outCol = base + glowCol;
+comp_7=`outCol = outCol * 1.2;
+comp_8=`ret = saturate(outCol);
