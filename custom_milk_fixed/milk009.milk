@@ -1,0 +1,102 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5.000000
+fGammaAdj=1.000
+fDecay=0.950
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=1.002
+fWaveSmoothing=0.261
+fWaveParam=0.000
+fModWaveAlphaStart=0.500
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=1.000
+fWarpScale=1.331
+fZoomExponent=1.0
+fShader=0.0
+zoom=1.0
+rot=0.0
+cx=0.5
+cy=0.5
+dx=0.0
+dy=0.0
+warp=1.0
+sx=1.0
+sy=1.0
+wave_r=0.5
+wave_g=0.5
+wave_b=0.5
+wave_x=0.5
+wave_y=0.5
+ob_size=0.01
+ob_r=0.0
+ob_g=0.0
+ob_b=0.0
+ob_a=1.0
+ib_size=0.01
+ib_r=0.0
+ib_g=0.0
+ib_b=0.0
+ib_a=1.0
+mv_x=64.0
+mv_y=48.0
+mv_dx=0.0
+mv_dy=0.0
+mv_l=0.9
+mv_r=1.0
+mv_g=1.0
+mv_b=1.0
+mv_a=0.0
+
+per_frame_init_1=`
+    decay = 0.98;
+`
+per_frame_1=`
+    q1 = time;
+`
+per_pixel_1=`
+    // Audio-reactive pulse
+    float moon_pulse = 1.0 + 0.1 * bass_att;
+
+    // Dynamic drift
+    float2 moon_center = float2(0.5 + 0.03 * sin(time * 0.4), 0.5 + 0.03 * cos(time * 0.3));
+
+    // Crescent Moon
+    // first circle (the main body of the moon)
+    float moon_radius = 0.2 * moon_pulse;
+    float moon_dist = distance(uv, moon_center);
+    float moon_shape = smoothstep(moon_radius, moon_radius - 0.01, moon_dist);
+
+    // second circle (the part we subtract to make the crescent)
+    float cutout_radius = 0.18 * moon_pulse;
+    float2 cutout_offset = float2(0.08 * moon_pulse, 0.0);
+    float cutout_dist = distance(uv, moon_center + cutout_offset);
+    float cutout_shape = smoothstep(cutout_radius, cutout_radius - 0.01, cutout_dist);
+
+    // combine the shapes
+    float final_moon = moon_shape - cutout_shape;
+
+    // color the moon
+    float3 moon_color = float3(0.9, 0.9, 0.7); // A pale yellow
+
+    // set the final color
+    ret = saturate(final_moon * moon_color);
+`

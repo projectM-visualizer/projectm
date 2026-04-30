@@ -1,0 +1,217 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5.000000
+fGammaAdj=1.000
+fDecay=0.950
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=1.002
+fWaveSmoothing=0.261
+fWaveParam=0.000
+fModWaveAlphaStart=0.500
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=1.000
+fWarpScale=1.331
+fZoomExponent=1.0
+fShader=0.0
+zoom=1.0
+rot=0.0
+cx=0.5
+cy=0.5
+dx=0.0
+dy=0.0
+warp=0.010
+sx=1.0
+sy=1.0
+ob_size=0.01
+ib_size=0.01
+mv_a=0.0
+
+per_frame_init_1=`
+    decay = 0.98;
+`
+
+per_frame_1=`
+    q1 = time;
+    q2 = bass_att;
+    q3 = mid_att;
+    q4 = treb_att;
+    q5 = (bass + mid + treb) * 0.1;
+    q6 = 1.0 + 0.15 * bass_att;
+    q7 = mid_att;
+    q8 = time * 5.0;
+    q9 = time * 0.3;
+    q10 = 0.9 + 0.3 * bass_att;
+    q11 = time * 0.02;
+    q12 = time * 0.03;
+`
+
+per_pixel_1=`
+    // --- FBM Noise (4 octaves, unrolled) ---
+    float2 p = uv * 2.0 + float2(q11, q12);
+    float fbm_val = 0.0;
+    float amp = 0.5;
+
+    // octave 1
+    float2 fi = floor(p);
+    float2 ff = frac(p);
+    ff = ff * ff * (3.0 - 2.0 * ff);
+    float ha = frac(sin(dot(fi, float2(12.9898, 78.233))) * 43758.5453);
+    float hb = frac(sin(dot(fi + float2(1.0, 0.0), float2(12.9898, 78.233))) * 43758.5453);
+    float hc = frac(sin(dot(fi + float2(0.0, 1.0), float2(12.9898, 78.233))) * 43758.5453);
+    float hd = frac(sin(dot(fi + float2(1.0, 1.0), float2(12.9898, 78.233))) * 43758.5453);
+    float vn = lerp(lerp(ha, hb, ff.x), lerp(hc, hd, ff.x), ff.y);
+    fbm_val += amp * vn;
+    p = p * 2.1 + float2(1.7, 9.2);
+    amp *= 0.5;
+
+    // octave 2
+    fi = floor(p);
+    ff = frac(p);
+    ff = ff * ff * (3.0 - 2.0 * ff);
+    ha = frac(sin(dot(fi, float2(12.9898, 78.233))) * 43758.5453);
+    hb = frac(sin(dot(fi + float2(1.0, 0.0), float2(12.9898, 78.233))) * 43758.5453);
+    hc = frac(sin(dot(fi + float2(0.0, 1.0), float2(12.9898, 78.233))) * 43758.5453);
+    hd = frac(sin(dot(fi + float2(1.0, 1.0), float2(12.9898, 78.233))) * 43758.5453);
+    vn = lerp(lerp(ha, hb, ff.x), lerp(hc, hd, ff.x), ff.y);
+    fbm_val += amp * vn;
+    p = p * 2.1 + float2(1.7, 9.2);
+    amp *= 0.5;
+
+    // octave 3
+    fi = floor(p);
+    ff = frac(p);
+    ff = ff * ff * (3.0 - 2.0 * ff);
+    ha = frac(sin(dot(fi, float2(12.9898, 78.233))) * 43758.5453);
+    hb = frac(sin(dot(fi + float2(1.0, 0.0), float2(12.9898, 78.233))) * 43758.5453);
+    hc = frac(sin(dot(fi + float2(0.0, 1.0), float2(12.9898, 78.233))) * 43758.5453);
+    hd = frac(sin(dot(fi + float2(1.0, 1.0), float2(12.9898, 78.233))) * 43758.5453);
+    vn = lerp(lerp(ha, hb, ff.x), lerp(hc, hd, ff.x), ff.y);
+    fbm_val += amp * vn;
+    p = p * 2.1 + float2(1.7, 9.2);
+    amp *= 0.5;
+
+    // octave 4
+    fi = floor(p);
+    ff = frac(p);
+    ff = ff * ff * (3.0 - 2.0 * ff);
+    ha = frac(sin(dot(fi, float2(12.9898, 78.233))) * 43758.5453);
+    hb = frac(sin(dot(fi + float2(1.0, 0.0), float2(12.9898, 78.233))) * 43758.5453);
+    hc = frac(sin(dot(fi + float2(0.0, 1.0), float2(12.9898, 78.233))) * 43758.5453);
+    hd = frac(sin(dot(fi + float2(1.0, 1.0), float2(12.9898, 78.233))) * 43758.5453);
+    vn = lerp(lerp(ha, hb, ff.x), lerp(hc, hd, ff.x), ff.y);
+    fbm_val += amp * vn;
+
+    // --- Nebula Color Mapping ---
+    float3 cyan = float3(0.0, 0.6, 0.9);
+    float3 purple = float3(0.5, 0.1, 0.8);
+    float3 magenta = float3(0.9, 0.0, 0.5);
+    float3 col = lerp(cyan, purple, saturate(fbm_val * 2.0 - 0.2 + q7 * 0.3));
+    col = lerp(col, magenta, saturate(fbm_val * 1.5 - 0.5 + q4 * 0.2));
+    col *= 0.15 + 0.85 * fbm_val;
+
+    // --- Planet Body ---
+    float2 pc = uv - float2(0.5, 0.5);
+    float pr = length(pc);
+    float planetRadius = 0.12 * q6;
+    float planet = smoothstep(planetRadius, planetRadius - 0.008, pr);
+    float band = sin(pc.y * 30.0 + q1 * 0.5) * 0.5 + 0.5;
+    float3 pCol = lerp(float3(0.9, 0.7, 0.4), float3(0.8, 0.5, 0.2), band);
+    float rim = pow(1.0 - saturate(pr / planetRadius), 3.0);
+    pCol += float3(0.3, 0.5, 0.8) * rim * q2;
+
+    // --- Planet Ring ---
+    float angle = atan2(pc.y, pc.x);
+    float tilt = 0.35 * abs(sin(angle));
+    float ringRad = 0.22 * q6;
+    float ringThick = 0.022;
+    float ringDist = abs(pr - ringRad * (1.0 - tilt)) - ringThick * (1.0 - tilt);
+    float ring = smoothstep(0.0, -0.005, ringDist);
+    float occ = smoothstep(planetRadius + 0.015, planetRadius - 0.005, pr);
+    ring *= lerp(1.0, 0.15, occ);
+    float3 ringCol = float3(0.4, 0.8, 1.0) * (0.6 + 0.4 * q5);
+
+    // --- Orbital Particle Ring ---
+    float orbitAngle = angle + q9;
+    float targetR = 0.32 + 0.02 * sin(orbitAngle * 3.0);
+    float radialDiff = abs(pr - targetR);
+    float particleID = floor((orbitAngle + q1 * 0.4) * 50.0);
+    float h = frac(sin(particleID * 12.9898) * 43758.5453);
+    float presence = step(0.75, h);
+    float sz = 0.008 + h * 0.012;
+    float bright = presence * smoothstep(sz, 0.0, radialDiff);
+    float twinkle = 0.5 + 0.5 * sin(q8 + h * 50.0);
+    bright *= twinkle * (0.6 + q4 * 2.0);
+    float3 partCol = float3(0.8, 0.95, 1.0);
+
+    // --- Composite Layers Back-to-Front ---
+    ret = col;
+    ret = lerp(ret, pCol, planet);
+    ret = lerp(ret, ringCol, ring);
+    ret = lerp(ret, partCol, bright);
+`
+
+warp_1=`
+    float2 d = uv - 0.5;
+    float wr = length(d);
+    float theta = atan2(d.y, d.x) + wr * wr * 0.2 + q1 * 0.03 + q3 * 0.1;
+    float2 wuv = float2(wr * cos(theta), wr * sin(theta)) + 0.5;
+    ret = tex2D(sampler_main, wuv).xyz;
+`
+
+comp_1=`
+    float3 base = tex2D(sampler_main, uv).xyz;
+    float3 b1 = GetBlur1(uv);
+    float3 b2 = GetBlur2(uv);
+    float3 b3 = GetBlur3(uv);
+    float lum = dot(base, float3(0.299, 0.587, 0.114));
+    float mask = smoothstep(0.25, 0.7, lum);
+    float3 bloom = (b1 * 0.5 + b2 * 0.35 + b3 * 0.15) * mask * 1.4;
+    ret = base + bloom;
+    float2 vc = uv - 0.5;
+    ret *= saturate(1.0 - dot(vc, vc) * 1.3);
+    ret *= q10;
+    ret = pow(ret, float3(0.9, 0.95, 1.1));
+    ret = saturate(ret);
+`
+
+// Asteroid Belt
+shapecode_0_enabled=1
+shapecode_0_sides=5
+shapecode_0_additive=1
+shapecode_0_thickOutline=0
+shapecode_0_num_inst=24
+shapecode_0_x=0.5
+shapecode_0_y=0.5
+shapecode_0_rad=0.02
+shapecode_0_ang=0
+shapecode_0_r=0.5
+shapecode_0_g=0.9
+shapecode_0_b=1.0
+shapecode_0_a=0.5
+shapecode_0_border_a=0
+
+shape_0_per_frame_1=angle = (instance / 24.0) * 6.283 + q9 + instance * 0.1;
+shape_0_per_frame_2=orbitR = 0.36 + 0.03 * sin(angle * 2.0);
+shape_0_per_frame_3=x = 0.5 + cos(angle) * orbitR;
+shape_0_per_frame_4=y = 0.5 + sin(angle) * orbitR;
+shape_0_per_frame_5=rad = 0.012 + q4 * 0.008;
+shape_0_per_frame_6=a = 0.4 + q4 * 0.6;

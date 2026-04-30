@@ -1,0 +1,96 @@
+[preset00]
+fRating=5.0
+fGammaAdj=6.0
+fDecay=0.95
+fVideoEchoZoom=1.0
+fVideoEchoAlpha=0.0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bTexWrap=1
+bDarkenCenter=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.0
+fShader=0.0
+zoom=1.0
+rot=0.0
+cx=0.5
+cy=0.5
+dx=0.0
+dy=0.0
+warp=1.0
+sx=1.0
+sy=1.0
+wave_a=0.0
+wave_r=1.0
+wave_g=1.0
+wave_b=1.0
+ob_size=0.01
+ob_r=1.0
+ob_g=1.0
+ob_b=1.0
+ob_a=1.0
+ib_size=0.01
+ib_r=1.0
+ib_g=1.0
+ib_b=1.0
+ib_a=1.0
+
+[shape_00]
+enabled=1
+sides=20
+additive=0
+textured=0
+r=1.0
+g=0.1
+b=0.1
+a=0.5
+border_r=1.0
+border_g=1.0
+border_b=1.0
+border_a=0.0
+
+per_frame_init_1=// Initialize variables
+per_frame_init_2=t1 = 0;
+per_frame_init_3=num_shapes = 42;
+per_frame_init_4=radius = 0.4;
+
+per_frame_1=// Per-frame updates
+per_frame_2=t1 = time;
+per_frame_3=beat_reactivity = bass_att;
+per_frame_4=
+per_frame_5=// Loop to draw each shape instance
+per_frame_6=instance = 0;
+per_frame_7=loop(num_shapes,
+per_frame_8=  // Calculate the angle for this shape
+per_frame_9=  angle = instance/num_shapes * 6.283;
+per_frame_10=
+per_frame_11=  // Calculate position on the circle, pulsing with the beat
+per_frame_12=  shape_x = 0.5 + cos(angle + time*0.5) * (radius + beat_reactivity*0.2);
+per_frame_13=  shape_y = 0.5 + sin(angle + time*0.5) * (radius + beat_reactivity*0.2);
+per_frame_14=
+per_frame_15=  // Set shape size, alpha, and color based on beat
+per_frame_16=  shape_rad = 0.05 + beat_reactivity * 0.1;
+per_frame_17=  shape_a = 0.3 + beat_reactivity * 0.4;
+per_frame_18=  shape_r = 1.0;
+per_frame_19=  shape_g = 0.5 + beat_reactivity * 0.5;
+per_frame_20=  shape_b = 0.5 + beat_reactivity * 0.5;
+per_frame_21=
+per_frame_22=  // Draw the shape
+per_frame_23=  draw_shape(instance, shape_x, shape_y, shape_rad, 0, shape_a, shape_r, shape_g, shape_b);
+per_frame_24=
+per_frame_25=  instance = instance + 1;
+per_frame_26=);
+
+per_pixel_1=// Create a shifting pattern using x, y, and time
+per_pixel_2=c = 0.5 + 0.5*sin(x*10 + t1*0.2) * cos(y*10 + t1*0.3);
+per_pixel_3=
+per_pixel_4=// Set the pixel color
+per_pixel_5=red = min(c*0.1, 1.0);
+per_pixel_6=green = min(c*0.8, 1.0);
+per_pixel_7=blue = min(1.0-c*0.8, 1.0);
+per_pixel_8=alpha = 1.0;

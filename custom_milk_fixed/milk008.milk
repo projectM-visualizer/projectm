@@ -1,0 +1,139 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+
+[preset00]
+fRating=5.000000
+fGammaAdj=1.000
+fDecay=0.960
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=1.000
+fWaveSmoothing=0.500
+fWaveParam=0.000
+fModWaveAlphaStart=0.710
+fModWaveAlphaEnd=1.300
+fWarpAnimSpeed=1.000
+fWarpScale=1.331
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.0000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=1.00000
+sy=1.00000
+wave_r=0.650
+wave_g=0.650
+wave_b=0.650
+wave_x=0.500
+wave_y=0.500
+ob_size=0.005
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=1.000
+ib_size=0.000
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.000
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+
+per_frame_1=ms = min(time - int(time), 1);
+per_frame_2=beat_sine = sin(ms * 3.14159);
+per_frame_3=
+per_frame_4=// Base sway on bass
+per_frame_5=sway = bass_att * 0.05;
+per_frame_6=
+per_frame_7=// Apple bounce
+per_frame_8=apple_bounce = bass_att * 0.1 * beat_sine;
+
+// Tree Trunk
+shapecode_0_enabled=1
+shapecode_0_sides=4
+shapecode_0_additive=0
+shapecode_0_thickOutline=1
+shapecode_0_x=0.5
+shapecode_0_y=0.1
+shapecode_0_rad=0.3
+shapecode_0_ang=0
+shapecode_0_r=0.4
+shapecode_0_g=0.2
+shapecode_0_b=0.1
+shapecode_0_a=1
+shapecode_0_border_a=0
+shape_0_per_frame_1=y = 0.1;
+shape_0_per_frame_2=rad = 0.3 + bass_att * 0.02;
+shape_0_per_frame_3=ang = sway * 0.2;
+shape_0_per_frame_4=sy = 2;
+
+// Leaves
+shapecode_1_enabled=1
+shapecode_1_sides=60
+shapecode_1_additive=1
+shapecode_1_thickOutline=0
+shapecode_1_x=0.5
+shapecode_1_y=0.6
+shapecode_1_rad=0.4
+shapecode_1_ang=0
+shapecode_1_r=0.1
+shapecode_1_g=0.6
+shapecode_1_b=0.1
+shapecode_1_a=0.8
+shapecode_1_r2=0.2
+shapecode_1_g2=0.8
+shapecode_1_b2=0.2
+shapecode_1_a2=0
+shapecode_1_border_a=0
+shape_1_per_frame_1=x = 0.5 + sway;
+shape_1_per_frame_2=rad = 0.4 + mid_att * 0.1;
+
+// Apples
+shapecode_2_enabled=1
+shapecode_2_sides=60
+shapecode_2_additive=1
+shapecode_2_thickOutline=0
+shapecode_2_num_inst=15
+shapecode_2_x=0.5
+shapecode_2_y=0.6
+shapecode_2_rad=0.03
+shapecode_2_ang=0
+shapecode_2_r=1
+shapecode_2_g=0
+shapecode_2_b=0
+shapecode_2_a=1
+shapecode_2_border_a=0
+shape_2_per_frame_1=x = 0.5 + sway;
+shape_2_per_frame_2=y_pos = 0.6 + apple_bounce;
+shape_2_per_frame_3=instance_x = (instance/15-0.5)*0.8 + rand(time + instance * 0.1)*0.1;
+shape_2_per_frame_4=instance_y = (rand(time + instance)-0.5)*0.6;
+shape_2_per_frame_5=x = x + instance_x * rad;
+shape_2_per_frame_6=y = y_pos + instance_y * rad;
+shape_2_per_frame_7=rad = 0.03 + (instance % 3) * 0.005;
+shape_2_per_frame_8=rad = rad + bass_att * 0.01;

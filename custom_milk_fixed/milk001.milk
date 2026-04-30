@@ -1,0 +1,92 @@
+[preset00]
+fRating=4.0
+fGammaAdj=8.2
+fDecay=0.98
+fVideoEchoZoom=1.0
+fVideoEchoAlpha=0.0
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=1.002
+fWaveSmoothing=0.261
+fWaveParam=0.0
+fModWaveAlphaStart=0.5
+fModWaveAlphaEnd=1.0
+fWarpAnimSpeed=1.0
+fWarpScale=1.331
+fZoomExponent=1.0
+fShader=1.0
+zoom=1.0
+rot=0.0
+cx=0.5
+cy=0.5
+dx=0.0
+dy=0.0
+
+per_frame_1=// --- Motion and Segmentation Control ---
+per_frame_2=rot = rot + 0.002;
+per_frame_3=
+per_frame_4=// q1 controls the number of segments.
+per_frame_5=q1 = 1 + 30*(0.5 + 0.5*sin(time*0.15));
+per_frame_6=
+per_frame_7=// q2 controls the transition between smooth and segmented plasma.
+per_frame_8=q2 = 0.5 + 0.5*sin(time*0.4);
+per_frame_9=
+per_frame_10=// Precompute time+rot combinations for performance
+per_frame_11=q3 = time*0.8 + rot;
+per_frame_12=q4 = time*0.9 + rot;
+per_frame_13=q5 = time + rot;
+per_frame_14=q6 = time*0.4;
+
+per_pixel_1=// --- Adding Complexity and Detail ---
+per_pixel_2=
+per_pixel_3=// Coordinate setup (with segmentation)
+per_pixel_4=seg_x = floor(uv.x * q1) / q1;
+per_pixel_5=seg_y = floor(uv.y * q1) / q1;
+per_pixel_6=work_x = lerp(uv.x, seg_x, q2);
+per_pixel_7=work_y = lerp(uv.y, seg_y, q2);
+per_pixel_8=
+per_pixel_9=// --- Pattern 1: Soft Background Plasma ---
+per_pixel_10=bg_r = 0.5 + 0.5*sin(work_x*4 + q3);
+per_pixel_11=bg_g = 0.5 + 0.5*sin(work_y*4 + q4);
+per_pixel_12=bg_b = 0.5 + 0.5*sin((work_x+work_y)*2 + q5);
+per_pixel_13=
+per_pixel_14=// --- Pattern 2: Sharp Geometric Overlay ---
+per_pixel_15=// Using abs() for V-shapes and mod() for repeating grids.
+per_pixel_16=sharp_x = 1 - abs(sin(mod(work_x*25 + q6, 6.283)));
+per_pixel_17=sharp_y = 1 - abs(cos(mod(work_y*25 - q6, 6.283)));
+per_pixel_18=
+per_pixel_19=// Squaring the result creates thinner, higher-contrast lines.
+per_pixel_20=sharp_pattern = pow(sharp_x * sharp_y, 3.0);
+per_pixel_21=
+per_pixel_22=// --- Final Compositing ---
+per_pixel_23=// We'll use the soft plasma for base color and the sharp pattern for highlights.
+per_pixel_24=
+per_pixel_25=// Mix the background colors for a richer palette
+per_pixel_26=base_col_r = bg_r*0.7 + bg_g*0.3;
+per_pixel_27=base_col_g = bg_g*0.7 + bg_b*0.3;
+per_pixel_28=base_col_b = bg_b*0.7 + bg_r*0.3;
+per_pixel_29=
+per_pixel_30=// Add the sharp pattern on top of the base colors.
+per_pixel_31=final_r = base_col_r + sharp_pattern*1.8;
+per_pixel_32=final_g = base_col_g + sharp_pattern*1.6;
+per_pixel_33=final_b = base_col_b + sharp_pattern*2.0;
+per_pixel_34=
+per_pixel_35=// Final audio-reactive brightness boost
+per_pixel_36=boost = 2.2 + 0.8*bass_att;
+per_pixel_37=
+per_pixel_38=red = min(final_r * boost, 1.0);
+per_pixel_39=grn = min(final_g * boost, 1.0);
+per_pixel_40=blu = min(final_b * boost, 1.0);

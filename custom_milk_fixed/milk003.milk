@@ -1,0 +1,89 @@
+[preset00]
+fRating=3.0
+fGammaAdj=1.0
+fDecay=0.98
+fVideoEchoZoom=1.0
+fVideoEchoAlpha=0.0
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=1.002
+fWaveSmoothing=0.261
+fWaveParam=0.0
+fModWaveAlphaStart=0.5
+fModWaveAlphaEnd=1.0
+fWarpAnimSpeed=1.0
+fWarpScale=1.331
+fZoomExponent=1.0
+fShader=1.0
+zoom=1.005
+rot=0.0
+cx=0.5
+cy=0.5
+dx=0.0
+dy=0.0
+
+per_frame_1=// Basic motion
+per_frame_2=rot = rot + 0.002;
+per_frame_3=
+per_frame_4=// q1 controls the number of segments. It's a slow wave.
+per_frame_5=// We add 1 to avoid division by zero and have at least 1 segment.
+per_frame_6=q1 = 1 + 30*(0.5 + 0.5*sin(time*0.15));
+per_frame_7=
+per_frame_8=// q2 controls the transition between smooth and segmented plasma.
+per_frame_9=// A sharper transition can be made with if/above/below, but sin is smooth.
+per_frame_10=q2 = 0.5 + 0.5*sin(time*0.4);
+per_frame_11=
+per_frame_12=// Add some audio-reactive movement to the center
+per_frame_13=cx = 0.5 + 0.05*bass_att*sin(time*0.3);
+per_frame_14=cy = 0.5 + 0.05*treb_att*cos(time*0.33);
+per_frame_15=
+per_frame_16=// Precompute time-based values for performance
+per_frame_17=q3 = time*0.2;
+per_frame_18=q4 = time*0.33;
+per_frame_19=q5 = time;
+per_frame_20=q6 = time*0.8;
+per_frame_21=q7 = time*0.5;
+per_frame_22=q8 = time*0.6;
+per_frame_23=q9 = time*2;
+
+per_pixel_1=seg_uv_x = floor(uv.x * q1) / q1;
+per_pixel_2=seg_uv_y = floor(uv.y * q1) / q1;
+per_pixel_3=
+per_pixel_4=// Blend between normal UV and segmented UV using q2
+per_pixel_5=work_uv_x = lerp(uv.x, seg_uv_x, q2);
+per_pixel_6=work_uv_y = lerp(uv.y, seg_uv_y, q2);
+per_pixel_7=
+per_pixel_8=// More complex plasma functions for a richer effect
+per_pixel_9=dist = sqrt(pow(work_uv_x-0.5,2) + pow(work_uv_y-0.5,2))*2;
+per_pixel_10=
+per_pixel_11=v1 = sin(work_uv_x*10 + q5);
+per_pixel_12=v2 = sin((work_uv_x*sin(q3) + work_uv_y*cos(q4))*10 + q5);
+per_pixel_13=v3 = sin(sqrt(100*(pow(work_uv_x-0.5,2) + pow(work_uv_y-0.5,2))) + q5);
+per_pixel_14=
+per_pixel_15=// Combine plasma components
+per_pixel_16=c = v1+v2+v3;
+per_pixel_17=
+per_pixel_18=// Final color calculation using the combined plasma and audio reactivity
+per_pixel_19=brightness = 0.4 + 0.6*bass_att;
+per_pixel_20=red = min(brightness * (0.5 + 0.5*sin(c*3.1415 + q6)), 1.0);
+per_pixel_21=grn = min(brightness * (0.5 + 0.5*sin(c*3.1415 + q7 + 2.0)), 1.0);
+per_pixel_22=blu = min(brightness * (0.5 + 0.5*sin(dist - 0.5 + c*3.1415 + q8 + 4.0)), 1.0);
+per_pixel_23=
+per_pixel_24=// Add a sparkle on top of it all
+per_pixel_25=sparkle = (1-dist)*step(0.99, sin( (atan(work_uv_y, work_uv_x) + q9)*10))*treb_att;
+per_pixel_26=red = min(red + sparkle, 1.0);
+per_pixel_27=grn = min(grn + sparkle, 1.0);
+per_pixel_28=blu = min(blu + sparkle, 1.0);

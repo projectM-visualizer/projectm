@@ -496,28 +496,38 @@ nxhttp.send();
 }
 
 function getCustomMilkShaders(){
-for(var i=0;i<$customMilk.length;i++){
+var completed=0;
+var total=$customMilk.length;
+var statEl3=document.querySelector('#stat');
+if(statEl3){statEl3.innerHTML='Downloading Custom Presets';statEl3.style.backgroundColor='yellow';}
+for(var i=0;i<total;i++){
 (function(src,idx){
 const ff=new XMLHttpRequest();
 ff.open('GET',src,true);
 ff.responseType='arraybuffer';
-var statEl3 = document.querySelector('#stat');
-if (statEl3) { statEl3.innerHTML='Downloading Custom Preset'; statEl3.style.backgroundColor='yellow'; }
 ff.addEventListener("load",function(){
 var buf=ff.response;
 if(buf){
 FS.writeFile("/presets/custmilk_"+idx+".milk",new Uint8ClampedArray(buf));
 console.log('Got custom preset: custmilk_'+idx+'.milk from '+src);
 }
+completed++;
+if(completed===total){
+Module.addCustomMilkPaths(total);
+if(statEl3){statEl3.innerHTML='Custom Presets Ready';statEl3.style.backgroundColor='blue';}
+}
+});
+ff.addEventListener("error",function(){
+console.warn('Failed to download custom preset: '+src);
+completed++;
+if(completed===total){
+Module.addCustomMilkPaths(total);
+if(statEl3){statEl3.innerHTML='Custom Presets Ready';statEl3.style.backgroundColor='blue';}
+}
 });
 ff.send(null);
 })($customMilk[i],i);
 }
-setTimeout(function(){
-Module.addCustomMilkPaths($customMilk.length);
-var statEl4 = document.querySelector('#stat');
-if (statEl4) { statEl4.innerHTML='Custom Presets Ready'; statEl4.style.backgroundColor='blue'; }
-},2500);
 }
 
 function loadRandomCustomMilk(){
@@ -877,11 +887,15 @@ return;
 
 void add_custom_milk_paths(int count){
 char preset_file[256];
+int added=0;
 for(int i=0;i<count;++i){
 snprintf(preset_file,sizeof(preset_file),"/presets/custmilk_%d.milk",i);
+if(access(preset_file,F_OK)==0){
 projectm_playlist_add_preset(app_data.playlist,preset_file,false);
+added++;
 }
-printf("Added %d custom milk presets to playlist.\n",count);
+}
+printf("Added %d of %d custom milk presets to playlist.\n",added,count);
 return;
 }
 
