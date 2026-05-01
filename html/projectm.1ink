@@ -1208,19 +1208,19 @@ setTimeout(function(){
 createModule().then(async function(instance) {
 Module=instance;
 
-Module.init();
+Module._init();
 updateLayout();
 const mcanvas = document.querySelector('#mcanvas');
 const startupPaths = await loadStartupApiPresets(5);
 if (startupPaths.length > 0) {
-    Module.loadPresetFile(startupPaths[0]);
+    Module.ccall('loadPresetFile', null, ['string'], [startupPaths[0]]);
     for (let i = 1; i < startupPaths.length; i++) {
-        Module.addPresetFile(startupPaths[i]);
+        Module.ccall('addPresetFile', null, ['string'], [startupPaths[i]]);
     }
 } else {
     console.warn('No startup API presets loaded');
 }
-Module.startRender(mcanvas.width, mcanvas.height);
+Module._startRender(mcanvas.width, mcanvas.height);
 // Background load remaining presets so rendering isn't blocked
 // loadRegularMilkPresets();
 });
@@ -1526,11 +1526,11 @@ const resizeObserver = new ResizeObserver((entries) => {
         scanvas.style.width = cssWidth + 'px';
         scanvas.style.height = cssHeight + 'px';
 
-        if (typeof Module !== 'undefined' && Module.setWindowSize) {
-            Module.setWindowSize(w, h);
+        if (typeof Module !== 'undefined' && Module._setWindowSize) {
+            Module._setWindowSize(w, h);
         }
-        if (typeof Module !== 'undefined' && Module.setAspectCorrection) {
-            Module.setAspectCorrection(viewMode === 'bezel');
+        if (typeof Module !== 'undefined' && Module._setAspectCorrection) {
+            Module._setAspectCorrection(viewMode === 'bezel');
         }
     }
 });
@@ -1541,14 +1541,14 @@ if (contain1El) {
 }
 
 async function loadRandomApiPreset() {
-    if (typeof Module === 'undefined' || !Module.loadPresetFile) {
+    if (typeof Module === 'undefined' || !Module._loadPresetFile) {
         console.error('Module not ready');
         return;
     }
     const apiBase = localStorage.getItem('apiBase') || 'https://storage.noahcohn.com';
     try {
         const result = await fetchApiPreset(apiBase);
-        Module.loadPresetFile(result.vfsPath);
+        Module.ccall('loadPresetFile', null, ['string'], [result.vfsPath]);
         console.log('Loaded API preset:', result.filename, 'from', result.dir);
     } catch (e) {
         console.error('Failed to load API preset:', e);

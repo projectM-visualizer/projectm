@@ -65,6 +65,8 @@ projectm_playlist_handle playlist={};
 
 bool g_is_streaming_audio = false;
 
+extern "C" {
+EMSCRIPTEN_KEEPALIVE
 void create_sprite() {
 const char* new_sprite_code =
         "[preset01]"
@@ -83,9 +85,11 @@ projectm_sprite_create(app_data.projectm_engine, "milkdrop", new_sprite_code);
 return;
 }
 
+EMSCRIPTEN_KEEPALIVE
 uintptr_t get_projectm_handle() { 
 return reinterpret_cast<uintptr_t>(app_data.projectm_engine);
 }
+} // extern "C"
 
 EM_JS(void, js_feed_stream_data_to_projectm, (uintptr_t pm_handle, int buffer_size), {
     const analyser = window.projectMStreamAnalyser;
@@ -102,9 +106,9 @@ EM_JS(void, js_feed_stream_data_to_projectm, (uintptr_t pm_handle, int buffer_si
     if (pcmBuffer.length > projectm_buffer_size) {
         // Send subarray of the last 576 samples
         const optimizedBuffer = pcmBuffer.subarray(pcmBuffer.length - projectm_buffer_size);
-        Module.projectm_pcm_add_float(pm_handle, optimizedBuffer, projectm_buffer_size, 1);
+        Module.ccall('projectm_pcm_add_float_wrapper', null, ['number', 'array', 'number', 'number'], [pm_handle, optimizedBuffer, projectm_buffer_size, 1]);
     } else {
-        Module.projectm_pcm_add_float(pm_handle, pcmBuffer, pcmBuffer.length, 1);
+        Module.ccall('projectm_pcm_add_float_wrapper', null, ['number', 'array', 'number', 'number'], [pm_handle, pcmBuffer, pcmBuffer.length, 1]);
     }
 });
 
@@ -197,13 +201,9 @@ EM_JS(void, js_initialize_worklet_system_once, (uintptr_t pm_handle_for_addpcm),
             const workletNode = new AudioWorkletNode(audioContext, 'projectm-audio-processor');
             window.projectMWorkletNode_Global_Cpp = workletNode;
             workletNode.port.onmessage = (event) => {
-                if (event.data.type === 'pcmData' && Module.projectm_pcm_add_float) {
-                    Module.projectm_pcm_add_float(
-                        pm_handle_for_addpcm,
-                        event.data.audioData,
-                        event.data.samplesPerChannel,
-                        event.data.channelsForPM
-                    );
+                if (event.data.type === 'pcmData' && Module._projectm_pcm_add_float_wrapper) {
+                    Module.ccall('projectm_pcm_add_float_wrapper', null, ['number', 'array', 'number', 'number'],
+                        [pm_handle_for_addpcm, event.data.audioData, event.data.samplesPerChannel, event.data.channelsForPM]);
                 }
             };
             workletNode.connect(audioContext.destination);
@@ -256,9 +256,9 @@ EM_JS(void, js_load_song_into_worklet, (const char* path_in_vfs, bool loop, bool
 extern "C" {
 
 EMSCRIPTEN_KEEPALIVE
-void pl(const std::string& song_path_in_vfs) {
-printf("C++: pl() called for unique path: %s\n", song_path_in_vfs.c_str());
-js_load_song_into_worklet(song_path_in_vfs.c_str(), true, true);
+void pl(const char* song_path_in_vfs) {
+printf("C++: pl() called for unique path: %s\n", song_path_in_vfs);
+js_load_song_into_worklet(song_path_in_vfs, true, true);
 return;
 }
 
@@ -303,6 +303,8 @@ eglSwapBuffers(display,surface);
 return;
 }
 
+extern "C" {
+EMSCRIPTEN_KEEPALIVE
 void start_render(int width, int height){
 // glClearColor( 1.0, 1.0, 1.0, 0.0 );
 glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
@@ -326,6 +328,7 @@ emscripten_set_main_loop_timing(2,1);
 
 return;
 }
+} // extern "C"
 
 void _on_preset_switch_failed(const char *preset_filename, const char *message, void *user_data) {
 printf("Preset switch failed (%s): %s\n", preset_filename, message);
@@ -369,7 +372,7 @@ if(sarrayBuffer){
 let sfil=new Uint8ClampedArray(sarrayBuffer);
 FS.writeFile("/presets/preset_custom.milk",sfil);
 setTimeout(function(){
-Module.loadPresetFile("/presets/preset_custom.milk");
+Module.ccall('loadPresetFile', null, ['string'], ["/presets/preset_custom.milk"]);
 var statEl6 = document.querySelector('#stat');
 if (statEl6) { statEl6.innerHTML='Downloaded Shader'; statEl6.style.backgroundColor='blue'; }
 },20);
@@ -543,7 +546,7 @@ console.log('Got custom preset: custmilk_'+idx+'.milk from '+src);
 }
 completed++;
 if(completed===total){
-Module.addCustomMilkPaths(total);
+Module._addCustomMilkPaths(total);
 if(statEl3){statEl3.innerHTML='Custom Presets Ready';statEl3.style.backgroundColor='blue';}
 }
 });
@@ -551,7 +554,7 @@ ff.addEventListener("error",function(){
 console.warn('Failed to download custom preset: '+src);
 completed++;
 if(completed===total){
-Module.addCustomMilkPaths(total);
+Module._addCustomMilkPaths(total);
 if(statEl3){statEl3.innerHTML='Custom Presets Ready';statEl3.style.backgroundColor='blue';}
 }
 });
@@ -570,7 +573,7 @@ return;
 var idx=Math.floor(Math.random()*$customMilk.length);
 var fname='/presets/custmilk_'+idx+'.milk';
 var originalName = $customMilk[idx].split('/').pop();
-Module.loadPresetFile(fname);
+Module.ccall('loadPresetFile', null, ['string'], [fname]);
 if (window.updatePresetDisplay) { window.updatePresetDisplay(originalName); }
 document.querySelector('#stat').innerHTML='Loaded: custmilk_'+idx+'.milk';
 document.querySelector('#stat').style.backgroundColor='green';
@@ -720,7 +723,7 @@ loadRandomCustomMilk();
 var createSpriteBtnEl = document.querySelector('#createSpriteBtn');
 if (createSpriteBtnEl) {
     createSpriteBtnEl.addEventListener('click',function(){
-        Module.createSprite();
+        Module._createSprite();
     });
 }
 
@@ -735,7 +738,7 @@ if (meshSizeEl) {
         // Split the value into two numbers
         let values = meshValue.split(',').map(Number);
         console.log('Setting Mesh:', values[0], values[1]);
-        Module.setMesh(values[0], values[1]);
+        Module._setMesh(values[0], values[1]);
     });
 }
 
@@ -749,6 +752,8 @@ if (meshSizeEl) {
 
 });
 
+extern "C" {
+EMSCRIPTEN_KEEPALIVE
 int init() {
 if (pm) return 0;
 js_init_projectm_dom();
@@ -890,7 +895,10 @@ js_initialize_worklet_system_once(reinterpret_cast<uintptr_t>(app_data.projectm_
 js_initialize_stream_analyser();
 return 0;
 }
+} // extern "C"
 
+extern "C" {
+EMSCRIPTEN_KEEPALIVE
 void add_preset_path(){
 const char * loc="/presets/";
 char preset_file[256];
@@ -901,6 +909,7 @@ projectm_playlist_add_preset(app_data.playlist, preset_file, false);
 return;
 }
 
+EMSCRIPTEN_KEEPALIVE
 void add_existing_vfs_presets(){
 char preset_file[256];
 int added = 0;
@@ -915,12 +924,14 @@ printf("Added %d existing VFS presets to playlist.\n", added);
 return;
 }
 
-void add_preset_file(std::string path) {
+EMSCRIPTEN_KEEPALIVE
+void add_preset_file(const char* path) {
 if (!app_data.playlist) return;
-projectm_playlist_add_preset(app_data.playlist, path.c_str(), false);
+projectm_playlist_add_preset(app_data.playlist, path, false);
 return;
 }
 
+EMSCRIPTEN_KEEPALIVE
 void add_custom_milk_paths(int count){
 char preset_file[256];
 int added=0;
@@ -935,11 +946,13 @@ printf("Added %d of %d custom milk presets to playlist.\n",added,count);
 return;
 }
 
+EMSCRIPTEN_KEEPALIVE
 void set_mesh(int w,int h){
 projectm_set_mesh_size(pm,w,h);
 return;
 }
 
+EMSCRIPTEN_KEEPALIVE
 void destruct() {
 if (pm) {
 projectm_destroy(pm);
@@ -950,30 +963,39 @@ gl_ctx = NULL;
 return;
 }
 
+EMSCRIPTEN_KEEPALIVE
 void switch_preset() {
 if (!app_data.playlist) return;
 projectm_playlist_play_next(app_data.playlist, false);
 return;
 }
 
+EMSCRIPTEN_KEEPALIVE
 void set_aspect_correction(bool enabled) {
 if (!pm) return;
 projectm_set_aspect_correction(pm, enabled);
 return;
 }
+} // extern "C"
 
-void load_preset_file(std::string filename) {
+extern "C" {
+EMSCRIPTEN_KEEPALIVE
+void load_preset_file(const char* filename) {
 if (!pm) return;
-projectm_load_preset_file(pm, filename.c_str(), true);
+projectm_load_preset_file(pm, filename, true);
 return;
 }
+} // extern "C"
 
+extern "C" {
+EMSCRIPTEN_KEEPALIVE
 void render_frame() {
 if (!pm) return;
 projectm_opengl_render_frame(pm);
 return;
 }
 
+EMSCRIPTEN_KEEPALIVE
 void set_window_size(int width, int height) {
 if (!pm) return;
 emscripten_set_canvas_element_size("#mcanvas", width, height);
@@ -983,29 +1005,17 @@ projectm_set_window_size(pm, width, height);
 return;
 }
 
-EMSCRIPTEN_BINDINGS(projectm_bindings) {
-function("destruct", &destruct);
-function("getProjectmHandle", &get_projectm_handle);
-function("init", &init);
-function("getCustomShader", &getCustomShader);
-function("loadPresetFile", &load_preset_file);
-function("switchPreset", &switch_preset);
-function("setAspectCorrection", &set_aspect_correction);
-function("renderFrame", &render_frame);
-function("startRender", &start_render);
-function("setWindowSize", &set_window_size);
-function("setMesh", &set_mesh);
-function("getShader", &getShader);
-function("addPath", &add_preset_path);
-function("addExistingVfsPresets", &add_existing_vfs_presets);
-function("addPresetFile", &add_preset_file);
-function("addCustomMilkPaths", &add_custom_milk_paths);
-function("projectm_pcm_add_float", &projectm_pcm_add_float_from_js_array_wrapper);
-function("pl", &pl);
-function("createSprite", &create_sprite);
-function("stop_worklet_playback", &stop_worklet_playback);
-function("set_audio_source_to_stream", &set_audio_source_to_stream);
+EMSCRIPTEN_KEEPALIVE
+void projectm_pcm_add_float_wrapper(uintptr_t pm_handle_value, float* audio_data, unsigned int num_samples_per_channel, int channels_enum_value) {
+    (void)pm_handle_value;
+    projectm_handle current_pm_handle = app_data.projectm_engine;
+    if (!current_pm_handle) {
+        fprintf(stderr, "Error: projectM handle is null in pcm_add_float_wrapper.\n");
+        return;
+    }
+    projectm_pcm_add_float(current_pm_handle, audio_data, num_samples_per_channel, static_cast<projectm_channels>(channels_enum_value));
 }
+} // extern "C"
 
 int main(){
 init();

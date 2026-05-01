@@ -179,11 +179,11 @@ const resizeObserver = new ResizeObserver((entries) => {
         scanvas.style.width = cssWidth + 'px';
         scanvas.style.height = cssHeight + 'px';
 
-        if (typeof Module !== 'undefined' && Module.setWindowSize) {
-            Module.setWindowSize(w, h);
+        if (typeof Module !== 'undefined' && Module._setWindowSize) {
+            Module._setWindowSize(w, h);
         }
-        if (typeof Module !== 'undefined' && Module.setAspectCorrection) {
-            Module.setAspectCorrection(isBezelMode);
+        if (typeof Module !== 'undefined' && Module._setAspectCorrection) {
+            Module._setAspectCorrection(isBezelMode);
         }
     }
 });
@@ -237,14 +237,14 @@ async function loadStartupApiPresets(count) {
 
 // ====== UI CONTROLS ======
 async function loadRandomApiPreset() {
-    if (typeof Module === 'undefined' || !Module.loadPresetFile) {
+    if (typeof Module === 'undefined' || !Module._loadPresetFile) {
         console.error('Module not ready');
         return;
     }
     const apiBase = localStorage.getItem('apiBase') || 'https://storage.noahcohn.com';
     try {
         const result = await fetchApiPreset(apiBase);
-        Module.loadPresetFile(result.vfsPath);
+        Module.ccall('loadPresetFile', null, ['string'], [result.vfsPath]);
         updatePresetDisplay(result.filename);
         console.log('Loaded API preset:', result.filename, 'from', result.dir);
     } catch (e) {
@@ -298,22 +298,22 @@ setTimeout(function(){
         createModule().then(async function(instance) {
             Module = instance;
 
-            Module.init();
+            Module._init();
             updateLayout();
             const mcanvas = document.querySelector('#mcanvas');
 
             const startupResults = await loadStartupApiPresets(5);
             if (startupResults.length > 0) {
-                Module.loadPresetFile(startupResults[0].vfsPath);
+                Module.ccall('loadPresetFile', null, ['string'], [startupResults[0].vfsPath]);
                 updatePresetDisplay(startupResults[0].filename);
                 for (let i = 1; i < startupResults.length; i++) {
-                    Module.addPresetFile(startupResults[i].vfsPath);
+                    Module.ccall('addPresetFile', null, ['string'], [startupResults[i].vfsPath]);
                 }
             } else {
                 console.warn('No startup API presets loaded');
             }
 
-            Module.startRender(mcanvas.width, mcanvas.height);
+            Module._startRender(mcanvas.width, mcanvas.height);
         }).catch(function(err) {
             console.error('projectM module initialization failed:', err);
         });
