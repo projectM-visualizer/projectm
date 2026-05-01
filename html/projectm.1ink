@@ -1196,6 +1196,10 @@ xhr.send();
 */
 
 document.getElementById("startBtn5").addEventListener('click',function(){
+if (document.querySelector('script[src="./pm/projectm-v.024-thread.1ijs"]')) {
+    console.log('projectM module script already present, skipping duplicate load');
+    return;
+}
 let scr=document.createElement("script");
 scr.async=true;
 scr.charset='utf-8';
@@ -1223,6 +1227,8 @@ if (startupPaths.length > 0) {
 Module._startRender(mcanvas.width, mcanvas.height);
 // Background load remaining presets so rendering isn't blocked
 // loadRegularMilkPresets();
+}).catch(function(err) {
+    console.error('projectM module initialization failed:', err);
 });
 },1000);
 });
