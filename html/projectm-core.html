@@ -313,7 +313,7 @@ setTimeout(function(){
                 console.warn('No startup API presets loaded');
             }
 
-            Module._startRender(mcanvas.width, mcanvas.height);
+            Module._start_render(mcanvas.width, mcanvas.height);
         }).catch(function(err) {
             console.error('projectM module initialization failed:', err);
         });

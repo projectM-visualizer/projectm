@@ -1227,7 +1227,7 @@ if (startupPaths.length > 0) {
 } else {
     console.warn('No startup API presets loaded');
 }
-Module._startRender(mcanvas.width, mcanvas.height);
+Module._start_render(mcanvas.width, mcanvas.height);
 // Background load remaining presets so rendering isn't blocked
 // loadRegularMilkPresets();
 }).catch(function(err) {
