@@ -489,7 +489,7 @@ function textures(xml, textureBase){
 
 function scanTextures(){
     var textureBase = getBasePath('#textureDir', 'textures/');
-    if (!textureBase.match(/^https?:\/\//)) {
+    if (!textureBase.startsWith('http://') && !textureBase.startsWith('https://')) {
         textureBase = new URL(textureBase, window.location.href).href;
     }
     const nxhttp = new XMLHttpRequest();
@@ -626,7 +626,7 @@ function sngs(xml, songBase){
 
 function scanSongs(){
     var songBase = getBasePath('#songDir', 'songs/');
-    if (!songBase.match(/^https?:\/\//)) {
+    if (!songBase.startsWith('http://') && !songBase.startsWith('https://')) {
         songBase = new URL(songBase, window.location.href).href;
     }
     const nxhttp = new XMLHttpRequest();
