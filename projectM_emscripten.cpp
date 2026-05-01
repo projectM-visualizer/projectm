@@ -431,10 +431,8 @@ function vfsMkdir(path) {
 vfsMkdir('/presets');
 vfsMkdir('/textures');
 vfsMkdir('/snd');
-document.querySelector('#scanvas').height=window.innerHeight;
-document.querySelector('#scanvas').width=window.innerWidth;
-document.querySelector('#mcanvas').height=window.innerHeight;
-document.querySelector('#mcanvas').width=window.innerWidth;
+// Canvas sizing is handled by the JS ResizeObserver before init();
+// Do not clobber it here.
 var $sngs=[];
 var $shds=[];
 var $texs=[];
@@ -549,7 +547,7 @@ console.log('Got custom preset: custmilk_'+idx+'.milk from '+src);
 }
 completed++;
 if(completed===total){
-Module._add_custom_milk_paths(total);
+console.log('Custom milk presets downloaded (not adding to auto-change playlist).');
 if(statEl3){statEl3.innerHTML='Custom Presets Ready';statEl3.style.backgroundColor='blue';}
 }
 });
@@ -557,7 +555,7 @@ ff.addEventListener("error",function(){
 console.warn('Failed to download custom preset: '+src);
 completed++;
 if(completed===total){
-Module._add_custom_milk_paths(total);
+console.log('Custom milk presets downloaded (not adding to auto-change playlist).');
 if(statEl3){statEl3.innerHTML='Custom Presets Ready';statEl3.style.backgroundColor='blue';}
 }
 });
@@ -979,6 +977,14 @@ EMSCRIPTEN_KEEPALIVE
 void set_aspect_correction(bool enabled) {
 if (!pm) return;
 projectm_set_aspect_correction(pm, enabled);
+return;
+}
+
+EMSCRIPTEN_KEEPALIVE
+void set_preset_locked(bool locked) {
+if (!pm) return;
+projectm_set_preset_locked(pm, locked);
+printf("Preset lock set to: %s\n", locked ? "true" : "false");
 return;
 }
 } // extern "C"
