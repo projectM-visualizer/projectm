@@ -7,10 +7,22 @@ namespace Renderer {
 
 TransitionShaderManager::TransitionShaderManager()
     : m_transitionShaders({CompileTransitionShader(kTransitionShaderBuiltInCircleGlsl330),
+                           CompileTransitionShader(kTransitionShaderBuiltInCubeRotateGlsl330),
+                           CompileTransitionShader(kTransitionShaderBuiltInDreamyGlsl330),
+                           CompileTransitionShader(kTransitionShaderBuiltInGlitchGlsl330),
+                           CompileTransitionShader(kTransitionShaderBuiltInHeatWaveGlsl330),
+                           CompileTransitionShader(kTransitionShaderBuiltInKaleidoscopeGlsl330),
+                           CompileTransitionShader(kTransitionShaderBuiltInMosaicZoomGlsl330),
+                           CompileTransitionShader(kTransitionShaderBuiltInMotionBlurGlsl330),
+                           CompileTransitionShader(kTransitionShaderBuiltInPageCurlGlsl330),
+                           CompileTransitionShader(kTransitionShaderBuiltInPixelateGlsl330),
                            CompileTransitionShader(kTransitionShaderBuiltInPlasmaGlsl330),
                            CompileTransitionShader(kTransitionShaderBuiltInSimpleBlendGlsl330),
+                           CompileTransitionShader(kTransitionShaderBuiltInSliceSwipeGlsl330),
                            CompileTransitionShader(kTransitionShaderBuiltInSweepGlsl330),
+                           CompileTransitionShader(kTransitionShaderBuiltInTileFlipGlsl330),
                            CompileTransitionShader(kTransitionShaderBuiltInWarpGlsl330),
+                           CompileTransitionShader(kTransitionShaderBuiltInWaterDropGlsl330),
                            CompileTransitionShader(kTransitionShaderBuiltInZoomBlurGlsl330)})
     , m_mersenneTwister(m_randomDevice())
 {
