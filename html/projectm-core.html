@@ -237,14 +237,14 @@ async function loadStartupApiPresets(count) {
 
 // ====== UI CONTROLS ======
 async function loadRandomApiPreset() {
-    if (typeof Module === 'undefined' || !Module._loadPresetFile) {
+    if (typeof Module === 'undefined' || !Module._load_preset_file) {
         console.error('Module not ready');
         return;
     }
     const apiBase = localStorage.getItem('apiBase') || 'https://storage.noahcohn.com';
     try {
         const result = await fetchApiPreset(apiBase);
-        Module.ccall('loadPresetFile', null, ['string'], [result.vfsPath]);
+        Module.ccall('load_preset_file', null, ['string'], [result.vfsPath]);
         updatePresetDisplay(result.filename);
         console.log('Loaded API preset:', result.filename, 'from', result.dir);
     } catch (e) {
@@ -304,10 +304,10 @@ setTimeout(function(){
 
             const startupResults = await loadStartupApiPresets(5);
             if (startupResults.length > 0) {
-                Module.ccall('loadPresetFile', null, ['string'], [startupResults[0].vfsPath]);
+                Module.ccall('load_preset_file', null, ['string'], [startupResults[0].vfsPath]);
                 updatePresetDisplay(startupResults[0].filename);
                 for (let i = 1; i < startupResults.length; i++) {
-                    Module.ccall('addPresetFile', null, ['string'], [startupResults[i].vfsPath]);
+                    Module.ccall('add_preset_file', null, ['string'], [startupResults[i].vfsPath]);
                 }
             } else {
                 console.warn('No startup API presets loaded');

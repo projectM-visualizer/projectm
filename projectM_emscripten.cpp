@@ -372,7 +372,7 @@ if(sarrayBuffer){
 let sfil=new Uint8ClampedArray(sarrayBuffer);
 FS.writeFile("/presets/preset_custom.milk",sfil);
 setTimeout(function(){
-Module.ccall('loadPresetFile', null, ['string'], ["/presets/preset_custom.milk"]);
+Module.ccall('load_preset_file', null, ['string'], ["/presets/preset_custom.milk"]);
 var statEl6 = document.querySelector('#stat');
 if (statEl6) { statEl6.innerHTML='Downloaded Shader'; statEl6.style.backgroundColor='blue'; }
 },20);
@@ -459,9 +459,9 @@ function textures(xml, textureBase){
     $texs[0] = preList.length;
     console.log('scanned: ' + $texs[0] + ' textures from ' + textureBase);
     for (var i = 5; i < preList.length; i++) {
-        var href = preList[i].href;
-        var fname = preList[i].innerText.trim();
-        var fullUrl = new URL(href, textureBase).href;
+        var fname = preList[i].getAttribute('href');
+        var fileName = preList[i].innerText.trim();
+        var fullUrl = new URL(fname, textureBase).href;
         $texs[i] = fullUrl;
         console.log('$texs[' + i + ']: ', $texs[i]);
         (function(filename, url) {
@@ -483,12 +483,15 @@ function textures(xml, textureBase){
                 }
             });
             ff.send(null);
-        })(fname, fullUrl);
+        })(fileName, fullUrl);
     }
 }
 
 function scanTextures(){
     var textureBase = getBasePath('#textureDir', 'textures/');
+    if (!textureBase.match(/^https?:\/\//)) {
+        textureBase = new URL(textureBase, window.location.href).href;
+    }
     const nxhttp = new XMLHttpRequest();
     nxhttp.onreadystatechange = function(){
         if (this.readyState == 4 && this.status == 200) {
@@ -507,7 +510,7 @@ const preList=htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
 var currentOrigin=window.location.origin;
 $customMilk=[];
 for(var i=0;i<preList.length;i++){
-var txxt=preList[i].href;
+var txxt=preList[i].getAttribute('href');
 txxt=txxt.replace(currentOrigin,'');
 if(txxt.indexOf('.milk')!==-1){
 $customMilk.push('https://glsl.1ink.us/custom_milk'+txxt);
@@ -546,7 +549,7 @@ console.log('Got custom preset: custmilk_'+idx+'.milk from '+src);
 }
 completed++;
 if(completed===total){
-Module._addCustomMilkPaths(total);
+Module._add_custom_milk_paths(total);
 if(statEl3){statEl3.innerHTML='Custom Presets Ready';statEl3.style.backgroundColor='blue';}
 }
 });
@@ -554,7 +557,7 @@ ff.addEventListener("error",function(){
 console.warn('Failed to download custom preset: '+src);
 completed++;
 if(completed===total){
-Module._addCustomMilkPaths(total);
+Module._add_custom_milk_paths(total);
 if(statEl3){statEl3.innerHTML='Custom Presets Ready';statEl3.style.backgroundColor='blue';}
 }
 });
@@ -573,7 +576,7 @@ return;
 var idx=Math.floor(Math.random()*$customMilk.length);
 var fname='/presets/custmilk_'+idx+'.milk';
 var originalName = $customMilk[idx].split('/').pop();
-Module.ccall('loadPresetFile', null, ['string'], [fname]);
+Module.ccall('load_preset_file', null, ['string'], [fname]);
 if (window.updatePresetDisplay) { window.updatePresetDisplay(originalName); }
 document.querySelector('#stat').innerHTML='Loaded: custmilk_'+idx+'.milk';
 document.querySelector('#stat').style.backgroundColor='green';
@@ -590,7 +593,7 @@ const nparser=new DOMParser();
 const htmlDocs=nparser.parseFromString(xml.responseText,'text/html');
 const preList=htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
 for(var i=1;i<preList.length;i++){
-var txxt=preList[i].href;
+var txxt=preList[i].getAttribute('href');
 let currentOrigin=window.location.origin;
 txxt=txxt.replace(currentOrigin,'');
 array.push(baseUrl+txxt);
@@ -615,14 +618,17 @@ function sngs(xml, songBase){
     $sngs[0] = preList.length;
     console.log('scanned: ' + $sngs[0] + ' songs from ' + songBase);
     for (var i = 1; i < preList.length; i++) {
-        var href = preList[i].href;
-        var fullUrl = new URL(href, songBase).href;
+        var fname = preList[i].getAttribute('href');
+        var fullUrl = new URL(fname, songBase).href;
         $sngs[i] = fullUrl;
     }
 }
 
 function scanSongs(){
     var songBase = getBasePath('#songDir', 'songs/');
+    if (!songBase.match(/^https?:\/\//)) {
+        songBase = new URL(songBase, window.location.href).href;
+    }
     const nxhttp = new XMLHttpRequest();
     nxhttp.onreadystatechange = function(){
         if (this.readyState == 4 && this.status == 200) {
