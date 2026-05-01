@@ -1629,8 +1629,9 @@ document.getElementById("fullscreenBtn").addEventListener('click', function() {
 document.addEventListener('fullscreenchange', function() {
     if (!document.fullscreenElement && viewMode === 'fullscreen') {
         viewMode = 'window';
-        updateLayout();
     }
+    updateLayout();
+    if (viewMode === 'bezel') draw();
 });
 
 // ResizeObserver subsumes viewport resize for the canvases themselves,
