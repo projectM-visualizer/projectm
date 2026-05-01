@@ -1230,6 +1230,7 @@ window._pmLoaded = true;
 
 Module._init();
 updateLayout();
+forceResize();
 const mcanvas = document.querySelector('#mcanvas');
 const startupPaths = await loadStartupApiPresets(5);
 if (startupPaths.length > 0) {
@@ -1384,6 +1385,35 @@ link.click();
 // flippedCanvas = null;// Nullify reference
 });
 
+
+function forceResize() {
+    const dpr = window.devicePixelRatio || 1;
+    const cssWidth = (viewMode === 'bezel') ? window.innerHeight : window.innerWidth;
+    const cssHeight = (viewMode === 'bezel') ? window.innerHeight : window.innerHeight;
+    const w = Math.max(1, Math.round(cssWidth * dpr));
+    const h = Math.max(1, Math.round(cssHeight * dpr));
+
+    const mcanvas = document.querySelector('#mcanvas');
+    const scanvas = document.querySelector('#scanvas');
+    if (!mcanvas || !scanvas) return;
+
+    mcanvas.width = w;
+    mcanvas.height = h;
+    scanvas.width = w;
+    scanvas.height = h;
+
+    mcanvas.style.width = cssWidth + 'px';
+    mcanvas.style.height = cssHeight + 'px';
+    scanvas.style.width = cssWidth + 'px';
+    scanvas.style.height = cssHeight + 'px';
+
+    if (typeof Module !== 'undefined' && Module._set_window_size) {
+        Module._set_window_size(w, h);
+    }
+    if (typeof Module !== 'undefined' && Module._set_aspect_correction) {
+        Module._set_aspect_correction(viewMode === 'bezel');
+    }
+}
 
 function updateLayout() {
     const mcanvas = document.querySelector('#mcanvas');
@@ -1633,6 +1663,7 @@ document.getElementById("fullWindowBtn").addEventListener('click', function() {
         }
     }
     updateLayout();
+    forceResize();
     if (viewMode === 'bezel') draw();
 });
 
@@ -1645,6 +1676,7 @@ document.getElementById("fullscreenBtn").addEventListener('click', function() {
         enterFullscreen();
     }
     updateLayout();
+    forceResize();
     if (viewMode === 'bezel') draw();
 });
 
@@ -1667,6 +1699,7 @@ document.addEventListener('fullscreenchange', function() {
         viewMode = 'window';
     }
     updateLayout();
+    forceResize();
     if (viewMode === 'bezel') draw();
 });
 

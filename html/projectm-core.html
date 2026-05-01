@@ -98,6 +98,35 @@ window.updatePresetDisplay = function(name) {
 };
 
 // ====== CANVAS SIZE MANAGEMENT ======
+function forceResize() {
+    const dpr = window.devicePixelRatio || 1;
+    const cssWidth = isBezelMode ? window.innerHeight : window.innerWidth;
+    const cssHeight = window.innerHeight;
+    const w = Math.max(1, Math.round(cssWidth * dpr));
+    const h = Math.max(1, Math.round(cssHeight * dpr));
+
+    const mcanvas = document.querySelector('#mcanvas');
+    const scanvas = document.querySelector('#scanvas');
+    if (!mcanvas || !scanvas) return;
+
+    mcanvas.width = w;
+    mcanvas.height = h;
+    scanvas.width = w;
+    scanvas.height = h;
+
+    mcanvas.style.width = cssWidth + 'px';
+    mcanvas.style.height = cssHeight + 'px';
+    scanvas.style.width = cssWidth + 'px';
+    scanvas.style.height = cssHeight + 'px';
+
+    if (typeof Module !== 'undefined' && Module._set_window_size) {
+        Module._set_window_size(w, h);
+    }
+    if (typeof Module !== 'undefined' && Module._set_aspect_correction) {
+        Module._set_aspect_correction(isBezelMode);
+    }
+}
+
 function updateLayout() {
     const mcanvas = document.querySelector('#mcanvas');
     const scanvas = document.querySelector('#scanvas');
@@ -263,6 +292,7 @@ document.getElementById("apiRandomPresetBtn").addEventListener('click', function
 document.getElementById("toggleBezelBtn").addEventListener('click', function() {
     isBezelMode = !isBezelMode;
     updateLayout();
+    forceResize();
 });
 
 // ====== WINDOW RESIZE HANDLER ======
@@ -300,6 +330,7 @@ setTimeout(function(){
 
             Module._init();
             updateLayout();
+            forceResize();
             const mcanvas = document.querySelector('#mcanvas');
 
             const startupResults = await loadStartupApiPresets(5);

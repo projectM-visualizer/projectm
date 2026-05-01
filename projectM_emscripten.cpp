@@ -1004,6 +1004,7 @@ EMSCRIPTEN_KEEPALIVE
 void set_window_size(int width, int height) {
 if (!pm) return;
 emscripten_set_canvas_element_size("#mcanvas", width, height);
+emscripten_set_canvas_element_size("#scanvas", width, height);
 glViewport(0,0,width,height);
 glScissor(0,0,width,height);
 projectm_set_window_size(pm, width, height);
