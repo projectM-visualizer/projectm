@@ -62,7 +62,6 @@ upload_file() {
     if ! command -v sshpass >/dev/null 2>&1; then
         echo "sshpass not found, installing..."
         if command -v apt-get >/dev/null 2>&1; then
-            sudo apt-get update -y
             sudo apt-get install -y sshpass
         else
             echo "Cannot install sshpass automatically. Please install it or use another upload method."
