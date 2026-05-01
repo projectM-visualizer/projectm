@@ -179,11 +179,11 @@ const resizeObserver = new ResizeObserver((entries) => {
         scanvas.style.width = cssWidth + 'px';
         scanvas.style.height = cssHeight + 'px';
 
-        if (typeof Module !== 'undefined' && Module._setWindowSize) {
-            Module._setWindowSize(w, h);
+        if (typeof Module !== 'undefined' && Module._set_window_size) {
+            Module._set_window_size(w, h);
         }
-        if (typeof Module !== 'undefined' && Module._setAspectCorrection) {
-            Module._setAspectCorrection(isBezelMode);
+        if (typeof Module !== 'undefined' && Module._set_aspect_correction) {
+            Module._set_aspect_correction(isBezelMode);
         }
     }
 });

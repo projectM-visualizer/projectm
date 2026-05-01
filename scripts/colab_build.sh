@@ -12,7 +12,7 @@ EMSDK_ENV="${EMSDK_ROOT}/emsdk_env.sh"
 JVM_HEAP_SIZE="${JVM_HEAP_SIZE:-8g}"
 BUILD_JOBS="${BUILD_JOBS:-8}"
 
-PACKAGES=(cmake-curses-gui qtbase5-dev llvm-dev libvisual-0.4-dev ninja-build)
+PACKAGES=(bison flex cmake-curses-gui qtbase5-dev llvm-dev libvisual-0.4-dev ninja-build)
 
 if [ "$(id -u)" -eq 0 ]; then
     SUDO=""
