@@ -186,14 +186,6 @@ mySelect.value = firstValue;
 <option value="https://test.1ink.us/l4zr/video">Lazers</option>
 </select>
 </div>
-<section id="flacPlayerSection" style="display:none;margin-top:1rem;height:60vh;width:100%;">
-  <div style="text-align:center;color:#ccc;font-family:'Lucida Console',monospace;font-size:12px;margin-bottom:0.5rem;">FLAC Player</div>
-  <iframe id="flacFrame"
-    src="https://test.1ink.us/flac_player"
-    style="width:100%;height:100%;border:none;background:#000;"
-    allow="autoplay; fullscreen">
-  </iframe>
-</section>
 </nav>
 <main id=panel>
 <img src='./python_bar.png' id="progr" style='position:absolute;bottom:12vh;right:25vh;width:20vh;z-index:3300;display:none;'"/>
@@ -241,9 +233,9 @@ Random Preset (API)
 </div>
 
 <input type=button id=flacPlayerBtn style='background-color:magenta;position:absolute;display:block;left:3%;bottom:48%;z-index:3300;border:3px solid green;border-radius:20%;width:4vh;height:3.5vh;' />
-<div style='position:absolute;display:block;left:6%;bottom:48%;z-index:3300;font-family: "Lucida Console", "Courier New", monospace;font-size: 14px;color:lightgrey;'>
+<label for="flacPlayerBtn" style='position:absolute;display:block;left:6%;bottom:48%;z-index:3300;font-family: "Lucida Console", "Courier New", monospace;font-size: 14px;color:lightgrey;cursor:pointer;'>
 FLAC Player
-</div>
+</label>
 
 <div id="preset-name">Preset: --</div>
 
@@ -396,6 +388,14 @@ Click to upload image
 </div>
 
 <audio crossorigin id=track preload=none hidden style='pointer-events:none;'></audio>
+<section id="flacPlayerSection" style="display:none;position:fixed;z-index:3400;top:12vh;left:8vw;width:84vw;height:76vh;background:#000;border:2px solid #333;border-radius:8px;box-shadow:0 0 30px rgba(0,0,0,0.9);overflow:hidden;">
+  <div style="text-align:center;color:#ccc;font-family:'Lucida Console',monospace;font-size:12px;padding:0.5rem;background:#111;">FLAC Player</div>
+  <iframe id="flacFrame"
+    src="https://test.1ink.us/flac_player"
+    style="width:100%;height:calc(100% - 24px);border:none;background:#000;"
+    allow="autoplay; fullscreen">
+  </iframe>
+</section>
 </body>
 <script>
 
