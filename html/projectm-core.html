@@ -59,6 +59,10 @@ body { margin: 0; padding: 0; background-color: black; overflow: hidden; }
     <span class="btn-label">Random Preset (API)</span>
   </button>
 
+  <button id="lockPresetBtn" class="control-btn" style="background-color:green;left:3%;bottom:65%;">
+    <span class="btn-label">Lock Preset</span>
+  </button>
+
   <div id="preset-name">Preset: --</div>
 </div>
 
@@ -141,6 +145,7 @@ function updateLayout() {
             contain1.style.width = '100vw';
             contain1.style.height = '100vh';
             contain1.style.left = '0';
+            contain1.style.top = '0';
             contain1.style.position = 'fixed';
         }
 
@@ -260,9 +265,55 @@ document.getElementById("apiRandomPresetBtn").addEventListener('click', function
     loadRandomApiPreset();
 });
 
+let isPresetLocked = false;
+document.getElementById("lockPresetBtn").addEventListener('click', function() {
+    isPresetLocked = !isPresetLocked;
+    const btn = document.getElementById("lockPresetBtn");
+    const label = btn.querySelector('.btn-label');
+    if (isPresetLocked) {
+        btn.style.backgroundColor = 'red';
+        if (label) label.textContent = 'Unlock Preset';
+    } else {
+        btn.style.backgroundColor = 'green';
+        if (label) label.textContent = 'Lock Preset';
+    }
+    if (typeof Module !== 'undefined' && Module._set_preset_locked) {
+        Module._set_preset_locked(isPresetLocked ? 1 : 0);
+    } else if (typeof Module !== 'undefined' && Module.ccall) {
+        Module.ccall('set_preset_locked', null, ['number'], [isPresetLocked ? 1 : 0]);
+    }
+    console.log('Preset lock:', isPresetLocked);
+});
+
+function syncModuleSize() {
+    const contain1 = document.querySelector('#contain1');
+    const mcanvas = document.querySelector('#mcanvas');
+    const scanvas = document.querySelector('#scanvas');
+    if (!contain1 || !mcanvas || !scanvas || typeof Module === 'undefined') return;
+    const rect = contain1.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const w = Math.max(1, Math.round(rect.width * dpr));
+    const h = Math.max(1, Math.round(rect.height * dpr));
+    mcanvas.width = w;
+    mcanvas.height = h;
+    scanvas.width = w;
+    scanvas.height = h;
+    mcanvas.style.width = rect.width + 'px';
+    mcanvas.style.height = rect.height + 'px';
+    scanvas.style.width = rect.width + 'px';
+    scanvas.style.height = rect.height + 'px';
+    if (Module._set_window_size) {
+        Module._set_window_size(w, h);
+    }
+    if (Module._set_aspect_correction) {
+        Module._set_aspect_correction(isBezelMode);
+    }
+}
+
 document.getElementById("toggleBezelBtn").addEventListener('click', function() {
     isBezelMode = !isBezelMode;
     updateLayout();
+    syncModuleSize();
 });
 
 // ====== WINDOW RESIZE HANDLER ======
@@ -300,6 +351,7 @@ setTimeout(function(){
 
             Module._init();
             updateLayout();
+            syncModuleSize();
             const mcanvas = document.querySelector('#mcanvas');
 
             const startupResults = await loadStartupApiPresets(5);
