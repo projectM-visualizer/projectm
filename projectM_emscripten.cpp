@@ -507,13 +507,13 @@ function customMilkShds(xml){
 const nparser=new DOMParser();
 const htmlDocs=nparser.parseFromString(xml.responseText,'text/html');
 const preList=htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
-var currentOrigin=window.location.origin;
+var baseUrl='https://glsl.1ink.us/custom_milk/';
 $customMilk=[];
 for(var i=0;i<preList.length;i++){
 var txxt=preList[i].getAttribute('href');
-txxt=txxt.replace(currentOrigin,'');
-if(txxt.indexOf('.milk')!==-1){
-$customMilk.push('https://glsl.1ink.us/custom_milk'+txxt);
+var fullUrl=new URL(txxt,baseUrl).href;
+if(fullUrl.indexOf('.milk')!==-1){
+$customMilk.push(fullUrl);
 }
 }
 console.log('Scanned '+$customMilk.length+' custom milk presets.');
@@ -594,9 +594,8 @@ const htmlDocs=nparser.parseFromString(xml.responseText,'text/html');
 const preList=htmlDocs.getElementsByTagName('pre')[0].getElementsByTagName('a');
 for(var i=1;i<preList.length;i++){
 var txxt=preList[i].getAttribute('href');
-let currentOrigin=window.location.origin;
-txxt=txxt.replace(currentOrigin,'');
-array.push(baseUrl+txxt);
+var fullUrl=new URL(txxt,baseUrl).href;
+array.push(fullUrl);
 }
 console.log('Scanned '+array.length+' presets from '+baseUrl);
 }
