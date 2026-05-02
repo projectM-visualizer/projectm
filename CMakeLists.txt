@@ -171,7 +171,7 @@ if(ENABLE_EMSCRIPTEN)
             "SHELL:-msimd128 -mrelaxed-simd -fopenmp -lomp -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing "
             "SHELL:--typed-function-references --enable-reference-types -fno-math-errno "
             "SHELL:-s TRUSTED_TYPES=1 -s WASM_BIGINT=1 -sAUDIO_WORKLET=1 "
-            "SHELL:-s FORCE_FILESYSTEM=1 -s ASYNCIFY=1 -s EXPORTED_RUNTIME_METHODS='ccall,cwrap' -s EXPORTED_FUNCTIONS='_main,_projectm_touch'"
+            "SHELL:-s FORCE_FILESYSTEM=1 -s ASYNCIFY=1 -s EXPORTED_RUNTIME_METHODS='ccall,cwrap' -s EXPORTED_FUNCTIONS='_main,_projectm_touch,_dual_fbo_begin_transition,_dual_fbo_end_transition,_dual_fbo_cancel_transition,_dual_fbo_swap_preset_a,_dual_fbo_swap_preset_b,_dual_fbo_get_a_read_fbo,_dual_fbo_get_a_write_fbo,_dual_fbo_get_a_read_tex,_dual_fbo_get_a_write_tex,_dual_fbo_get_b_read_fbo,_dual_fbo_get_b_write_fbo,_dual_fbo_get_b_read_tex,_dual_fbo_get_b_write_tex,_dual_fbo_is_preset_b_allocated,_dual_fbo_get_format'"
             )
 
     # Dual-pipeline transition tuning: stack-size hint for ASYNCIFY to avoid binary bloat
