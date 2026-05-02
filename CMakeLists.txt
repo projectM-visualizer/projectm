@@ -147,6 +147,12 @@ if(ENABLE_EMSCRIPTEN)
         message(FATAL_ERROR "You are not using an emscripten compiler.")
     endif()
 
+    # Option to enable dual-pipeline preset transition support (Phase 1).
+    # When ON, adds ASYNCIFY stack-size tuning required for non-blocking shader compilation
+    # and file I/O during concurrent preset loading. Leave OFF until the full 5-phase
+    # implementation is complete unless you are actively developing the transition feature.
+    option(ENABLE_WASM_TRANSITIONS "Enable dual-pipeline preset transition support for WebAssembly builds (Phase 1). Adds ASYNCIFY stack-size tuning for non-blocking shader compilation. Only effective when ENABLE_EMSCRIPTEN is ON. Leave OFF until the full 5-phase implementation is complete." OFF)
+
     # emscripten uses different options to compile and link libraries, so we can't use find_package().
     # Instead, specifying the required options directly to emcc is the way to go.
     # Note: The "SHELL:" syntax is required to pass each argument as-is, but without quotes and CMake's de-duplication.
@@ -167,6 +173,14 @@ if(ENABLE_EMSCRIPTEN)
             "SHELL:-s TRUSTED_TYPES=1 -s WASM_BIGINT=1 -sAUDIO_WORKLET=1 "
             "SHELL:-s FORCE_FILESYSTEM=1 -s ASYNCIFY=1 -s EXPORTED_RUNTIME_METHODS='ccall,cwrap' -s EXPORTED_FUNCTIONS='_main,_projectm_touch'"
             )
+
+    # Dual-pipeline transition tuning: stack-size hint for ASYNCIFY to avoid binary bloat
+    # while preserving enough stack space for concurrent preset loading and shader compilation.
+    if(ENABLE_WASM_TRANSITIONS)
+        add_link_options(
+                "SHELL:-s ASYNCIFY_STACK_SIZE=65536"
+                )
+    endif()
 
     # if(USE_PTHREADS)
     #     add_compile_options("SHELL:-pthread")
@@ -272,6 +286,7 @@ message(STATUS "    macOS Framework:             ${ENABLE_MACOS_FRAMEWORK}")
 message(STATUS "    Emscripten:                  ${ENABLE_EMSCRIPTEN}")
 if(CMAKE_SYSTEM_NAME STREQUAL Emscripten)
     message(STATUS "    - PThreads:              ${USE_PTHREADS}")
+    message(STATUS "    - WASM Transitions:      ${ENABLE_WASM_TRANSITIONS}")
 endif()
 message(STATUS "    Use system GLM:              ${ENABLE_SYSTEM_GLM}")
 message(STATUS "    Use system projectM-eval:    ${ENABLE_SYSTEM_PROJECTM_EVAL}")
