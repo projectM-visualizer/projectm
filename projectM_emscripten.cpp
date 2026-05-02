@@ -31,6 +31,7 @@
 #include <limits>
 #include <cmath>
 #include <algorithm>
+#include <string>
 
 using namespace emscripten;
 
@@ -608,12 +609,15 @@ private:
  */
 static void gl_reset_state_between_pipelines()
 {
+    // Covers all texture units accessed by projectM shaders (warp, composite, blur, etc.).
+    static constexpr int kMaxProjectMTextureUnits = 8;
+
     // Disable blending; reset to opaque replace mode.
     glDisable(GL_BLEND);
     glBlendFunc(GL_ONE, GL_ZERO);
 
-    // Unbind textures on the first 8 units (covers all units used by projectM shaders).
-    for (int unit = 0; unit < 8; ++unit)
+    // Unbind textures on the first kMaxProjectMTextureUnits units.
+    for (int unit = 0; unit < kMaxProjectMTextureUnits; ++unit)
     {
         glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + unit));
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -1617,7 +1621,7 @@ void load_preset_file(const char* filename) {
         for (uint32_t i = 0; i < count; ++i) {
             char* item = projectm_playlist_item(app_data.playlist, i);
             if (item) {
-                bool match = (strcmp(item, filename) == 0);
+                bool match = (std::string(item) == filename);
                 projectm_playlist_free_string(item);
                 if (match) {
                     foundIdx = static_cast<int32_t>(i);
@@ -1627,13 +1631,20 @@ void load_preset_file(const char* filename) {
         }
         if (foundIdx < 0) {
             // Add to playlist so the manager can track it.
+            uint32_t sizeBefore = projectm_playlist_size(app_data.playlist);
             projectm_playlist_add_preset(app_data.playlist, filename, false);
-            foundIdx = static_cast<int32_t>(projectm_playlist_size(app_data.playlist) - 1);
+            uint32_t sizeAfter = projectm_playlist_size(app_data.playlist);
+            if (sizeAfter > sizeBefore) {
+                foundIdx = static_cast<int32_t>(sizeAfter - 1);
+            }
         }
-        // Switch via the playlist manager (hard_cut=false → soft transition).
-        projectm_playlist_set_position(app_data.playlist,
-                                       static_cast<uint32_t>(foundIdx), false);
-        return;
+        if (foundIdx >= 0) {
+            // Switch via the playlist manager (hard_cut=false → soft transition).
+            projectm_playlist_set_position(app_data.playlist,
+                                           static_cast<uint32_t>(foundIdx), false);
+            return;
+        }
+        // Fall through to direct load if playlist add failed.
     }
 
     // Fallback: no playlist attached yet – load directly.
@@ -1837,6 +1848,8 @@ void dual_fbo_render_preset_a()
 {
     if (!pm || !g_dualFbo.IsPresetAAllocated())
     {
+        fprintf(stderr, "dual_fbo_render_preset_a: not ready (pm=%p, presetAAllocated=%d)\n",
+                static_cast<void*>(pm), static_cast<int>(g_dualFbo.IsPresetAAllocated()));
         return;
     }
     GLStateGuard guard;
@@ -1860,6 +1873,8 @@ void dual_fbo_render_preset_b()
 {
     if (!pm || !g_dualFbo.IsPresetBAllocated())
     {
+        fprintf(stderr, "dual_fbo_render_preset_b: not ready (pm=%p, presetBAllocated=%d)\n",
+                static_cast<void*>(pm), static_cast<int>(g_dualFbo.IsPresetBAllocated()));
         return;
     }
     // Force-reset GL state left by Preset A's draw before entering Preset B's pipeline.
