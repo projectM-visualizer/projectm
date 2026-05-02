@@ -65,5 +65,6 @@ src/libprojectM/build/
 
 # CLion
 cmake-build-*
+cmake-build/
 .idea
 build-test-*
