@@ -31,6 +31,7 @@
 #include <limits>
 #include <cmath>
 #include <algorithm>
+#include <string>
 
 using namespace emscripten;
 
@@ -475,6 +476,162 @@ private:
 DualPingPongFramebuffer g_dualFbo;
 
 // =============================================================================
+// Phase 3: GLStateGuard – RAII WebGL state save/restore for preset isolation
+// =============================================================================
+
+/**
+ * @brief RAII guard that snapshots relevant WebGL state on construction and
+ *        restores it on destruction.
+ *
+ * Usage:
+ * @code
+ *     {
+ *         GLStateGuard guard;
+ *         // … render preset A …
+ *     } // state automatically restored here
+ * @endcode
+ *
+ * Saved/restored state:
+ *   - GL_BLEND enabled flag
+ *   - Blend function (src/dst RGB + Alpha)
+ *   - GL_DEPTH_WRITEMASK
+ *   - GL_VIEWPORT
+ *   - GL_SCISSOR_TEST enabled flag
+ *   - GL_SCISSOR_BOX
+ *   - GL_ACTIVE_TEXTURE unit
+ *   - GL_TEXTURE_BINDING_2D on texture unit 0
+ *   - GL_FRAMEBUFFER_BINDING
+ */
+class GLStateGuard
+{
+public:
+    GLStateGuard()
+    {
+        // --- Blend state ---
+        m_blendEnabled = glIsEnabled(GL_BLEND);
+        glGetIntegerv(GL_BLEND_SRC_RGB,   &m_blendSrcRGB);
+        glGetIntegerv(GL_BLEND_DST_RGB,   &m_blendDstRGB);
+        glGetIntegerv(GL_BLEND_SRC_ALPHA, &m_blendSrcAlpha);
+        glGetIntegerv(GL_BLEND_DST_ALPHA, &m_blendDstAlpha);
+
+        // --- Depth mask ---
+        glGetBooleanv(GL_DEPTH_WRITEMASK, &m_depthMask);
+
+        // --- Viewport ---
+        glGetIntegerv(GL_VIEWPORT, m_viewport);
+
+        // --- Scissor ---
+        m_scissorEnabled = glIsEnabled(GL_SCISSOR_TEST);
+        glGetIntegerv(GL_SCISSOR_BOX, m_scissorBox);
+
+        // --- Active texture unit ---
+        glGetIntegerv(GL_ACTIVE_TEXTURE, &m_activeTexture);
+
+        // --- Texture binding on unit 0 ---
+        glActiveTexture(GL_TEXTURE0);
+        glGetIntegerv(GL_TEXTURE_BINDING_2D, &m_tex0Binding);
+        // Restore the originally active texture unit immediately.
+        glActiveTexture(static_cast<GLenum>(m_activeTexture));
+
+        // --- FBO binding ---
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &m_fboBinding);
+    }
+
+    ~GLStateGuard()
+    {
+        // --- FBO binding ---
+        glBindFramebuffer(GL_FRAMEBUFFER, static_cast<GLuint>(m_fboBinding));
+
+        // --- Blend state ---
+        if (m_blendEnabled)
+            glEnable(GL_BLEND);
+        else
+            glDisable(GL_BLEND);
+        glBlendFuncSeparate(static_cast<GLenum>(m_blendSrcRGB),
+                            static_cast<GLenum>(m_blendDstRGB),
+                            static_cast<GLenum>(m_blendSrcAlpha),
+                            static_cast<GLenum>(m_blendDstAlpha));
+
+        // --- Depth mask ---
+        glDepthMask(m_depthMask);
+
+        // --- Viewport ---
+        glViewport(m_viewport[0], m_viewport[1], m_viewport[2], m_viewport[3]);
+
+        // --- Scissor ---
+        if (m_scissorEnabled)
+            glEnable(GL_SCISSOR_TEST);
+        else
+            glDisable(GL_SCISSOR_TEST);
+        glScissor(m_scissorBox[0], m_scissorBox[1], m_scissorBox[2], m_scissorBox[3]);
+
+        // --- Texture unit 0 binding ---
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(m_tex0Binding));
+
+        // --- Active texture unit ---
+        glActiveTexture(static_cast<GLenum>(m_activeTexture));
+    }
+
+    // Non-copyable, non-movable.
+    GLStateGuard(const GLStateGuard&)            = delete;
+    GLStateGuard& operator=(const GLStateGuard&) = delete;
+    GLStateGuard(GLStateGuard&&)                 = delete;
+    GLStateGuard& operator=(GLStateGuard&&)      = delete;
+
+private:
+    GLboolean m_blendEnabled   = GL_FALSE;
+    GLint     m_blendSrcRGB    = GL_ONE;
+    GLint     m_blendDstRGB    = GL_ZERO;
+    GLint     m_blendSrcAlpha  = GL_ONE;
+    GLint     m_blendDstAlpha  = GL_ZERO;
+    GLboolean m_depthMask      = GL_TRUE;
+    GLint     m_viewport[4]    = {0, 0, 0, 0};
+    GLboolean m_scissorEnabled = GL_FALSE;
+    GLint     m_scissorBox[4]  = {0, 0, 0, 0};
+    GLint     m_activeTexture  = GL_TEXTURE0;
+    GLint     m_tex0Binding    = 0;
+    GLint     m_fboBinding     = 0;
+};
+
+/**
+ * @brief Forcefully resets OpenGL blend, texture, and FBO state between two
+ *        preset pipeline phases.
+ *
+ * Call after finishing Preset A's draw and before starting Preset B's draw to
+ * prevent Preset A's additive blend/texture state from contaminating Preset B.
+ *
+ * Resets:
+ *   - Blending disabled (GL_ONE, GL_ZERO – opaque replace mode)
+ *   - Texture units 0-7 unbound (GL_TEXTURE_2D)
+ *   - FBO unbound (default framebuffer)
+ *   - Depth mask enabled (default)
+ */
+static void gl_reset_state_between_pipelines()
+{
+    // Covers all texture units accessed by projectM shaders (warp, composite, blur, etc.).
+    static constexpr int kMaxProjectMTextureUnits = 8;
+
+    // Disable blending; reset to opaque replace mode.
+    glDisable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ZERO);
+
+    // Unbind textures on the first kMaxProjectMTextureUnits units.
+    for (int unit = 0; unit < kMaxProjectMTextureUnits; ++unit)
+    {
+        glActiveTexture(static_cast<GLenum>(GL_TEXTURE0 + unit));
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+    glActiveTexture(GL_TEXTURE0); // Leave active unit at 0 as a clean default.
+
+    // Reset depth mask.
+    glDepthMask(GL_TRUE);
+
+    // Unbind any FBO (render to default framebuffer).
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+// =============================================================================
 
 EGLContext ctxegl;
 EGLDisplay display;
@@ -739,9 +896,13 @@ reinterpret_cast<uintptr_t>(app_data.projectm_engine),
 
 );
 }
-// glClearColor( 1.0, 1.0, 1.0, 0.0 );
-// glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
-projectm_opengl_render_frame(pm);
+// Phase 3: Wrap the render call in a GLStateGuard so that any blend, texture,
+// or FBO state set by the preset shader is restored before handing control back
+// to the browser's WebGL layer.
+{
+    GLStateGuard guard;
+    projectm_opengl_render_frame(pm);
+}
 eglSwapBuffers(display,surface);
 return;
 }
@@ -1448,9 +1609,46 @@ return;
 extern "C" {
 EMSCRIPTEN_KEEPALIVE
 void load_preset_file(const char* filename) {
-if (!pm) return;
-projectm_load_preset_file(pm, filename, true);
-return;
+    if (!pm) return;
+
+    // Phase 3: Route all preset switches through the playlist manager so that
+    // the engine's built-in transition cleanup routines are always triggered
+    // (dual FBO re-init, glClearColor reset, blend state isolation).
+    if (app_data.playlist) {
+        // Search the existing playlist for this filename.
+        uint32_t count = projectm_playlist_size(app_data.playlist);
+        int32_t foundIdx = -1;
+        for (uint32_t i = 0; i < count; ++i) {
+            char* item = projectm_playlist_item(app_data.playlist, i);
+            if (item) {
+                bool match = (std::string(item) == filename);
+                projectm_playlist_free_string(item);
+                if (match) {
+                    foundIdx = static_cast<int32_t>(i);
+                    break;
+                }
+            }
+        }
+        if (foundIdx < 0) {
+            // Add to playlist so the manager can track it.
+            uint32_t sizeBefore = projectm_playlist_size(app_data.playlist);
+            projectm_playlist_add_preset(app_data.playlist, filename, false);
+            uint32_t sizeAfter = projectm_playlist_size(app_data.playlist);
+            if (sizeAfter > sizeBefore) {
+                foundIdx = static_cast<int32_t>(sizeAfter - 1);
+            }
+        }
+        if (foundIdx >= 0) {
+            // Switch via the playlist manager (hard_cut=false → soft transition).
+            projectm_playlist_set_position(app_data.playlist,
+                                           static_cast<uint32_t>(foundIdx), false);
+            return;
+        }
+        // Fall through to direct load if playlist add failed.
+    }
+
+    // Fallback: no playlist attached yet – load directly.
+    projectm_load_preset_file(pm, filename, true);
 }
 } // extern "C"
 
@@ -1488,7 +1686,7 @@ void projectm_pcm_add_float_wrapper(uintptr_t pm_handle_value, float* audio_data
 } // extern "C"
 
 // =============================================================================
-// Phase 2: Dual ping-pong FBO lifecycle C API (EMSCRIPTEN_KEEPALIVE exports)
+// Phase 2 + Phase 3: Dual ping-pong FBO lifecycle C API (EMSCRIPTEN_KEEPALIVE exports)
 //
 // These functions are the public interface for JavaScript / the transition
 // layer to drive the dual FBO system:
@@ -1504,6 +1702,10 @@ void projectm_pcm_add_float_wrapper(uintptr_t pm_handle_value, float* audio_data
 //   dual_fbo_get_b_read_tex()    – texture ID to sample as history (Preset B)
 //   dual_fbo_is_preset_b_allocated() – query whether transition is active
 //   dual_fbo_get_format()        – 0=RGBA32F, 1=RGBA16F, 2=RGBA8
+//
+// Phase 3 isolated render helpers (save/restore full GL state):
+//   dual_fbo_render_preset_a()   – render Preset A into A_Write FBO w/ state guard
+//   dual_fbo_render_preset_b()   – force-reset GL, render Preset B into B_Write FBO
 // =============================================================================
 extern "C" {
 
@@ -1626,6 +1828,60 @@ EMSCRIPTEN_KEEPALIVE
 int dual_fbo_get_format()
 {
     return static_cast<int>(g_dualFbo.GetFormat());
+}
+
+// ---- Phase 3: isolated render helpers --------------------------------------
+
+/**
+ * @brief Renders the current projectM frame for Preset A with full GL state
+ *        save/restore isolation.
+ *
+ * Binds Preset A's Write FBO before rendering so that projectM's output is
+ * captured into the dual FBO system. Saves all relevant GL state before the
+ * render call and restores it afterward to prevent leakage into subsequent
+ * pipeline phases or into the browser's WebGL layer.
+ *
+ * After this call, swap Preset A's ping-pong FBOs with dual_fbo_swap_preset_a().
+ */
+EMSCRIPTEN_KEEPALIVE
+void dual_fbo_render_preset_a()
+{
+    if (!pm || !g_dualFbo.IsPresetAAllocated())
+    {
+        fprintf(stderr, "dual_fbo_render_preset_a: not ready (pm=%p, presetAAllocated=%d)\n",
+                static_cast<void*>(pm), static_cast<int>(g_dualFbo.IsPresetAAllocated()));
+        return;
+    }
+    GLStateGuard guard;
+    glBindFramebuffer(GL_FRAMEBUFFER, g_dualFbo.GetAWriteFBO());
+    projectm_opengl_render_frame(pm);
+}
+
+/**
+ * @brief Renders the current projectM frame for Preset B with full GL state
+ *        save/restore isolation.
+ *
+ * Must be called after dual_fbo_render_preset_a() during a transition frame.
+ * Before rendering, gl_reset_state_between_pipelines() is called to eliminate
+ * any additive blend or texture state left by Preset A's draw – this prevents
+ * the "white screen" / additive bleed artefacts.
+ *
+ * After this call, swap Preset B's ping-pong FBOs with dual_fbo_swap_preset_b().
+ */
+EMSCRIPTEN_KEEPALIVE
+void dual_fbo_render_preset_b()
+{
+    if (!pm || !g_dualFbo.IsPresetBAllocated())
+    {
+        fprintf(stderr, "dual_fbo_render_preset_b: not ready (pm=%p, presetBAllocated=%d)\n",
+                static_cast<void*>(pm), static_cast<int>(g_dualFbo.IsPresetBAllocated()));
+        return;
+    }
+    // Force-reset GL state left by Preset A's draw before entering Preset B's pipeline.
+    gl_reset_state_between_pipelines();
+    GLStateGuard guard;
+    glBindFramebuffer(GL_FRAMEBUFFER, g_dualFbo.GetBWriteFBO());
+    projectm_opengl_render_frame(pm);
 }
 
 } // extern "C"
