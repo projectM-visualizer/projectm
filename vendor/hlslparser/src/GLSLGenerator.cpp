@@ -247,6 +247,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
     {
         m_writer.WriteLine(0, "#version 300 es");
         m_writer.WriteLine(0, "precision highp float;");
+        m_writer.WriteLine(0, "precision highp int;");
         m_writer.WriteLine(0, "precision highp sampler3D;");
     }
     else
