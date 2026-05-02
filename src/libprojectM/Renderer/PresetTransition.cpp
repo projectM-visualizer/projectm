@@ -50,6 +50,9 @@ void PresetTransition::Draw(const Preset& oldPreset,
 {
     if (m_transitionShader == nullptr)
     {
+        // Shader failed to compile — force an instant hard-cut so the transition
+        // completes on the next IsDone() check instead of stalling.
+        m_durationSeconds = 0.0;
         return;
     }
 
@@ -124,7 +127,7 @@ void PresetTransition::Draw(const Preset& oldPreset,
 
     for (int i = 2; i < textureUnit; i++)
     {
-        noiseDescriptors[i - 2].Unbind(textureUnit);
+        noiseDescriptors[i - 2].Unbind(i);
     }
 
     Mesh::Unbind();
