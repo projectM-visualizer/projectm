@@ -6,36 +6,51 @@ namespace libprojectM {
 namespace Renderer {
 
 TransitionShaderManager::TransitionShaderManager()
-    : m_transitionShaders({CompileTransitionShader(kTransitionShaderBuiltInCircleGlsl330),
-                           CompileTransitionShader(kTransitionShaderBuiltInCubeRotateGlsl330),
-                           CompileTransitionShader(kTransitionShaderBuiltInDreamyGlsl330),
-                           CompileTransitionShader(kTransitionShaderBuiltInGlitchGlsl330),
-                           CompileTransitionShader(kTransitionShaderBuiltInHeatWaveGlsl330),
-                           CompileTransitionShader(kTransitionShaderBuiltInKaleidoscopeGlsl330),
-                           CompileTransitionShader(kTransitionShaderBuiltInMosaicZoomGlsl330),
-                           CompileTransitionShader(kTransitionShaderBuiltInMotionBlurGlsl330),
-                           CompileTransitionShader(kTransitionShaderBuiltInPageCurlGlsl330),
-                           CompileTransitionShader(kTransitionShaderBuiltInPixelateGlsl330),
-                           CompileTransitionShader(kTransitionShaderBuiltInPlasmaGlsl330),
-                           CompileTransitionShader(kTransitionShaderBuiltInSimpleBlendGlsl330),
-                           CompileTransitionShader(kTransitionShaderBuiltInSliceSwipeGlsl330),
-                           CompileTransitionShader(kTransitionShaderBuiltInSweepGlsl330),
-                           CompileTransitionShader(kTransitionShaderBuiltInTileFlipGlsl330),
-                           CompileTransitionShader(kTransitionShaderBuiltInWarpGlsl330),
-                           CompileTransitionShader(kTransitionShaderBuiltInWaterDropGlsl330),
-                           CompileTransitionShader(kTransitionShaderBuiltInZoomBlurGlsl330)})
-    , m_mersenneTwister(m_randomDevice())
+    : m_mersenneTwister(m_randomDevice())
 {
+    // Compile all candidate shaders and keep only those that succeeded.
+    std::vector<std::shared_ptr<Shader>> candidates = {
+        CompileTransitionShader(kTransitionShaderBuiltInCircleGlsl330),
+        CompileTransitionShader(kTransitionShaderBuiltInCubeRotateGlsl330),
+        CompileTransitionShader(kTransitionShaderBuiltInDreamyGlsl330),
+        CompileTransitionShader(kTransitionShaderBuiltInGlitchGlsl330),
+        CompileTransitionShader(kTransitionShaderBuiltInHeatWaveGlsl330),
+        CompileTransitionShader(kTransitionShaderBuiltInKaleidoscopeGlsl330),
+        CompileTransitionShader(kTransitionShaderBuiltInMosaicZoomGlsl330),
+        CompileTransitionShader(kTransitionShaderBuiltInMotionBlurGlsl330),
+        CompileTransitionShader(kTransitionShaderBuiltInPageCurlGlsl330),
+        CompileTransitionShader(kTransitionShaderBuiltInPixelateGlsl330),
+        CompileTransitionShader(kTransitionShaderBuiltInPlasmaGlsl330),
+        CompileTransitionShader(kTransitionShaderBuiltInSliceSwipeGlsl330),
+        CompileTransitionShader(kTransitionShaderBuiltInSweepGlsl330),
+        CompileTransitionShader(kTransitionShaderBuiltInTileFlipGlsl330),
+        CompileTransitionShader(kTransitionShaderBuiltInWarpGlsl330),
+        CompileTransitionShader(kTransitionShaderBuiltInWaterDropGlsl330),
+        CompileTransitionShader(kTransitionShaderBuiltInZoomBlurGlsl330),
+    };
+
+    for (auto& shader : candidates)
+    {
+        if (shader != nullptr)
+        {
+            m_transitionShaders.push_back(std::move(shader));
+        }
+    }
+
+    // Always compile SimpleBlend separately as a guaranteed fallback used when
+    // every entry in m_transitionShaders failed to compile.
+    m_fallbackShader = CompileTransitionShader(kTransitionShaderBuiltInSimpleBlendGlsl330);
 }
 
 auto TransitionShaderManager::RandomTransition() -> std::shared_ptr<Shader>
 {
-    if (m_transitionShaders.empty())
+    if (!m_transitionShaders.empty())
     {
-        return {};
+        return m_transitionShaders.at(m_mersenneTwister() % m_transitionShaders.size());
     }
 
-    return m_transitionShaders.at(m_mersenneTwister() % m_transitionShaders.size());
+    // All custom shaders failed to compile — use the SimpleBlend fallback.
+    return m_fallbackShader;
 }
 
 auto TransitionShaderManager::CompileTransitionShader(const std::string& shaderBodyCode) -> std::shared_ptr<Shader>
