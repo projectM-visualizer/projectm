@@ -15,6 +15,48 @@ the Emscripten linker:
 - `-sALLOW_MEMORY_GROWTH=1`: Allows allocating additional memory if necessary. This may be required to load additional
   textures etc. in projectM.
 
+## Dual-Pipeline Preset Transitions (ENABLE_WASM_TRANSITIONS)
+
+Phase 1 of the dual-pipeline preset transition feature introduces dedicated CMake and linker flags for the WASM build
+that are prerequisites for smooth preset cross-fading in the browser.
+
+### Required flags (all set automatically under `if(EMSCRIPTEN)` in CMakeLists.txt)
+
+| Flag | Purpose |
+|------|---------|
+| `-s USE_WEBGL2=1` | Target WebGL 2.0 — required for MRTs and float texture support |
+| `-s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2` | Strictly target WebGL 2.0 and avoid fallback to WebGL 1.0 |
+| `-s FULL_ES3=1` | Enable full OpenGL ES 3.0 emulation for advanced shader features |
+| `-O3` | Maximum optimization — needed to handle dual-preset CPU load |
+| `-s ALLOW_MEMORY_GROWTH=1` | Allow WASM heap to grow dynamically — prevents OOM crash when loading a second preset |
+| `-s ASYNCIFY=1` | Allow synchronous C++ functions to yield to the JS event loop — prevents browser freeze during shader compilation |
+
+### CMake option: `ENABLE_WASM_TRANSITIONS`
+
+An explicit opt-in CMake option is provided to gate additional transition-tuning flags:
+
+```shell
+emcmake cmake -B build-wasm -DENABLE_WASM_TRANSITIONS=ON
+```
+
+When `ENABLE_WASM_TRANSITIONS=ON`, the following extra flag is applied:
+
+- `-s ASYNCIFY_STACK_SIZE=65536`: Tunes the ASYNCIFY stack size to reduce binary bloat while preserving enough stack
+  space for concurrent preset loading and shader compilation.
+
+This option defaults to `OFF` until all 5 phases of the dual-pipeline transition implementation are complete. Enable it
+when actively developing or testing preset transition functionality.
+
+### Future phases
+
+The full dual-pipeline transition feature is being implemented in 5 phases:
+
+1. **Phase 1** (this change) — Emscripten build flags (`USE_WEBGL2`, `FULL_ES3`, `ASYNCIFY`, `ALLOW_MEMORY_GROWTH`, `-O3`)
+2. **Phase 2** — Dual ping-pong FBO architecture with floating-point texture support
+3. **Phase 3** — WebGL state isolation & playlist transition routing
+4. **Phase 4** — Async shader transpilation pipeline
+5. **Phase 5** — Final compositing pass: dual-texture blend shader
+
 ## Initializing Emscripten's OpenGL Context
 
 In addition to the above linker flags, some additional initialization steps must be performed to set up the OpenGL
