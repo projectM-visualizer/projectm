@@ -30,8 +30,451 @@
 #include <vector>
 #include <limits>
 #include <cmath>
+#include <algorithm>
 
 using namespace emscripten;
+
+// =============================================================================
+// Phase 2: Dual Ping-Pong FBO Architecture with Floating-Point Texture Support
+// =============================================================================
+
+/**
+ * @brief Available floating-point texture formats for FBO color attachments.
+ *
+ * Preference order:
+ *   RGBA32F – full 32-bit float per channel (requires EXT_color_buffer_float)
+ *   RGBA16F – 16-bit half-float per channel (requires EXT_color_buffer_half_float)
+ *   RGBA8   – 8-bit normalized (always available; shaders must clamp output to [0,1])
+ */
+enum class FboFloatFormat
+{
+    RGBA32F, //!< GL_RGBA32F – preferred for recursive warp feedback loops
+    RGBA16F, //!< GL_RGBA16F – mobile-friendly fallback
+    RGBA8    //!< GL_RGBA8   – last resort; negative alpha corruption possible without clamping
+};
+
+/**
+ * @brief Dual ping-pong framebuffer manager for isolated preset transitions.
+ *
+ * Maintains four framebuffer objects so that two preset pipelines can render
+ * concurrently without sharing any texture state:
+ *
+ *   Slot 0 (A_Read)  – Preset A feedback source (history texture)
+ *   Slot 1 (A_Write) – Preset A render target   (current frame)
+ *   Slot 2 (B_Read)  – Preset B feedback source [lazily allocated]
+ *   Slot 3 (B_Write) – Preset B render target   [lazily allocated]
+ *
+ * Each frame the Read/Write roles within each preset are swapped (ping-pong),
+ * giving each preset its own isolated feedback loop.
+ *
+ * Preset B FBOs are only allocated when a transition is actively initiated and
+ * are released (or promoted to Preset A) when the transition completes.
+ */
+class DualPingPongFramebuffer
+{
+public:
+    static constexpr int kARead  = 0; //!< Preset A read  (history) slot
+    static constexpr int kAWrite = 1; //!< Preset A write (current) slot
+    static constexpr int kBRead  = 2; //!< Preset B read  (history) slot
+    static constexpr int kBWrite = 3; //!< Preset B write (current) slot
+
+    DualPingPongFramebuffer() = default;
+
+    ~DualPingPongFramebuffer()
+    {
+        ReleaseAll();
+    }
+
+    /**
+     * @brief Detects the best available float texture format by probing WebGL extensions.
+     *
+     * Call once after the WebGL context has been made current and before any FBO
+     * allocation. Priority: GL_RGBA32F (EXT_color_buffer_float) >
+     * GL_RGBA16F (EXT_color_buffer_half_float) > GL_RGBA8.
+     *
+     * @param ctx The active Emscripten WebGL context handle.
+     */
+    void DetectFormat(EMSCRIPTEN_WEBGL_CONTEXT_HANDLE ctx)
+    {
+        if (emscripten_webgl_enable_extension(ctx, "EXT_color_buffer_float") == EM_TRUE)
+        {
+            m_format = FboFloatFormat::RGBA32F;
+            // Enable bilinear filtering on float textures when available.
+            emscripten_webgl_enable_extension(ctx, "OES_texture_float_linear");
+            printf("DualFBO: Using GL_RGBA32F float textures.\n");
+        }
+        else if (emscripten_webgl_enable_extension(ctx, "EXT_color_buffer_half_float") == EM_TRUE)
+        {
+            m_format = FboFloatFormat::RGBA16F;
+            emscripten_webgl_enable_extension(ctx, "OES_texture_half_float_linear");
+            printf("DualFBO: Using GL_RGBA16F half-float textures.\n");
+        }
+        else
+        {
+            m_format = FboFloatFormat::RGBA8;
+            printf("DualFBO: Float textures unavailable, falling back to GL_RGBA8.\n");
+            printf("DualFBO: WARNING – preset shaders should clamp output to [0,1].\n");
+        }
+    }
+
+    /**
+     * @brief Allocates the Preset A ping-pong FBO pair.
+     *
+     * Must be called once after the WebGL context is ready and DetectFormat()
+     * has been invoked. Safe to call again after a Resize() – dimensions are
+     * updated but no re-allocation occurs.
+     *
+     * @param width  Framebuffer width in pixels.
+     * @param height Framebuffer height in pixels.
+     * @return true on success, false if FBO creation failed.
+     */
+    bool AllocatePresetA(int width, int height)
+    {
+        if (m_presetAAllocated)
+        {
+            Resize(width, height);
+            return true;
+        }
+
+        m_width  = width;
+        m_height = height;
+
+        if (!CreateFBO(kARead, width, height) || !CreateFBO(kAWrite, width, height))
+        {
+            ReleaseFBO(kARead);
+            ReleaseFBO(kAWrite);
+            fprintf(stderr, "DualFBO: Failed to allocate Preset A FBOs.\n");
+            return false;
+        }
+
+        m_presetAAllocated = true;
+        printf("DualFBO: Preset A FBOs allocated (%dx%d).\n", width, height);
+        return true;
+    }
+
+    /**
+     * @brief Lazily allocates the Preset B ping-pong FBO pair.
+     *
+     * Call when a transition is initiated. Does nothing if Preset B is already
+     * allocated.
+     *
+     * @param width  Framebuffer width in pixels.
+     * @param height Framebuffer height in pixels.
+     * @return true on success, false if FBO creation failed.
+     */
+    bool AllocatePresetB(int width, int height)
+    {
+        if (m_presetBAllocated)
+        {
+            return true;
+        }
+
+        if (!CreateFBO(kBRead, width, height) || !CreateFBO(kBWrite, width, height))
+        {
+            ReleaseFBO(kBRead);
+            ReleaseFBO(kBWrite);
+            fprintf(stderr, "DualFBO: Failed to allocate Preset B FBOs.\n");
+            return false;
+        }
+
+        m_presetBAllocated = true;
+        printf("DualFBO: Preset B FBOs allocated (%dx%d).\n", width, height);
+        return true;
+    }
+
+    /**
+     * @brief Releases the Preset B FBOs without affecting Preset A.
+     *
+     * Call when a transition is cancelled or after PromoteBtoA() has
+     * transferred ownership.
+     */
+    void ReleasePresetB()
+    {
+        if (!m_presetBAllocated)
+        {
+            return;
+        }
+        ReleaseFBO(kBRead);
+        ReleaseFBO(kBWrite);
+        m_presetBAllocated = false;
+        printf("DualFBO: Preset B FBOs released.\n");
+    }
+
+    /**
+     * @brief Releases all allocated FBOs. Called automatically by the destructor.
+     */
+    void ReleaseAll()
+    {
+        ReleasePresetB();
+        if (m_presetAAllocated)
+        {
+            ReleaseFBO(kARead);
+            ReleaseFBO(kAWrite);
+            m_presetAAllocated = false;
+            printf("DualFBO: Preset A FBOs released.\n");
+        }
+    }
+
+    /**
+     * @brief Promotes Preset B's FBOs into the Preset A slots after a transition completes.
+     *
+     * Old Preset A FBOs are deleted; Preset B's FBOs take their place.
+     * After this call Preset B is no longer allocated and Preset A holds the
+     * former Preset B resources.
+     */
+    void PromoteBtoA()
+    {
+        if (!m_presetBAllocated)
+        {
+            return;
+        }
+
+        // Release old Preset A resources.
+        if (m_presetAAllocated)
+        {
+            ReleaseFBO(kARead);
+            ReleaseFBO(kAWrite);
+        }
+
+        // Move Preset B into Preset A slots (transfer ownership).
+        m_fbos[kARead]      = m_fbos[kBRead];
+        m_fbos[kAWrite]     = m_fbos[kBWrite];
+        m_textures[kARead]  = m_textures[kBRead];
+        m_textures[kAWrite] = m_textures[kBWrite];
+
+        // Clear Preset B slots (ownership transferred; do not delete).
+        m_fbos[kBRead]      = 0;
+        m_fbos[kBWrite]     = 0;
+        m_textures[kBRead]  = 0;
+        m_textures[kBWrite] = 0;
+
+        m_presetAAllocated = true;
+        m_presetBAllocated = false;
+        printf("DualFBO: Preset B promoted to Preset A.\n");
+    }
+
+    /**
+     * @brief Swaps the Read/Write FBOs for Preset A (ping-pong).
+     *
+     * Call once per frame while Preset A is rendering so that the previous
+     * frame's output becomes the new frame's history texture.
+     */
+    void SwapPresetA()
+    {
+        std::swap(m_fbos[kARead],      m_fbos[kAWrite]);
+        std::swap(m_textures[kARead],  m_textures[kAWrite]);
+    }
+
+    /**
+     * @brief Swaps the Read/Write FBOs for Preset B (ping-pong).
+     *
+     * Call once per frame during a transition.
+     */
+    void SwapPresetB()
+    {
+        std::swap(m_fbos[kBRead],      m_fbos[kBWrite]);
+        std::swap(m_textures[kBRead],  m_textures[kBWrite]);
+    }
+
+    /**
+     * @brief Resizes all allocated FBOs to new dimensions.
+     *
+     * Recreates all textures at the new size; existing framebuffer contents
+     * are lost. The FBO handles themselves are reused.
+     *
+     * @param width  New framebuffer width in pixels.
+     * @param height New framebuffer height in pixels.
+     */
+    void Resize(int width, int height)
+    {
+        if (width == m_width && height == m_height)
+        {
+            return;
+        }
+
+        m_width  = width;
+        m_height = height;
+
+        if (m_presetAAllocated)
+        {
+            ResizeFBOTexture(kARead,  width, height);
+            ResizeFBOTexture(kAWrite, width, height);
+        }
+        if (m_presetBAllocated)
+        {
+            ResizeFBOTexture(kBRead,  width, height);
+            ResizeFBOTexture(kBWrite, width, height);
+        }
+
+        printf("DualFBO: Resized to %dx%d.\n", width, height);
+    }
+
+    // -------------------------------------------------------------------------
+    // Accessor functions – return raw OpenGL handles for use in render passes.
+    // -------------------------------------------------------------------------
+    GLuint GetAReadFBO()    const { return m_fbos[kARead]; }
+    GLuint GetAWriteFBO()   const { return m_fbos[kAWrite]; }
+    GLuint GetAReadTex()    const { return m_textures[kARead]; }
+    GLuint GetAWriteTex()   const { return m_textures[kAWrite]; }
+
+    GLuint GetBReadFBO()    const { return m_fbos[kBRead]; }
+    GLuint GetBWriteFBO()   const { return m_fbos[kBWrite]; }
+    GLuint GetBReadTex()    const { return m_textures[kBRead]; }
+    GLuint GetBWriteTex()   const { return m_textures[kBWrite]; }
+
+    bool IsPresetAAllocated() const { return m_presetAAllocated; }
+    bool IsPresetBAllocated() const { return m_presetBAllocated; }
+
+    FboFloatFormat GetFormat() const { return m_format; }
+    int Width()  const { return m_width; }
+    int Height() const { return m_height; }
+
+private:
+    // -------------------------------------------------------------------------
+    // Helper: return the GL internal format for the detected float format.
+    // -------------------------------------------------------------------------
+    GLint GetGLInternalFormat() const
+    {
+        switch (m_format)
+        {
+            case FboFloatFormat::RGBA32F: return GL_RGBA32F;
+            case FboFloatFormat::RGBA16F: return GL_RGBA16F;
+            case FboFloatFormat::RGBA8:   return GL_RGBA8;
+            default:
+                fprintf(stderr, "DualFBO: Unknown FboFloatFormat; falling back to GL_RGBA8.\n");
+                return GL_RGBA8;
+        }
+    }
+
+    GLenum GetGLFormat() const { return GL_RGBA; }
+
+    GLenum GetGLType() const
+    {
+        switch (m_format)
+        {
+            case FboFloatFormat::RGBA32F: return GL_FLOAT;
+            case FboFloatFormat::RGBA16F: return GL_HALF_FLOAT;
+            case FboFloatFormat::RGBA8:   return GL_UNSIGNED_BYTE;
+            default:
+                fprintf(stderr, "DualFBO: Unknown FboFloatFormat; falling back to GL_UNSIGNED_BYTE.\n");
+                return GL_UNSIGNED_BYTE;
+        }
+    }
+
+    /**
+     * @brief Creates a single FBO with a colour texture attachment at the given slot.
+     *
+     * @param index  Slot index (kARead, kAWrite, kBRead, or kBWrite).
+     * @param width  Texture width in pixels.
+     * @param height Texture height in pixels.
+     * @return true on success; false if the framebuffer status check failed.
+     */
+    bool CreateFBO(int index, int width, int height)
+    {
+        glGenTextures(1, &m_textures[index]);
+        glBindTexture(GL_TEXTURE_2D, m_textures[index]);
+        glTexImage2D(GL_TEXTURE_2D, 0,
+                     GetGLInternalFormat(), width, height, 0,
+                     GetGLFormat(), GetGLType(), nullptr);
+        ConfigureTextureSampling(m_textures[index]);
+
+        glGenFramebuffers(1, &m_fbos[index]);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_fbos[index]);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                               GL_TEXTURE_2D, m_textures[index], 0);
+
+        GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        if (status != GL_FRAMEBUFFER_COMPLETE)
+        {
+            fprintf(stderr, "DualFBO: Framebuffer slot %d incomplete (status=0x%x).\n",
+                    index, status);
+            glDeleteTextures(1, &m_textures[index]);
+            glDeleteFramebuffers(1, &m_fbos[index]);
+            m_textures[index] = 0;
+            m_fbos[index]     = 0;
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @brief Deletes the FBO and its texture at the given slot and resets handles to 0.
+     */
+    void ReleaseFBO(int index)
+    {
+        if (m_fbos[index] != 0)
+        {
+            glDeleteFramebuffers(1, &m_fbos[index]);
+            m_fbos[index] = 0;
+        }
+        if (m_textures[index] != 0)
+        {
+            glDeleteTextures(1, &m_textures[index]);
+            m_textures[index] = 0;
+        }
+    }
+
+    /**
+     * @brief Reallocates the colour texture for a slot at new dimensions.
+     *
+     * The FBO handle itself is reused; only the texture storage is replaced
+     * and re-attached.
+     */
+    void ResizeFBOTexture(int index, int width, int height)
+    {
+        if (m_textures[index] == 0)
+        {
+            return;
+        }
+        glBindTexture(GL_TEXTURE_2D, m_textures[index]);
+        glTexImage2D(GL_TEXTURE_2D, 0,
+                     GetGLInternalFormat(), width, height, 0,
+                     GetGLFormat(), GetGLType(), nullptr);
+        ConfigureTextureSampling(m_textures[index]);
+
+        // Re-attach the resized texture to the FBO.
+        glBindFramebuffer(GL_FRAMEBUFFER, m_fbos[index]);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                               GL_TEXTURE_2D, m_textures[index], 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    /**
+     * @brief Sets the standard sampler parameters (linear filtering, edge clamp) on a
+     *        currently-bound 2D texture. Assumes the texture is already bound.
+     *
+     * @param texId The texture whose parameters to configure (used only for clarity;
+     *              the call operates on the currently bound GL_TEXTURE_2D target).
+     */
+    void ConfigureTextureSampling(GLuint texId)
+    {
+        (void)texId; // The texture must be bound before calling this helper.
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    GLuint m_fbos[4]     = {0, 0, 0, 0}; //!< FBO IDs:     [A_Read, A_Write, B_Read, B_Write]
+    GLuint m_textures[4] = {0, 0, 0, 0}; //!< Texture IDs: [A_Read, A_Write, B_Read, B_Write]
+
+    int m_width  = 0; //!< Current FBO texture width in pixels
+    int m_height = 0; //!< Current FBO texture height in pixels
+
+    bool m_presetAAllocated = false; //!< Whether Preset A FBOs are currently allocated
+    bool m_presetBAllocated = false; //!< Whether Preset B FBOs are currently allocated
+
+    FboFloatFormat m_format = FboFloatFormat::RGBA8; //!< Detected colour format for textures
+};
+
+// Global dual ping-pong FBO manager instance (Emscripten/WASM build only).
+DualPingPongFramebuffer g_dualFbo;
+
+// =============================================================================
 
 EGLContext ctxegl;
 EGLDisplay display;
@@ -320,6 +763,9 @@ glFrontFace(GL_CW);
 glCullFace(GL_BACK);
 app_data.loading=EM_FALSE;
 projectm_set_window_size(pm,width,height);
+// Phase 2: Allocate Preset A ping-pong FBOs now that the viewport
+// dimensions are known. DetectFormat() was already called in init().
+g_dualFbo.AllocatePresetA(width, height);
 emscripten_set_main_loop((void (*)())renderLoop,0,0);
 
 
@@ -870,6 +1316,13 @@ emscripten_webgl_enable_extension(gl_ctx, "OES_texture_half_float_linear");
 emscripten_webgl_enable_extension(gl_ctx,"EXT_color_buffer_float"); // GLES float
 emscripten_webgl_enable_extension(gl_ctx,"EXT_float_blend"); // GLES float
 
+// Phase 2: Detect the best available floating-point texture format for the
+// dual ping-pong FBO system. DetectFormat() checks EXT_color_buffer_float
+// (RGBA32F), EXT_color_buffer_half_float (RGBA16F), and falls back to RGBA8.
+// This must be called after the WebGL context is made current so that
+// extension availability can be probed reliably.
+g_dualFbo.DetectFormat(gl_ctx);
+
 pm = projectm_create();
 app_data.projectm_engine = pm;
 playlist = projectm_playlist_create(pm);
@@ -961,6 +1414,9 @@ if (pm) {
 projectm_destroy(pm);
 }
 pm = NULL;
+// Phase 2: Release dual FBO resources before destroying the WebGL context
+// to avoid calling OpenGL functions with an invalid context.
+g_dualFbo.ReleaseAll();
 if (gl_ctx) emscripten_webgl_destroy_context(gl_ctx);
 gl_ctx = NULL;
 return;
@@ -1014,6 +1470,8 @@ emscripten_set_canvas_element_size("#scanvas", width, height);
 glViewport(0,0,width,height);
 glScissor(0,0,width,height);
 projectm_set_window_size(pm, width, height);
+// Phase 2: Resize all allocated dual ping-pong FBOs to match the new viewport.
+g_dualFbo.Resize(width, height);
 return;
 }
 
@@ -1027,6 +1485,149 @@ void projectm_pcm_add_float_wrapper(uintptr_t pm_handle_value, float* audio_data
     }
     projectm_pcm_add_float(current_pm_handle, audio_data, num_samples_per_channel, static_cast<projectm_channels>(channels_enum_value));
 }
+} // extern "C"
+
+// =============================================================================
+// Phase 2: Dual ping-pong FBO lifecycle C API (EMSCRIPTEN_KEEPALIVE exports)
+//
+// These functions are the public interface for JavaScript / the transition
+// layer to drive the dual FBO system:
+//
+//   dual_fbo_begin_transition()  – allocate Preset B FBOs (lazy, call once)
+//   dual_fbo_end_transition()    – promote Preset B → Preset A (transition done)
+//   dual_fbo_cancel_transition() – release Preset B FBOs without promoting
+//   dual_fbo_swap_preset_a()     – ping-pong Preset A Read/Write each frame
+//   dual_fbo_swap_preset_b()     – ping-pong Preset B Read/Write each frame
+//   dual_fbo_get_a_read_fbo()    – FBO ID to bind as render target (Preset A)
+//   dual_fbo_get_a_read_tex()    – texture ID to sample as history (Preset A)
+//   dual_fbo_get_b_write_fbo()   – FBO ID to bind as render target (Preset B)
+//   dual_fbo_get_b_read_tex()    – texture ID to sample as history (Preset B)
+//   dual_fbo_is_preset_b_allocated() – query whether transition is active
+//   dual_fbo_get_format()        – 0=RGBA32F, 1=RGBA16F, 2=RGBA8
+// =============================================================================
+extern "C" {
+
+/**
+ * @brief Lazily allocates Preset B ping-pong FBOs to start a transition.
+ *
+ * Uses the current Preset A dimensions.  Safe to call when a transition is
+ * already active (no-op in that case).
+ *
+ * @return true on success.
+ */
+EMSCRIPTEN_KEEPALIVE
+bool dual_fbo_begin_transition()
+{
+    int w = g_dualFbo.Width();
+    int h = g_dualFbo.Height();
+    if (w <= 0 || h <= 0)
+    {
+        fprintf(stderr, "DualFBO: Cannot begin transition – Preset A FBOs not allocated.\n");
+        return false;
+    }
+    return g_dualFbo.AllocatePresetB(w, h);
+}
+
+/**
+ * @brief Completes a transition by promoting Preset B's FBOs into Preset A.
+ *
+ * Old Preset A resources are freed; Preset B's resources become the new
+ * Preset A. After this call Preset B is no longer allocated.
+ */
+EMSCRIPTEN_KEEPALIVE
+void dual_fbo_end_transition()
+{
+    g_dualFbo.PromoteBtoA();
+}
+
+/**
+ * @brief Cancels an in-progress transition and releases Preset B FBOs.
+ */
+EMSCRIPTEN_KEEPALIVE
+void dual_fbo_cancel_transition()
+{
+    g_dualFbo.ReleasePresetB();
+}
+
+/**
+ * @brief Swaps Preset A's Read/Write FBOs (call once per rendered frame).
+ *
+ * After the swap the former Write texture becomes the Read (history) texture
+ * for the next frame, implementing the ping-pong feedback loop.
+ */
+EMSCRIPTEN_KEEPALIVE
+void dual_fbo_swap_preset_a()
+{
+    g_dualFbo.SwapPresetA();
+}
+
+/**
+ * @brief Swaps Preset B's Read/Write FBOs (call once per rendered frame during a transition).
+ */
+EMSCRIPTEN_KEEPALIVE
+void dual_fbo_swap_preset_b()
+{
+    g_dualFbo.SwapPresetB();
+}
+
+// ---- Accessor functions (return raw OpenGL / WebGL handles) ----------------
+
+/** @brief Returns the Preset A Read FBO ID (bind as render target). */
+EMSCRIPTEN_KEEPALIVE
+GLuint dual_fbo_get_a_read_fbo()   { return g_dualFbo.GetAReadFBO(); }
+
+/** @brief Returns the Preset A Write FBO ID. */
+EMSCRIPTEN_KEEPALIVE
+GLuint dual_fbo_get_a_write_fbo()  { return g_dualFbo.GetAWriteFBO(); }
+
+/** @brief Returns the Preset A Read texture ID (sample as history/feedback). */
+EMSCRIPTEN_KEEPALIVE
+GLuint dual_fbo_get_a_read_tex()   { return g_dualFbo.GetAReadTex(); }
+
+/** @brief Returns the Preset A Write texture ID. */
+EMSCRIPTEN_KEEPALIVE
+GLuint dual_fbo_get_a_write_tex()  { return g_dualFbo.GetAWriteTex(); }
+
+/** @brief Returns the Preset B Read FBO ID (bind as render target). */
+EMSCRIPTEN_KEEPALIVE
+GLuint dual_fbo_get_b_read_fbo()   { return g_dualFbo.GetBReadFBO(); }
+
+/** @brief Returns the Preset B Write FBO ID. */
+EMSCRIPTEN_KEEPALIVE
+GLuint dual_fbo_get_b_write_fbo()  { return g_dualFbo.GetBWriteFBO(); }
+
+/** @brief Returns the Preset B Read texture ID (sample as history/feedback). */
+EMSCRIPTEN_KEEPALIVE
+GLuint dual_fbo_get_b_read_tex()   { return g_dualFbo.GetBReadTex(); }
+
+/** @brief Returns the Preset B Write texture ID. */
+EMSCRIPTEN_KEEPALIVE
+GLuint dual_fbo_get_b_write_tex()  { return g_dualFbo.GetBWriteTex(); }
+
+/**
+ * @brief Returns true if the Preset B FBOs are currently allocated
+ *        (i.e., a transition is in progress).
+ */
+EMSCRIPTEN_KEEPALIVE
+bool dual_fbo_is_preset_b_allocated()
+{
+    return g_dualFbo.IsPresetBAllocated();
+}
+
+/**
+ * @brief Returns the active FBO colour format as an integer.
+ *
+ * Values:
+ *   0 = RGBA32F (GL_RGBA32F, 32-bit float)
+ *   1 = RGBA16F (GL_RGBA16F, 16-bit half-float)
+ *   2 = RGBA8   (GL_RGBA8, 8-bit normalized – shaders should clamp output)
+ */
+EMSCRIPTEN_KEEPALIVE
+int dual_fbo_get_format()
+{
+    return static_cast<int>(g_dualFbo.GetFormat());
+}
+
 } // extern "C"
 
 int main(){
