@@ -261,12 +261,8 @@ public:
      */
     void SwapPresetA()
     {
-        GLuint tmpFbo      = m_fbos[kARead];
-        GLuint tmpTex      = m_textures[kARead];
-        m_fbos[kARead]     = m_fbos[kAWrite];
-        m_textures[kARead] = m_textures[kAWrite];
-        m_fbos[kAWrite]    = tmpFbo;
-        m_textures[kAWrite]= tmpTex;
+        std::swap(m_fbos[kARead],      m_fbos[kAWrite]);
+        std::swap(m_textures[kARead],  m_textures[kAWrite]);
     }
 
     /**
@@ -276,12 +272,8 @@ public:
      */
     void SwapPresetB()
     {
-        GLuint tmpFbo      = m_fbos[kBRead];
-        GLuint tmpTex      = m_textures[kBRead];
-        m_fbos[kBRead]     = m_fbos[kBWrite];
-        m_textures[kBRead] = m_textures[kBWrite];
-        m_fbos[kBWrite]    = tmpFbo;
-        m_textures[kBWrite]= tmpTex;
+        std::swap(m_fbos[kBRead],      m_fbos[kBWrite]);
+        std::swap(m_textures[kBRead],  m_textures[kBWrite]);
     }
 
     /**
@@ -348,8 +340,10 @@ private:
             case FboFloatFormat::RGBA32F: return GL_RGBA32F;
             case FboFloatFormat::RGBA16F: return GL_RGBA16F;
             case FboFloatFormat::RGBA8:   return GL_RGBA8;
+            default:
+                fprintf(stderr, "DualFBO: Unknown FboFloatFormat; falling back to GL_RGBA8.\n");
+                return GL_RGBA8;
         }
-        return GL_RGBA8;
     }
 
     GLenum GetGLFormat() const { return GL_RGBA; }
@@ -361,8 +355,10 @@ private:
             case FboFloatFormat::RGBA32F: return GL_FLOAT;
             case FboFloatFormat::RGBA16F: return GL_HALF_FLOAT;
             case FboFloatFormat::RGBA8:   return GL_UNSIGNED_BYTE;
+            default:
+                fprintf(stderr, "DualFBO: Unknown FboFloatFormat; falling back to GL_UNSIGNED_BYTE.\n");
+                return GL_UNSIGNED_BYTE;
         }
-        return GL_UNSIGNED_BYTE;
     }
 
     /**
@@ -380,11 +376,7 @@ private:
         glTexImage2D(GL_TEXTURE_2D, 0,
                      GetGLInternalFormat(), width, height, 0,
                      GetGLFormat(), GetGLType(), nullptr);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        ConfigureTextureSampling(m_textures[index]);
 
         glGenFramebuffers(1, &m_fbos[index]);
         glBindFramebuffer(GL_FRAMEBUFFER, m_fbos[index]);
@@ -441,17 +433,30 @@ private:
         glTexImage2D(GL_TEXTURE_2D, 0,
                      GetGLInternalFormat(), width, height, 0,
                      GetGLFormat(), GetGLType(), nullptr);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glBindTexture(GL_TEXTURE_2D, 0);
+        ConfigureTextureSampling(m_textures[index]);
 
         // Re-attach the resized texture to the FBO.
         glBindFramebuffer(GL_FRAMEBUFFER, m_fbos[index]);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                GL_TEXTURE_2D, m_textures[index], 0);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+    /**
+     * @brief Sets the standard sampler parameters (linear filtering, edge clamp) on a
+     *        currently-bound 2D texture. Assumes the texture is already bound.
+     *
+     * @param texId The texture whose parameters to configure (used only for clarity;
+     *              the call operates on the currently bound GL_TEXTURE_2D target).
+     */
+    void ConfigureTextureSampling(GLuint texId)
+    {
+        (void)texId; // The texture must be bound before calling this helper.
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     GLuint m_fbos[4]     = {0, 0, 0, 0}; //!< FBO IDs:     [A_Read, A_Write, B_Read, B_Write]

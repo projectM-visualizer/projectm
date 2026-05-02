@@ -162,6 +162,31 @@ if(ENABLE_EMSCRIPTEN)
             "SHELL:-msimd128 -mrelaxed-simd -fopenmp -lomp -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing -fno-math-errno -pthread"
             )
 
+    # Exported C functions accessible from JavaScript via ccall/cwrap.
+    # Using a CMake list variable keeps each entry on its own line and makes
+    # future additions easy to review.
+    set(PROJECTM_WASM_EXPORTED_FUNCTIONS
+            _main
+            _projectm_touch
+            # Phase 2: Dual ping-pong FBO lifecycle API
+            _dual_fbo_begin_transition
+            _dual_fbo_end_transition
+            _dual_fbo_cancel_transition
+            _dual_fbo_swap_preset_a
+            _dual_fbo_swap_preset_b
+            _dual_fbo_get_a_read_fbo
+            _dual_fbo_get_a_write_fbo
+            _dual_fbo_get_a_read_tex
+            _dual_fbo_get_a_write_tex
+            _dual_fbo_get_b_read_fbo
+            _dual_fbo_get_b_write_fbo
+            _dual_fbo_get_b_read_tex
+            _dual_fbo_get_b_write_tex
+            _dual_fbo_is_preset_b_allocated
+            _dual_fbo_get_format
+            )
+    list(JOIN PROJECTM_WASM_EXPORTED_FUNCTIONS "," PROJECTM_WASM_EXPORTED_FUNCTIONS_STR)
+
     add_link_options(
             "SHELL:-std=c++20 -O3 -rtlib=compiler-rt-mt -mtune=wasm32 -s SHARED_MEMORY=1 -s WASM_WORKERS=1 -pthread "
             "SHELL:-s MIN_WEBGL_VERSION=2 "
@@ -171,7 +196,7 @@ if(ENABLE_EMSCRIPTEN)
             "SHELL:-msimd128 -mrelaxed-simd -fopenmp -lomp -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing "
             "SHELL:--typed-function-references --enable-reference-types -fno-math-errno "
             "SHELL:-s TRUSTED_TYPES=1 -s WASM_BIGINT=1 -sAUDIO_WORKLET=1 "
-            "SHELL:-s FORCE_FILESYSTEM=1 -s ASYNCIFY=1 -s EXPORTED_RUNTIME_METHODS='ccall,cwrap' -s EXPORTED_FUNCTIONS='_main,_projectm_touch,_dual_fbo_begin_transition,_dual_fbo_end_transition,_dual_fbo_cancel_transition,_dual_fbo_swap_preset_a,_dual_fbo_swap_preset_b,_dual_fbo_get_a_read_fbo,_dual_fbo_get_a_write_fbo,_dual_fbo_get_a_read_tex,_dual_fbo_get_a_write_tex,_dual_fbo_get_b_read_fbo,_dual_fbo_get_b_write_fbo,_dual_fbo_get_b_read_tex,_dual_fbo_get_b_write_tex,_dual_fbo_is_preset_b_allocated,_dual_fbo_get_format'"
+            "SHELL:-s FORCE_FILESYSTEM=1 -s ASYNCIFY=1 -s EXPORTED_RUNTIME_METHODS='ccall,cwrap' -s EXPORTED_FUNCTIONS='${PROJECTM_WASM_EXPORTED_FUNCTIONS_STR}'"
             )
 
     # Dual-pipeline transition tuning: stack-size hint for ASYNCIFY to avoid binary bloat
