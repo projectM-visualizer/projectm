@@ -147,11 +147,10 @@ if(ENABLE_EMSCRIPTEN)
         message(FATAL_ERROR "You are not using an emscripten compiler.")
     endif()
 
-    # Option to enable dual-pipeline preset transition support (Phase 1).
+    # Option to enable dual-pipeline preset transition support (all 5 phases now implemented).
     # When ON, adds ASYNCIFY stack-size tuning required for non-blocking shader compilation
-    # and file I/O during concurrent preset loading. Leave OFF until the full 5-phase
-    # implementation is complete unless you are actively developing the transition feature.
-    option(ENABLE_WASM_TRANSITIONS "Enable dual-pipeline preset transition support for WebAssembly builds (Phase 1). Adds ASYNCIFY stack-size tuning for non-blocking shader compilation. Only effective when ENABLE_EMSCRIPTEN is ON. Leave OFF until the full 5-phase implementation is complete." OFF)
+    # and file I/O during concurrent preset loading.
+    option(ENABLE_WASM_TRANSITIONS "Enable dual-pipeline preset transition support for WebAssembly builds. Adds ASYNCIFY stack-size tuning for non-blocking shader compilation. Only effective when ENABLE_EMSCRIPTEN is ON." OFF)
 
     # emscripten uses different options to compile and link libraries, so we can't use find_package().
     # Instead, specifying the required options directly to emcc is the way to go.
@@ -159,7 +158,7 @@ if(ENABLE_EMSCRIPTEN)
     add_compile_options(
             "SHELL:-O3 -mtune=wasm32 "
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING -s SHARED_MEMORY=1 -s WASM_WORKERS=1 "
-            "SHELL:-msimd128 -mrelaxed-simd -fopenmp -lomp -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing -fno-math-errno -pthread"
+            "SHELL:-msimd128 -mrelaxed-simd -fopenmp -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing -fno-math-errno -pthread"
             )
 
     # Exported C functions accessible from JavaScript via ccall/cwrap.
@@ -186,6 +185,13 @@ if(ENABLE_EMSCRIPTEN)
             _dual_fbo_get_format
             # Phase 4: Async shader compilation / transition gating
             _dual_fbo_is_preset_b_ready
+            # Phase 5: Transition controller
+            _transition_start
+            _transition_cancel
+            _transition_is_active
+            _transition_get_blend
+            _transition_set_duration
+            _transition_get_duration
             )
     list(JOIN PROJECTM_WASM_EXPORTED_FUNCTIONS "," PROJECTM_WASM_EXPORTED_FUNCTIONS_STR)
 
@@ -195,7 +201,7 @@ if(ENABLE_EMSCRIPTEN)
             "SHELL:-s MAX_WEBGL_VERSION=2 "
             "SHELL:-s USE_WEBGL2=1 -s FULL_ES2=0 -s FULL_ES3=1 -s GL_POOL_TEMP_BUFFERS=0 -s GL_MAX_TEMP_BUFFER_SIZE=33177600 -s GL_TRACK_ERRORS=0 "
             "SHELL:-s NO_DISABLE_EXCEPTION_CATCHING -s ALLOW_MEMORY_GROWTH=1 -sMALLOC='mimalloc' -sMAXIMUM_MEMORY=4gb -sINITIAL_MEMORY=1024mb "
-            "SHELL:-msimd128 -mrelaxed-simd -fopenmp -lomp -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing "
+            "SHELL:-msimd128 -mrelaxed-simd -fopenmp -mmutable-globals -mbulk-memory -matomics -mnontrapping-fptoint -msign-ext -fno-strict-aliasing "
             "SHELL:--typed-function-references --enable-reference-types -fno-math-errno "
             "SHELL:-s TRUSTED_TYPES=1 -s WASM_BIGINT=1 -sAUDIO_WORKLET=1 "
             "SHELL:-s FORCE_FILESYSTEM=1 -s ASYNCIFY=1 -s EXPORTED_RUNTIME_METHODS='ccall,cwrap' -s EXPORTED_FUNCTIONS='${PROJECTM_WASM_EXPORTED_FUNCTIONS_STR}'"
