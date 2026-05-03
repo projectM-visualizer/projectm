@@ -354,8 +354,21 @@ setTimeout(function(){
             syncModuleSize();
             const mcanvas = document.querySelector('#mcanvas');
 
+            // Start the render loop *before* downloading presets so that
+            // projectM's TimeKeeper (m_currentTime) is already being advanced
+            // each frame by UpdateTimers().  If start_render is called *after*
+            // load_preset_file, m_transitionStartTime is set to ~0 while the
+            // render loop hasn't started yet; when it does start, m_currentTime
+            // immediately jumps to wall-clock elapsed time, making the
+            // transition appear instant (hard cut) whenever startup takes
+            // longer than the soft-cut duration (~17 s on slow networks/devices).
+            Module._start_render(mcanvas.width, mcanvas.height);
+
             const startupResults = await loadStartupApiPresets(5);
             if (startupResults.length > 0) {
+                // The render loop is now running, so m_currentTime is current.
+                // load_preset_file will start a smooth 17-second crossfade from
+                // the idle preset to the first API preset.
                 Module.ccall('load_preset_file', null, ['string'], [startupResults[0].vfsPath]);
                 updatePresetDisplay(startupResults[0].filename);
                 for (let i = 1; i < startupResults.length; i++) {
@@ -364,8 +377,6 @@ setTimeout(function(){
             } else {
                 console.warn('No startup API presets loaded');
             }
-
-            Module._start_render(mcanvas.width, mcanvas.height);
         }).catch(function(err) {
             console.error('projectM module initialization failed:', err);
         });
