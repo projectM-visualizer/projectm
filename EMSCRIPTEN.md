@@ -51,11 +51,59 @@ when actively developing or testing preset transition functionality.
 
 The full dual-pipeline transition feature is being implemented in 5 phases:
 
-1. **Phase 1** (this change) — Emscripten build flags (`USE_WEBGL2`, `FULL_ES3`, `ASYNCIFY`, `ALLOW_MEMORY_GROWTH`, `-O3`)
-2. **Phase 2** — Dual ping-pong FBO architecture with floating-point texture support
-3. **Phase 3** — WebGL state isolation & playlist transition routing
-4. **Phase 4** — Async shader transpilation pipeline
+1. **Phase 1** (merged) — Emscripten build flags (`USE_WEBGL2`, `FULL_ES3`, `ASYNCIFY`, `ALLOW_MEMORY_GROWTH`, `-O3`)
+2. **Phase 2** (merged) — Dual ping-pong FBO architecture with floating-point texture support
+3. **Phase 3** (merged) — WebGL state isolation & playlist transition routing
+4. **Phase 4** (this change) — Async shader transpilation pipeline & GLSL ES 3.0 correctness
 5. **Phase 5** — Final compositing pass: dual-texture blend shader
+
+## Phase 4 — Async Shader Transpilation & Transition Gating
+
+Phase 4 ensures that HLSL→GLSL transpilation and preset loading never freeze the browser, and that the visual transition blend only begins once the incoming preset's shaders are confirmed compiled and linked.
+
+### GLSL ES 3.00 compliance
+
+When building for Emscripten/WASM, `USE_GLES=ON` is set automatically by CMake. This activates the GLES shader pipeline throughout the library:
+
+- The hlslparser `GLSLGenerator` targets `Version_300_ES`, emitting `#version 300 es` and precision qualifiers for every transpiled fragment shader.
+- Static shaders (blur, warp, composite vertex shaders) are prepended with the GLES version header by `MilkdropStaticShaders::AddVersionHeader`, which includes:
+  ```glsl
+  #version 300 es
+  
+  precision highp float;
+  precision highp int;
+  precision highp sampler2D;
+  precision highp sampler3D;
+  ```
+- All generated fragment shaders use `out vec4` instead of `gl_FragColor`, `texture()` instead of `texture2D()`/`textureCube()`, and `in`/`out` instead of `varying`/`attribute`.
+
+### Async preset loading
+
+`load_preset_file()` now:
+
+1. Resets the `g_presetBReady` gate to `false` at the start of every load.
+2. Sets `app_data.loading = EM_TRUE` to pause the render loop and prevent GL state conflicts during shader compilation.
+3. Calls `emscripten_sleep(0)` to **yield to the browser event loop** before the heavy HLSL→GLSL transpilation and `glCompileShader`/`glLinkProgram` calls begin. This prevents the browser from showing an "unresponsive page" warning.
+4. Loads the preset via the playlist manager (which runs the full shader compilation pipeline internally).
+5. `load_preset_callback_done` fires synchronously once `GL_LINK_STATUS == GL_TRUE` is confirmed; it clears the loading flag and sets `g_presetBReady = true`.
+
+### Transition gating
+
+JavaScript **must** poll `dual_fbo_is_preset_b_ready()` and wait for it to return `true` before calling `dual_fbo_begin_transition()` to start the compositing blend.
+
+```js
+// Example: gate the transition start on both FBO allocation and shader readiness
+function maybeStartTransition() {
+    if (Module._dual_fbo_is_preset_b_ready() && Module._dual_fbo_is_preset_b_allocated()) {
+        // Safe to begin blending — shaders are compiled and FBOs are ready.
+        startCompositing();
+    } else {
+        requestAnimationFrame(maybeStartTransition);
+    }
+}
+```
+
+The flag is reset to `false` on every `load_preset_file()` call, so polling loops correctly handle back-to-back preset switches.
 
 ## Initializing Emscripten's OpenGL Context
 

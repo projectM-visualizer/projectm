@@ -184,6 +184,8 @@ if(ENABLE_EMSCRIPTEN)
             _dual_fbo_get_b_write_tex
             _dual_fbo_is_preset_b_allocated
             _dual_fbo_get_format
+            # Phase 4: Async shader compilation / transition gating
+            _dual_fbo_is_preset_b_ready
             )
     list(JOIN PROJECTM_WASM_EXPORTED_FUNCTIONS "," PROJECTM_WASM_EXPORTED_FUNCTIONS_STR)
 

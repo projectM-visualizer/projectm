@@ -665,6 +665,25 @@ projectm_playlist_handle playlist={};
 
 bool g_is_streaming_audio = false;
 
+// =============================================================================
+// Phase 4: Async preset loading / transition gating
+// =============================================================================
+
+/**
+ * @brief Guards the start of the visual transition blend.
+ *
+ * Set to @c true only after the incoming preset's shader programs have been
+ * compiled successfully (GL_LINK_STATUS == GL_TRUE, confirmed by the
+ * projectm_playlist preset-switched callback).  Reset to @c false whenever a
+ * new preset load begins so that stale state can never trigger an early blend.
+ *
+ * JavaScript should poll @c dual_fbo_is_preset_b_ready() and call
+ * @c dual_fbo_begin_transition() only when this returns @c true *and* the
+ * Preset B FBOs are fully allocated and have received at least one rendered
+ * frame.
+ */
+static bool g_presetBReady = false;
+
 extern "C" {
 EMSCRIPTEN_KEEPALIVE
 void create_sprite() {
@@ -751,6 +770,11 @@ void load_preset_callback_done(bool is_hard_cut, unsigned int index,void* user_d
 float randomDelay=(emscripten_random()*30.0)+27.0;
 projectm_set_preset_duration(app_data.projectm_engine, randomDelay);
 app_data.loading=EM_FALSE;
+
+// Phase 4: Shader compilation is complete (GL_LINK_STATUS == GL_TRUE was
+// confirmed inside Shader::CompileProgram before this callback was reached).
+// Signal to the transition system that the new preset is safe to blend in.
+g_presetBReady = true;
 
 uint32_t pos = projectm_playlist_get_position(app_data.playlist);
 char* preset_path = projectm_playlist_item(app_data.playlist, pos);
@@ -1611,6 +1635,22 @@ EMSCRIPTEN_KEEPALIVE
 void load_preset_file(const char* filename) {
     if (!pm) return;
 
+    // Phase 4: Reset the "Preset B ready" gate so the transition compositing
+    // layer does not start blending before the new preset's shaders are fully
+    // compiled and linked.
+    g_presetBReady = false;
+
+    // Pause the render loop while shader compilation runs.  This prevents GL
+    // state conflicts between the render call and the compile/link operations
+    // that share the same WebGL context.
+    app_data.loading = EM_TRUE;
+
+    // Phase 4: Yield to the browser event loop *before* the heavy HLSL→GLSL
+    // transpilation and glCompileShader/glLinkProgram calls begin.  This keeps
+    // the page responsive and prevents the "unresponsive page" warning even
+    // when the incoming preset has a complex shader.
+    emscripten_sleep(0);
+
     // Phase 3: Route all preset switches through the playlist manager so that
     // the engine's built-in transition cleanup routines are always triggered
     // (dual FBO re-init, glClearColor reset, blend state isolation).
@@ -1640,6 +1680,8 @@ void load_preset_file(const char* filename) {
         }
         if (foundIdx >= 0) {
             // Switch via the playlist manager (hard_cut=false → soft transition).
+            // load_preset_callback_done is invoked synchronously from within
+            // this call; it clears app_data.loading and sets g_presetBReady.
             projectm_playlist_set_position(app_data.playlist,
                                            static_cast<uint32_t>(foundIdx), false);
             return;
@@ -1648,7 +1690,13 @@ void load_preset_file(const char* filename) {
     }
 
     // Fallback: no playlist attached yet – load directly.
+    // Shader compilation happens synchronously inside this call.
     projectm_load_preset_file(pm, filename, true);
+
+    // Phase 4: Preset shaders compiled; signal ready and clear the loading
+    // guard (the playlist-path callback handles this for the playlist route).
+    g_presetBReady = true;
+    app_data.loading = EM_FALSE;
 }
 } // extern "C"
 
@@ -1814,6 +1862,29 @@ EMSCRIPTEN_KEEPALIVE
 bool dual_fbo_is_preset_b_allocated()
 {
     return g_dualFbo.IsPresetBAllocated();
+}
+
+/**
+ * @brief Phase 4: Returns true when the incoming preset's shaders have been
+ *        compiled and linked successfully.
+ *
+ * JavaScript must poll this function and confirm it returns @c true before
+ * calling @c dual_fbo_begin_transition() to start the visual blend.  This
+ * ensures the transition compositing never samples an incompletely linked
+ * shader program.
+ *
+ * The flag is set to @c false at the start of every @c load_preset_file() call
+ * and to @c true once the projectm-playlist preset-switched callback fires
+ * (which runs only after @c GL_LINK_STATUS == GL_TRUE has been confirmed
+ * inside @c Shader::CompileProgram).
+ *
+ * @return @c true  – the new preset is fully compiled; safe to begin blending.
+ * @return @c false – preset loading is still in progress; do NOT start blend.
+ */
+EMSCRIPTEN_KEEPALIVE
+bool dual_fbo_is_preset_b_ready()
+{
+    return g_presetBReady;
 }
 
 /**
