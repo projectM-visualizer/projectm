@@ -147,11 +147,10 @@ if(ENABLE_EMSCRIPTEN)
         message(FATAL_ERROR "You are not using an emscripten compiler.")
     endif()
 
-    # Option to enable dual-pipeline preset transition support (Phase 1).
+    # Option to enable dual-pipeline preset transition support (all 5 phases now implemented).
     # When ON, adds ASYNCIFY stack-size tuning required for non-blocking shader compilation
-    # and file I/O during concurrent preset loading. Leave OFF until the full 5-phase
-    # implementation is complete unless you are actively developing the transition feature.
-    option(ENABLE_WASM_TRANSITIONS "Enable dual-pipeline preset transition support for WebAssembly builds (Phase 1). Adds ASYNCIFY stack-size tuning for non-blocking shader compilation. Only effective when ENABLE_EMSCRIPTEN is ON. Leave OFF until the full 5-phase implementation is complete." OFF)
+    # and file I/O during concurrent preset loading.
+    option(ENABLE_WASM_TRANSITIONS "Enable dual-pipeline preset transition support for WebAssembly builds. Adds ASYNCIFY stack-size tuning for non-blocking shader compilation. Only effective when ENABLE_EMSCRIPTEN is ON." OFF)
 
     # emscripten uses different options to compile and link libraries, so we can't use find_package().
     # Instead, specifying the required options directly to emcc is the way to go.
@@ -186,6 +185,13 @@ if(ENABLE_EMSCRIPTEN)
             _dual_fbo_get_format
             # Phase 4: Async shader compilation / transition gating
             _dual_fbo_is_preset_b_ready
+            # Phase 5: Transition controller
+            _transition_start
+            _transition_cancel
+            _transition_is_active
+            _transition_get_blend
+            _transition_set_duration
+            _transition_get_duration
             )
     list(JOIN PROJECTM_WASM_EXPORTED_FUNCTIONS "," PROJECTM_WASM_EXPORTED_FUNCTIONS_STR)
 

@@ -632,6 +632,230 @@ static void gl_reset_state_between_pipelines()
 }
 
 // =============================================================================
+// Phase 5: Compositing Blend Shader
+//
+// A fullscreen quad shader that blends two preset FBO outputs (Preset A and
+// Preset B) into the default framebuffer (browser canvas) using a smooth
+// linear crossfade controlled by a [0.0, 1.0] blend factor.
+//
+// Usage:
+//   g_compositorShader.Init();                                   // once, after GL context is ready
+//   g_compositorShader.Draw(texA, texB, blend, width, height);   // every frame
+// =============================================================================
+
+/**
+ * @brief Fullscreen compositing shader that blends two preset FBO textures.
+ *
+ * Compiles a GLSL ES 3.00 vertex + fragment shader pair, manages a fullscreen
+ * triangle-strip VAO/VBO, and blits the result to FBO 0 (the browser canvas).
+ *
+ * blend == 0.0 → 100% Preset A (plain blit)
+ * blend == 1.0 → 100% Preset B
+ * 0 < blend < 1 → smooth crossfade
+ */
+class CompositingBlendShader
+{
+public:
+    /**
+     * @brief Compiles shaders, links program, and uploads the fullscreen quad geometry.
+     * @return true on success; false if any GL call failed (program stays uninitialised).
+     */
+    bool Init()
+    {
+        // GLSL ES 3.00 vertex shader: maps NDC positions and derives UV coords.
+        static const char* kVertSrc = R"(#version 300 es
+in vec2 aPosition;
+out vec2 vTexCoord;
+void main() {
+    vTexCoord = aPosition * 0.5 + 0.5;
+    gl_Position = vec4(aPosition, 0.0, 1.0);
+}
+)";
+
+        // GLSL ES 3.00 fragment shader: blends two textures with mix().
+        static const char* kFragSrc = R"(#version 300 es
+precision highp float;
+uniform sampler2D uTexA;
+uniform sampler2D uTexB;
+uniform float uBlend;
+in vec2 vTexCoord;
+out vec4 fragColor;
+void main() {
+    vec4 colorA = texture(uTexA, vTexCoord);
+    vec4 colorB = texture(uTexB, vTexCoord);
+    fragColor = mix(colorA, colorB, uBlend);
+}
+)";
+
+        GLuint vert = CompileShader(GL_VERTEX_SHADER, kVertSrc);
+        if (!vert)
+        {
+            return false;
+        }
+        GLuint frag = CompileShader(GL_FRAGMENT_SHADER, kFragSrc);
+        if (!frag)
+        {
+            glDeleteShader(vert);
+            return false;
+        }
+
+        m_program = glCreateProgram();
+        glAttachShader(m_program, vert);
+        glAttachShader(m_program, frag);
+        glLinkProgram(m_program);
+        glDeleteShader(vert);
+        glDeleteShader(frag);
+
+        GLint linked = GL_FALSE;
+        glGetProgramiv(m_program, GL_LINK_STATUS, &linked);
+        if (!linked)
+        {
+            GLint len = 0;
+            glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &len);
+            std::vector<char> log(static_cast<size_t>(len) + 1u);
+            glGetProgramInfoLog(m_program, len, nullptr, log.data());
+            fprintf(stderr, "CompositingBlendShader: link error: %s\n", log.data());
+            glDeleteProgram(m_program);
+            m_program = 0;
+            return false;
+        }
+
+        // Cache uniform / attribute locations.
+        m_locTexA  = glGetUniformLocation(m_program, "uTexA");
+        m_locTexB  = glGetUniformLocation(m_program, "uTexB");
+        m_locBlend = glGetUniformLocation(m_program, "uBlend");
+        m_locPos   = glGetAttribLocation(m_program, "aPosition");
+
+        // Fullscreen triangle-strip quad in NDC (CCW winding):
+        //   (-1,-1)  (1,-1)  (-1,1)  (1,1)
+        static const GLfloat kQuad[8] = {
+            -1.0f, -1.0f,
+             1.0f, -1.0f,
+            -1.0f,  1.0f,
+             1.0f,  1.0f,
+        };
+
+        glGenVertexArrays(1, &m_vao);
+        glGenBuffers(1, &m_vbo);
+        glBindVertexArray(m_vao);
+        glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(kQuad), kQuad, GL_STATIC_DRAW);
+        if (m_locPos >= 0)
+        {
+            glEnableVertexAttribArray(static_cast<GLuint>(m_locPos));
+            glVertexAttribPointer(static_cast<GLuint>(m_locPos), 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+        }
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        m_initialized = true;
+        fprintf(stderr, "CompositingBlendShader: initialized successfully.\n");
+        return true;
+    }
+
+    /**
+     * @brief Blends texA and texB into the default framebuffer (screen).
+     *
+     * @param texA   Preset A Read texture (GL_TEXTURE_2D handle).
+     * @param texB   Preset B Read texture; pass 0 when no transition is active.
+     * @param blend  Mix factor: 0.0 = full A, 1.0 = full B.
+     * @param width  Viewport width in pixels.
+     * @param height Viewport height in pixels.
+     */
+    void Draw(GLuint texA, GLuint texB, float blend, int width, int height)
+    {
+        if (!m_initialized || m_program == 0)
+        {
+            return;
+        }
+
+        // Render to the default framebuffer (browser canvas).
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, width, height);
+        glDisable(GL_BLEND);
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(GL_FALSE);
+        glDisable(GL_SCISSOR_TEST);
+
+        glUseProgram(m_program);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texA);
+        glUniform1i(m_locTexA, 0);
+
+        // Fall back to texA when texB is 0 (no-transition blit).
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texB != 0u ? texB : texA);
+        glUniform1i(m_locTexB, 1);
+
+        glUniform1f(m_locBlend, blend);
+
+        glBindVertexArray(m_vao);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        glBindVertexArray(0);
+
+        // Clean up texture bindings.
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        glUseProgram(0);
+    }
+
+    bool IsInitialized() const { return m_initialized; }
+
+private:
+    static GLuint CompileShader(GLenum type, const char* src)
+    {
+        GLuint shader = glCreateShader(type);
+        glShaderSource(shader, 1, &src, nullptr);
+        glCompileShader(shader);
+
+        GLint compiled = GL_FALSE;
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+        if (!compiled)
+        {
+            GLint len = 0;
+            glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &len);
+            std::vector<char> log(static_cast<size_t>(len) + 1u);
+            glGetShaderInfoLog(shader, len, nullptr, log.data());
+            fprintf(stderr, "CompositingBlendShader: compile error (%s): %s\n",
+                    type == GL_VERTEX_SHADER ? "vert" : "frag", log.data());
+            glDeleteShader(shader);
+            return 0;
+        }
+        return shader;
+    }
+
+    bool   m_initialized = false;
+    GLuint m_program     = 0;
+    GLuint m_vao         = 0;
+    GLuint m_vbo         = 0;
+    GLint  m_locTexA     = -1;
+    GLint  m_locTexB     = -1;
+    GLint  m_locBlend    = -1;
+    GLint  m_locPos      = -1;
+};
+
+// Global compositing shader instance (Emscripten/WASM build only).
+static CompositingBlendShader g_compositorShader;
+
+// =============================================================================
+// Phase 5: Transition Controller State
+//
+// Manages the blend timeline that crossfades Preset A → Preset B.
+// JavaScript starts a transition by calling transition_start() after
+// dual_fbo_begin_transition() has been called and Preset B has been warmed up
+// with at least one rendered frame.
+// =============================================================================
+
+static float  g_transitionDuration  = 3.0f;  //!< Crossfade duration in seconds (default 3 s).
+static bool   g_transitionActive    = false;  //!< Whether a blend is currently in progress.
+static float  g_transitionBlend     = 0.0f;   //!< Current blend value in [0.0, 1.0].
+static double g_transitionStartTime = 0.0;    //!< emscripten_get_now() timestamp (ms) at blend start.
+
+// =============================================================================
 
 EGLContext ctxegl;
 EGLDisplay display;
@@ -951,6 +1175,12 @@ projectm_set_window_size(pm,width,height);
 // Phase 2: Allocate Preset A ping-pong FBOs now that the viewport
 // dimensions are known. DetectFormat() was already called in init().
 g_dualFbo.AllocatePresetA(width, height);
+// Phase 5: Compile and link the compositing blend shader now that the GL
+// context is current and Preset A's FBOs are allocated.
+if (!g_compositorShader.Init())
+{
+    fprintf(stderr, "start_render: CompositingBlendShader failed to initialise – transitions will be unavailable.\n");
+}
 emscripten_set_main_loop((void (*)())renderLoop,0,0);
 
 
@@ -1704,7 +1934,89 @@ extern "C" {
 EMSCRIPTEN_KEEPALIVE
 void render_frame() {
 if (!pm) return;
-projectm_opengl_render_frame(pm);
+
+// Phase 5: Integrated dual-FBO render pipeline.
+//
+// When the dual FBO system and compositing shader are both ready, the render
+// loop orchestrates the full transition pipeline:
+//
+//   1. Render Preset A → FBO_A_Write, ping-pong to FBO_A_Read.
+//   2. (if transition active) Render Preset B → FBO_B_Write, ping-pong to FBO_B_Read.
+//   3. Composite to screen:
+//        - No transition: blit FBO_A_Read to canvas (blend = 0.0 → 100 % A).
+//        - Transition:    blend FBO_A_Read + FBO_B_Read using uBlend.
+//   4. Advance blend timer; auto-complete when uBlend >= 1.0.
+//
+// If the dual FBO system is not yet initialised (e.g. start_render() has not
+// been called), we fall back to the legacy single-pass render so that the
+// visualiser still works during start-up.
+
+if (!g_dualFbo.IsPresetAAllocated() || !g_compositorShader.IsInitialized())
+{
+    // Legacy fallback: render directly to the default framebuffer.
+    projectm_opengl_render_frame(pm);
+    return;
+}
+
+const int w = g_dualFbo.Width();
+const int h = g_dualFbo.Height();
+
+// --- Step 1: Render Preset A into its Write FBO ---
+{
+    GLStateGuard guard;
+    glBindFramebuffer(GL_FRAMEBUFFER, g_dualFbo.GetAWriteFBO());
+    projectm_opengl_render_frame(pm);
+}
+g_dualFbo.SwapPresetA();
+
+// --- Step 2: (transition active) Render Preset B into its Write FBO ---
+if (g_transitionActive && g_dualFbo.IsPresetBAllocated())
+{
+    gl_reset_state_between_pipelines();
+    {
+        GLStateGuard guard;
+        glBindFramebuffer(GL_FRAMEBUFFER, g_dualFbo.GetBWriteFBO());
+        projectm_opengl_render_frame(pm);
+    }
+    g_dualFbo.SwapPresetB();
+}
+
+// --- Step 3: Composite to the default framebuffer (browser canvas) ---
+if (g_transitionActive && g_dualFbo.IsPresetBAllocated())
+{
+    g_compositorShader.Draw(g_dualFbo.GetAReadTex(), g_dualFbo.GetBReadTex(),
+                            g_transitionBlend, w, h);
+
+    // --- Step 4: Advance blend timer ---
+    float newBlend;
+    if (g_transitionDuration <= 0.0f)
+    {
+        // Hard cut: jump immediately to full B.
+        newBlend = 1.0f;
+    }
+    else
+    {
+        // Time-based blend (emscripten_get_now() returns milliseconds).
+        const double now = emscripten_get_now();
+        newBlend = static_cast<float>((now - g_transitionStartTime) / (static_cast<double>(g_transitionDuration) * 1000.0));
+    }
+    g_transitionBlend = newBlend < 1.0f ? newBlend : 1.0f;
+
+    if (g_transitionBlend >= 1.0f)
+    {
+        // Transition complete: promote B → A, release B's FBOs, reset state.
+        g_dualFbo.PromoteBtoA();
+        g_transitionBlend    = 0.0f;
+        g_transitionActive   = false;
+        g_presetBReady       = false;
+        fprintf(stderr, "Phase5: Transition complete – Preset B promoted to A.\n");
+    }
+}
+else
+{
+    // No transition: blit Preset A directly to screen (blend = 0.0).
+    g_compositorShader.Draw(g_dualFbo.GetAReadTex(), 0u, 0.0f, w, h);
+}
 return;
 }
 
@@ -1956,6 +2268,113 @@ void dual_fbo_render_preset_b()
 }
 
 } // extern "C"
+
+// =============================================================================
+// Phase 5: Transition Controller C API
+//
+// Public C functions that JavaScript calls to drive the blend timeline.
+//
+//   transition_start()           – start the blend (requires dual_fbo_begin_transition()
+//                                  to have been called first and at least one Preset B frame
+//                                  to have been rendered to warm up the pipeline)
+//   transition_cancel()          – abort an in-progress transition; resets to Preset A
+//   transition_is_active()       – returns true while a blend is in progress
+//   transition_get_blend()       – returns the current uBlend value in [0.0, 1.0]
+//   transition_set_duration()    – set crossfade duration in seconds (0 = hard cut)
+//   transition_get_duration()    – return the current crossfade duration
+// =============================================================================
+extern "C" {
+
+/**
+ * @brief Starts the visual crossfade blend from Preset A to Preset B.
+ *
+ * Prerequisites before calling this function:
+ *   1. dual_fbo_begin_transition() must have been called (Preset B FBOs allocated).
+ *   2. dual_fbo_is_preset_b_ready() must return true (shaders compiled).
+ *   3. At least one Preset B frame should have been rendered to warm up the pipeline.
+ *
+ * If transition duration is 0, an immediate hard cut is performed.
+ */
+EMSCRIPTEN_KEEPALIVE
+void transition_start()
+{
+    if (!g_dualFbo.IsPresetBAllocated())
+    {
+        fprintf(stderr, "transition_start: Preset B FBOs not allocated – call dual_fbo_begin_transition() first.\n");
+        return;
+    }
+    g_transitionBlend     = 0.0f;
+    g_transitionStartTime = emscripten_get_now(); // milliseconds
+    g_transitionActive    = true;
+    fprintf(stderr, "Phase5: Transition started (duration=%.2f s).\n",
+            static_cast<double>(g_transitionDuration));
+}
+
+/**
+ * @brief Cancels an in-progress transition and releases Preset B's FBOs.
+ *
+ * After this call Preset A continues rendering as normal and the blend
+ * value is reset to 0.0.
+ */
+EMSCRIPTEN_KEEPALIVE
+void transition_cancel()
+{
+    if (!g_transitionActive)
+    {
+        return;
+    }
+    g_transitionActive = false;
+    g_transitionBlend  = 0.0f;
+    g_presetBReady     = false;
+    g_dualFbo.ReleasePresetB();
+    fprintf(stderr, "Phase5: Transition cancelled.\n");
+}
+
+/**
+ * @brief Returns true while a crossfade blend is in progress.
+ */
+EMSCRIPTEN_KEEPALIVE
+bool transition_is_active()
+{
+    return g_transitionActive;
+}
+
+/**
+ * @brief Returns the current blend value in the range [0.0, 1.0].
+ *
+ * 0.0 = 100 % Preset A, 1.0 = 100 % Preset B.
+ */
+EMSCRIPTEN_KEEPALIVE
+float transition_get_blend()
+{
+    return g_transitionBlend;
+}
+
+/**
+ * @brief Sets the crossfade duration in seconds.
+ *
+ * Pass 0.0 to enable hard cuts (instant preset switch with no blend).
+ *
+ * @param seconds Duration of the blend in seconds (≥ 0).
+ */
+EMSCRIPTEN_KEEPALIVE
+void transition_set_duration(float seconds)
+{
+    g_transitionDuration = seconds >= 0.0f ? seconds : 0.0f;
+    fprintf(stderr, "Phase5: Transition duration set to %.2f s.\n",
+            static_cast<double>(g_transitionDuration));
+}
+
+/**
+ * @brief Returns the current crossfade duration in seconds.
+ */
+EMSCRIPTEN_KEEPALIVE
+float transition_get_duration()
+{
+    return g_transitionDuration;
+}
+
+} // extern "C" (Phase 5)
 
 int main(){
 init();
