@@ -942,17 +942,25 @@ EM_JS(void, js_feed_stream_data_to_projectm, (uintptr_t pm_handle, int buffer_si
     }
     analyser.getFloatTimeDomainData(pcmBuffer);
 
+    // Lazy-allocate a permanent 2048-float WASM buffer (max size for both audio paths).
+    // Using a pre-allocated buffer avoids ccall's 'array' type which relies on stackAlloc,
+    // and is fragile with ALLOW_MEMORY_GROWTH + pthreads + SHARED_MEMORY.
+    if (!window.projectMAudioBufferPtr) {
+        window.projectMAudioBufferPtr = _malloc(2048 * 4);
+    }
+    const buf = window.projectMAudioBufferPtr;
+
     // Optimization: projectM's internal analysis buffer is 576 samples (AudioBufferSamples).
     // Sending more than this just overwrites the older data in the ring buffer before analysis.
     // We send only the most recent 576 samples to minimize overhead while keeping the buffer fresh.
     const projectm_buffer_size = 576;
-    if (pcmBuffer.length > projectm_buffer_size) {
-        // Send subarray of the last 576 samples
-        const optimizedBuffer = pcmBuffer.subarray(pcmBuffer.length - projectm_buffer_size);
-        Module.ccall('projectm_pcm_add_float_wrapper', null, ['number', 'array', 'number', 'number'], [pm_handle, optimizedBuffer, projectm_buffer_size, 1]);
-    } else {
-        Module.ccall('projectm_pcm_add_float_wrapper', null, ['number', 'array', 'number', 'number'], [pm_handle, pcmBuffer, pcmBuffer.length, 1]);
-    }
+    const src = (pcmBuffer.length > projectm_buffer_size)
+                ? pcmBuffer.subarray(pcmBuffer.length - projectm_buffer_size)
+                : pcmBuffer;
+
+    // Write via a fresh Float32Array view of the live SharedArrayBuffer.
+    new Float32Array(wasmMemory.buffer).set(src, buf >> 2);
+    _projectm_pcm_add_float_wrapper(pm_handle, buf, src.length, 1);
 });
 
 EM_JS(void, js_initialize_stream_analyser, (), {
@@ -1049,9 +1057,17 @@ EM_JS(void, js_initialize_worklet_system_once, (uintptr_t pm_handle_for_addpcm),
             const workletNode = new AudioWorkletNode(audioContext, 'projectm-audio-processor');
             window.projectMWorkletNode_Global_Cpp = workletNode;
             workletNode.port.onmessage = (event) => {
-                if (event.data.type === 'pcmData' && Module._projectm_pcm_add_float_wrapper) {
-                    Module.ccall('projectm_pcm_add_float_wrapper', null, ['number', 'array', 'number', 'number'],
-                        [pm_handle_for_addpcm, event.data.audioData, event.data.samplesPerChannel, event.data.channelsForPM]);
+                if (event.data.type === 'pcmData' && _projectm_pcm_add_float_wrapper) {
+                    // Lazy-allocate a permanent 2048-float WASM buffer shared with the stream path.
+                    if (!window.projectMAudioBufferPtr) {
+                        window.projectMAudioBufferPtr = _malloc(2048 * 4);
+                    }
+                    const buf = window.projectMAudioBufferPtr;
+                    const audioData = event.data.audioData;
+
+                    // Write via a fresh Float32Array view of the live SharedArrayBuffer.
+                    new Float32Array(wasmMemory.buffer).set(audioData, buf >> 2);
+                    _projectm_pcm_add_float_wrapper(pm_handle_for_addpcm, buf, event.data.samplesPerChannel, event.data.channelsForPM);
                 }
             };
             workletNode.connect(audioContext.destination);

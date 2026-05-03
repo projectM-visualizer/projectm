@@ -207,9 +207,8 @@ mySelect.value = firstValue;
 Start / Change Song
 </div>
 
-<input type=button id=randomPresetBtn style='background-color:orange;position:absolute;display:block;left:3%;bottom:18%;z-index:3300;border:3px solid green;border-radius:20%;width:4vh;height:3.5vh;' />
+<input type=button id=randomPresetBtn style='background-color:orange;position:absolute;display:none;left:3%;bottom:18%;z-index:3300;border:3px solid green;border-radius:20%;width:4vh;height:3.5vh;' />
 <div style='position:absolute;display:block;left:6%;bottom:18%;z-index:3300;font-family: "Lucida Console", "Courier New", monospace;font-size: 14px;color:lightgrey;'>
-Random Preset
 </div>
 
 <input type=button id=fullWindowBtn style='background-color:blue;position:absolute;display:block;left:3%;bottom:24%;z-index:3300;border:3px solid green;border-radius:20%;width:4vh;height:3.5vh;' />
