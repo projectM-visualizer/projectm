@@ -2,8 +2,8 @@
 
 This document provides essential context for AI coding agents working on the projectM codebase. projectM is an open-source C++20 library that reimplements the Winamp Milkdrop music visualizer as a modern, cross-platform, reusable library.
 
-**License:** GNU Lesser General Public License 2.1 (LGPL-2.1-only)  
-**Version:** 4.1.0 (as of `CMakeLists.txt`)  
+**License:** GNU Lesser General Public License 2.1 (LGPL-2.1-only)
+**Version:** 4.1.0 (as of `CMakeLists.txt`)
 **Repository:** https://github.com/projectM-visualizer/projectm
 
 ---
@@ -118,6 +118,7 @@ sudo cmake --build . --target install
 | `ENABLE_DEBUG_POSTFIX` | `ON` | Append `d` to debug binary names. |
 | `ENABLE_MACOS_FRAMEWORK` | `OFF` | Build macOS Framework bundles instead of plain dylibs. |
 | `ENABLE_INSTALL` | `OFF` | Enable install targets when built as a CMake sub-project. |
+| `ENABLE_WASM_TRANSITIONS` | `OFF` | **Emscripten only.** Enable dual-pipeline preset transition support. Adds ASYNCIFY stack-size tuning for non-blocking shader compilation. |
 
 ### Using vcpkg (especially on Windows)
 
@@ -245,7 +246,7 @@ GitHub Actions workflows are in `.github/workflows/`:
 - `build_windows.yml` — Visual Studio / Ninja builds with vcpkg
 - `build_osx.yml` — macOS shared/static builds, with/without framework
 - `build_emscripten.yml` — Emscripten WASM build
-- `build_android.yml` — Android NDK build
+- `build_android.yml` — Android NDK build (arm64-v8a, armeabi-v7a, x86_64)
 - `push_release.yml` — Release artifact publishing
 
 ### Packaging Outputs
