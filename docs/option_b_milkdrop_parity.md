@@ -28,6 +28,7 @@ We want to close the gap while staying Emscripten/WebGL compatible.
 | **B3**    | Advanced Blending & Compositing   | Add more sophisticated blending modes          | Medium   | 3–4           | Planned   |
 | **B4**    | Timing, Synchronization & Polish  | Match Milkdrop’s frame-accurate feel           | High     | 2–3           | Planned   |
 | **B5**    | Exotic Effects & Favorites        | Replicate beloved Milkdrop transitions         | Medium   | Ongoing       | Future    |
+| **B6**    | Performance & Parallelism         | Add OpenMP pragmas + other optimizations       | Medium   | 2–4           | Future    |
 
 ---
 
@@ -40,7 +41,7 @@ We want to close the gap while staying Emscripten/WebGL compatible.
 
 ---
 
-## Next Session (Today)
+## Next Session (Today
 
 **Phase B1: Gap Analysis & Prioritization**
 
