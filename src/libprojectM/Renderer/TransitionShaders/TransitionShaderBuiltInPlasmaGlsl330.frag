@@ -25,7 +25,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     vec2 uv = fragCoord / iResolution.xy;
     vec2 nuv = uv;
-    nuv.y /= max(iResolution.x / iResolution.y, 0.0001);
+    nuv.y /= max(iAspectX / iAspectY, 0.0001);
 
     // Audio-reactive turbulent advection of the noise field.
     float bassPump  = clamp(iBassAtt, 0.0, 2.0);
@@ -49,7 +49,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     fractValue = fractValue / max(ampSum, 0.0001) * 0.5 + 0.5;
 
     float band = 0.18;
-    float p    = iProgressCosine;
+    float p    = iProgressEased;
     float cutoff = smoothstep(p + band, p - band, fractValue);
     float edge   = smoothstep(p + band, p, fractValue) -
                    smoothstep(p, p - band, fractValue);

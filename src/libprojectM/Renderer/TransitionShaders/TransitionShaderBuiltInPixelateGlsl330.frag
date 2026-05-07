@@ -1,5 +1,5 @@
 // Progressive pixelation/despixelation transition.
-// Uses iProgressCosine to drive block size from large (old preset) to 1x1 (new preset).
+// Uses iProgressEased to drive block size from large (old preset) to 1x1 (new preset).
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
@@ -7,7 +7,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
     // Randomize max block size and aspect correction
     float maxBlock = mod(float(iRandStatic.x) * 0.01, 64.0) + 32.0;
-    float progress = iProgressCosine;
+    float progress = iProgressEased;
 
     // Block size shrinks as progress increases; bass kicks momentarily blow it up.
     float bassPump = clamp(iBassAtt, 0.0, 2.0);

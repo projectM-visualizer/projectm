@@ -8,7 +8,7 @@ float hash(vec2 p)
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     vec2 uv = fragCoord / iResolution.xy;
-    float progress = iProgressCosine;
+    float progress = iProgressEased;
 
     // Randomize glitch intensity and frequency
     float intensity = mod(float(iRandStatic.x) * 0.001, 0.3) + 0.1;

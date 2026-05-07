@@ -5,7 +5,7 @@
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     vec2 uv = fragCoord / iResolution.xy;
-    float p = iProgressCosine;
+    float p = iProgressEased;
 
     // Haze peaks at midpoint.
     float haze = sin(p * 3.14159265);
@@ -47,7 +47,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
     // Soft vignette to deepen the dream feel.
     vec2 vUV = uv - 0.5;
-    vUV.x *= iResolution.x / max(iResolution.y, 1.0);
+    vUV.x *= iAspectX / iAspectY;
     float vig = 1.0 - dot(vUV, vUV) * (0.45 * haze);
 
     col = 1.0 - exp(-col * 1.05);                   // gentle filmic squash

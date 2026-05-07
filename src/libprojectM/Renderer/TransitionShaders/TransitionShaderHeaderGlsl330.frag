@@ -9,10 +9,40 @@ uniform ivec4 iRandFrame;
 uniform vec3 iBeatValues;
 uniform vec3 iBeatAttValues;
 
-#define iProgressLinear durationParams.x
-#define iProgressCosine durationParams.y
+// Aspect ratio correction uniforms for geometry-sensitive transitions.
+uniform float iAspectX;
+uniform float iAspectY;
+uniform float iInvAspectX;
+uniform float iInvAspectY;
+
+// Milkdrop-style easing function for transition progress.
+// easingType: 0 = linear, 1 = smoothstep (default), 2 = ease-in, 3 = ease-out
+float _prjm_getEasedProgress(float t, float easingType)
+{
+    t = clamp(t, 0.0, 1.0);
+    if (easingType < 0.5)
+    {
+        return t;                                         // 0 = Linear
+    }
+    else if (easingType < 1.5)
+    {
+        return t * t * (3.0 - 2.0 * t);                   // 1 = Smoothstep (default)
+    }
+    else if (easingType < 2.5)
+    {
+        return t * t;                                     // 2 = Ease-in (quadratic)
+    }
+    else
+    {
+        return 1.0 - (1.0 - t) * (1.0 - t);               // 3 = Ease-out (quadratic)
+    }
+}
+
+#define iProgressLinear  durationParams.x
+#define iProgressCosine  durationParams.y
 #define iProgressBicubic durationParams.z
-#define iTransitionDuration durationParams.w
+#define iEasingType      durationParams.w
+#define iProgressEased   _prjm_getEasedProgress(durationParams.x, durationParams.w)
 
 #define iTime timeParams.x
 #define iTimeDelta timeParams.y

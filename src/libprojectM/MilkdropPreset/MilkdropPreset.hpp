@@ -108,8 +108,11 @@ private:
     std::string m_absolutePath;     //!< The absolute path of the MilkdropPreset
 
     Renderer::Framebuffer m_framebuffer{2};                           //!< Preset rendering framebuffer with two surfaces (last frame and current frame).
-    int m_currentFrameBuffer{0};                                      //!< Framebuffer ID of the current frame.
-    int m_previousFrameBuffer{1};                                     //!< Framebuffer ID of the previous frame.
+                                                                        //!< Index 0 is the current draw target; index 1 holds the previous frame image.
+                                                                        //!< After each rendered frame they are swapped so the new image becomes the
+                                                                        //!< previous frame source for feedback/warp effects on the next cycle.
+    int m_currentFrameBuffer{0};                                      //!< Framebuffer ID of the current frame (draw target).
+    int m_previousFrameBuffer{1};                                     //!< Framebuffer ID of the previous frame (read source for warp feedback).
     std::shared_ptr<Renderer::TextureAttachment> m_motionVectorUVMap; //!< The UV map of the previous frame's warp mesh, used for motion vector reverse propagation.
 
     PresetState m_state;               //!< Preset state container.

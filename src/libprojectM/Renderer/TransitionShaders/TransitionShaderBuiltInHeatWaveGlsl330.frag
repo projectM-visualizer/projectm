@@ -10,8 +10,7 @@ float _hw_n2(vec2 p)
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     vec2 uv = fragCoord / iResolution.xy;
-    float aspect = iResolution.x / max(iResolution.y, 1.0);
-    float p = iProgressCosine;
+    float p = iProgressEased;
 
     // Heat strength is a hump centered on the midpoint.
     float heat = sin(p * 3.14159265);

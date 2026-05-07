@@ -4,7 +4,7 @@
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     vec2 uv = fragCoord / iResolution.xy;
-    float progress = iProgressCosine;
+    float progress = iProgressEased;
 
     // Sample both presets
     vec3 oldImg = texture(iChannel0, uv).xyz;
@@ -16,7 +16,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     // Vignette darkening strongest at progress = 0.5
     float vignetteStrength = sin(progress * 3.14159265) * 0.25;
     vec2 vignetteUV = uv - 0.5;
-    vignetteUV.x *= iResolution.x / iResolution.y;
+    vignetteUV.x *= iAspectX / iAspectY;
     float vignette = 1.0 - dot(vignetteUV, vignetteUV) * vignetteStrength;
     col *= vignette;
 

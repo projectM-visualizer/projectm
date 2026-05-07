@@ -10,8 +10,7 @@ float _mz_hash(vec2 p)
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     vec2 uv = fragCoord / iResolution.xy;
-    float aspect = iResolution.x / max(iResolution.y, 1.0);
-    float p = iProgressBicubic;
+    float p = iProgressEased;
 
     // Random grid size.
     float gridX = floor(mod(float(iRandStatic.x) * 0.01, 8.0)) + 6.0;   // 6..13

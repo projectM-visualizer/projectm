@@ -4,7 +4,7 @@
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     vec2 uv = fragCoord / iResolution.xy;
-    float aspect = iResolution.y / iResolution.x;
+    float aspect = iAspectY / iAspectX;
 
     // Randomize direction and edge width
     float inOrOut = mod(float(iRandStatic.x) * 0.01, 2.0);
@@ -15,13 +15,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     {
         imgInner = texture(iChannel0, uv).xyz;
         imgOuter = texture(iChannel1, uv).xyz;
-        progress = iProgressCosine;
+        progress = iProgressEased;
     }
     else
     {
         imgOuter = texture(iChannel0, uv).xyz;
         imgInner = texture(iChannel1, uv).xyz;
-        progress = 1.0 - iProgressCosine;
+        progress = 1.0 - iProgressEased;
     }
 
     float blendWidth = mod(float(iRandStatic.y) * 0.001, 0.1) + 0.05;

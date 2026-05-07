@@ -7,7 +7,7 @@ float _ss_hash(float n) { return fract(sin(n * 78.233) * 43758.5453); }
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     vec2 uv = fragCoord / iResolution.xy;
-    float p = iProgressBicubic;
+    float p = iProgressEased;
 
     // Random orientation and slice count.
     bool vertical = mod(float(iRandStatic.x) * 0.01, 2.0) < 1.0;

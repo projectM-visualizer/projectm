@@ -13,6 +13,18 @@ namespace libprojectM {
 namespace Renderer {
 
 /**
+ * @brief Easing curve types for transition progress.
+ */
+enum class EasingType : int
+{
+    Linear = 0,   //!< No easing — raw linear progress.
+    Smoothstep,   //!< Smoothstep (3t² - 2t³) — recommended default.
+    EaseIn,       //!< Quadratic ease-in.
+    EaseOut,      //!< Quadratic ease-out.
+    Count         //!< Number of easing types (not a valid selection).
+};
+
+/**
  * @brief Implements the shader and rendering logic to blend two presets into each other.
  */
 class PresetTransition
@@ -77,6 +89,8 @@ private:
     double m_durationSeconds{3.0};  //!< Transition duration in seconds.
     double m_transitionStartTime{}; //!< Start time of this transition. Duration is measured from this point.
     double m_lastFrameTime{};       //!< Time when the previous frame was rendered.
+
+    EasingType m_easingType{EasingType::Smoothstep}; //!< Easing curve applied to linear progress in GLSL.
 
     glm::ivec4 m_staticRandomValues{}; //!< Four random integers, remaining static during the whole transition.
 

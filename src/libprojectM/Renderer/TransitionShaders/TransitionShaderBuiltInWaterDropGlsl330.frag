@@ -3,7 +3,7 @@
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     vec2 uv = fragCoord / iResolution.xy;
-    float progress = iProgressCosine;
+    float progress = iProgressEased;
 
     // Random center point
     vec2 center = vec2(
@@ -13,7 +13,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
     // Distance from ripple center
     vec2 delta = uv - center;
-    delta.x *= iResolution.x / iResolution.y;
+    delta.x *= iAspectX / iAspectY;
     float dist = length(delta);
 
     // Ripple parameters; bass adds extra wave amplitude.

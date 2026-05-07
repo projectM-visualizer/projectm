@@ -4,7 +4,7 @@
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     vec2 uv = fragCoord / iResolution.xy;
-    float aspect = iResolution.x / max(iResolution.y, 1.0);
+    float aspect = iAspectX / iAspectY;
 
     // Random seam angle from a small set so it always feels deliberate.
     int dirPick = int(mod(float(iRandStatic.x), 4.0));
@@ -14,7 +14,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     else if (dirPick == 2) dir = normalize(vec2( 1.0, -0.6));
     else                   dir = normalize(vec2(-1.0, -0.6));
 
-    float p = iProgressBicubic;
+    float p = iProgressEased;
 
     // Coord along the curl axis, normalized so the seam sweeps from -1..+1.
     vec2 c = uv - 0.5;

@@ -3,7 +3,7 @@
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     vec2 uv = fragCoord / iResolution.xy;
-    float progress = iProgressCosine;
+    float progress = iProgressEased;
 
     // Randomize angle and blur intensity; bass amplifies the blur length.
     float angle = radians(mod(float(iRandStatic.x), 360.0));

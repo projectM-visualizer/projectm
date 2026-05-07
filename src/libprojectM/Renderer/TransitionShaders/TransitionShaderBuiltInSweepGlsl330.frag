@@ -26,7 +26,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     float len = length(uv) / sqrt(2.0);
     uv = vec2(cos(angle) * len, sin(angle) * len) + 0.5;
 
-    float progress = iProgressCosine;
+    float progress = iProgressEased;
 
     float mask;
     if (dualEdge)

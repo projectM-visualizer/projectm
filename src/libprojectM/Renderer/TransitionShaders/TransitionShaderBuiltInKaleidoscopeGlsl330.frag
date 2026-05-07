@@ -4,7 +4,7 @@
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     vec2 uv = fragCoord / iResolution.xy;
-    float aspect = iResolution.x / max(iResolution.y, 1.0);
+    float aspect = iAspectX / iAspectY;
 
     // Aspect-corrected centered coords so reflections look uniform on widescreen.
     vec2 c = uv - 0.5;
@@ -18,7 +18,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
                    : 8.0;
     float rotDir = (mod(float(iRandStatic.y) * 0.01, 2.0) < 1.0) ? 1.0 : -1.0;
 
-    float p = iProgressCosine;
+    float p = iProgressEased;
 
     // Polar.
     float angle  = atan(c.y, c.x);

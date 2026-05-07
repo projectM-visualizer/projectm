@@ -12,7 +12,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     float twistAmount = mod(float(iRandStatic.y) * 0.001, 0.5) + 0.1;
     twistAmount *= 1.0 + 0.4 * clamp(iMidAtt, 0.0, 2.0);
 
-    float progress = iProgressCosine;
+    float progress = iProgressEased;
 
     // Choose warp axis based on random direction
     float coord;

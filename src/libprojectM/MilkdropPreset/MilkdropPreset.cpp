@@ -160,6 +160,8 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     }
 
     // Swap framebuffer IDs for the next frame.
+    // This ping-pong swap makes the just-rendered frame available as the
+    // "previous frame" texture for feedback/warp effects in the next cycle.
     std::swap(m_currentFrameBuffer, m_previousFrameBuffer);
 
     m_isFirstFrame = false;
@@ -238,9 +240,14 @@ void MilkdropPreset::Load(std::istream& stream)
 void MilkdropPreset::InitializePreset(PresetFileParser& parsedFile)
 {
     // Create the offscreen rendering surfaces.
+    // MilkdropPreset uses a ping-pong framebuffer pair:
+    //   - m_framebuffer[0] = current frame render target
+    //   - m_framebuffer[1] = previous frame (used for feedback/warp effects)
+    // After each frame they are swapped with std::swap().
+    // Using GL_RGBA + GL_UNSIGNED_BYTE for broad GLES/Emscripten compatibility.
     m_motionVectorUVMap = std::make_shared<Renderer::TextureAttachment>(GL_RG16F, GL_RG, GL_FLOAT, 0, 0);
-    m_framebuffer.CreateColorAttachment(0, 0); // Main image 1
-    m_framebuffer.CreateColorAttachment(1, 0); // Main image 2
+    m_framebuffer.CreateColorAttachment(0, 0); // Main image 1 (current)
+    m_framebuffer.CreateColorAttachment(1, 0); // Main image 2 (previous)
 
     Renderer::Framebuffer::Unbind();
 

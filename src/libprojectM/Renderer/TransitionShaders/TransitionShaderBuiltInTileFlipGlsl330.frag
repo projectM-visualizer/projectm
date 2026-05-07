@@ -8,7 +8,7 @@ float hash(vec2 p)
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     vec2 uv = fragCoord / iResolution.xy;
-    float progress = iProgressCosine;
+    float progress = iProgressEased;
 
     // Randomize grid size and flip direction
     float gridX = floor(mod(float(iRandStatic.x) * 0.01, 6.0)) + 4.0;

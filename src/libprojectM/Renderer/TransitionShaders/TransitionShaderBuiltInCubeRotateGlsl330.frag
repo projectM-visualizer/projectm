@@ -5,13 +5,13 @@
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     vec2 uv = fragCoord / iResolution.xy;
-    float aspect = iResolution.x / max(iResolution.y, 1.0);
+    float aspect = iAspectX / iAspectY;
 
     // Random axis: 0 = horizontal (Y axis), 1 = vertical (X axis), random sign.
     bool horizontal = mod(float(iRandStatic.x) * 0.01, 2.0) < 1.0;
     float sgn = (mod(float(iRandStatic.y) * 0.01, 2.0) < 1.0) ? 1.0 : -1.0;
 
-    float p = iProgressBicubic;
+    float p = iProgressEased;
     float angle = p * 1.57079632 * sgn;        // 0 .. ±90°
     float ca = cos(angle);
     float sa = sin(angle);
