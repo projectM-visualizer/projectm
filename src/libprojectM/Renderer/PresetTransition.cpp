@@ -139,6 +139,16 @@ auto PresetTransition::GetPassTexture(int passNumber) const -> std::shared_ptr<c
     return nullptr;
 }
 
+void PresetTransition::SetBlendMode(TransitionBlendMode mode)
+{
+    m_blendMode = mode;
+}
+
+auto PresetTransition::GetBlendMode() const -> TransitionBlendMode
+{
+    return m_blendMode;
+}
+
 /**
  * @brief Renders the transition blend between two presets.
  *
@@ -229,6 +239,8 @@ void PresetTransition::Draw(const Preset& oldPreset,
     m_transitionShader->SetUniformFloat("iAspectY",    context.aspectY);
     m_transitionShader->SetUniformFloat("iInvAspectX", context.invAspectX);
     m_transitionShader->SetUniformFloat("iInvAspectY", context.invAspectY);
+
+    m_transitionShader->SetUniformInt("iBlendMode", static_cast<int>(m_blendMode));
 
     // Texture samplers
     // Explicitly activate each texture unit before binding to ensure correct

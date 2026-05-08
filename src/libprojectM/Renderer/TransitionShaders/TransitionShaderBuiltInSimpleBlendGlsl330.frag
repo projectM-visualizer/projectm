@@ -7,11 +7,18 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     float progress = iProgressEased;
 
     // Sample both presets
-    vec3 oldImg = texture(iChannel0, uv).xyz;
-    vec3 newImg = texture(iChannel1, uv).xyz;
+    vec4 oldColor = texture(iChannel0, uv);
+    vec4 newColor = texture(iChannel1, uv);
 
-    // Basic cosine crossfade
-    vec3 col = mix(oldImg, newImg, progress);
+    // Apply selected blending mode
+    vec4 result;
+    if (iBlendMode == 0)      result = blendAlpha(oldColor, newColor, progress);
+    else if (iBlendMode == 1) result = blendAdditive(oldColor, newColor, progress);
+    else if (iBlendMode == 2) result = blendMultiplicative(oldColor, newColor, progress);
+    else if (iBlendMode == 3) result = blendScreen(oldColor, newColor, progress);
+    else                      result = blendAlpha(oldColor, newColor, progress);
+
+    vec3 col = result.xyz;
 
     // Vignette darkening strongest at progress = 0.5
     float vignetteStrength = sin(progress * 3.14159265) * 0.25;

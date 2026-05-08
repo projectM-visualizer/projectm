@@ -26,6 +26,19 @@ enum class EasingType : int
 };
 
 /**
+ * @brief Blending modes for preset transitions.
+ */
+enum class TransitionBlendMode : int
+{
+    Alpha = 0,        //!< Default mix (current behavior).
+    Additive,         //!< Old + New * progress.
+    Multiplicative,   //!< Old * (1-progress) + (Old * New) * progress.
+    Screen,           //!< Screen blending.
+    Masked,           //!< Future: use a third mask texture.
+    Count             //!< Number of blend modes (not a valid selection).
+};
+
+/**
  * @brief Implements the shader and rendering logic to blend two presets into each other.
  */
 class PresetTransition
@@ -120,6 +133,16 @@ public:
      */
     auto GetPassTexture(int passNumber) const -> std::shared_ptr<class Texture>;
 
+    /**
+     * @brief Sets the blending mode used by this transition.
+     */
+    void SetBlendMode(TransitionBlendMode mode);
+
+    /**
+     * @brief Returns the current blending mode.
+     */
+    auto GetBlendMode() const -> TransitionBlendMode;
+
 private:
     std::vector<std::string> m_noiseTextureNames{"noise_lq",
                                                  "pw_noise_lq",
@@ -144,6 +167,8 @@ private:
 
     int m_passCount{1}; //!< Number of render passes (1 = single-pass, 2 = multi-pass).
     int m_currentPass{-1}; //!< Currently active pass index (-1 = none).
+
+    TransitionBlendMode m_blendMode{TransitionBlendMode::Alpha}; //!< Blending mode for this transition.
 
     std::shared_ptr<Framebuffer> m_passFramebuffer; //!< Intermediate FBO for multi-pass transitions (pass 0 output).
     GLint m_originalDrawFbo{0}; //!< Original draw framebuffer saved before pass 0 binds the intermediate FBO.

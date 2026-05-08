@@ -59,6 +59,30 @@ float _prjm_getEasedProgress(float t, float easingType)
 uniform int iPass;              //!< Current render pass (0 = first, 1 = second).
 uniform sampler2D iLastPassTex; //!< Result of the previous pass (valid in pass 1+).
 
+// === Advanced Blending Library (Phase B3) ===
+uniform int iBlendMode;   // 0=Alpha, 1=Additive, 2=Multiplicative, 3=Screen
+
+vec4 blendAlpha(vec4 a, vec4 b, float t)
+{
+    return mix(a, b, t);
+}
+
+vec4 blendAdditive(vec4 a, vec4 b, float t)
+{
+    return a + b * t;
+}
+
+vec4 blendMultiplicative(vec4 a, vec4 b, float t)
+{
+    return a * (1.0 - t) + (a * b) * t;
+}
+
+vec4 blendScreen(vec4 a, vec4 b, float t)
+{
+    vec4 screen = 1.0 - (1.0 - a) * (1.0 - b);
+    return mix(a, screen, t);
+}
+
 // Samplers
 uniform sampler2D iChannel0;
 uniform sampler2D iChannel1;
