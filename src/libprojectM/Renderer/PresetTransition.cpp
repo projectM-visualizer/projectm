@@ -71,6 +71,16 @@ auto PresetTransition::Progress(double currentFrameTime) const -> double
     return std::min(std::max((currentFrameTime - m_transitionStartTime) / m_durationSeconds, 0.0), 1.0);
 }
 
+void PresetTransition::SetPassCount(int passCount)
+{
+    m_passCount = std::max(1, std::min(passCount, 2));
+}
+
+auto PresetTransition::PassCount() const -> int
+{
+    return m_passCount;
+}
+
 /**
  * @brief Renders the transition blend between two presets.
  *
@@ -205,8 +215,62 @@ void PresetTransition::Draw(const Preset& oldPreset,
         textureUnit++;
     }
 
-    // Render the transition quad
-    m_mesh.Draw();
+    // ------------------------------------------------------------------
+    // Render the transition quad (single-pass or multi-pass)
+    // ------------------------------------------------------------------
+    if (m_passCount > 1)
+    {
+        // === Multi-pass rendering (2 passes) ===
+        // Pass 0 renders to an intermediate FBO.
+        // Pass 1 samples the intermediate result via iLastPassTex.
+
+        if (!m_passFramebuffer)
+        {
+            m_passFramebuffer = std::make_shared<Framebuffer>(1);
+            m_passFramebuffer->CreateColorAttachment(0, 0);
+        }
+        m_passFramebuffer->SetSize(context.viewportSizeX, context.viewportSizeY);
+
+        // Remember the original draw framebuffer.
+        GLint originalDrawFbo = 0;
+        glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &originalDrawFbo);
+
+        // --- Pass 0: render to intermediate FBO ---
+        m_passFramebuffer->Bind(0);
+        glViewport(0, 0, context.viewportSizeX, context.viewportSizeY);
+        m_transitionShader->SetUniformInt("iPass", 0);
+        m_mesh.Draw();
+
+        // --- Pass 1: render to original target, sample pass 0 ---
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(originalDrawFbo));
+        glViewport(0, 0, context.viewportSizeX, context.viewportSizeY);
+
+        auto pass0Tex = m_passFramebuffer->GetColorAttachmentTexture(0, 0);
+        if (pass0Tex)
+        {
+            glActiveTexture(GL_TEXTURE0 + textureUnit);
+            m_transitionShader->SetUniformInt("iLastPassTex", textureUnit);
+            pass0Tex->Bind(textureUnit, m_presetSampler);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        }
+
+        m_transitionShader->SetUniformInt("iPass", 1);
+        m_mesh.Draw();
+
+        // Unbind pass texture if it was bound.
+        if (pass0Tex)
+        {
+            glActiveTexture(GL_TEXTURE0 + textureUnit);
+            pass0Tex->Unbind(textureUnit);
+        }
+    }
+    else
+    {
+        // Single-pass (default): set iPass to 0 so single-pass shaders work unchanged.
+        m_transitionShader->SetUniformInt("iPass", 0);
+        m_mesh.Draw();
+    }
 
     // Clean up — explicitly unbind each texture unit to leave the driver in a
     // predictable state. This prevents texture leakage during rapid preset

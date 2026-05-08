@@ -29,6 +29,13 @@ public:
      */
     auto RandomTransition() -> std::shared_ptr<Shader>;
 
+    /**
+     * @brief Returns the number of render passes required by the given shader.
+     * @param shader The transition shader to query.
+     * @return The pass count (1 for single-pass, 2+ for multi-pass). Defaults to 1 if unknown.
+     */
+    auto GetPassCount(const std::shared_ptr<Shader>& shader) const -> int;
+
 private:
     /**
      * @brief Compiles a single transition shader program.
@@ -36,8 +43,15 @@ private:
      */
     static auto CompileTransitionShader(const std::string& shaderBodyCode) -> std::shared_ptr<Shader>;
 
-    std::vector<std::shared_ptr<Shader>> m_transitionShaders; //!< Currently loaded and compiled transition shaders.
+    struct TransitionEntry
+    {
+        std::shared_ptr<Shader> shader; //!< The compiled transition shader.
+        int passCount{1};               //!< Number of render passes (1 = single-pass, 2+ = multi-pass).
+    };
+
+    std::vector<TransitionEntry> m_transitionShaders; //!< Currently loaded and compiled transition shaders.
     std::shared_ptr<Shader> m_fallbackShader; //!< SimpleBlend fallback used when all custom shaders fail to compile.
+    int m_fallbackPassCount{1}; //!< Pass count for the fallback shader.
 
     std::random_device m_randomDevice; //!< Seed for the random number generator
     std::mt19937 m_mersenneTwister; //!< Random engine to select shader

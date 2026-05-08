@@ -7,6 +7,7 @@ set(TRANSITION_SHADER_FILES
         TransitionShaders/TransitionShaderBuiltInKaleidoscopeGlsl330.frag
         TransitionShaders/TransitionShaderBuiltInMosaicZoomGlsl330.frag
         TransitionShaders/TransitionShaderBuiltInMotionBlurGlsl330.frag
+        TransitionShaders/TransitionShaderBuiltInMultiPassTestGlsl330.frag
         TransitionShaders/TransitionShaderBuiltInPageCurlGlsl330.frag
         TransitionShaders/TransitionShaderBuiltInPixelateGlsl330.frag
         TransitionShaders/TransitionShaderBuiltInPlasmaGlsl330.frag

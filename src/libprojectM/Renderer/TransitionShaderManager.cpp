@@ -18,6 +18,7 @@ TransitionShaderManager::TransitionShaderManager()
         CompileTransitionShader(kTransitionShaderBuiltInKaleidoscopeGlsl330),
         CompileTransitionShader(kTransitionShaderBuiltInMosaicZoomGlsl330),
         CompileTransitionShader(kTransitionShaderBuiltInMotionBlurGlsl330),
+        CompileTransitionShader(kTransitionShaderBuiltInMultiPassTestGlsl330),
         CompileTransitionShader(kTransitionShaderBuiltInPageCurlGlsl330),
         CompileTransitionShader(kTransitionShaderBuiltInPixelateGlsl330),
         CompileTransitionShader(kTransitionShaderBuiltInPlasmaGlsl330),

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Renderer/Framebuffer.hpp"
 #include "Renderer/Mesh.hpp"
 #include "Renderer/Shader.hpp"
 
@@ -70,6 +71,19 @@ public:
               const Audio::FrameAudioData& audioData,
               double currentFrameTime);
 
+    /**
+     * @brief Sets the number of render passes for this transition.
+     *
+     * 1 = single-pass (default). 2 = multi-pass (pass 0 renders to an
+     * intermediate FBO, pass 1 samples from it via iLastPassTex).
+     */
+    void SetPassCount(int passCount);
+
+    /**
+     * @brief Returns the current pass count.
+     */
+    auto PassCount() const -> int;
+
 private:
     std::vector<std::string> m_noiseTextureNames{"noise_lq",
                                                  "pw_noise_lq",
@@ -91,6 +105,10 @@ private:
     double m_lastFrameTime{};       //!< Time when the previous frame was rendered.
 
     EasingType m_easingType{EasingType::Smoothstep}; //!< Easing curve applied to linear progress in GLSL.
+
+    int m_passCount{1}; //!< Number of render passes (1 = single-pass, 2 = multi-pass).
+
+    std::shared_ptr<Framebuffer> m_passFramebuffer; //!< Intermediate FBO for multi-pass transitions (pass 0 output).
 
     glm::ivec4 m_staticRandomValues{}; //!< Four random integers, remaining static during the whole transition.
 

@@ -55,6 +55,10 @@ float _prjm_getEasedProgress(float t, float easingType)
 #define iMidAtt  iBeatAttValues.y
 #define iTrebAtt iBeatAttValues.z
 
+// Multi-pass uniforms
+uniform int iPass;              //!< Current render pass (0 = first, 1 = second).
+uniform sampler2D iLastPassTex; //!< Result of the previous pass (valid in pass 1+).
+
 // Samplers
 uniform sampler2D iChannel0;
 uniform sampler2D iChannel1;
