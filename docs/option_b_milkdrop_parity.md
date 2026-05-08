@@ -46,17 +46,17 @@ We want to close the gap while staying Emscripten/WebGL compatible.
 ### Phase B2: Multi-pass Transition Support
 
 **Implemented:**
-- ✅  multi-pass framework:
-  -  / 
-  -  /  / 
-  -  for external sampling
-- ✅  pass-count tracking per shader
-- ✅  wires up pass count automatically
-- ✅ GLSL uniforms  and  in 
-- ✅ Intermediate FBO management in 
-- ✅ **PageCurl** ported to 2-pass (geometry + lighting/highlight/glow)
-- ✅ **HeatWave** ported to 2-pass (distortion + heat shimmer/haze)
-- ✅ MultiPassTest shader (proof of concept) registered
+- `PresetTransition` multi-pass framework:
+  - `SetPassCount(int)` / `PassCount()`
+  - `BeginPass(int, int, int)` / `EndPass()` / `GetCurrentPass()`
+  - `GetPassTexture(int)` for external sampling
+- `TransitionShaderManager` pass-count tracking per shader
+- `ProjectM::StartPresetTransition()` wires up pass count automatically
+- GLSL uniforms `iPass` and `iLastPassTex` in `TransitionShaderHeaderGlsl330.frag`
+- Intermediate FBO management in `PresetTransition::Draw()`
+- **PageCurl** ported to 2-pass (geometry + lighting/highlight/glow)
+- **HeatWave** ported to 2-pass (distortion + heat shimmer/haze)
+- MultiPassTest shader (proof of concept) registered
 
 **Remaining:**
 - Port 1–2 more transitions (WaterDrop or Glitch are candidates)
@@ -66,12 +66,12 @@ We want to close the gap while staying Emscripten/WebGL compatible.
 ### Phase B6: Performance & Parallelism (Started)
 
 **Implemented:**
-- ✅ OpenMP pragmas added to **11 waveform generators** that were missing them
-- ✅  — 576-sample buffer copy
-- ✅  — index buffer fill
-- ✅  — waveform scaling loop
+- OpenMP pragmas added to **11 waveform generators** that were missing them
+- `Audio/PCM.cpp::CopyNewWaveformData()` — 576-sample buffer copy
+- `Renderer/VertexIndexArray.cpp::MakeContinuous()` — index buffer fill
+- `MilkdropPreset/CustomWaveform.cpp` — waveform scaling loop
 
-All pragmas use the existing  guard with . No regressions on Emscripten (pragmas compile away when ).
+All pragmas use the existing `#ifdef PRJM_ENABLE_OPENMP` guard with `schedule(static)`. No regressions on Emscripten (pragmas compile away when `ENABLE_OPENMP=OFF`).
 
 ---
 
