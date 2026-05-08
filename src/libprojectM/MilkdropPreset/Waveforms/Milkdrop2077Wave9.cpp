@@ -2,6 +2,10 @@
 
 #include "PresetState.hpp"
 
+#ifdef PRJM_ENABLE_OPENMP
+#include <omp.h>
+#endif
+
 namespace libprojectM {
 namespace MilkdropPreset {
 namespace Waveforms {
@@ -20,6 +24,9 @@ void Milkdrop2077Wave9::GenerateVertices(const PresetState& presetState, const P
 
     ClipWaveformEdges(1.57f * m_mysteryWaveParam);
 
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
     for (int i = 0; i < m_samples; i++)
     {
         m_wave1Vertices[i] = {

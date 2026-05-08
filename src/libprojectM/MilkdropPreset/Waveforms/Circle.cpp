@@ -4,6 +4,10 @@
 
 #include <cmath>
 
+#ifdef PRJM_ENABLE_OPENMP
+#include <omp.h>
+#endif
+
 namespace libprojectM {
 namespace MilkdropPreset {
 namespace Waveforms {
@@ -29,6 +33,9 @@ void Circle::GenerateVertices(const PresetState& presetState,
 
     const float inverseSamplesMinusOne{1.0f / static_cast<float>(m_samples)};
 
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
     for (int i = 0; i < m_samples; i++)
     {
         float radius = 0.5f + 0.4f * m_pcmDataR[i + sampleOffset] + m_mysteryWaveParam;

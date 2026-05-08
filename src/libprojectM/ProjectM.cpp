@@ -317,7 +317,12 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
     {
         m_transitioningPreset = std::move(preset);
         m_timeKeeper->StartSmoothing();
-        m_transition = std::make_unique<Renderer::PresetTransition>(m_transitionShaderManager->RandomTransition(), m_softCutDuration, m_timeKeeper->GetFrameTime());
+        auto transitionShader = m_transitionShaderManager->RandomTransition();
+        m_transition = std::make_unique<Renderer::PresetTransition>(transitionShader, m_softCutDuration, m_timeKeeper->GetFrameTime());
+        if (m_transition && transitionShader)
+        {
+            m_transition->SetPassCount(m_transitionShaderManager->GetPassCount(transitionShader));
+        }
     }
 }
 

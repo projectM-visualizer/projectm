@@ -135,6 +135,9 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     }
 
     // Scale waveform to final size
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
     for (int sample = 0; sample < sampleCount; sample++)
     {
         sampleDataL[sample] *= mult;

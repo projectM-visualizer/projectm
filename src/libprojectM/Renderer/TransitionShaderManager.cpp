@@ -9,32 +9,40 @@ TransitionShaderManager::TransitionShaderManager()
     : m_mersenneTwister(m_randomDevice())
 {
     // Compile all candidate shaders and keep only those that succeeded.
-    std::vector<std::shared_ptr<Shader>> candidates = {
-        CompileTransitionShader(kTransitionShaderBuiltInCircleGlsl330),
-        CompileTransitionShader(kTransitionShaderBuiltInCubeRotateGlsl330),
-        CompileTransitionShader(kTransitionShaderBuiltInDreamyGlsl330),
-        CompileTransitionShader(kTransitionShaderBuiltInGlitchGlsl330),
-        CompileTransitionShader(kTransitionShaderBuiltInHeatWaveGlsl330),
-        CompileTransitionShader(kTransitionShaderBuiltInKaleidoscopeGlsl330),
-        CompileTransitionShader(kTransitionShaderBuiltInMosaicZoomGlsl330),
-        CompileTransitionShader(kTransitionShaderBuiltInMotionBlurGlsl330),
-        CompileTransitionShader(kTransitionShaderBuiltInMultiPassTestGlsl330),
-        CompileTransitionShader(kTransitionShaderBuiltInPageCurlGlsl330),
-        CompileTransitionShader(kTransitionShaderBuiltInPixelateGlsl330),
-        CompileTransitionShader(kTransitionShaderBuiltInPlasmaGlsl330),
-        CompileTransitionShader(kTransitionShaderBuiltInSliceSwipeGlsl330),
-        CompileTransitionShader(kTransitionShaderBuiltInSweepGlsl330),
-        CompileTransitionShader(kTransitionShaderBuiltInTileFlipGlsl330),
-        CompileTransitionShader(kTransitionShaderBuiltInWarpGlsl330),
-        CompileTransitionShader(kTransitionShaderBuiltInWaterDropGlsl330),
-        CompileTransitionShader(kTransitionShaderBuiltInZoomBlurGlsl330),
+    // Each entry is {shaderBody, passCount}. Most are single-pass (1).
+    // PageCurl and MultiPassTest use 2 passes for enhanced visual quality.
+    struct Candidate
+    {
+        const std::string& body;
+        int passCount;
     };
 
-    for (auto& shader : candidates)
+    std::vector<Candidate> candidates;
+    candidates.emplace_back(Candidate{kTransitionShaderBuiltInCircleGlsl330, 1});
+    candidates.emplace_back(Candidate{kTransitionShaderBuiltInCubeRotateGlsl330, 1});
+    candidates.emplace_back(Candidate{kTransitionShaderBuiltInDreamyGlsl330, 1});
+    candidates.emplace_back(Candidate{kTransitionShaderBuiltInGlitchGlsl330, 1});
+    candidates.emplace_back(Candidate{kTransitionShaderBuiltInHeatWaveGlsl330, 2});
+    candidates.emplace_back(Candidate{kTransitionShaderBuiltInKaleidoscopeGlsl330, 1});
+    candidates.emplace_back(Candidate{kTransitionShaderBuiltInMosaicZoomGlsl330, 1});
+    candidates.emplace_back(Candidate{kTransitionShaderBuiltInMotionBlurGlsl330, 1});
+    candidates.emplace_back(Candidate{kTransitionShaderBuiltInMultiPassTestGlsl330, 2});
+    candidates.emplace_back(Candidate{kTransitionShaderBuiltInPageCurlGlsl330, 2});
+    candidates.emplace_back(Candidate{kTransitionShaderBuiltInPixelateGlsl330, 1});
+    candidates.emplace_back(Candidate{kTransitionShaderBuiltInPlasmaGlsl330, 1});
+    candidates.emplace_back(Candidate{kTransitionShaderBuiltInSliceSwipeGlsl330, 1});
+    candidates.emplace_back(Candidate{kTransitionShaderBuiltInSweepGlsl330, 1});
+    candidates.emplace_back(Candidate{kTransitionShaderBuiltInTileFlipGlsl330, 1});
+    candidates.emplace_back(Candidate{kTransitionShaderBuiltInWarpGlsl330, 1});
+    candidates.emplace_back(Candidate{kTransitionShaderBuiltInWaterDropGlsl330, 1});
+    candidates.emplace_back(Candidate{kTransitionShaderBuiltInZoomBlurGlsl330, 1});
+
+    for (auto& entry : candidates)
     {
+        auto shader = CompileTransitionShader(entry.body);
         if (shader != nullptr)
         {
-            m_transitionShaders.push_back(std::move(shader));
+            m_transitionShaders.push_back({std::move(shader), entry.passCount});
         }
     }
 
@@ -47,11 +55,30 @@ auto TransitionShaderManager::RandomTransition() -> std::shared_ptr<Shader>
 {
     if (!m_transitionShaders.empty())
     {
-        return m_transitionShaders.at(m_mersenneTwister() % m_transitionShaders.size());
+        return m_transitionShaders.at(m_mersenneTwister() % m_transitionShaders.size()).shader;
     }
 
     // All custom shaders failed to compile — use the SimpleBlend fallback.
     return m_fallbackShader;
+}
+
+auto TransitionShaderManager::GetPassCount(const std::shared_ptr<Shader>& shader) const -> int
+{
+    if (!shader)
+    {
+        return 1;
+    }
+
+    for (const auto& entry : m_transitionShaders)
+    {
+        if (entry.shader == shader)
+        {
+            return entry.passCount;
+        }
+    }
+
+    // Fallback shader or unknown — default to single-pass.
+    return m_fallbackPassCount;
 }
 
 auto TransitionShaderManager::CompileTransitionShader(const std::string& shaderBodyCode) -> std::shared_ptr<Shader>

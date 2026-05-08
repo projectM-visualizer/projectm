@@ -2,6 +2,10 @@
 
 #include <Audio/AudioConstants.hpp>
 
+#ifdef PRJM_ENABLE_OPENMP
+#include <omp.h>
+#endif
+
 namespace libprojectM {
 namespace MilkdropPreset {
 namespace Waveforms {
@@ -13,6 +17,9 @@ void CenteredSpiro::GenerateVertices(const PresetState&, const PerFrameContext&)
 
     m_wave1Vertices.resize(m_samples);
 
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
     for (int i = 0; i < m_samples; i++)
     {
         m_wave1Vertices[i] = {m_pcmDataR[i] * m_aspectY + m_waveX,

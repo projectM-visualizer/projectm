@@ -1,6 +1,6 @@
 # Option B: Milkdrop Blending Parity (Long-term Incremental Project)
 
-**Status:** Planning Phase  
+**Status:** Active — Phase B2 nearly complete, B6 started  
 **Approach:** Incremental sessions (at least once per week)  
 **Goal:** Make Project-M’s preset transitions feel as smooth, organic, and high-quality as classic Milkdrop.
 
@@ -23,12 +23,12 @@ We want to close the gap while staying Emscripten/WebGL compatible.
 
 | Phase | Name                              | Focus                                          | Priority | Est. Sessions | Status    |
 |-------|-----------------------------------|------------------------------------------------|----------|---------------|-----------|
-| **B1**    | Gap Analysis & Prioritization     | Identify biggest differences vs Milkdrop       | High     | 1–2           | **Next**  |
-| **B2**    | Multi-pass Transition Support     | Enable 2-pass and simple multi-pass effects    | High     | 3–4           | Planned   |
+| **B1**    | Gap Analysis & Prioritization     | Identify biggest differences vs Milkdrop       | High     | 1–2           | Done      |
+| **B2**    | Multi-pass Transition Support     | Enable 2-pass and simple multi-pass effects    | High     | 3–4           | **Active** |
 | **B3**    | Advanced Blending & Compositing   | Add more sophisticated blending modes          | Medium   | 3–4           | Planned   |
 | **B4**    | Timing, Synchronization & Polish  | Match Milkdrop’s frame-accurate feel           | High     | 2–3           | Planned   |
 | **B5**    | Exotic Effects & Favorites        | Replicate beloved Milkdrop transitions         | Medium   | Ongoing       | Future    |
-| **B6**    | Performance & Parallelism         | Add OpenMP pragmas + other optimizations       | Medium   | 2–4           | Future    |
+| **B6**    | Performance & Parallelism         | Add OpenMP pragmas + other optimizations       | Medium   | 2–4           | **Started** |
 
 ---
 
@@ -41,20 +41,43 @@ We want to close the gap while staying Emscripten/WebGL compatible.
 
 ---
 
-## Next Session (Today)
+## Completed Work (Latest Session)
 
-**Phase B1: Gap Analysis & Prioritization**
+### Phase B2: Multi-pass Transition Support
 
-**Goals for this session:**
-1. List the top 5–7 biggest differences between current Project-M transitions and classic Milkdrop.
-2. Prioritize which gaps give the biggest visual improvement per effort.
-3. Decide what to tackle in the next 1–2 sessions.
+**Implemented:**
+- ✅  multi-pass framework:
+  -  / 
+  -  /  / 
+  -  for external sampling
+- ✅  pass-count tracking per shader
+- ✅  wires up pass count automatically
+- ✅ GLSL uniforms  and  in 
+- ✅ Intermediate FBO management in 
+- ✅ **PageCurl** ported to 2-pass (geometry + lighting/highlight/glow)
+- ✅ **HeatWave** ported to 2-pass (distortion + heat shimmer/haze)
+- ✅ MultiPassTest shader (proof of concept) registered
+
+**Remaining:**
+- Port 1–2 more transitions (WaterDrop or Glitch are candidates)
+- Add unit tests for multi-pass flow
+- Stress-test memory after 100+ rapid transitions
+
+### Phase B6: Performance & Parallelism (Started)
+
+**Implemented:**
+- ✅ OpenMP pragmas added to **11 waveform generators** that were missing them
+- ✅  — 576-sample buffer copy
+- ✅  — index buffer fill
+- ✅  — waveform scaling loop
+
+All pragmas use the existing  guard with . No regressions on Emscripten (pragmas compile away when ).
 
 ---
 
-**Let’s begin Phase B1 now.** 
+## Next Session
 
-Would you like me to start by listing the current known gaps, or do you want to do a quick collaborative review first?
+**Recommended focus:** Complete Phase B2 by porting Glitch or WaterDrop to 2-pass, then move to B3 (Advanced Blending) or continue B6 (more OpenMP candidates).
 
 ---
 

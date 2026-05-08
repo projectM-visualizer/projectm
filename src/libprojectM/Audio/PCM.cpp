@@ -1,5 +1,9 @@
 #include "Audio/PCM.hpp"
 
+#ifdef PRJM_ENABLE_OPENMP
+#include <omp.h>
+#endif
+
 namespace libprojectM {
 namespace Audio {
 
@@ -115,6 +119,9 @@ void PCM::CopyNewWaveformData(const WaveformBuffer& source, WaveformBuffer& dest
     // Acquire fence pairs with the release store in AddToBuffer, ensuring we see completed writes.
     auto const bufferStartIndex = m_start.load(std::memory_order_acquire);
 
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
     for (size_t i = 0; i < AudioBufferSamples; i++)
     {
         destination[i] = source[(bufferStartIndex + i) % AudioBufferSamples];

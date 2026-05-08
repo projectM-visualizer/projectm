@@ -81,6 +81,64 @@ auto PresetTransition::PassCount() const -> int
     return m_passCount;
 }
 
+void PresetTransition::BeginPass(int passNumber, int viewportWidth, int viewportHeight)
+{
+    if (passNumber < 0 || passNumber >= m_passCount)
+    {
+        return;
+    }
+
+    m_currentPass = passNumber;
+
+    if (m_passCount > 1)
+    {
+        if (passNumber == 0)
+        {
+            if (!m_passFramebuffer)
+            {
+                m_passFramebuffer = std::make_shared<Framebuffer>(1);
+                m_passFramebuffer->CreateColorAttachment(0, 0);
+            }
+            m_passFramebuffer->SetSize(viewportWidth, viewportHeight);
+            glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &m_originalDrawFbo);
+            m_passFramebuffer->Bind(0);
+        }
+        else if (passNumber == 1)
+        {
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(m_originalDrawFbo));
+        }
+    }
+
+    glViewport(0, 0, viewportWidth, viewportHeight);
+    m_transitionShader->SetUniformInt("iPass", passNumber);
+}
+
+void PresetTransition::EndPass()
+{
+    if (m_currentPass == 0 && m_passCount > 1)
+    {
+        // Restore the original draw framebuffer so pass 1 (and subsequent code)
+        // can safely sample the intermediate texture.
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(m_originalDrawFbo));
+    }
+
+    m_currentPass = -1;
+}
+
+auto PresetTransition::GetCurrentPass() const -> int
+{
+    return m_currentPass;
+}
+
+auto PresetTransition::GetPassTexture(int passNumber) const -> std::shared_ptr<class Texture>
+{
+    if (passNumber == 0 && m_passFramebuffer)
+    {
+        return m_passFramebuffer->GetColorAttachmentTexture(0, 0);
+    }
+    return nullptr;
+}
+
 /**
  * @brief Renders the transition blend between two presets.
  *
@@ -224,28 +282,13 @@ void PresetTransition::Draw(const Preset& oldPreset,
         // Pass 0 renders to an intermediate FBO.
         // Pass 1 samples the intermediate result via iLastPassTex.
 
-        if (!m_passFramebuffer)
-        {
-            m_passFramebuffer = std::make_shared<Framebuffer>(1);
-            m_passFramebuffer->CreateColorAttachment(0, 0);
-        }
-        m_passFramebuffer->SetSize(context.viewportSizeX, context.viewportSizeY);
-
-        // Remember the original draw framebuffer.
-        GLint originalDrawFbo = 0;
-        glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &originalDrawFbo);
-
-        // --- Pass 0: render to intermediate FBO ---
-        m_passFramebuffer->Bind(0);
-        glViewport(0, 0, context.viewportSizeX, context.viewportSizeY);
-        m_transitionShader->SetUniformInt("iPass", 0);
+        BeginPass(0, context.viewportSizeX, context.viewportSizeY);
         m_mesh.Draw();
+        EndPass();
 
-        // --- Pass 1: render to original target, sample pass 0 ---
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(originalDrawFbo));
-        glViewport(0, 0, context.viewportSizeX, context.viewportSizeY);
+        BeginPass(1, context.viewportSizeX, context.viewportSizeY);
 
-        auto pass0Tex = m_passFramebuffer->GetColorAttachmentTexture(0, 0);
+        auto pass0Tex = GetPassTexture(0);
         if (pass0Tex)
         {
             glActiveTexture(GL_TEXTURE0 + textureUnit);
@@ -255,7 +298,6 @@ void PresetTransition::Draw(const Preset& oldPreset,
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         }
 
-        m_transitionShader->SetUniformInt("iPass", 1);
         m_mesh.Draw();
 
         // Unbind pass texture if it was bound.
@@ -268,8 +310,9 @@ void PresetTransition::Draw(const Preset& oldPreset,
     else
     {
         // Single-pass (default): set iPass to 0 so single-pass shaders work unchanged.
-        m_transitionShader->SetUniformInt("iPass", 0);
+        BeginPass(0, context.viewportSizeX, context.viewportSizeY);
         m_mesh.Draw();
+        EndPass();
     }
 
     // Clean up — explicitly unbind each texture unit to leave the driver in a

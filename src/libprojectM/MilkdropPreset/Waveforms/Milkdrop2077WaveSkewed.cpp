@@ -5,6 +5,10 @@
 #include <algorithm>
 #include <cmath>
 
+#ifdef PRJM_ENABLE_OPENMP
+#include <omp.h>
+#endif
+
 namespace libprojectM {
 namespace MilkdropPreset {
 namespace Waveforms {
@@ -23,6 +27,9 @@ void Milkdrop2077WaveSkewed::GenerateVertices(const PresetState& presetState,
     }
     alpha = std::max(0.0f, std::min(1.0f, alpha));
 
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
     for (size_t i = 0; i < static_cast<size_t>(m_samples); i++)
     {
         float rad = 0.63f + 0.23f * m_pcmDataR[i] + m_mysteryWaveParam;

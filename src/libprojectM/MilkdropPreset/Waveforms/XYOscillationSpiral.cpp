@@ -2,6 +2,10 @@
 
 #include "PerFrameContext.hpp"
 
+#ifdef PRJM_ENABLE_OPENMP
+#include <omp.h>
+#endif
+
 namespace libprojectM {
 namespace MilkdropPreset {
 namespace Waveforms {
@@ -23,6 +27,9 @@ void XYOscillationSpiral::GenerateVertices(const PresetState& presetState,
 
     m_wave1Vertices.resize(m_samples);
 
+#ifdef PRJM_ENABLE_OPENMP
+#pragma omp parallel for schedule(static)
+#endif
     for (int i = 0; i < m_samples; i++)
     {
         float const radius = (0.53f + 0.43f * m_pcmDataR[i] + m_mysteryWaveParam);

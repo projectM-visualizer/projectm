@@ -84,6 +84,42 @@ public:
      */
     auto PassCount() const -> int;
 
+    /**
+     * @brief Begins a render pass.
+     *
+     * Binds the appropriate framebuffer, sets the viewport, and updates
+     * the iPass uniform. Must be paired with EndPass().
+     *
+     * @param passNumber The pass index (0 = first pass, 1 = second pass).
+     * @param viewportWidth The viewport width in pixels.
+     * @param viewportHeight The viewport height in pixels.
+     */
+    void BeginPass(int passNumber, int viewportWidth, int viewportHeight);
+
+    /**
+     * @brief Ends the current render pass.
+     *
+     * Resets internal pass state. For multi-pass transitions, pass 0
+     * will restore the original draw framebuffer so pass 1 can safely
+     * sample the intermediate texture.
+     */
+    void EndPass();
+
+    /**
+     * @brief Returns the current pass index, or -1 if no pass is active.
+     */
+    auto GetCurrentPass() const -> int;
+
+    /**
+     * @brief Returns the output texture of a completed pass.
+     *
+     * Only valid for pass 0 of a multi-pass transition after EndPass().
+     *
+     * @param passNumber The pass index to query.
+     * @return The pass output texture, or nullptr if unavailable.
+     */
+    auto GetPassTexture(int passNumber) const -> std::shared_ptr<class Texture>;
+
 private:
     std::vector<std::string> m_noiseTextureNames{"noise_lq",
                                                  "pw_noise_lq",
@@ -107,8 +143,10 @@ private:
     EasingType m_easingType{EasingType::Smoothstep}; //!< Easing curve applied to linear progress in GLSL.
 
     int m_passCount{1}; //!< Number of render passes (1 = single-pass, 2 = multi-pass).
+    int m_currentPass{-1}; //!< Currently active pass index (-1 = none).
 
     std::shared_ptr<Framebuffer> m_passFramebuffer; //!< Intermediate FBO for multi-pass transitions (pass 0 output).
+    GLint m_originalDrawFbo{0}; //!< Original draw framebuffer saved before pass 0 binds the intermediate FBO.
 
     glm::ivec4 m_staticRandomValues{}; //!< Four random integers, remaining static during the whole transition.
 
