@@ -47,7 +47,7 @@
       /* Mask to show only the rim (outermost ~7% of radius) */
       mask: radial-gradient(circle at 50%, transparent 91%, black 93%, black 100%);
       -webkit-mask: radial-gradient(circle at 50%, transparent 91%, black 93%, black 100%);
-      animation: bezel-spin 18s linear infinite;
+      /* Animation applied only under prefers-reduced-motion: no-preference */
     }
 
     @keyframes bezel-spin {
@@ -136,7 +136,7 @@
     }
 
     .clickable-button.pulse::after {
-      animation: btn-pulse 400ms ease-out forwards;
+      /* animation applied only under prefers-reduced-motion: no-preference */
     }
 
     /* ── Knob ─────────────────────────────────────────────────────── */
@@ -223,7 +223,7 @@
       background: #4ade80;
       box-shadow: 0 0 6px 2px rgba(74,222,128,0.8);
       transform: rotate(72deg);
-      animation: led-heartbeat 1.2s ease-in-out infinite;
+      /* animation set in prefers-reduced-motion: no-preference block */
     }
 
     /* Preset lock — amber only when body.has-lock, lower-right (144°) */
@@ -236,7 +236,7 @@
     body.has-lock .led--lock {
       background: #f59e0b;
       box-shadow: 0 0 7px 2px rgba(245,158,11,0.85);
-      animation: led-blink-slow 1.8s ease-in-out infinite;
+      /* animation set in prefers-reduced-motion: no-preference block */
     }
 
     /* Random mode — blue double-blink, lower-left (216°) */
@@ -244,7 +244,7 @@
       background: #60a5fa;
       box-shadow: 0 0 6px 2px rgba(96,165,250,0.8);
       transform: rotate(216deg);
-      animation: led-double-blink 1.5s ease-in-out infinite;
+      /* animation set in prefers-reduced-motion: no-preference block */
     }
 
     /* Beat — red, toggled by JS interval, upper-left (288°) */
@@ -265,7 +265,8 @@
       50%       { opacity: 0.2; }
     }
 
-    @keyframes led-blink-slow {
+    /* Slow blink for the lock LED — name reflects behavior, not speed */
+    @keyframes led-lock-blink {
       0%, 100% { opacity: 1; }
       50%       { opacity: 0.08; }
     }
@@ -276,12 +277,13 @@
     }
 
     /* ── Respect prefers-reduced-motion ──────────────────────────── */
-    @media (prefers-reduced-motion: reduce) {
-      .panel-container::after       { animation: none !important; }
-      .led--audio                   { animation: none !important; }
-      .led--random                  { animation: none !important; }
-      body.has-lock .led--lock      { animation: none !important; }
-      .clickable-button.pulse::after { animation: none !important; }
+    /* Animations are defined only when the user has not requested reduced motion */
+    @media (prefers-reduced-motion: no-preference) {
+      .panel-container::after  { animation: bezel-spin 18s linear infinite; }
+      .led--audio              { animation: led-heartbeat 1.2s ease-in-out infinite; }
+      .led--random             { animation: led-double-blink 1.5s ease-in-out infinite; }
+      body.has-lock .led--lock { animation: led-lock-blink 1.8s ease-in-out infinite; }
+      .clickable-button.pulse::after { animation: btn-pulse 400ms ease-out forwards; }
     }
   </style>
 </head>
@@ -336,7 +338,7 @@
 
     function applyKnobRotation(deg) {
       knob.style.transform = `translate(-50%,-50%) rotate(${deg}deg)`;
-      // Shift the panel drop-glow hue as the knob turns
+      // Normalize negative rotation to 0–360 range for a valid hue value
       const hue = ((deg % 360) + 360) % 360;
       panelContainer.style.filter = `drop-shadow(0 0 28px hsla(${hue}, 55%, 50%, 0.42))`;
     }
@@ -406,8 +408,9 @@
     // TODO: replace setInterval with real audio-analyser beat detection
     // Hook point: call beatLed.classList.add('on') on beat, remove after ~120ms
     const beatLed = document.querySelector('.led--beat');
+    let beatInterval = null;
     if (!prefersReducedMotion) {
-      setInterval(() => beatLed.classList.toggle('on'), 500);
+      beatInterval = setInterval(() => beatLed.classList.toggle('on'), 500);
     }
 
     // ── Subtle idle knob wobble ────────────────────────────────────
