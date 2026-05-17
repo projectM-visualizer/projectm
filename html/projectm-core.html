@@ -38,30 +38,40 @@ body { margin: 0; padding: 0; background-color: black; overflow: hidden; }
   <!-- Bezel frame overlay -->
   <img src="./unglass.png" id="bezel-frame" style="position:absolute;z-index:555;pointer-events:none;display:block;"/>
 
-  <!-- Control Buttons -->
-  <button id="musicBtn" class="control-btn" style="background-color:cyan;left:3%;bottom:15%;">
-    <span class="btn-label">Start / Change Song</span>
-  </button>
+  <!-- Control Panel Container (bottom left) -->
+  <div id="control-panel" class="control-panel-container">
+    <!-- Show/Hide Controls Button -->
+    <button id="showControlsBtn" class="show-controls-btn">
+      <span class="controls-label">Show</span>
+    </button>
 
-  <button id="randomPresetBtn" class="control-btn" style="background-color:orange;left:3%;bottom:25%;">
-    <span class="btn-label">Random Preset</span>
-  </button>
+    <!-- Control Buttons (hidden by default) -->
+    <div id="controls-container" class="controls-hidden">
+      <button id="musicBtn" class="control-btn" style="background-color:cyan;">
+        <span class="btn-label">Start / Change Song</span>
+      </button>
 
-  <button id="toggleBezelBtn" class="control-btn" style="background-color:blue;left:3%;bottom:35%;">
-    <span class="btn-label">Toggle Fullscreen</span>
-  </button>
+      <button id="randomPresetBtn" class="control-btn" style="background-color:orange;">
+        <span class="btn-label">Random Preset</span>
+      </button>
 
-  <button id="customMilkBtn" class="control-btn" style="background-color:purple;left:3%;bottom:45%;">
-    <span class="btn-label">Random Custom</span>
-  </button>
+      <button id="toggleBezelBtn" class="control-btn" style="background-color:blue;">
+        <span class="btn-label">Toggle Fullscreen</span>
+      </button>
 
-  <button id="apiRandomPresetBtn" class="control-btn" style="background-color:teal;left:3%;bottom:55%;">
-    <span class="btn-label">Random Preset (API)</span>
-  </button>
+      <button id="customMilkBtn" class="control-btn" style="background-color:purple;">
+        <span class="btn-label">Random Custom</span>
+      </button>
 
-  <button id="lockPresetBtn" class="control-btn" style="background-color:green;left:3%;bottom:65%;">
-    <span class="btn-label">Lock Preset</span>
-  </button>
+      <button id="apiRandomPresetBtn" class="control-btn" style="background-color:teal;">
+        <span class="btn-label">Random Preset (API)</span>
+      </button>
+
+      <button id="lockPresetBtn" class="control-btn" style="background-color:green;">
+        <span class="btn-label">Lock Preset</span>
+      </button>
+    </div>
+  </div>
 
   <div id="preset-name">Preset: --</div>
 </div>
@@ -239,6 +249,39 @@ async function loadStartupApiPresets(count) {
     }
     return results;
 }
+
+// ====== SHOW/HIDE CONTROLS ======
+let controlsVisible = false;
+const showControlsBtn = document.getElementById('showControlsBtn');
+const controlsContainer = document.getElementById('controls-container');
+
+showControlsBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    controlsVisible = !controlsVisible;
+
+    if (controlsVisible) {
+        controlsContainer.classList.remove('controls-hidden');
+        controlsContainer.classList.add('controls-visible');
+        showControlsBtn.classList.add('controls-visible');
+        showControlsBtn.querySelector('.controls-label').textContent = 'Hide';
+    } else {
+        controlsContainer.classList.remove('controls-visible');
+        controlsContainer.classList.add('controls-hidden');
+        showControlsBtn.classList.remove('controls-visible');
+        showControlsBtn.querySelector('.controls-label').textContent = 'Show';
+    }
+});
+
+// Close controls when clicking outside
+document.addEventListener('click', function() {
+    if (controlsVisible) {
+        controlsVisible = false;
+        controlsContainer.classList.remove('controls-visible');
+        controlsContainer.classList.add('controls-hidden');
+        showControlsBtn.classList.remove('controls-visible');
+        showControlsBtn.querySelector('.controls-label').textContent = 'Show';
+    }
+});
 
 // ====== UI CONTROLS ======
 async function loadRandomApiPreset() {
