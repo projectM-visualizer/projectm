@@ -8,19 +8,61 @@
   <style>
     body { font-family: 'Inter', system_ui, sans-serif; background: #111; }
 
+    /* ── Panel Container ──────────────────────────────────────────── */
     .panel-container {
       width: 620px;
       height: 620px;
       position: relative;
+      --knob-hue: 220;
+      filter: drop-shadow(0 0 28px hsla(220, 55%, 50%, 0.4));
+      transition: filter 0.6s ease;
     }
 
+    /* Outer dark bezel ring — replaces flat border on .panel-bg */
+    .panel-container::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      border: 14px solid #0d1117;
+      box-shadow: inset 0 0 0 2px #1e293b;
+      pointer-events: none;
+      z-index: 9;
+    }
+
+    /* Rotating conic-gradient bezel highlight */
+    .panel-container::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      pointer-events: none;
+      z-index: 9;
+      background: conic-gradient(
+        rgba(255,255,255,0.22) 0deg 48deg,
+        transparent           48deg 185deg,
+        rgba(255,255,255,0.09) 185deg 233deg,
+        transparent           233deg 360deg
+      );
+      /* Mask to show only the rim (outermost ~7% of radius) */
+      mask: radial-gradient(circle at 50%, transparent 91%, black 93%, black 100%);
+      -webkit-mask: radial-gradient(circle at 50%, transparent 91%, black 93%, black 100%);
+      animation: bezel-spin 18s linear infinite;
+    }
+
+    @keyframes bezel-spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* ── Panel Background ─────────────────────────────────────────── */
     .panel-bg {
       width: 100%;
       height: 100%;
       border-radius: 9999px;
       overflow: hidden;
       box-shadow: 0 25px 60px -15px rgb(0 0 0 / 0.7);
-      border: 12px solid #374151;
+      position: relative;
     }
 
     .panel-bg img {
@@ -29,20 +71,75 @@
       object-fit: cover;
     }
 
+    /* Inner vignette for depth */
+    .panel-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(circle at 50% 50%, transparent 52%, rgba(0,0,0,0.48) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ── Clickable Buttons ────────────────────────────────────────── */
     .clickable-button {
       position: absolute;
       background: transparent;
       border: none;
       cursor: pointer;
       z-index: 10;
+      border-radius: 6px;
       transition: transform 0.1s ease, filter 0.1s ease;
     }
 
-    .clickable-button:active {
-      transform: scale(0.95);
-      filter: brightness(0.8);
+    /* Persistent hover glow — uses ::before so it doesn't conflict with pulse ring */
+    .clickable-button::before {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: 9px;
+      background: radial-gradient(ellipse at 50% 50%, rgba(255,220,80,0.35), transparent 68%);
+      opacity: 0;
+      transition: opacity 0.12s ease;
+      pointer-events: none;
     }
 
+    .clickable-button:hover::before { opacity: 1; }
+
+    .clickable-button:active {
+      transform: scale(0.95);
+      filter: brightness(1.1);
+    }
+
+    /* Engaged (locked) state — steady amber glow */
+    .clickable-button.engaged::before {
+      background: radial-gradient(ellipse at 50% 50%, rgba(255,155,0,0.58), transparent 68%);
+      opacity: 1;
+      box-shadow: 0 0 14px rgba(255,155,0,0.35);
+    }
+
+    /* Pulse ring on click — uses ::after */
+    .clickable-button::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 8px;
+      border: 2px solid rgba(255,230,100,0.75);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @keyframes btn-pulse {
+      0%   { transform: scale(1);   opacity: 0.85; }
+      100% { transform: scale(1.65); opacity: 0; }
+    }
+
+    .clickable-button.pulse::after {
+      animation: btn-pulse 400ms ease-out forwards;
+    }
+
+    /* ── Knob ─────────────────────────────────────────────────────── */
     .knob {
       position: absolute;
       top: 50%;
@@ -61,7 +158,24 @@
       align-items: center;
       justify-content: center;
     }
+
     .knob:active { cursor: grabbing; }
+
+    /* Faint conic sweep — rotates with the knob as a direction indicator */
+    .knob::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: conic-gradient(
+        from 0deg,
+        rgba(255,255,255,0.13) 0deg 38deg,
+        transparent            38deg 360deg
+      );
+      pointer-events: none;
+    }
+
+    /* Red position dot */
     .knob::after {
       content: '';
       width: 18px;
@@ -69,6 +183,105 @@
       background: #ef4444;
       border-radius: 9999px;
       box-shadow: 0 0 15px #ef4444;
+    }
+
+    /* ── LED Ring ─────────────────────────────────────────────────── */
+    .led-ring {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /*
+     * Positioning trick: all LEDs start at the container center,
+     * offset upward by 260px (radius), then each rotates around
+     * the container center via transform-origin: 5px 265px.
+     * Container: 620×620, center: (310,310).
+     * LED top-left at: left = 310-5 = 305px, top = 310-265 = 45px.
+     * transform-origin 5px 265px → absolute point (310, 310) = center ✓
+     */
+    .led {
+      position: absolute;
+      left: calc(50% - 5px);
+      top: calc(50% - 265px);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      transform-origin: 5px 265px;
+    }
+
+    /* Power — solid green, top (0°) */
+    .led--power {
+      background: #22c55e;
+      box-shadow: 0 0 6px 2px rgba(34,197,94,0.8);
+      transform: rotate(0deg);
+    }
+
+    /* Audio active — green heartbeat, upper-right (72°) */
+    .led--audio {
+      background: #4ade80;
+      box-shadow: 0 0 6px 2px rgba(74,222,128,0.8);
+      transform: rotate(72deg);
+      animation: led-heartbeat 1.2s ease-in-out infinite;
+    }
+
+    /* Preset lock — amber only when body.has-lock, lower-right (144°) */
+    .led--lock {
+      background: #4b5563;
+      box-shadow: 0 0 3px 1px rgba(75,85,99,0.5);
+      transform: rotate(144deg);
+    }
+
+    body.has-lock .led--lock {
+      background: #f59e0b;
+      box-shadow: 0 0 7px 2px rgba(245,158,11,0.85);
+      animation: led-blink-slow 1.8s ease-in-out infinite;
+    }
+
+    /* Random mode — blue double-blink, lower-left (216°) */
+    .led--random {
+      background: #60a5fa;
+      box-shadow: 0 0 6px 2px rgba(96,165,250,0.8);
+      transform: rotate(216deg);
+      animation: led-double-blink 1.5s ease-in-out infinite;
+    }
+
+    /* Beat — red, toggled by JS interval, upper-left (288°) */
+    .led--beat {
+      background: #374151;
+      box-shadow: none;
+      transform: rotate(288deg);
+      transition: background 0.06s ease, box-shadow 0.06s ease;
+    }
+
+    .led--beat.on {
+      background: #f87171;
+      box-shadow: 0 0 8px 3px rgba(248,113,113,0.85);
+    }
+
+    @keyframes led-heartbeat {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.2; }
+    }
+
+    @keyframes led-blink-slow {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.08; }
+    }
+
+    @keyframes led-double-blink {
+      0%, 17%, 34%, 100% { opacity: 1; }
+      8.5%, 25.5%         { opacity: 0.08; }
+    }
+
+    /* ── Respect prefers-reduced-motion ──────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      .panel-container::after       { animation: none !important; }
+      .led--audio                   { animation: none !important; }
+      .led--random                  { animation: none !important; }
+      body.has-lock .led--lock      { animation: none !important; }
+      .clickable-button.pulse::after { animation: none !important; }
     }
   </style>
 </head>
@@ -80,13 +293,22 @@
       <img src="./panel-bg.jpg" alt="Industrial Control Panel">
     </div>
 
-    <!-- Interactive Overlay Buttons (positioned over the generated image) -->
-    <button onclick="hidePanel()" class="clickable-button" style="top: 18%; left: 22%; width: 18%; height: 11%;"></button>
-    <button onclick="lockPreset()" class="clickable-button" style="top: 12%; left: 42%; width: 16%; height: 9%;"></button>
+    <!-- Status LED ring (z-index 5, behind buttons) -->
+    <div class="led-ring" aria-hidden="true">
+      <span class="led led--power"  title="Power"></span>
+      <span class="led led--audio"  title="Audio Active"></span>
+      <span class="led led--lock"   title="Preset Locked"></span>
+      <span class="led led--random" title="Random Mode"></span>
+      <span class="led led--beat"   title="Beat"></span>
+    </div>
+
+    <!-- Interactive Overlay Buttons (positions unchanged — aligned to panel-bg.jpg) -->
+    <button onclick="hidePanel()"      class="clickable-button" style="top: 18%; left: 22%; width: 18%; height: 11%;"></button>
+    <button id="btn-lock" onclick="lockPreset()"     class="clickable-button" style="top: 12%; left: 42%; width: 16%; height:  9%;"></button>
     <button onclick="startChangeSong()" class="clickable-button" style="top: 32%; left: 12%; width: 18%; height: 11%;"></button>
-    <button onclick="fullWindow()" class="clickable-button" style="top: 52%; left: 14%; width: 18%; height: 11%;"></button>
-    <button onclick="randomPreset()" class="clickable-button" style="top: 32%; right: 14%; width: 18%; height: 11%;"></button>
-    <button onclick="randomCustom()" class="clickable-button" style="top: 52%; right: 14%; width: 18%; height: 11%;"></button>
+    <button onclick="fullWindow()"     class="clickable-button" style="top: 52%; left: 14%; width: 18%; height: 11%;"></button>
+    <button onclick="randomPreset()"   class="clickable-button" style="top: 32%; right: 14%; width: 18%; height: 11%;"></button>
+    <button onclick="randomCustom()"   class="clickable-button" style="top: 52%; right: 14%; width: 18%; height: 11%;"></button>
 
     <!-- Central Draggable Knob -->
     <div id="knob" class="knob"></div>
@@ -98,52 +320,103 @@
   </button>
 
   <script>
-    // Draggable Knob
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ── Draggable Knob ─────────────────────────────────────────────
     const knob = document.getElementById('knob');
+    const panelContainer = document.querySelector('.panel-container');
     let rot = 0, dragging = false, startAng = 0;
 
     function angle(e) {
       const r = knob.getBoundingClientRect();
-      const cx = r.left + r.width/2;
-      const cy = r.top + r.height/2;
+      const cx = r.left + r.width / 2;
+      const cy = r.top + r.height / 2;
       return Math.atan2(e.clientY - cy, e.clientX - cx) * 180 / Math.PI;
     }
 
+    function applyKnobRotation(deg) {
+      knob.style.transform = `translate(-50%,-50%) rotate(${deg}deg)`;
+      // Shift the panel drop-glow hue as the knob turns
+      const hue = ((deg % 360) + 360) % 360;
+      panelContainer.style.filter = `drop-shadow(0 0 28px hsla(${hue}, 55%, 50%, 0.42))`;
+    }
+
     knob.addEventListener('mousedown', e => { dragging = true; startAng = angle(e) - rot; });
-    document.addEventListener('mousemove', e => { if(dragging){ rot = angle(e) - startAng; knob.style.transform = `translate(-50%,-50%) rotate(${rot}deg)`; }});
-    document.addEventListener('mouseup', () => dragging = false);
+    document.addEventListener('mousemove', e => {
+      if (dragging) { rot = angle(e) - startAng; applyKnobRotation(rot); }
+    });
+    document.addEventListener('mouseup', () => { dragging = false; });
 
     // Touch support
-    knob.addEventListener('touchstart', e => { dragging=true; startAng = angle(e.touches[0]) - rot; });
-    document.addEventListener('touchmove', e => { if(dragging) { rot = angle(e.touches[0]) - startAng; knob.style.transform=`translate(-50%,-50%) rotate(${rot}deg)`; }});
-    document.addEventListener('touchend', () => dragging=false);
+    knob.addEventListener('touchstart', e => { dragging = true; startAng = angle(e.touches[0]) - rot; });
+    document.addEventListener('touchmove', e => {
+      if (dragging) { rot = angle(e.touches[0]) - startAng; applyKnobRotation(rot); }
+    });
+    document.addEventListener('touchend', () => { dragging = false; });
 
-    function hidePanel() {
-      const p = document.querySelector('.panel-container');
-      p.style.transition = 'all 0.3s ease';
-      p.style.opacity = '0';
-      setTimeout(() => { p.style.display='none'; document.getElementById('show-btn').classList.remove('hidden'); }, 280);
+    // ── Button pulse helper ────────────────────────────────────────
+    function pulseButton(btn) {
+      if (prefersReducedMotion) return;
+      btn.classList.remove('pulse');
+      void btn.offsetWidth; // force reflow so animation restarts
+      btn.classList.add('pulse');
+      setTimeout(() => btn.classList.remove('pulse'), 420);
     }
+
+    // Delegated click listener — pulses every .clickable-button on click
+    panelContainer.addEventListener('click', e => {
+      const btn = e.target.closest('.clickable-button');
+      if (btn) pulseButton(btn);
+    });
+
+    // ── Panel show / hide ──────────────────────────────────────────
+    function hidePanel() {
+      console.log('%c[B3HD] Hide Panel', 'color:#f43f5e');
+      panelContainer.style.transition = 'all 0.3s ease';
+      panelContainer.style.opacity = '0';
+      setTimeout(() => {
+        panelContainer.style.display = 'none';
+        document.getElementById('show-btn').classList.remove('hidden');
+      }, 280);
+    }
+
     function showPanel() {
-      const p = document.querySelector('.panel-container');
-      p.style.display = 'block';
-      p.style.opacity = '0';
-      setTimeout(() => { p.style.transition='all 0.3s ease'; p.style.opacity='1'; }, 10);
+      panelContainer.style.display = 'block';
+      panelContainer.style.opacity = '0';
+      setTimeout(() => {
+        panelContainer.style.transition = 'all 0.3s ease';
+        panelContainer.style.opacity = '1';
+      }, 10);
       document.getElementById('show-btn').classList.add('hidden');
     }
 
-    // Wire these to your real B3HD logic
+    // ── Application handlers (wire to real B3HD logic) ─────────────
     function startChangeSong() { console.log('%c[B3HD] Start/Change Song', 'color:#f43f5e'); }
-    function fullWindow() { console.log('%c[B3HD] Full Window', 'color:#f43f5e'); }
-    function randomPreset() { console.log('%c[B3HD] Random Preset', 'color:#f43f5e'); }
-    function randomCustom() { console.log('%c[B3HD] Random Custom', 'color:#f43f5e'); }
-    function lockPreset() { console.log('%c[B3HD] Lock Preset', 'color:#f43f5e'); }
+    function fullWindow()      { console.log('%c[B3HD] Full Window',       'color:#f43f5e'); }
+    function randomPreset()    { console.log('%c[B3HD] Random Preset',     'color:#f43f5e'); }
+    function randomCustom()    { console.log('%c[B3HD] Random Custom',     'color:#f43f5e'); }
 
-    // Subtle idle animation on knob
-    setTimeout(() => {
-      knob.style.transition = 'transform 1.5s cubic-bezier(0.34,1.56,0.64,1)';
-      knob.style.transform = `translate(-50%, -50%) rotate(${Math.random()*25 - 12}deg)`;
-    }, 1200);
+    function lockPreset() {
+      console.log('%c[B3HD] Lock Preset', 'color:#f43f5e');
+      const locked = document.body.classList.toggle('has-lock');
+      document.getElementById('btn-lock').classList.toggle('engaged', locked);
+    }
+
+    // ── Beat LED placeholder ───────────────────────────────────────
+    // TODO: replace setInterval with real audio-analyser beat detection
+    // Hook point: call beatLed.classList.add('on') on beat, remove after ~120ms
+    const beatLed = document.querySelector('.led--beat');
+    if (!prefersReducedMotion) {
+      setInterval(() => beatLed.classList.toggle('on'), 500);
+    }
+
+    // ── Subtle idle knob wobble ────────────────────────────────────
+    if (!prefersReducedMotion) {
+      setTimeout(() => {
+        knob.style.transition = 'transform 1.5s cubic-bezier(0.34,1.56,0.64,1)';
+        knob.style.transform = `translate(-50%, -50%) rotate(${Math.random() * 25 - 12}deg)`;
+      }, 1200);
+    }
   </script>
 </body>
 </html>
