@@ -280,7 +280,7 @@
   <div class="panel-container">
     <!-- Generated Panel Background -->
     <div class="panel-bg">
-      <img src="./panel-bg.jpg" alt="Industrial Control Panel">
+      <img src="./image/panel-bg.jpg" alt="Industrial Control Panel">
     </div>
 
     <!-- Status LED ring (z-index 5, behind buttons) -->
