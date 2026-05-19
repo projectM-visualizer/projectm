@@ -89,131 +89,75 @@ img[id^="logo"] {
   display: block;
 }
 
-/* ====== CONTROL PANEL CONTAINER ====== */
+/* ====== CONTROL PANEL ====== */
 .control-panel-container {
   position: fixed;
   bottom: 2vh;
   left: 2vh;
   z-index: 3300;
   pointer-events: auto;
+  width: 409px;
+  height: 409px;
 }
 
-/* Show/Hide Controls Button (panel background) */
+/* Show/Hide Controls Button (panel background image) */
 .show-controls-btn {
-  position: relative;
-  width: 90px;
-  height: 90px;
-  background: linear-gradient(135deg, #2a3f5f 0%, #1a2a3f 50%, #0f1820 100%);
-  border: 8px solid #444;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 12px;
-  color: white;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.1),
-    inset 0 -1px 0 rgba(0,0,0,0.8),
-    0 4px 8px rgba(0,0,0,0.5);
-  z-index: 3301;
-}
-
-.show-controls-btn::before,
-.show-controls-btn::after {
-  content: '';
   position: absolute;
-  width: 12px;
-  height: 12px;
-  background: radial-gradient(circle at 30% 30%, #3dd5f3, #0a9bc4);
-  border-radius: 50%;
-  box-shadow: 0 0 8px rgba(61, 213, 243, 0.6);
-}
-
-.show-controls-btn::before {
-  top: 12px;
-  left: 12px;
-}
-
-.show-controls-btn::after {
-  top: 12px;
-  right: 12px;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+  z-index: 3301;
+  top: 0;
+  left: 0;
 }
 
 .show-controls-btn:hover {
-  transform: scale(1.05);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.2),
-    inset 0 -1px 0 rgba(0,0,0,0.8),
-    0 6px 12px rgba(0,0,0,0.7),
-    0 0 12px rgba(61, 213, 243, 0.3);
+  opacity: 0.9;
 }
 
-.show-controls-btn:active {
-  transform: scale(0.95);
-}
-
-.show-controls-btn.controls-visible {
-  background: linear-gradient(135deg, #3a5f7f 0%, #2a3a5f 50%, #1f2a3f 100%);
-}
-
-.controls-label {
-  position: relative;
-  z-index: 2;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-}
-
-/* Controls Container */
+/* Controls Container - overlays buttons on the panel image */
 #controls-container {
   position: absolute;
-  bottom: 100%;
+  width: 100%;
+  height: 100%;
+  top: 0;
   left: 0;
-  margin-bottom: 10px;
-  background: rgba(0, 0, 0, 0.8);
-  padding: 10px;
-  border-radius: 4px;
-  border: 2px solid #555;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  width: 160px;
-  transition: all 0.3s ease, opacity 0.3s ease;
-  opacity: 0;
   pointer-events: none;
-  max-height: 0;
-  overflow: hidden;
+  z-index: 3302;
 }
 
-#controls-container.controls-visible {
-  opacity: 1;
-  pointer-events: auto;
-  max-height: 300px;
+#controls-container.hidden {
+  display: none;
 }
 
-/* Control Buttons */
+/* Control Buttons - positioned around the circular panel */
 .control-btn {
-  position: relative;
-  width: 70px;
+  position: absolute;
+  width: 60px;
   height: 50px;
-  z-index: 3300;
-  border: 4px solid #e7e7e7;
-  border-radius: 6px;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
   pointer-events: auto;
   font-weight: bold;
-  font-size: 9px;
+  font-size: 10px;
   color: white;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+  padding: 4px;
 }
 
 .control-btn:hover {
-  transform: scale(1.05);
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 .control-btn:active {
@@ -221,27 +165,66 @@ img[id^="logo"] {
 }
 
 .btn-label {
-  display: none;
-  position: absolute;
-  left: calc(100% + 10px);
-  bottom: 0;
-  white-space: nowrap;
   font-family: "Lucida Console", "Courier New", monospace;
-  font-size: 12px;
-  color: lightgrey;
-  font-weight: normal;
+  font-size: 10px;
+  color: white;
+  font-weight: bold;
   pointer-events: none;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
 }
 
-/* Show labels on hover for panel button */
-.controls-visible .btn-label {
-  display: block;
+/* Button Positioning around the circular panel */
+/* Hide Controls (top-left) */
+.hide-controls-btn {
+  left: 60px;
+  top: 50px;
 }
 
-.controls-hidden {
-  opacity: 0 !important;
-  pointer-events: none !important;
-  max-height: 0 !important;
+/* Lock Preset (top-center) */
+.lock-preset-btn {
+  left: 175px;
+  top: 20px;
+}
+
+/* Flac Player (top-right) */
+.flac-player-btn {
+  left: 290px;
+  top: 50px;
+}
+
+/* Start / Change Song (left) */
+.music-btn {
+  left: 15px;
+  top: 180px;
+}
+
+/* Random Preset (right) */
+.random-preset-btn {
+  right: 15px;
+  top: 180px;
+}
+
+/* Full Window (bottom-left) */
+.full-window-btn {
+  left: 60px;
+  bottom: 50px;
+}
+
+/* Fullscreen (bottom-center) */
+.fullscreen-btn {
+  left: 175px;
+  bottom: 20px;
+}
+
+/* Random Custom (bottom-right) */
+.custom-milk-btn {
+  left: 290px;
+  bottom: 50px;
+}
+
+/* API Preset Button - hidden but functional */
+.api-preset-btn {
+  display: none !important;
 }
 
 /* ====== AUDIO ELEMENT ====== */
@@ -276,7 +259,7 @@ input, button {
 #preset-name {
   position: fixed;
   bottom: 2vh;
-  left: 120px;
+  left: 430px;
   z-index: 3299;
   font-family: "Lucida Console", "Courier New", monospace;
   font-size: 14px;

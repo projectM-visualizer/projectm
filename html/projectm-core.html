@@ -40,35 +40,55 @@ body { margin: 0; padding: 0; background-color: black; overflow: hidden; }
 
   <!-- Control Panel Container (bottom left) -->
   <div id="control-panel" class="control-panel-container">
-    <!-- Show/Hide Controls Button -->
-    <button id="showControlsBtn" class="show-controls-btn">
-      <span class="controls-label">Show</span>
+    <!-- Show/Hide Controls Button with image background -->
+    <button id="showControlsBtn" class="show-controls-btn" style="background-image: url('./panel-bg.jpg');">
     </button>
 
-    <!-- Control Buttons (hidden by default) -->
-    <div id="controls-container" class="controls-hidden">
-      <button id="musicBtn" class="control-btn" style="background-color:cyan;">
-        <span class="btn-label">Start / Change Song</span>
+    <!-- Control Buttons positioned to match image -->
+    <div id="controls-container" class="controls-container">
+      <!-- Hide Controls (top-left) -->
+      <button id="hideControlsBtn" class="control-btn hide-controls-btn" style="background-color:rgba(0,0,0,0.6);">
+        <span class="btn-label">Hide</span>
       </button>
 
-      <button id="randomPresetBtn" class="control-btn" style="background-color:orange;">
-        <span class="btn-label">Random Preset</span>
+      <!-- Lock Preset (top-center) -->
+      <button id="lockPresetBtn" class="control-btn lock-preset-btn" style="background-color:rgba(0,0,0,0.6);">
+        <span class="btn-label">Lock</span>
       </button>
 
-      <button id="toggleBezelBtn" class="control-btn" style="background-color:blue;">
-        <span class="btn-label">Toggle Fullscreen</span>
+      <!-- Flac Player (top-right) -->
+      <button class="control-btn flac-player-btn" style="background-color:rgba(0,0,0,0.6);">
+        <span class="btn-label">Flac</span>
       </button>
 
-      <button id="customMilkBtn" class="control-btn" style="background-color:purple;">
-        <span class="btn-label">Random Custom</span>
+      <!-- Start / Change Song (left) -->
+      <button id="musicBtn" class="control-btn music-btn" style="background-color:rgba(0,0,0,0.6);">
+        <span class="btn-label">Start</span>
       </button>
 
-      <button id="apiRandomPresetBtn" class="control-btn" style="background-color:teal;">
-        <span class="btn-label">Random Preset (API)</span>
+      <!-- Random Preset (right) -->
+      <button id="randomPresetBtn" class="control-btn random-preset-btn" style="background-color:rgba(0,0,0,0.6);">
+        <span class="btn-label">Random</span>
       </button>
 
-      <button id="lockPresetBtn" class="control-btn" style="background-color:green;">
-        <span class="btn-label">Lock Preset</span>
+      <!-- Full Window (bottom-left) -->
+      <button id="toggleBezelBtn" class="control-btn full-window-btn" style="background-color:rgba(0,0,0,0.6);">
+        <span class="btn-label">Window</span>
+      </button>
+
+      <!-- Fullscreen (bottom-center) -->
+      <button class="control-btn fullscreen-btn" style="background-color:rgba(0,0,0,0.6);">
+        <span class="btn-label">Fullscreen</span>
+      </button>
+
+      <!-- Random Custom (bottom-right) -->
+      <button id="customMilkBtn" class="control-btn custom-milk-btn" style="background-color:rgba(0,0,0,0.6);">
+        <span class="btn-label">Custom</span>
+      </button>
+
+      <!-- Random Preset API (hidden, for functionality) -->
+      <button id="apiRandomPresetBtn" class="control-btn api-preset-btn" style="display:none;">
+        <span class="btn-label">API Random</span>
       </button>
     </div>
   </div>
@@ -251,37 +271,31 @@ async function loadStartupApiPresets(count) {
 }
 
 // ====== SHOW/HIDE CONTROLS ======
-let controlsVisible = false;
+let controlsVisible = true;
 const showControlsBtn = document.getElementById('showControlsBtn');
 const controlsContainer = document.getElementById('controls-container');
+const hideControlsBtn = document.getElementById('hideControlsBtn');
+
+function toggleControls() {
+    controlsVisible = !controlsVisible;
+    if (!controlsVisible) {
+        controlsContainer.classList.add('hidden');
+    } else {
+        controlsContainer.classList.remove('hidden');
+    }
+}
 
 showControlsBtn.addEventListener('click', function(e) {
     e.stopPropagation();
-    controlsVisible = !controlsVisible;
-
-    if (controlsVisible) {
-        controlsContainer.classList.remove('controls-hidden');
-        controlsContainer.classList.add('controls-visible');
-        showControlsBtn.classList.add('controls-visible');
-        showControlsBtn.querySelector('.controls-label').textContent = 'Hide';
-    } else {
-        controlsContainer.classList.remove('controls-visible');
-        controlsContainer.classList.add('controls-hidden');
-        showControlsBtn.classList.remove('controls-visible');
-        showControlsBtn.querySelector('.controls-label').textContent = 'Show';
-    }
+    toggleControls();
 });
 
-// Close controls when clicking outside
-document.addEventListener('click', function() {
-    if (controlsVisible) {
-        controlsVisible = false;
-        controlsContainer.classList.remove('controls-visible');
-        controlsContainer.classList.add('controls-hidden');
-        showControlsBtn.classList.remove('controls-visible');
-        showControlsBtn.querySelector('.controls-label').textContent = 'Show';
-    }
-});
+if (hideControlsBtn) {
+    hideControlsBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleControls();
+    });
+}
 
 // ====== UI CONTROLS ======
 async function loadRandomApiPreset() {
