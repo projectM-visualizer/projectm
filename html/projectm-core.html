@@ -57,8 +57,8 @@ body { margin: 0; padding: 0; background-color: black; overflow: hidden; }
       </button>
 
       <!-- Flac Player (top-right) -->
-      <button class="control-btn flac-player-btn" style="background-color:rgba(0,0,0,0.6);">
-        <span class="btn-label">Flac</span>
+      <button id="flacPlayerBtn" class="control-btn flac-player-btn" style="background-color:#8b5cf6;">
+        <span class="btn-label">Open FLAC Player</span>
       </button>
 
       <!-- Start / Change Song (left) -->
@@ -94,6 +94,7 @@ body { margin: 0; padding: 0; background-color: black; overflow: hidden; }
   </div>
 
   <div id="preset-name">Preset: --</div>
+  <div id="flac-status" style="position:fixed;bottom:2vh;left:530px;z-index:3299;font-family:'Lucida Console','Courier New',monospace;font-size:14px;color:#22c55e;pointer-events:none;white-space:nowrap;text-shadow:1px 1px 2px rgba(0,0,0,0.85);"></div>
 </div>
 
 <!-- Hidden data containers -->
@@ -108,6 +109,7 @@ body { margin: 0; padding: 0; background-color: black; overflow: hidden; }
   <div id="hig">720</div>
   <div id="tim">8500</div>
   <div id="vsiz">0</div>
+  <div id="flacPlayerUrl">https://flac.1ink.us</div>
 </div>
 
 <!-- Audio element -->
@@ -341,6 +343,69 @@ document.getElementById("lockPresetBtn").addEventListener('click', function() {
     }
     console.log('Preset lock:', isPresetLocked);
 });
+
+// ====== FLAC PLAYER INTEGRATION ======
+let audioChannel = null;
+let playerPopup = null;
+let flacStatusTimeoutId = null;
+
+function feedPCMToModule(buf) {
+    if (typeof Module === 'undefined' || !Module._projectm_pcm_add_float_wrapper) {
+        console.warn('feedPCMToModule: Module not ready, dropping PCM frame');
+        return;
+    }
+    const ptr = Module._malloc(buf.length * 4);
+    if (!ptr) return;
+    try {
+        Module.HEAPF32.set(buf, ptr >> 2);
+        // pm_handle arg is ignored by the wrapper (uses app_data internally); pass 0
+        Module._projectm_pcm_add_float_wrapper(0, ptr, buf.length, 1);
+    } finally {
+        Module._free(ptr);
+    }
+}
+
+function updateFlacStatus(connected) {
+    const indicator = document.getElementById('flac-status');
+    const btn = document.getElementById('flacPlayerBtn');
+    const label = btn ? btn.querySelector('.btn-label') : null;
+    if (indicator) {
+        indicator.textContent = connected ? '● FLAC' : '';
+    }
+    if (btn) {
+        btn.style.backgroundColor = connected ? '#22c55e' : '#8b5cf6';
+    }
+    if (label) {
+        label.textContent = connected ? 'FLAC Live' : 'Open FLAC Player';
+    }
+}
+
+function openFlacPlayer() {
+    const urlEl = document.getElementById('flacPlayerUrl');
+    const url = (urlEl ? urlEl.textContent.trim() : '') ||
+                localStorage.getItem('flacPlayerUrl') ||
+                'https://flac.1ink.us';
+    playerPopup = window.open(url, 'flac-player',
+        'width=420,height=700,resizable=yes,scrollbars=no');
+
+    if (!playerPopup) {
+        console.warn('openFlacPlayer: popup was blocked. Please allow popups for this site.');
+    }
+
+    if (!audioChannel) {
+        audioChannel = new BroadcastChannel('projectm-audio');
+        audioChannel.onmessage = (e) => {
+            if (e.data?.type === 'pcm' && e.data.buffer) {
+                feedPCMToModule(e.data.buffer);
+                updateFlacStatus(true);
+                clearTimeout(flacStatusTimeoutId);
+                flacStatusTimeoutId = setTimeout(() => updateFlacStatus(false), 3000);
+            }
+        };
+    }
+}
+
+document.getElementById('flacPlayerBtn').addEventListener('click', openFlacPlayer);
 
 function syncModuleSize() {
     const contain1 = document.querySelector('#contain1');
