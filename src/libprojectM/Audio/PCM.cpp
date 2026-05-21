@@ -3,6 +3,7 @@
 #ifdef PRJM_ENABLE_OPENMP
 #include <omp.h>
 #endif
+#include <mutex>
 
 namespace libprojectM {
 namespace Audio {
@@ -22,6 +23,7 @@ void PCM::AddToBuffer(
     }
 
     size_t const writeStart = m_start.load(std::memory_order_relaxed);
+    std::lock_guard<std::mutex> lock(m_pcmMutex);
     for (size_t i = 0; i < sampleCount; i++)
     {
         size_t const bufferOffset = (writeStart + i) % AudioBufferSamples;
@@ -54,9 +56,12 @@ void PCM::Add(int16_t const* const samples, uint32_t channels, size_t const coun
 
 void PCM::UpdateFrameAudioData(double secondsSinceLastFrame, uint32_t frame)
 {
-    // 1. Copy audio data from input buffer
-    CopyNewWaveformData(m_inputBufferL, m_waveformL);
-    CopyNewWaveformData(m_inputBufferR, m_waveformR);
+    // 1. Copy audio data from input buffer (lock to prevent tearing with audio thread writes)
+    {
+        std::lock_guard<std::mutex> lock(m_pcmMutex);
+        CopyNewWaveformData(m_inputBufferL, m_waveformL);
+        CopyNewWaveformData(m_inputBufferR, m_waveformR);
+    }
 
     // 2. Update spectrum analyzer data for both channels
     UpdateSpectrum(m_waveformL, m_spectrumL);
