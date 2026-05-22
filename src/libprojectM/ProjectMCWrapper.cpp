@@ -538,6 +538,19 @@ uint32_t projectm_sprite_get_max_sprites(projectm_handle instance)
     return projectMInstance->UserSpriteLimit();
 }
 
+double projectm_sprite_get_var(projectm_handle instance, uint32_t sprite_id, const char* var_name)
+{
+    auto* projectMInstance = handle_to_instance(instance);
+
+    return projectMInstance->UserSpriteGetVariableValue(sprite_id, var_name);
+}
+
+void projectm_sprite_set_var(projectm_handle instance, uint32_t sprite_id, const char* var_name, double value)
+{
+    auto* projectMInstance = handle_to_instance(instance);
+
+    projectMInstance->UserSpriteSetVariableValue(sprite_id, var_name, value);
+}
 void projectm_set_log_callback(projectm_log_callback callback, bool current_thread_only, void* user_data)
 {
     if (current_thread_only)

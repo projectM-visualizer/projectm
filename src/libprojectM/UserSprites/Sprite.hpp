@@ -47,6 +47,20 @@ public:
      * @return true if the sprite should be deleted, false if not.
      */
     virtual auto Done() const -> bool = 0;
+
+    /**
+     * @brief Returns the current value of a variable in the sprite's expression code.
+     * @param variableName The variable to retrieve the value for.
+     * @return The value of the requested variable and sprite.
+     */
+    virtual auto GetVariableValue(const std::string& variableName) const -> double = 0;
+
+    /**
+     * @brief Set the value of a variable in the sprite's expression code.
+     * @param variableName The variable to set the value for.
+     * @param value The new value.
+     */
+    virtual void SetVariableValue(const std::string& variableName, double value) = 0;
 };
 
 } // namespace UserSprites

@@ -123,6 +123,28 @@ PROJECTM_EXPORT void projectm_sprite_set_max_sprites(projectm_handle instance,
  */
 PROJECTM_EXPORT uint32_t projectm_sprite_get_max_sprites(projectm_handle instance);
 
+/**
+ * @brief Retrieves the current value of an expression variable of a given sprite.
+ *
+ * @param instance The projectM instance handle.
+ * @param sprite_id The sprite ID returned by projectm_sprite_create() to retrieve the value for.
+ * @param var_name The variable name to retrieve the value for.
+ * @return The current value of the requested variable. Returns 0.0 if the variable is not defined.
+ * @since 4.2.0
+ */
+PROJECTM_EXPORT double projectm_sprite_get_var(projectm_handle instance, uint32_t sprite_id, const char* var_name);
+
+/**
+ * @brief Sets the value of the given variable for a single sprite instance.
+ *
+ * @param instance The projectM instance handle.
+ * @param sprite_id The sprite ID returned by projectm_sprite_create() to set the value for.
+ * @param var_name The variable to set a new value for.
+ * @param value The new value.
+ * @since 4.2.0
+ */
+PROJECTM_EXPORT void projectm_sprite_set_var(projectm_handle instance, uint32_t sprite_id, const char* var_name, double value);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

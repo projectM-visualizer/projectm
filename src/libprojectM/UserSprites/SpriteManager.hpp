@@ -82,6 +82,22 @@ public:
      */
     auto SpriteSlots() const -> uint32_t;
 
+    /**
+     * @brief Returns the current value of a variable in a user sprite's expression code.
+     * @param spriteIdentifier The sprite ID to retrieve the value for.
+     * @param variableName The variable to retrieve the value for.
+     * @return The value of the requested variable and sprite.
+     */
+    auto GetSpriteVariableValue(SpriteIdentifier spriteIdentifier, const std::string& variableName) const -> double;
+
+    /**
+     * @brief Set the value of a variable in a user sprite's expression code.
+     * @param spriteIdentifier The sprite ID to set the value for.
+     * @param variableName The variable to set the value for.
+     * @param value The new value.
+     */
+    void SetSpriteVariableValue(SpriteIdentifier spriteIdentifier, const std::string& variableName, double value);
+
 private:
     using SpriteIdPair = std::pair<SpriteIdentifier, Sprite::Ptr>;
 

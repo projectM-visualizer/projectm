@@ -366,6 +366,16 @@ auto ProjectM::UserSpriteIdentifiers() const -> std::vector<uint32_t>
     return m_spriteManager->ActiveSpriteIdentifiers();
 }
 
+auto ProjectM::UserSpriteGetVariableValue(uint32_t spriteId, const std::string& variableName) const -> double
+{
+    return m_spriteManager->GetSpriteVariableValue(spriteId, variableName);
+}
+
+void ProjectM::UserSpriteSetVariableValue(uint32_t spriteId, const std::string& variableName, double value)
+{
+    m_spriteManager->SetSpriteVariableValue(spriteId, variableName, value);
+}
+
 void ProjectM::BurnInTexture(uint32_t openGlTextureId, int left, int top, int width, int height)
 {
     if (m_activePreset)
