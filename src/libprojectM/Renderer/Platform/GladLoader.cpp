@@ -47,8 +47,8 @@ auto GladLoader::CheckGLRequirements() -> bool
 
     glCheck
         .WithApi(GLApi::OpenGLES)
-        .WithMinimumVersion(3, 2)
-        .WithMinimumShaderLanguageVersion(3, 20)
+        .WithMinimumVersion(3, 0)
+        .WithMinimumShaderLanguageVersion(3, 0)
         //        .WithRequiredExtension("GL_OES_texture_float")
         //        .WithRequiredExtension("GL_OES_standard_derivatives")
         .WithRequireCoreProfile(false);
