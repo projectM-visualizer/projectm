@@ -62,14 +62,21 @@ void PCM::UpdateFrameAudioData(double secondsSinceLastFrame, uint32_t frame)
     UpdateSpectrum(m_waveformL, m_spectrumL);
     UpdateSpectrum(m_waveformR, m_spectrumR);
 
+    // Beat detection should reflect both channels; average L+R into a mono spectrum.
+    SpectrumBuffer monoSpectrum{};
+    for (size_t sample = 0; sample < SpectrumSamples; sample++)
+    {
+        monoSpectrum[sample] = 0.5f * (m_spectrumL[sample] + m_spectrumR[sample]);
+    }
+
     // 3. Align waveforms
     m_alignL.Align(m_waveformL);
     m_alignR.Align(m_waveformR);
 
     // 4. Update beat detection values
-    m_bass.Update(m_spectrumL, secondsSinceLastFrame, frame);
-    m_middles.Update(m_spectrumL, secondsSinceLastFrame, frame);
-    m_treble.Update(m_spectrumL, secondsSinceLastFrame, frame);
+    m_bass.Update(monoSpectrum, secondsSinceLastFrame, frame);
+    m_middles.Update(monoSpectrum, secondsSinceLastFrame, frame);
+    m_treble.Update(monoSpectrum, secondsSinceLastFrame, frame);
 
 }
 
