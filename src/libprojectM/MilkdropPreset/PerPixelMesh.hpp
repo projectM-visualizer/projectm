@@ -42,6 +42,18 @@ public:
     void CompileWarpShader(PresetState& presetState);
 
     /**
+     * True once the warp shader's deferred background compile (if any) has finished.
+     * Non-blocking.
+     */
+    auto WarpShaderCompileReady() const -> bool;
+
+    /**
+     * Finalizes a deferred warp-shader compile, replaying CompileWarpShader's failure
+     * handling (drop the warp shader).
+     */
+    void FinalizeWarpShaderCompile();
+
+    /**
      * @brief Renders the transformation mesh.
      * @param presetState The preset state to retrieve the configuration values from.
      * @param presetPerFrameContext The per-frame context to retrieve the initial vars from.

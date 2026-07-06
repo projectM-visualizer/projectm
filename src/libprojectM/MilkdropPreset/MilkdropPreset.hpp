@@ -86,6 +86,17 @@ public:
 
     void BindFramebuffer() override;
 
+    /**
+     * Non-blocking readiness of the warp/composite shaders' deferred background compiles.
+     */
+    auto PendingShaderCompileReady() const -> bool override;
+
+    /**
+     * Finalizes deferred warp/composite compiles with the same per-shader failure
+     * fallbacks as the synchronous compile path.
+     */
+    void FinalizePendingShaderCompile() override;
+
 private:
     void PerFrameUpdate();
 

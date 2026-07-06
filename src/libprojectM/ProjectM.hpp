@@ -90,6 +90,46 @@ public:
     void LoadPresetFile(const std::string& presetFilename, bool smoothTransition);
 
     /**
+     * @brief Loads and initializes a preset in the background without switching to it.
+     *
+     * The preset is fully created and initialized (including shader compilation), then
+     * retained until ActivatePreloadedPreset() is called. Only one preset can be
+     * preloaded at a time; a subsequent call replaces the previous one. On failure,
+     * PresetSwitchFailedEvent() is fired and no preset is retained.
+     *
+     * @param presetFilename The preset filename to preload.
+     */
+    void PreloadPresetFile(const std::string& presetFilename);
+
+    /**
+     * @brief Switches to the previously preloaded preset without re-initializing it.
+     *
+     * Returns false (and discards the preloaded preset where appropriate) if no preset
+     * is preloaded or the window size changed since the preload, in which case the
+     * caller should fall back to LoadPresetFile().
+     *
+     * @param smoothTransition If set to true, old and new presets will be blended over smoothly.
+     * @return True if the preloaded preset was activated.
+     */
+    auto ActivatePreloadedPreset(bool smoothTransition) -> bool;
+
+    /**
+     * @brief Returns true if a preset is currently preloaded and awaiting activation.
+     */
+    auto HasPreloadedPreset() const -> bool;
+
+    /**
+     * @brief Non-blocking — true once the preloaded preset's deferred background shader
+     * compiles have finished. False if no preset is preloaded.
+     */
+    auto PreloadedPresetCompileReady() const -> bool;
+
+    /**
+     * @brief Returns the filename the preloaded preset was created from (empty if none).
+     */
+    auto PreloadedPresetName() const -> const std::string&;
+
+    /**
      * @brief Loads the given preset data and performs a smooth or immediate transition.
      *
      * This function assumes the data to be in Milkdrop format.
@@ -288,6 +328,8 @@ private:
 
     void StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hardCut);
 
+    void StartPresetTransitionInternal(std::unique_ptr<Preset>&& preset, bool hardCut, bool alreadyInitialized);
+
     void LoadIdlePreset();
 
     auto GetRenderContext() -> Renderer::RenderContext;
@@ -328,6 +370,10 @@ private:
     std::unique_ptr<Renderer::CopyTexture> m_textureCopier;                       //!< Class that copies textures 1:1 to another texture or framebuffer.
     std::unique_ptr<Preset> m_activePreset;                                       //!< Currently loaded preset.
     std::unique_ptr<Preset> m_transitioningPreset;                                //!< Destination preset when smooth preset switching.
+    std::unique_ptr<Preset> m_preloadedPreset;                                    //!< Initialized next preset retained for low-latency switching.
+    std::string m_preloadedPresetName;                                            //!< Filename used to create the preloaded preset.
+    uint32_t m_preloadedPresetWindowWidth{0};                                     //!< Window width used during preloaded preset initialization.
+    uint32_t m_preloadedPresetWindowHeight{0};                                    //!< Window height used during preloaded preset initialization.
     std::unique_ptr<Renderer::PresetTransition> m_transition;                     //!< Transition effect used for blending.
     std::unique_ptr<TimeKeeper> m_timeKeeper;                                     //!< Keeps the different timers used to render and switch presets.
     std::unique_ptr<UserSprites::SpriteManager> m_spriteManager;                  //!< Manages all types of user sprites.
