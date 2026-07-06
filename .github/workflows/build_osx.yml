@@ -41,7 +41,7 @@ jobs:
         run: |
           brew install boost
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: 'recursive'
 
@@ -94,7 +94,7 @@ jobs:
           cmake --build "${{ github.workspace }}/cmake-build-cxx-api" --config "Release"
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
             name: projectm-osx-${{ matrix.libs }}-${{ matrix.fslib }}-${{ matrix.arch }}-${{ matrix.runs-on }}
             path: install/*
@@ -118,7 +118,7 @@ jobs:
       - name: Install Packages
         run: brew install ninja
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: 'recursive'
 
@@ -164,7 +164,7 @@ jobs:
             "${{ github.workspace }}/install"
 
       - name: Upload Framework Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
             name: projectm-osx-framework-${{ matrix.cxx_interface && 'cxx' || 'c-only' }}-${{ matrix.arch }}-${{ matrix.runs-on }}
             path: install/*
