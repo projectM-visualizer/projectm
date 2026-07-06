@@ -5,6 +5,7 @@
 #pragma once
 
 #include <projectM-4/projectM_cxx_export.h>
+#include <projectM-4/callbacks.h>
 
 namespace libprojectM {
 namespace Renderer {
@@ -38,6 +39,10 @@ public:
 
     TextureManager* textureManager{nullptr}; //!< Holds all loaded textures for shader access.
     ShaderCache* shaderCache{nullptr}; //!< The shader chace of this projectM instance.
+
+    //!< Optional, app-provided preprocessed-HLSL cache hooks. Null unless registered via
+    //!< projectm_set_preprocess_cache. Points at storage owned by the ProjectM instance.
+    const projectm_preprocess_cache_hooks* preprocessCache{nullptr};
 };
 
 } // namespace Renderer

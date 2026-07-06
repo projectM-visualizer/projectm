@@ -171,6 +171,13 @@ void projectm_set_texture_load_event_callback(projectm_handle instance,
     }
 }
 
+void projectm_set_preprocess_cache(projectm_handle instance,
+                                   const projectm_preprocess_cache_hooks* hooks)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->SetPreprocessCacheHooks(hooks);
+}
+
 void projectm_set_texture_search_paths(projectm_handle instance,
                                        const char** texture_search_paths,
                                        size_t count)
