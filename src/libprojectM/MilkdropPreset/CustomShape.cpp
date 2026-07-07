@@ -19,8 +19,37 @@ CustomShape::CustomShape(PresetState& presetState)
     m_outlineMesh.SetVertexCount(100);
     m_outlineMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::LineLoop);
 
-    m_fillMesh.SetVertexCount(102);
-    m_fillMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::TriangleFan);
+    glGenVertexArrays(1, &m_vaoIdTextured);
+    glGenBuffers(1, &m_vboIdTextured);
+
+    glGenVertexArrays(1, &m_vaoIdUntextured);
+    glGenBuffers(1, &m_vboIdUntextured);
+
+    glBindVertexArray(m_vaoIdTextured);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboIdTextured);
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x))); // Position
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r))); // Color
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, u))); // Texture coordinate
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
+
+    glBindVertexArray(m_vaoIdUntextured);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboIdUntextured);
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x))); // Position
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r))); // Color
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(TexturedPoint) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
+
+    Init();
 
     m_perFrameContext.RegisterBuiltinVariables();
 }

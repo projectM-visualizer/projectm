@@ -15,7 +15,8 @@ static std::string const defaultCompositeShader = "shader_body\n{\nret = tex2D(s
 FinalComposite::FinalComposite()
     : m_compositeMesh(Renderer::VertexBufferUsage::StreamDraw, true, true)
 {
-    m_compositeMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::Triangles);
+    Init();
+}
 
     // Add attribute array for radius and angle information to the mesh.
     m_compositeMesh.Bind();
