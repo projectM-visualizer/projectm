@@ -24,7 +24,7 @@ jobs:
         runs-on: ['ubuntu-24.04']
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: 'recursive'
 
@@ -64,7 +64,7 @@ jobs:
           cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target install
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
             name: projectm-android-${{ matrix.libs }}-${{ matrix.abi }}-api${{ matrix.platform-version }}
             path: install/*

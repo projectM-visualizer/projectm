@@ -23,7 +23,7 @@ jobs:
         runs-on: ['ubuntu-24.04', 'ubuntu-22.04']
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: 'recursive'
 
@@ -81,7 +81,7 @@ jobs:
           cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target install
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
             name: projectm-linux-${{ matrix.libs }}-${{ matrix.fslib }}-${{ matrix.runs-on }}
             path: install/*

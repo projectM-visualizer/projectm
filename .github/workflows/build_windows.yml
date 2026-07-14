@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Checkout vcpkg
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: microsoft/vcpkg
           path: vcpkg
@@ -55,7 +55,7 @@ jobs:
             -Source "${{ env.FEED_URL }}"
 
       - name: Checkout libprojectM
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: 'recursive'
 
@@ -82,8 +82,13 @@ jobs:
             $runtime = ""
             $triplet = $triplet + "-static"
           }
+          if("${{ matrix.runs-on }}" -eq "windows-2022") {
+            $generator = "Visual Studio 17 2022"
+          } else {
+            $generator = "Visual Studio 18 2026"
+          }
           
-          cmake -G "Visual Studio 17 2022" `
+          cmake -G "$($generator)" `
             -A "${{ matrix.arch }}" `
             -S "${{ github.workspace }}" `
             -B "${{ github.workspace }}/cmake-build" `
@@ -111,7 +116,7 @@ jobs:
           cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --target INSTALL
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
             name: projectm-windows-${{ matrix.libs }}-${{ matrix.fslib }}-${{ matrix.arch }}-${{ matrix.runs-on }}
             path: install/*
