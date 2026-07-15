@@ -114,6 +114,30 @@ void projectm_load_preset_file(projectm_handle instance, const char* filename,
     projectMInstance->LoadPresetFile(filename, smooth_transition);
 }
 
+void projectm_preload_preset_file(projectm_handle instance, const char* filename)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->PreloadPresetFile(filename);
+}
+
+bool projectm_activate_preloaded_preset(projectm_handle instance, bool smooth_transition)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    return projectMInstance->ActivatePreloadedPreset(smooth_transition);
+}
+
+bool projectm_has_preloaded_preset(projectm_handle instance)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    return projectMInstance->HasPreloadedPreset();
+}
+
+bool projectm_preloaded_preset_compile_ready(projectm_handle instance)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    return projectMInstance->PreloadedPresetCompileReady();
+}
+
 void projectm_load_preset_data(projectm_handle instance, const char* data,
                                bool smooth_transition)
 {

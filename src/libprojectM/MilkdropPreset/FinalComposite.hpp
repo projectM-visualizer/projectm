@@ -32,6 +32,19 @@ public:
     void CompileCompositeShader(PresetState& presetState);
 
     /**
+     * True once the composite shader's deferred
+     * background compile (if any) has finished. Non-blocking.
+     */
+    auto CompositeShaderCompileReady() const -> bool;
+
+    /**
+     * Finalizes a deferred composite-shader compile,
+     * replaying CompileCompositeShader's failure handling (fall back to the default
+     * composite shader, compiled synchronously).
+     */
+    void FinalizeCompositeShaderCompile(PresetState& presetState);
+
+    /**
      * @brief Renders the composite quad with the appropriate effects or shaders.
      * @param presetState The preset state to retrieve the configuration values from.
      * @param presetPerFrameContext The per-frame context to retrieve the initial vars from.
