@@ -404,9 +404,20 @@ auto GLResolver::Initialize(UserResolver resolver, void* userData) -> bool
         std::string reason;
         if (!HasCurrentContext(currentContext, reason))
         {
-            m_loaded = false;
-            LOG_ERROR(std::string("[GLResolver] No current GL context present: ") + reason);
-            return false;
+            if (state.m_userResolver != nullptr)
+            {
+                currentContext.eglCurrent = true;
+                currentContext.eglAvailable = true;
+                LOG_INFO(std::string("[GLResolver] Current context could not be probed: ") +
+                         reason +
+                         "; assuming app-managed EGL/GLES context because a user resolver was supplied");
+            }
+            else
+            {
+                m_loaded = false;
+                LOG_ERROR(std::string("[GLResolver] No current GL context present: ") + reason);
+                return false;
+            }
         }
     }
 
