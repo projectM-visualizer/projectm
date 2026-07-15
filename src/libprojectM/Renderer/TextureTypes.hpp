@@ -24,5 +24,11 @@ struct TextureLoadData {
  */
 using TextureLoadCallback = std::function<void(const std::string& textureName, TextureLoadData& data)>;
 
+/**
+ * @brief Callback function type for unloading textures.
+ * @param textureName The name of the texture being unloaded.
+ */
+using TextureUnloadCallback = std::function<void(const std::string& textureName)>;
+
 } // namespace Renderer
 } // namespace libprojectM

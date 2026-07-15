@@ -65,13 +65,54 @@ public:
      */
     void SetTextureLoadCallback(TextureLoadCallback callback);
 
+    /**
+     * @brief Loads a texture with the given name from an uncompressed raw memory bitmap.
+     * @note The @a data buffer must at least contain width*height*channels bytes!
+     * @param unqualifiedName The unqualified texture name, e.g. without and wrap/filtering prefixes. Can be mixed-case.
+     * @param data The image data as RGB(A) components, 8 bits per color.
+     * @param width The width of the image.
+     * @param height The height of the image.
+     * @param channels The number of channels in the image, either 3 (RGB) or 4 (RGBA)
+     * @return true if the texture was loaded successfully, false if an error occurred or the texture was already loaded.
+     */
+    auto LoadExternalTextureRaw(const std::string& unqualifiedName, const uint8_t* data, uint32_t width, uint32_t height, uint32_t channels) -> bool;
+
+    /**
+     * @brief Loads a texture directly from an OpenGL texture ID.
+     * @param unqualifiedName The unqualified texture name, e.g. without and wrap/filtering prefixes. Can be mixed-case.
+     * @param textureId The OpenGL texture ID to use.
+     * @param width The width of the image.
+     * @param height The height of the image.
+     * @param channels The number of channels in the image, either 3 (RGB) or 4 (RGBA)
+     * @return true if the texture was loaded successfully, false if an error occurred or the texture was already loaded.
+     */
+    auto LoadExternalTextureID(const std::string& unqualifiedName, GLuint textureId, uint32_t width, uint32_t height, uint32_t channels) -> bool;
+
+    /**
+     * @brief Loads a texture from a supported (compressed) file format.
+     * @param unqualifiedName The unqualified texture name, e.g. without and wrap/filtering prefixes. Can be mixed-case.
+     * @param data The original image file contents.
+     * @return true if the texture was loaded successfully, false if an error occurred or the texture was already loaded.
+     */
+    auto LoadExternalTextureFile(const std::string& unqualifiedName, const uint8_t* data) -> bool;
+
+    /**
+     * @brief Unloads an externally loaded texture.
+     * @note Unloading a texture that is in use will postpone the unload until any preset using it is unloaded.
+     *       When manually unloading a texture passed by ID, the application should wait one or more preset
+     *       switches before deleting the actual texture to avoid rendering issues.
+     * @param unqualifiedName The unqualified texture name, e.g. without and wrap/filtering prefixes. Can be mixed-case.
+     * @return
+     */
+    auto UnloadExternalTexture(const std::string& unqualifiedName) -> bool;
+
 private:
     /**
      * Texture usage statistics. Used to determine when to purge a texture.
      */
     struct UsageStats {
         UsageStats(uint32_t size)
-            : sizeBytes(size){};
+            : sizeBytes(size) {};
 
         uint32_t age{};       //!< Age of the texture. Represents the number of presets loaded since it was last retrieved.
         uint32_t sizeBytes{}; //!< The texture in-memory size in bytes.
@@ -108,10 +149,11 @@ private:
     std::map<std::string, std::shared_ptr<Texture>> m_textures;             //!< All loaded textures, including generated ones.
     std::map<std::pair<GLint, GLint>, std::shared_ptr<Sampler>> m_samplers; //!< The four sampler objects for each combination of wrap and filter modes.
     std::map<std::string, UsageStats> m_textureStats;                       //!< Map with texture stats for user-loaded files.
-    std::vector<std::string> m_randomTextures;
+    std::vector<std::string> m_purgeableTextures;                           //!< Textures which may be purged automatically to save VRAM.
     std::vector<std::string> m_extensions{".jpg", ".jpeg", ".dds", ".png", ".tga", ".bmp", ".dib"};
 
-    TextureLoadCallback m_textureLoadCallback; //!< Optional callback for loading textures from non-filesystem sources.
+    TextureLoadCallback m_textureLoadCallback;     //!< Optional callback for loading textures from non-filesystem sources.
+    TextureUnloadCallback m_textureUnloadCallback; //!< Optional callback for unloading textures from non-filesystem sources.
 };
 
 } // namespace Renderer

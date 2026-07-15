@@ -6,6 +6,7 @@
 
 #include "Renderer/Sampler.hpp"
 
+#include <cstdint>
 #include <string>
 
 namespace libprojectM {
@@ -19,6 +20,17 @@ namespace Renderer {
 class Texture
 {
 public:
+    /**
+     * Determines the source of the texture, affecting the caching, loading and unloading behavior.
+     */
+    enum class Source : uint8_t
+    {
+        Internal,        //!< Internal texture loaded by libprojectM, can't be replaced or unloaded.
+        PresetRequested, //!< A texture requested by a preset, will be garbage-collected automatically.
+        ExternalImage,   //!< An externally loaded image, can be unloaded by the user.
+        ExternalTexture, //!< An externally created OpenGL texture, can be unloaded by the user. projectM will not delete the texture.
+    };
+
     Texture(const Texture&) = delete;
     auto operator=(const Texture&) -> Texture& = delete;
 
@@ -32,9 +44,9 @@ public:
      * @param name Optional name of the texture for referencing in Milkdrop shaders.
      * @param width Width in pixels.
      * @param height Height in pixels.
-     * @param isUserTexture true if the texture is an externally-loaded image, false if it's an internal texture.
+     * @param source The load source of the texture.
      */
-    explicit Texture(std::string name, int width, int height, bool isUserTexture);
+    explicit Texture(std::string name, int width, int height, Source source);
 
     /**
      * @brief Constructor. Allocates a new, empty texture with the given size and format.
@@ -46,10 +58,10 @@ public:
      * @param internalFormat OpenGL internal texture format.
      * @param format OpenGL texture format.
      * @param type Storage type for each color channel.
-     * @param isUserTexture true if the texture is an externally-loaded image, false if it's an internal texture.
+     * @param source The load source of the texture.
      */
     explicit Texture(std::string name, GLenum target, int width, int height, int depth,
-                     GLint internalFormat, GLenum format, GLenum type, bool isUserTexture);
+                     GLint internalFormat, GLenum format, GLenum type, Source source);
 
     /**
      * @brief Constructor. Creates a new texture instance from an existing OpenGL texture.
@@ -58,13 +70,10 @@ public:
      * @param target The texture target type, e.g. GL_TEXTURE_2D.
      * @param width Width in pixels.
      * @param height Height in pixels.
-     * @param isUserTexture true if the texture is an externally-loaded image, false if it's an internal texture.
-     * @param owned If true (default), the class takes ownership and will delete the texture when destroyed.
-     *              If false, the texture is managed externally and won't be deleted.
+     * @param source The load source of the texture.
      */
     explicit Texture(std::string name, GLuint texID, GLenum target,
-                     int width, int height,
-                     bool isUserTexture, bool owned = true);
+                     int width, int height, Source source);
 
     /**
      * @brief Constructor. Creates a new texture from image data with the given size and format.
@@ -77,10 +86,10 @@ public:
      * @param internalFormat OpenGL internal texture format.
      * @param format OpenGL texture format.
      * @param type Storage type for each color channel.
-     * @param isUserTexture true if the texture is an externally-loaded image, false if it's an internal texture.
+     * @param source The load source of the texture.
      */
     explicit Texture(std::string name, const void* data, GLenum target, int width, int height, int depth,
-                     GLint internalFormat, GLenum format, GLenum type, bool isUserTexture);
+                     GLint internalFormat, GLenum format, GLenum type, Source source);
 
     Texture(Texture&& other) = default;
     auto operator=(Texture&& other) -> Texture& = default;
@@ -141,7 +150,7 @@ public:
      * @brief Returns if the texture is user-defined, e.g. loaded from an image.
      * @return true if the texture is a user texture, false if it's an internally generated texture.
      */
-    auto IsUserTexture() const -> bool;
+    auto Source() const -> Source;
 
     /**
      * @brief Returns true if the texture is empty/unallocated.
@@ -165,12 +174,14 @@ private:
     GLuint m_textureId{0};    //!< The OpenGL texture name/ID.
     GLenum m_target{GL_NONE}; //!< The OpenGL texture target, e.g. GL_TEXTURE_2D.
 
-    std::string m_name;          //!< The texture name for identifying it in shaders.
-    int m_width{0};              //!< Texture width in pixels.
-    int m_height{0};             //!< Texture height in pixels.
-    int m_depth{0};              //!< Texture depth in pixels. Only used for 3D textures.
-    bool m_isUserTexture{false}; //!< true if it's a user texture, false if an internal one.
-    bool m_owned{true};          //!< true if this class owns the texture and should delete it.
+    std::string m_name; //!< The texture name for identifying it in shaders.
+    int m_width{0};     //!< Texture width in pixels.
+    int m_height{0};    //!< Texture height in pixels.
+    int m_depth{0};     //!< Texture depth in pixels. Only used for 3D textures.
+    enum Source m_source
+    {
+        Source::Internal
+    }; //!< Texture load source.
 
     GLint m_internalFormat{}; //!< OpenGL internal format, e.g. GL_RGBA8
     GLenum m_format{};        //!< OpenGL color format, e.g. GL_RGBA

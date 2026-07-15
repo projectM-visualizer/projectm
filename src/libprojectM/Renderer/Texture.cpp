@@ -5,12 +5,12 @@
 namespace libprojectM {
 namespace Renderer {
 
-Texture::Texture(std::string name, const int width, const int height, const bool isUserTexture)
+Texture::Texture(std::string name, const int width, const int height, const enum Source source)
     : m_target(GL_TEXTURE_2D)
     , m_name(std::move(name))
     , m_width(width)
     , m_height(height)
-    , m_isUserTexture(isUserTexture)
+    , m_source(source)
     , m_internalFormat(GL_RGB)
     , m_format(GL_RGB)
     , m_type(GL_UNSIGNED_BYTE)
@@ -19,13 +19,13 @@ Texture::Texture(std::string name, const int width, const int height, const bool
 }
 
 Texture::Texture(std::string name, GLenum target, int width, int height, int depth,
-                 GLint internalFormat, GLenum format, GLenum type, bool isUserTexture)
+                 GLint internalFormat, GLenum format, GLenum type, const enum Source source)
     : m_target(target)
     , m_name(std::move(name))
     , m_width(width)
     , m_height(height)
     , m_depth(depth)
-    , m_isUserTexture(isUserTexture)
+    , m_source(source)
     , m_internalFormat(internalFormat)
     , m_format(format)
     , m_type(type)
@@ -34,24 +34,24 @@ Texture::Texture(std::string name, GLenum target, int width, int height, int dep
 }
 
 Texture::Texture(std::string name, const GLuint texID, const GLenum target,
-                 const int width, const int height, const bool isUserTexture, const bool owned)
+                 const int width, const int height, const enum Source source)
     : m_textureId(texID)
     , m_target(target)
     , m_name(std::move(name))
     , m_width(width)
     , m_height(height)
-    , m_isUserTexture(isUserTexture)
-    , m_owned(owned)
+    , m_source(source)
 {
 }
 
-Texture::Texture(std::string name, const void* data, GLenum target, int width, int height, int depth, GLint internalFormat, GLenum format, GLenum type, bool isUserTexture)
+Texture::Texture(std::string name, const void* data, GLenum target, int width, int height, int depth,
+                 GLint internalFormat, GLenum format, GLenum type, const enum Source source)
     : m_target(target)
     , m_name(std::move(name))
     , m_width(width)
     , m_height(height)
     , m_depth(depth)
-    , m_isUserTexture(isUserTexture)
+    , m_source(source)
     , m_internalFormat(internalFormat)
     , m_format(format)
     , m_type(type)
@@ -62,7 +62,7 @@ Texture::Texture(std::string name, const void* data, GLenum target, int width, i
 
 Texture::~Texture()
 {
-    if (m_textureId > 0 && m_owned)
+    if (m_textureId > 0 && m_source != Source::ExternalTexture)
     {
         glDeleteTextures(1, &m_textureId);
         m_textureId = 0;
@@ -116,9 +116,9 @@ auto Texture::Depth() const -> int
     return m_depth;
 }
 
-auto Texture::IsUserTexture() const -> bool
+auto Texture::Source() const -> enum Source
 {
-    return m_isUserTexture;
+    return m_source;
 }
 
 auto Texture::Empty() const -> bool

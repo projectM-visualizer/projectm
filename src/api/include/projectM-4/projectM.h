@@ -33,6 +33,7 @@
 #include "projectM-4/memory.h"
 #include "projectM-4/parameters.h"
 #include "projectM-4/render_opengl.h"
+#include "projectM-4/textures.h"
 #include "projectM-4/touch.h"
 #include "projectM-4/version.h"
 #include "projectM-4/user_sprites.h"
