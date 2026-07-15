@@ -281,6 +281,14 @@ public:
      */
     void BurnInTexture(uint32_t openGlTextureId, int left, int top, int width, int height);
 
+    /**
+     * @brief Registers (or clears) app-provided preprocessed-HLSL cache hooks.
+     *
+     * The struct is copied by value. Passing nullptr clears any registered hooks.
+     * @param hooks Pointer to the hooks struct, or nullptr to clear.
+     */
+    void SetPreprocessCacheHooks(const projectm_preprocess_cache_hooks* hooks);
+
 private:
     void Initialize();
 
@@ -331,6 +339,9 @@ private:
     std::unique_ptr<Renderer::PresetTransition> m_transition;                     //!< Transition effect used for blending.
     std::unique_ptr<TimeKeeper> m_timeKeeper;                                     //!< Keeps the different timers used to render and switch presets.
     std::unique_ptr<UserSprites::SpriteManager> m_spriteManager;                  //!< Manages all types of user sprites.
+
+    projectm_preprocess_cache_hooks m_preprocessCacheHooks{}; //!< App-provided preprocessed-HLSL cache hooks (copied by value).
+    bool m_preprocessCacheHooksSet{false};                    //!< True once hooks are registered; controls RenderContext propagation.
 };
 
 } // namespace libprojectM

@@ -104,7 +104,7 @@ PROJECTM_EXPORT void projectm_set_preset_switch_failed_event_callback(projectm_h
  *          and will delete it (via glDeleteTextures) when it is no longer needed. Do not
  *          delete the texture yourself or reuse the texture ID after passing it here.
  *
- * @since 4.2.0
+ * @since 4.3.0
  */
 typedef struct projectm_texture_load_data {
     const unsigned char* data; /**< Pointer to raw pixel data in standard OpenGL format (first row is bottom of image). Can be NULL. */
@@ -139,7 +139,7 @@ typedef struct projectm_texture_load_data {
  * @param texture_name The name of the texture being requested, as used in the preset.
  * @param[out] data Pointer to a structure where the application should place texture data.
  * @param user_data A user-defined data pointer that was provided when registering the callback.
- * @since 4.2.0
+ * @since 4.3.0
  */
 typedef void (*projectm_texture_load_event)(const char* texture_name,
                                             projectm_texture_load_data* data,
@@ -155,11 +155,59 @@ typedef void (*projectm_texture_load_event)(const char* texture_name,
  * @param callback A pointer to the callback function.
  * @param user_data A pointer to any data that will be sent back in the callback, e.g. context
  *                  information.
- * @since 4.2.0
+ * @since 4.3.0
  */
 PROJECTM_EXPORT void projectm_set_texture_load_event_callback(projectm_handle instance,
                                                               projectm_texture_load_event callback,
                                                               void* user_data);
+
+/**
+ * @brief Optional hooks for caching the preprocessed-HLSL text of Milkdrop preset shaders.
+ *
+ * The Milkdrop shader transpiler runs a text preprocessor (macro expansion) over each
+ * preset shader before parsing it. That step is pure text and deterministic for a given
+ * input, so its result can be cached across runs. When these hooks are registered, projectM
+ * computes a stable key for the preprocessor input and consults the cache before running the
+ * (comparatively expensive) preprocessor.
+ *
+ * The cache is fully opt-in. If no hooks are registered, behaviour is byte-identical to a
+ * build without this feature. projectM owns nothing referenced by the value pointers after a
+ * callback returns; the get sink is only valid for the duration of the sink call.
+ *
+ * All hook invocations happen on the same thread that calls the projectM rendering
+ * functions (the transpile runs there), so no additional synchronization is required.
+ *
+ * @since 4.3.0
+ */
+typedef struct projectm_preprocess_cache_hooks {
+    /**
+     * @brief Lookup hook. On a hit, invoke @p sink exactly once with the cached value (valid
+     *        only for the duration of that call) and return true. On a miss, return false and
+     *        do not call @p sink.
+     */
+    bool (*get)(void* user, const char* key, size_t keylen,
+                void* sinkctx, void (*sink)(void* sinkctx, const char* data, size_t len));
+    /**
+     * @brief Store hook. Copy @p vallen bytes at @p value under the @p keylen-byte @p key.
+     *        The callee owns no passed-in pointer after returning.
+     */
+    void (*put)(void* user, const char* key, size_t keylen, const char* value, size_t vallen);
+    void* user; /**< User-defined pointer passed back to get/put. */
+} projectm_preprocess_cache_hooks;
+
+/**
+ * @brief Registers (or clears) the preprocessed-HLSL cache hooks for this instance.
+ *
+ * The hooks structure is copied by value; the caller need not keep it alive, but the @c user
+ * pointer and anything the callbacks touch must outlive the projectM instance (or until the
+ * hooks are cleared). Passing NULL clears any previously registered hooks.
+ *
+ * @param instance The projectM instance handle.
+ * @param hooks A pointer to the hooks structure, or NULL to clear.
+ * @since 4.3.0
+ */
+PROJECTM_EXPORT void projectm_set_preprocess_cache(projectm_handle instance,
+                                                   const projectm_preprocess_cache_hooks* hooks);
 
 #ifdef __cplusplus
 } // extern "C"
