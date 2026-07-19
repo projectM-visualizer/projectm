@@ -29,6 +29,7 @@
 #include <Audio/PCM.hpp>
 
 #include <Renderer/CopyTexture.hpp>
+#include <Renderer/GLStateGuard.hpp>
 #include <Renderer/PresetTransition.hpp>
 #include <Renderer/ShaderCache.hpp>
 #include <Renderer/TextureManager.hpp>
@@ -120,6 +121,12 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
     {
         return;
     }
+
+    // Save the host application's OpenGL state so we can restore it after rendering.
+    // This is required when libprojectM is used inside a shared OpenGL context,
+    // e.g. a Qt QOpenGLWidget, where the host expects its GL state to be preserved.
+    // The guard's destructor restores all captured state when this scope ends.
+    Renderer::GLStateGuard glStateGuard;
 
     // Update FPS and other timer values.
     m_timeKeeper->UpdateTimers();
@@ -368,6 +375,9 @@ auto ProjectM::UserSpriteIdentifiers() const -> std::vector<uint32_t>
 
 void ProjectM::BurnInTexture(uint32_t openGlTextureId, int left, int top, int width, int height)
 {
+    GLint previousFramebuffer{};
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &previousFramebuffer);
+
     if (m_activePreset)
     {
         m_activePreset->BindFramebuffer();
@@ -380,7 +390,7 @@ void ProjectM::BurnInTexture(uint32_t openGlTextureId, int left, int top, int wi
         m_textureCopier->Draw(*m_shaderCache, openGlTextureId, m_windowWidth, m_windowHeight, left, top, width, height);
     }
 
-    Renderer::Framebuffer::Unbind();
+    glBindFramebuffer(GL_FRAMEBUFFER, previousFramebuffer);
 }
 
 void ProjectM::SetPresetLocked(bool locked)
