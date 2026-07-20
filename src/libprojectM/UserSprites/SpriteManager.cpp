@@ -65,7 +65,8 @@ void SpriteManager::Draw(const Audio::FrameAudioData& audioData,
 {
     std::vector<SpriteIdentifier> toDestroy;
 
-    for (auto& idAndSprite : m_sprites) {
+    for (auto& idAndSprite : m_sprites)
+    {
         idAndSprite.second->Draw(audioData, renderContext, outputFramebufferObject, presets);
 
         if (idAndSprite.second->Done())
@@ -130,6 +131,40 @@ void SpriteManager::SpriteSlots(uint32_t slots)
 auto SpriteManager::SpriteSlots() const -> uint32_t
 {
     return m_spriteSlots;
+}
+
+auto SpriteManager::GetSpriteVariableValue(SpriteIdentifier spriteIdentifier, const std::string& variableName) const -> double
+{
+    if (m_spriteIdentifiers.find(spriteIdentifier) == m_spriteIdentifiers.end())
+    {
+        return 0.0;
+    }
+
+    for (const auto& idAndSprite : m_sprites)
+    {
+        if (idAndSprite.first == spriteIdentifier)
+        {
+            return idAndSprite.second->GetVariableValue(variableName);
+        }
+    }
+
+    return 0.0;
+}
+
+void SpriteManager::SetSpriteVariableValue(SpriteIdentifier spriteIdentifier, const std::string& variableName, double value)
+{
+    if (m_spriteIdentifiers.find(spriteIdentifier) == m_spriteIdentifiers.end())
+    {
+        return;
+    }
+
+    for (const auto& idAndSprite : m_sprites)
+    {
+        if (idAndSprite.first == spriteIdentifier)
+        {
+            idAndSprite.second->SetVariableValue(variableName, value);
+        }
+    }
 }
 
 auto SpriteManager::GetLowestFreeIdentifier() -> SpriteIdentifier

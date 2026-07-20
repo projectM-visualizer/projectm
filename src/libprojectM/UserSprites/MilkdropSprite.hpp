@@ -27,6 +27,10 @@ public:
 
     auto Done() const -> bool override;
 
+    auto GetVariableValue(const std::string& variableName) const -> double override;
+
+    void SetVariableValue(const std::string& variableName, double value) override;
+
 private:
     /**
      * @brief Context for the init and per-frame code.
@@ -43,7 +47,7 @@ private:
 
         /**
          * @brief Compiles and runs the init code of the sprite once, if any.
-         * Also sets up a the default values of the output variables.
+         * Also sets up the default values of the output variables.
          * @param initCode The initialization code.
          */
         void RunInitCode(const std::string& initCode, const Renderer::RenderContext& renderContext);
@@ -74,15 +78,15 @@ private:
         // Output variables
         PRJM_EVAL_F* done{};      //!< If this becomes non-zero, the sprite is deleted. Default: 0.0
         PRJM_EVAL_F* burn{};      //!< If non-zero, the sprite will be "burned" into currently rendered presets when done is also true, effectively "dissolving" the sprite in the preset. Default: 1.0
-        PRJM_EVAL_F* x{};         //!< Sprite x position (position of the image center). Range from -1000 to 1000. Default: 0.5
-        PRJM_EVAL_F* y{};         //!< Sprite y position (position of the image center). Range from -1000 to 1000. Default: 0.5
-        PRJM_EVAL_F* sx{};        //!< Sprite x scaling factor. Range from -1000 to 1000. Default: 1.0
-        PRJM_EVAL_F* sy{};        //!< Sprite y scaling factor. Range from -1000 to 1000. Default: 1.0
+        PRJM_EVAL_F* x{};         //!< Sprite X position (position of the image center). Range from -1000 to 1000. Default: 0.5
+        PRJM_EVAL_F* y{};         //!< Sprite Y position (position of the image center). Range from -1000 to 1000. Default: 0.5
+        PRJM_EVAL_F* sx{};        //!< Sprite X scaling factor. Range from -1000 to 1000. Default: 1.0
+        PRJM_EVAL_F* sy{};        //!< Sprite Y scaling factor. Range from -1000 to 1000. Default: 1.0
         PRJM_EVAL_F* rot{};       //!< Sprite rotation in radians (2*PI equals one full rotation). Default: 0.0
-        PRJM_EVAL_F* flipx{};     //!< If flag is non-zero, the sprite is flipped on the x axis. Default: 0.0
-        PRJM_EVAL_F* flipy{};     //!< If flag is non-zero, the sprite is flipped on the y axis. Default: 0.0
-        PRJM_EVAL_F* repeatx{};   //!< Repeat count of the image on the sprite quad on the x axis. Fractional values allowed. Range from 0.01 to 100.0. Default: 1.0
-        PRJM_EVAL_F* repeaty{};   //!< Repeat count of the image on the sprite quad on the y axis. Fractional values allowed. Range from 0.01 to 100.0. Default: 1.0
+        PRJM_EVAL_F* flipx{};     //!< If flag is non-zero, the sprite is flipped on the X axis. Default: 0.0
+        PRJM_EVAL_F* flipy{};     //!< If flag is non-zero, the sprite is flipped on the Y axis. Default: 0.0
+        PRJM_EVAL_F* repeatx{};   //!< Repeat count of the image on the sprite quad on the X axis. Fractional values allowed. Range from 0.01 to 100.0. Default: 1.0
+        PRJM_EVAL_F* repeaty{};   //!< Repeat count of the image on the sprite quad on the Y axis. Fractional values allowed. Range from 0.01 to 100.0. Default: 1.0
         PRJM_EVAL_F* blendmode{}; //!< Image blending mode. 0 = Alpha blending (default), 1 = Decal mode (no transparency), 2 = Additive blending, 3 = Source color blending, 4 = Color key blending. Default: 0
         PRJM_EVAL_F* r{};         //!< Modulation color used in some blending modes. Default: 1.0
         PRJM_EVAL_F* g{};         //!< Modulation color used in some blending modes. Default: 1.0

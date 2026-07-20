@@ -290,6 +290,26 @@ auto MilkdropSprite::Done() const -> bool
     return m_spriteDone;
 }
 
+auto MilkdropSprite::GetVariableValue(const std::string& variableName) const -> double
+{
+    PRJM_EVAL_F const* var = projectm_eval_context_register_variable(m_codeContext.spriteCodeContext, variableName.c_str());
+    if (var != nullptr)
+    {
+        return *var;
+    }
+
+    return 0.0;
+}
+
+void MilkdropSprite::SetVariableValue(const std::string& variableName, double value)
+{
+    PRJM_EVAL_F * var = projectm_eval_context_register_variable(m_codeContext.spriteCodeContext, variableName.c_str());
+    if (var != nullptr)
+    {
+        *var = value;
+    }
+}
+
 MilkdropSprite::CodeContext::CodeContext()
     : spriteCodeContext(projectm_eval_context_create(nullptr, nullptr))
 {

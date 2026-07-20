@@ -272,6 +272,22 @@ public:
     auto UserSpriteIdentifiers() const -> std::vector<uint32_t>;
 
     /**
+     * @brief Returns the current value of a variable in a user sprite's expression code.
+     * @param spriteId The sprite ID to retrieve the value for.
+     * @param variableName The variable to retrieve the value for.
+     * @return The value of the requested variable and sprite.
+     */
+    auto UserSpriteGetVariableValue(uint32_t spriteId, const std::string& variableName) const -> double;
+
+    /**
+     * @brief Set the value of a variable in a user sprite's expression code.
+     * @param spriteId The sprite ID to set the value for.
+     * @param variableName The variable to set the value for.
+     * @param value The new value.
+     */
+    void UserSpriteSetVariableValue(uint32_t spriteId, const std::string& variableName, double value);
+
+    /**
      * @brief Draws the given texture on the active preset's main texture to get a "burn-in" effect.
      * @param openGlTextureId The OpenGL texture to draw onto the active preset(s).
      * @param left Left coordinate in pixels on the destination texture.
