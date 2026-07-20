@@ -54,14 +54,19 @@ auto Logging::HasCallback() -> bool
 
 void Logging::Log(const std::string& message, LogLevel severity)
 {
+    Log(message.c_str(), severity);
+}
+
+void Logging::Log(const char* message, LogLevel severity)
+{
     auto callback = GetLoggingCallback();
 
-    if (callback.callbackFunction == nullptr)
+    if (callback.callbackFunction == nullptr || message == nullptr)
     {
         return;
     }
 
-    callback.callbackFunction(message.c_str(), static_cast<int>(severity), callback.userData);
+    callback.callbackFunction(message, static_cast<int>(severity), callback.userData);
 }
 
 auto Logging::GetLoggingCallback() -> UserCallback

@@ -92,6 +92,15 @@ public:
     PROJECTM_CXX_EXPORT static void Log(const std::string& message, LogLevel severity);
 
     /**
+     * @brief Passes a log message with the given severity to the active thread or global callback.
+     * This overload avoids implicit string allocations.
+     * If no callbacks are registered, this function does nothing.
+     * @param message Null-terminated C string message
+     * @param severity LogLevel severity
+     */
+    PROJECTM_CXX_EXPORT static void Log(const char* message, LogLevel severity);
+
+    /**
      * The default log level used if no log level is set (LogLevel::Information)
      */
     PROJECTM_CXX_EXPORT static const LogLevel m_defaultLogLevel;
