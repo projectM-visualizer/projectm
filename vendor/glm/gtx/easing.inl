@@ -1,5 +1,4 @@
 /// @ref gtx_easing
-/// @file glm/gtx/easing.inl
 
 #include <cmath>
 
@@ -426,7 +425,7 @@ namespace glm{
 
 		if(a < static_cast<genType>(0.5))
 		{
-			return static_cast<genType>(0.5) * (one<genType>() - bounceEaseOut(a * static_cast<genType>(2)));
+			return static_cast<genType>(0.5) * (one<genType>() - bounceEaseOut(one<genType>() - a * static_cast<genType>(2)));
 		}
 		else
 		{

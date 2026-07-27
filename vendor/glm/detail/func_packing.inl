@@ -3,7 +3,6 @@
 
 #include "../common.hpp"
 #include "type_half.hpp"
-#include "../fwd.hpp"
 
 namespace glm
 {
@@ -11,11 +10,11 @@ namespace glm
 	{
 		union
 		{
-			u16  in[2];
+			unsigned short in[2];
 			uint out;
 		} u;
 
-		u16vec2 result(round(clamp(v, 0.0f, 1.0f) * 65535.0f));
+		vec<2, unsigned short, defaultp> result(round(clamp(v, 0.0f, 1.0f) * 65535.0f));
 
 		u.in[0] = result[0];
 		u.in[1] = result[1];
@@ -28,7 +27,7 @@ namespace glm
 		union
 		{
 			uint in;
-			u16  out[2];
+			unsigned short out[2];
 		} u;
 
 		u.in = p;
@@ -40,11 +39,11 @@ namespace glm
 	{
 		union
 		{
-			i16  in[2];
+			signed short in[2];
 			uint out;
 		} u;
-
-		i16vec2 result(round(clamp(v, -1.0f, 1.0f) * 32767.0f));
+ 
+		vec<2, short, defaultp> result(round(clamp(v, -1.0f, 1.0f) * 32767.0f));
 
 		u.in[0] = result[0];
 		u.in[1] = result[1];
@@ -57,7 +56,7 @@ namespace glm
 		union
 		{
 			uint in;
-			i16  out[2];
+			signed short out[2];
 		} u;
 
 		u.in = p;
@@ -69,11 +68,11 @@ namespace glm
 	{
 		union
 		{
-			u8   in[4];
+			unsigned char in[4];
 			uint out;
 		} u;
 
-		u8vec4 result(round(clamp(v, 0.0f, 1.0f) * 255.0f));
+		vec<4, unsigned char, defaultp> result(round(clamp(v, 0.0f, 1.0f) * 255.0f));
 
 		u.in[0] = result[0];
 		u.in[1] = result[1];
@@ -88,7 +87,7 @@ namespace glm
 		union
 		{
 			uint in;
-			u8   out[4];
+			unsigned char out[4];
 		} u;
 
 		u.in = p;
@@ -100,11 +99,11 @@ namespace glm
 	{
 		union
 		{
-			i8   in[4];
+			signed char in[4];
 			uint out;
 		} u;
 
-		i8vec4 result(round(clamp(v, -1.0f, 1.0f) * 127.0f));
+		vec<4, signed char, defaultp> result(round(clamp(v, -1.0f, 1.0f) * 127.0f));
 
 		u.in[0] = result[0];
 		u.in[1] = result[1];
@@ -119,7 +118,7 @@ namespace glm
 		union
 		{
 			uint in;
-			i8   out[4];
+			signed char out[4];
 		} u;
 
 		u.in = p;
@@ -158,7 +157,7 @@ namespace glm
 	{
 		union
 		{
-			i16  in[2];
+			signed short in[2];
 			uint out;
 		} u;
 
@@ -173,7 +172,7 @@ namespace glm
 		union
 		{
 			uint in;
-			i16  out[2];
+			signed short out[2];
 		} u;
 
 		u.in = v;
@@ -184,7 +183,7 @@ namespace glm
 	}
 }//namespace glm
 
-#if GLM_ARCH != GLM_ARCH_PURE && GLM_HAS_UNRESTRICTED_UNIONS
+#if GLM_CONFIG_SIMD == GLM_ENABLE
 #	include "func_packing_simd.inl"
 #endif
 

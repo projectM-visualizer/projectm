@@ -6,20 +6,15 @@
 /// @defgroup core_func_matrix Matrix functions
 /// @ingroup core
 ///
-/// Include <glm/matrix.hpp> to use these core features.
+/// Provides GLSL matrix functions.
 ///
-/// For each of the following built-in matrix functions, there is both a
-/// single-qualifier floating point version, where all arguments and return values
-/// are single qualifier, and a double-qualifier floating version, where all
-/// arguments and return values are double qualifier. Only the single-qualifier
-/// floating point version is shown.
+/// Include <glm/matrix.hpp> to use these core features.
 
 #pragma once
 
 // Dependencies
 #include "detail/qualifier.hpp"
 #include "detail/setup.hpp"
-#include "detail/type_mat.hpp"
 #include "vec2.hpp"
 #include "vec3.hpp"
 #include "vec4.hpp"
@@ -34,63 +29,65 @@
 #include "mat4x4.hpp"
 
 namespace glm {
-	namespace detail
+namespace detail
+{
+	template<length_t C, length_t R, typename T, qualifier Q>
+	struct outerProduct_trait{};
+
+	template<typename T, qualifier Q>
+	struct outerProduct_trait<2, 2, T, Q>
 	{
-		template<typename T, qualifier Q>
-		struct outerProduct_trait<2, 2, T, Q>
-		{
-			typedef mat<2, 2, T, Q> type;
-		};
+		typedef mat<2, 2, T, Q> type;
+	};
 
-		template<typename T, qualifier Q>
-		struct outerProduct_trait<2, 3, T, Q>
-		{
-			typedef mat<3, 2, T, Q> type;
-		};
+	template<typename T, qualifier Q>
+	struct outerProduct_trait<2, 3, T, Q>
+	{
+		typedef mat<3, 2, T, Q> type;
+	};
 
-		template<typename T, qualifier Q>
-		struct outerProduct_trait<2, 4, T, Q>
-		{
-			typedef mat<4, 2, T, Q> type;
-		};
+	template<typename T, qualifier Q>
+	struct outerProduct_trait<2, 4, T, Q>
+	{
+		typedef mat<4, 2, T, Q> type;
+	};
 
-		template<typename T, qualifier Q>
-		struct outerProduct_trait<3, 2, T, Q>
-		{
-			typedef mat<2, 3, T, Q> type;
-		};
+	template<typename T, qualifier Q>
+	struct outerProduct_trait<3, 2, T, Q>
+	{
+		typedef mat<2, 3, T, Q> type;
+	};
 
-		template<typename T, qualifier Q>
-		struct outerProduct_trait<3, 3, T, Q>
-		{
-			typedef mat<3, 3, T, Q> type;
-		};
+	template<typename T, qualifier Q>
+	struct outerProduct_trait<3, 3, T, Q>
+	{
+		typedef mat<3, 3, T, Q> type;
+	};
 
-		template<typename T, qualifier Q>
-		struct outerProduct_trait<3, 4, T, Q>
-		{
-			typedef mat<4, 3, T, Q> type;
-		};
+	template<typename T, qualifier Q>
+	struct outerProduct_trait<3, 4, T, Q>
+	{
+		typedef mat<4, 3, T, Q> type;
+	};
 
-		template<typename T, qualifier Q>
-		struct outerProduct_trait<4, 2, T, Q>
-		{
-			typedef mat<2, 4, T, Q> type;
-		};
+	template<typename T, qualifier Q>
+	struct outerProduct_trait<4, 2, T, Q>
+	{
+		typedef mat<2, 4, T, Q> type;
+	};
 
-		template<typename T, qualifier Q>
-		struct outerProduct_trait<4, 3, T, Q>
-		{
-			typedef mat<3, 4, T, Q> type;
-		};
+	template<typename T, qualifier Q>
+	struct outerProduct_trait<4, 3, T, Q>
+	{
+		typedef mat<3, 4, T, Q> type;
+	};
 
-		template<typename T, qualifier Q>
-		struct outerProduct_trait<4, 4, T, Q>
-		{
-			typedef mat<4, 4, T, Q> type;
-		};
-
-	}//namespace detail
+	template<typename T, qualifier Q>
+	struct outerProduct_trait<4, 4, T, Q>
+	{
+		typedef mat<4, 4, T, Q> type;
+	};
+}//namespace detail
 
 	 /// @addtogroup core_func_matrix
 	 /// @{
@@ -100,7 +97,7 @@ namespace glm {
 	 ///
 	 /// @tparam C Integer between 1 and 4 included that qualify the number a column
 	 /// @tparam R Integer between 1 and 4 included that qualify the number a row
-	 /// @tparam T Floating-point or signed integer scalar types
+	 /// @tparam T Floating-point scalar types
 	 /// @tparam Q Value from qualifier enum
 	 ///
 	 /// @see <a href="http://www.opengl.org/sdk/docs/manglsl/xhtml/matrixCompMult.xml">GLSL matrixCompMult man page</a>
@@ -114,7 +111,7 @@ namespace glm {
 	///
 	/// @tparam C Integer between 1 and 4 included that qualify the number a column
 	/// @tparam R Integer between 1 and 4 included that qualify the number a row
-	/// @tparam T Floating-point or signed integer scalar types
+	/// @tparam T Floating-point scalar types
 	/// @tparam Q Value from qualifier enum
 	///
 	/// @see <a href="http://www.opengl.org/sdk/docs/manglsl/xhtml/outerProduct.xml">GLSL outerProduct man page</a>
@@ -126,7 +123,7 @@ namespace glm {
 	///
 	/// @tparam C Integer between 1 and 4 included that qualify the number a column
 	/// @tparam R Integer between 1 and 4 included that qualify the number a row
-	/// @tparam T Floating-point or signed integer scalar types
+	/// @tparam T Floating-point scalar types
 	/// @tparam Q Value from qualifier enum
 	///
 	/// @see <a href="http://www.opengl.org/sdk/docs/manglsl/xhtml/transpose.xml">GLSL transpose man page</a>
@@ -138,7 +135,7 @@ namespace glm {
 	///
 	/// @tparam C Integer between 1 and 4 included that qualify the number a column
 	/// @tparam R Integer between 1 and 4 included that qualify the number a row
-	/// @tparam T Floating-point or signed integer scalar types
+	/// @tparam T Floating-point scalar types
 	/// @tparam Q Value from qualifier enum
 	///
 	/// @see <a href="http://www.opengl.org/sdk/docs/manglsl/xhtml/determinant.xml">GLSL determinant man page</a>
@@ -150,7 +147,7 @@ namespace glm {
 	///
 	/// @tparam C Integer between 1 and 4 included that qualify the number a column
 	/// @tparam R Integer between 1 and 4 included that qualify the number a row
-	/// @tparam T Floating-point or signed integer scalar types
+	/// @tparam T Floating-point scalar types
 	/// @tparam Q Value from qualifier enum
 	///
 	/// @see <a href="http://www.opengl.org/sdk/docs/manglsl/xhtml/inverse.xml">GLSL inverse man page</a>

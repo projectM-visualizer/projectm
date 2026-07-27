@@ -1,12 +1,13 @@
 /// @ref gtc_packing
-/// @file glm/gtc/packing.inl
 
+#include "../ext/scalar_relational.hpp"
+#include "../ext/vector_relational.hpp"
 #include "../common.hpp"
-#include "../vector_relational.hpp"
 #include "../vec2.hpp"
 #include "../vec3.hpp"
 #include "../vec4.hpp"
 #include "../detail/type_half.hpp"
+#include "type_ptr.hpp"
 #include <cstring>
 #include <limits>
 
@@ -179,9 +180,16 @@ namespace detail
 //		return ((floatTo11bit(x) & ((1 << 11) - 1)) << 0) |  ((floatTo11bit(y) & ((1 << 11) - 1)) << 11) | ((floatTo10bit(z) & ((1 << 10) - 1)) << 22);
 //	}
 
+#if GLM_SILENT_WARNINGS == GLM_ENABLE
+#	if defined(__clang__)
+#		pragma clang diagnostic push
+#		pragma clang diagnostic ignored "-Wpadded"
+#	endif
+#endif
+
 	union u3u3u2
 	{
-		struct
+		struct Data
 		{
 			uint x : 3;
 			uint y : 3;
@@ -192,7 +200,7 @@ namespace detail
 
 	union u4u4
 	{
-		struct
+		struct Data
 		{
 			uint x : 4;
 			uint y : 4;
@@ -202,7 +210,7 @@ namespace detail
 
 	union u4u4u4u4
 	{
-		struct
+		struct Data
 		{
 			uint x : 4;
 			uint y : 4;
@@ -214,7 +222,7 @@ namespace detail
 
 	union u5u6u5
 	{
-		struct
+		struct Data
 		{
 			uint x : 5;
 			uint y : 6;
@@ -225,7 +233,7 @@ namespace detail
 
 	union u5u5u5u1
 	{
-		struct
+		struct Data
 		{
 			uint x : 5;
 			uint y : 5;
@@ -235,9 +243,15 @@ namespace detail
 		uint16 pack;
 	};
 
+#if GLM_SILENT_WARNINGS == GLM_ENABLE
+#	if defined(__clang__)
+#		pragma clang diagnostic pop
+#	endif
+#endif
+
 	union u10u10u10u2
 	{
-		struct
+		struct Data
 		{
 			uint x : 10;
 			uint y : 10;
@@ -249,7 +263,7 @@ namespace detail
 
 	union i10i10i10i2
 	{
-		struct
+		struct Data
 		{
 			int x : 10;
 			int y : 10;
@@ -261,7 +275,7 @@ namespace detail
 
 	union u9u9u9e5
 	{
-		struct
+		struct Data
 		{
 			uint x : 9;
 			uint y : 9;
@@ -282,14 +296,14 @@ namespace detail
 		{
 			int16 const Unpack(detail::toFloat16(v.x));
 			u16vec1 Packed;
-			memcpy(&Packed, &Unpack, sizeof(Packed));
+			memcpy(value_ptr(Packed), &Unpack, sizeof(Packed));
 			return Packed;
 		}
 
 		GLM_FUNC_QUALIFIER static vec<1, float, Q> unpack(vec<1, uint16, Q> const& v)
 		{
 			i16vec1 Unpack;
-			memcpy(&Unpack, &v, sizeof(Unpack));
+			memcpy(value_ptr(Unpack), value_ptr(v), sizeof(Unpack));
 			return vec<1, float, Q>(detail::toFloat32(v.x));
 		}
 	};
@@ -301,14 +315,14 @@ namespace detail
 		{
 			vec<2, int16, Q> const Unpack(detail::toFloat16(v.x), detail::toFloat16(v.y));
 			u16vec2 Packed;
-			memcpy(&Packed, &Unpack, sizeof(Packed));
+			memcpy(value_ptr(Packed), value_ptr(Unpack), sizeof(Packed));
 			return Packed;
 		}
 
 		GLM_FUNC_QUALIFIER static vec<2, float, Q> unpack(vec<2, uint16, Q> const& v)
 		{
 			i16vec2 Unpack;
-			memcpy(&Unpack, &v, sizeof(Unpack));
+			memcpy(value_ptr(Unpack), value_ptr(v), sizeof(Unpack));
 			return vec<2, float, Q>(detail::toFloat32(v.x), detail::toFloat32(v.y));
 		}
 	};
@@ -320,14 +334,14 @@ namespace detail
 		{
 			vec<3, int16, Q> const Unpack(detail::toFloat16(v.x), detail::toFloat16(v.y), detail::toFloat16(v.z));
 			u16vec3 Packed;
-			memcpy(&Packed, &Unpack, sizeof(Packed));
+			memcpy(value_ptr(Packed), value_ptr(Unpack), sizeof(Packed));
 			return Packed;
 		}
 
 		GLM_FUNC_QUALIFIER static vec<3, float, Q> unpack(vec<3, uint16, Q> const& v)
 		{
 			i16vec3 Unpack;
-			memcpy(&Unpack, &v, sizeof(Unpack));
+			memcpy(value_ptr(Unpack), &v, sizeof(Unpack));
 			return vec<3, float, Q>(detail::toFloat32(v.x), detail::toFloat32(v.y), detail::toFloat32(v.z));
 		}
 	};
@@ -339,15 +353,15 @@ namespace detail
 		{
 			vec<4, int16, Q> const Unpack(detail::toFloat16(v.x), detail::toFloat16(v.y), detail::toFloat16(v.z), detail::toFloat16(v.w));
 			u16vec4 Packed;
-			memcpy(&Packed, &Unpack, sizeof(Packed));
+			memcpy(value_ptr(Packed), value_ptr(Unpack), sizeof(Packed));
 			return Packed;
 		}
 
 		GLM_FUNC_QUALIFIER static vec<4, float, Q> unpack(vec<4, uint16, Q> const& v)
 		{
 			i16vec4 Unpack;
-			memcpy(&Unpack, &v, sizeof(Unpack));
-			return vec<4, float, Q>(detail::toFloat32(v.x), detail::toFloat32(v.y), detail::toFloat32(v.z), detail::toFloat32(v.w));
+			memcpy(value_ptr(Unpack), &v, sizeof(Unpack));
+			return vec<4, float, Q>(detail::toFloat32(Unpack.x), detail::toFloat32(Unpack.y), detail::toFloat32(Unpack.z), detail::toFloat32(Unpack.w));
 		}
 	};
 }//namespace detail
@@ -375,7 +389,7 @@ namespace detail
 	GLM_FUNC_QUALIFIER vec2 unpackUnorm2x8(uint16 p)
 	{
 		u8vec2 Unpack;
-		memcpy(&Unpack, &p, sizeof(Unpack));
+		memcpy(value_ptr(Unpack), &p, sizeof(Unpack));
 		return vec2(Unpack) * float(0.0039215686274509803921568627451); // 1 / 255
 	}
 
@@ -400,14 +414,14 @@ namespace detail
 	{
 		i8vec2 const Topack(round(clamp(v, -1.0f, 1.0f) * 127.0f));
 		uint16 Packed = 0;
-		memcpy(&Packed, &Topack, sizeof(Packed));
+		memcpy(&Packed, value_ptr(Topack), sizeof(Packed));
 		return Packed;
 	}
 
 	GLM_FUNC_QUALIFIER vec2 unpackSnorm2x8(uint16 p)
 	{
 		i8vec2 Unpack;
-		memcpy(&Unpack, &p, sizeof(Unpack));
+		memcpy(value_ptr(Unpack), &p, sizeof(Unpack));
 		return clamp(
 			vec2(Unpack) * 0.00787401574803149606299212598425f, // 1.0f / 127.0f
 			-1.0f, 1.0f);
@@ -435,7 +449,7 @@ namespace detail
 	GLM_FUNC_QUALIFIER vec4 unpackUnorm4x16(uint64 p)
 	{
 		u16vec4 Unpack;
-		memcpy(&Unpack, &p, sizeof(Unpack));
+		memcpy(value_ptr(Unpack), &p, sizeof(Unpack));
 		return vec4(Unpack) * 1.5259021896696421759365224689097e-5f; // 1.0 / 65535.0
 	}
 
@@ -460,14 +474,14 @@ namespace detail
 	{
 		i16vec4 const Topack(round(clamp(v ,-1.0f, 1.0f) * 32767.0f));
 		uint64 Packed = 0;
-		memcpy(&Packed, &Topack, sizeof(Packed));
+		memcpy(&Packed, value_ptr(Topack), sizeof(Packed));
 		return Packed;
 	}
 
 	GLM_FUNC_QUALIFIER vec4 unpackSnorm4x16(uint64 p)
 	{
 		i16vec4 Unpack;
-		memcpy(&Unpack, &p, sizeof(Unpack));
+		memcpy(value_ptr(Unpack), &p, sizeof(Unpack));
 		return clamp(
 			vec4(Unpack) * 3.0518509475997192297128208258309e-5f, //1.0f / 32767.0f,
 			-1.0f, 1.0f);
@@ -496,14 +510,14 @@ namespace detail
 			detail::toFloat16(v.z),
 			detail::toFloat16(v.w));
 		uint64 Packed = 0;
-		memcpy(&Packed, &Unpack, sizeof(Packed));
+		memcpy(&Packed, value_ptr(Unpack), sizeof(Packed));
 		return Packed;
 	}
 
 	GLM_FUNC_QUALIFIER glm::vec4 unpackHalf4x16(uint64 v)
 	{
 		i16vec4 Unpack;
-		memcpy(&Unpack, &v, sizeof(Unpack));
+		memcpy(value_ptr(Unpack), &v, sizeof(Unpack));
 		return vec4(
 			detail::toFloat32(Unpack.x),
 			detail::toFloat32(Unpack.y),
@@ -620,7 +634,7 @@ namespace detail
 
 		float const ExpSharedP = max(-15.f - 1.f, floor(log2(MaxColor))) + 1.0f + 15.f;
 		float const MaxShared = floor(MaxColor / pow(2.0f, (ExpSharedP - 15.f - 9.f)) + 0.5f);
-		float const ExpShared = detail::compute_equal<float>::call(MaxShared, pow(2.0f, 9.0f)) ? ExpSharedP + 1.0f : ExpSharedP;
+		float const ExpShared = equal(MaxShared, pow(2.0f, 9.0f), epsilon<float>()) ? ExpSharedP + 1.0f : ExpSharedP;
 
 		uvec3 const ColorComp(floor(Color / pow(2.f, (ExpShared - 15.f - 9.f)) + 0.5f));
 
@@ -637,7 +651,7 @@ namespace detail
 		detail::u9u9u9e5 Unpack;
 		Unpack.pack = v;
 
-		return vec3(Unpack.data.x, Unpack.data.y, Unpack.data.z) * pow(2.0f, Unpack.data.w - 15.f - 9.f);
+		return vec3(Unpack.data.x, Unpack.data.y, Unpack.data.z) * pow(2.0f, static_cast<float>(Unpack.data.w) - 15.f - 9.f);
 	}
 
 	// Based on Brian Karis http://graphicrants.blogspot.fr/2009/04/rgbm-color-encoding.html
@@ -683,7 +697,7 @@ namespace detail
 		GLM_STATIC_ASSERT(std::numeric_limits<uintType>::is_integer, "uintType must be an integer type");
 		GLM_STATIC_ASSERT(std::numeric_limits<floatType>::is_iec559, "floatType must be a floating point type");
 
-		return vec<L, float, Q>(v) * (static_cast<floatType>(1) / static_cast<floatType>(std::numeric_limits<uintType>::max()));
+		return vec<L, floatType, Q>(v) * (static_cast<floatType>(1) / static_cast<floatType>(std::numeric_limits<uintType>::max()));
 	}
 
 	template<typename intType, length_t L, typename floatType, qualifier Q>
@@ -805,7 +819,7 @@ namespace detail
 	GLM_FUNC_QUALIFIER i8vec2 unpackInt2x8(int16 p)
 	{
 		i8vec2 Unpack;
-		memcpy(&Unpack, &p, sizeof(Unpack));
+		memcpy(value_ptr(Unpack), &p, sizeof(Unpack));
 		return Unpack;
 	}
 
@@ -819,7 +833,7 @@ namespace detail
 	GLM_FUNC_QUALIFIER u8vec2 unpackUint2x8(uint16 p)
 	{
 		u8vec2 Unpack;
-		memcpy(&Unpack, &p, sizeof(Unpack));
+		memcpy(value_ptr(Unpack), &p, sizeof(Unpack));
 		return Unpack;
 	}
 
@@ -833,7 +847,7 @@ namespace detail
 	GLM_FUNC_QUALIFIER i8vec4 unpackInt4x8(int32 p)
 	{
 		i8vec4 Unpack;
-		memcpy(&Unpack, &p, sizeof(Unpack));
+		memcpy(value_ptr(Unpack), &p, sizeof(Unpack));
 		return Unpack;
 	}
 
@@ -847,7 +861,7 @@ namespace detail
 	GLM_FUNC_QUALIFIER u8vec4 unpackUint4x8(uint32 p)
 	{
 		u8vec4 Unpack;
-		memcpy(&Unpack, &p, sizeof(Unpack));
+		memcpy(value_ptr(Unpack), &p, sizeof(Unpack));
 		return Unpack;
 	}
 
@@ -861,7 +875,7 @@ namespace detail
 	GLM_FUNC_QUALIFIER i16vec2 unpackInt2x16(int p)
 	{
 		i16vec2 Unpack;
-		memcpy(&Unpack, &p, sizeof(Unpack));
+		memcpy(value_ptr(Unpack), &p, sizeof(Unpack));
 		return Unpack;
 	}
 
@@ -875,7 +889,7 @@ namespace detail
 	GLM_FUNC_QUALIFIER i16vec4 unpackInt4x16(int64 p)
 	{
 		i16vec4 Unpack;
-		memcpy(&Unpack, &p, sizeof(Unpack));
+		memcpy(value_ptr(Unpack), &p, sizeof(Unpack));
 		return Unpack;
 	}
 
@@ -889,7 +903,7 @@ namespace detail
 	GLM_FUNC_QUALIFIER u16vec2 unpackUint2x16(uint p)
 	{
 		u16vec2 Unpack;
-		memcpy(&Unpack, &p, sizeof(Unpack));
+		memcpy(value_ptr(Unpack), &p, sizeof(Unpack));
 		return Unpack;
 	}
 
@@ -903,7 +917,7 @@ namespace detail
 	GLM_FUNC_QUALIFIER u16vec4 unpackUint4x16(uint64 p)
 	{
 		u16vec4 Unpack;
-		memcpy(&Unpack, &p, sizeof(Unpack));
+		memcpy(value_ptr(Unpack), &p, sizeof(Unpack));
 		return Unpack;
 	}
 
@@ -917,7 +931,7 @@ namespace detail
 	GLM_FUNC_QUALIFIER i32vec2 unpackInt2x32(int64 p)
 	{
 		i32vec2 Unpack;
-		memcpy(&Unpack, &p, sizeof(Unpack));
+		memcpy(value_ptr(Unpack), &p, sizeof(Unpack));
 		return Unpack;
 	}
 
@@ -931,7 +945,7 @@ namespace detail
 	GLM_FUNC_QUALIFIER u32vec2 unpackUint2x32(uint64 p)
 	{
 		u32vec2 Unpack;
-		memcpy(&Unpack, &p, sizeof(Unpack));
+		memcpy(value_ptr(Unpack), &p, sizeof(Unpack));
 		return Unpack;
 	}
 }//namespace glm

@@ -14,16 +14,14 @@
 
 #ifndef GLM_ENABLE_EXPERIMENTAL
 #	error "GLM: GLM_GTX_type_trait is an experimental extension and may change in the future. Use #define GLM_ENABLE_EXPERIMENTAL before including it, if you really want to use it."
+#elif GLM_MESSAGES == GLM_ENABLE && !defined(GLM_EXT_INCLUDED)
+#	pragma message("GLM: GLM_GTX_type_trait extension included")
 #endif
 
 // Dependency:
 #include "../detail/qualifier.hpp"
 #include "../gtc/quaternion.hpp"
 #include "../gtx/dual_quaternion.hpp"
-
-#if GLM_MESSAGES == GLM_MESSAGES_ENABLED && !defined(GLM_EXT_INCLUDED)
-#	pragma message("GLM: GLM_GTX_type_trait extension included")
-#endif
 
 namespace glm
 {
@@ -62,7 +60,7 @@ namespace glm
 	};
 
 	template<typename T, qualifier Q>
-	struct type<tquat<T, Q> >
+	struct type<qua<T, Q> >
 	{
 		static bool const is_vec = false;
 		static bool const is_mat = false;

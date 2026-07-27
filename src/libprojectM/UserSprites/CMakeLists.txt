@@ -34,7 +34,7 @@ target_link_libraries(UserSprites
         libprojectM::API # For export header
         PUBLIC
         MilkdropPreset
-        GLM::GLM
+        glm::glm
         )
 
 if(BUILD_SHARED_LIBS)

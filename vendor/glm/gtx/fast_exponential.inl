@@ -1,5 +1,4 @@
 /// @ref gtx_fast_exponential
-/// @file glm/gtx/fast_exponential.inl
 
 namespace glm
 {
@@ -84,7 +83,7 @@ namespace glm
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER vec<L, T, Q> fastExp(vec<L, T, Q> const& x)
 	{
-		return detail::functor1<L, T, T, Q>::call(fastExp, x);
+		return detail::functor1<vec, L, T, T, Q>::call(fastExp, x);
 	}
 
 	// fastLog
@@ -106,32 +105,32 @@ namespace glm
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER vec<L, T, Q> fastLog(vec<L, T, Q> const& x)
 	{
-		return detail::functor1<L, T, T, Q>::call(fastLog, x);
+		return detail::functor1<vec, L, T, T, Q>::call(fastLog, x);
 	}
 
 	//fastExp2, ln2 = 0.69314718055994530941723212145818f
 	template<typename genType>
 	GLM_FUNC_QUALIFIER genType fastExp2(genType x)
 	{
-		return fastExp(0.69314718055994530941723212145818f * x);
+		return fastExp(static_cast<genType>(0.69314718055994530941723212145818) * x);
 	}
 
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER vec<L, T, Q> fastExp2(vec<L, T, Q> const& x)
 	{
-		return detail::functor1<L, T, T, Q>::call(fastExp2, x);
+		return detail::functor1<vec, L, T, T, Q>::call(fastExp2, x);
 	}
 
 	// fastLog2, ln2 = 0.69314718055994530941723212145818f
 	template<typename genType>
 	GLM_FUNC_QUALIFIER genType fastLog2(genType x)
 	{
-		return fastLog(x) / 0.69314718055994530941723212145818f;
+		return fastLog(x) / static_cast<genType>(0.69314718055994530941723212145818);
 	}
 
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER vec<L, T, Q> fastLog2(vec<L, T, Q> const& x)
 	{
-		return detail::functor1<L, T, T, Q>::call(fastLog2, x);
+		return detail::functor1<vec, L, T, T, Q>::call(fastLog2, x);
 	}
 }//namespace glm

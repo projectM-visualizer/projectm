@@ -6,15 +6,16 @@
 /// @defgroup core_func_integer Integer functions
 /// @ingroup core
 ///
-/// Include <glm/integer.hpp> to use these core features.
+/// Provides GLSL functions on integer types
 ///
 /// These all operate component-wise. The description is per component.
 /// The notation [a, b] means the set of bits from bit-number a through bit-number
 /// b, inclusive. The lowest-order bit is bit 0.
+///
+/// Include <glm/integer.hpp> to use these core features.
 
 #pragma once
 
-#include "detail/setup.hpp"
 #include "detail/qualifier.hpp"
 #include "common.hpp"
 #include "vector_relational.hpp"
@@ -61,7 +62,7 @@ namespace glm
 	/// @see <a href="http://www.opengl.org/sdk/docs/manglsl/xhtml/umulExtended.xml">GLSL umulExtended man page</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 8.8 Integer Functions</a>
 	template<length_t L, qualifier Q>
-	GLM_FUNC_DECL void umulExtended(
+	GLM_FUNC_DISCARD_DECL void umulExtended(
 		vec<L, uint, Q> const& x,
 		vec<L, uint, Q> const& y,
 		vec<L, uint, Q> & msb,
@@ -76,7 +77,7 @@ namespace glm
 	/// @see <a href="http://www.opengl.org/sdk/docs/manglsl/xhtml/imulExtended.xml">GLSL imulExtended man page</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 8.8 Integer Functions</a>
 	template<length_t L, qualifier Q>
-	GLM_FUNC_DECL void imulExtended(
+	GLM_FUNC_DISCARD_DECL void imulExtended(
 		vec<L, int, Q> const& x,
 		vec<L, int, Q> const& y,
 		vec<L, int, Q> & msb,

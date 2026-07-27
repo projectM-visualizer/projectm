@@ -17,9 +17,7 @@
 
 #ifndef GLM_ENABLE_EXPERIMENTAL
 #	error "GLM: GLM_GTX_polar_coordinates is an experimental extension and may change in the future. Use #define GLM_ENABLE_EXPERIMENTAL before including it, if you really want to use it."
-#endif
-
-#if GLM_MESSAGES == GLM_MESSAGES_ENABLED && !defined(GLM_EXT_INCLUDED)
+#elif GLM_MESSAGES == GLM_ENABLE && !defined(GLM_EXT_INCLUDED)
 #	pragma message("GLM: GLM_GTX_polar_coordinates extension included")
 #endif
 
@@ -28,7 +26,7 @@ namespace glm
 	/// @addtogroup gtx_polar_coordinates
 	/// @{
 
-	/// Convert Euclidean to Polar coordinates, x is the xz distance, y, the latitude and z the longitude.
+	/// Convert Euclidean to Polar coordinates, x is the latitude, y the longitude and z the xz distance.
 	///
 	/// @see gtx_polar_coordinates
 	template<typename T, qualifier Q>

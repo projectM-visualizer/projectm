@@ -1,17 +1,16 @@
 /// @ref gtx_associated_min_max
-/// @file glm/gtx/associated_min_max.inl
 
 namespace glm{
 
 // Min comparison between 2 variables
-template<typename T, typename U, qualifier Q>
+template<typename T, typename U>
 GLM_FUNC_QUALIFIER U associatedMin(T x, U a, T y, U b)
 {
 	return x < y ? a : b;
 }
 
 template<length_t L, typename T, typename U, qualifier Q>
-GLM_FUNC_QUALIFIER vec<2, U, Q> associatedMin
+GLM_FUNC_QUALIFIER vec<L, U, Q> associatedMin
 (
 	vec<L, T, Q> const& x, vec<L, U, Q> const& a,
 	vec<L, T, Q> const& y, vec<L, U, Q> const& b
@@ -87,7 +86,7 @@ GLM_FUNC_QUALIFIER U associatedMin
 )
 {
 	T Test1 = min(x, y);
-	T Test2 = min(z, w);;
+	T Test2 = min(z, w);
 	U Result1 = x < y ? a : b;
 	U Result2 = z < w ? c : d;
 	U Result = Test1 < Test2 ? Result1 : Result2;
@@ -153,7 +152,7 @@ GLM_FUNC_QUALIFIER vec<L, U, Q> associatedMin
 	for(length_t i = 0, n = Result.length(); i < n; ++i)
 	{
 		T Test1 = min(x[i], y[i]);
-		T Test2 = min(z[i], w[i]);;
+		T Test2 = min(z[i], w[i]);
 		U Result1 = x[i] < y[i] ? a : b;
 		U Result2 = z[i] < w[i] ? c : d;
 		Result[i] = Test1 < Test2 ? Result1 : Result2;
@@ -170,7 +169,7 @@ GLM_FUNC_QUALIFIER U associatedMax(T x, U a, T y, U b)
 
 // Max comparison between 2 variables
 template<length_t L, typename T, typename U, qualifier Q>
-GLM_FUNC_QUALIFIER vec<2, U, Q> associatedMax
+GLM_FUNC_QUALIFIER vec<L, U, Q> associatedMax
 (
 	vec<L, T, Q> const& x, vec<L, U, Q> const& a,
 	vec<L, T, Q> const& y, vec<L, U, Q> const& b
@@ -279,7 +278,7 @@ GLM_FUNC_QUALIFIER U associatedMax
 )
 {
 	T Test1 = max(x, y);
-	T Test2 = max(z, w);;
+	T Test2 = max(z, w);
 	U Result1 = x > y ? a : b;
 	U Result2 = z > w ? c : d;
 	U Result = Test1 > Test2 ? Result1 : Result2;
@@ -345,7 +344,7 @@ GLM_FUNC_QUALIFIER vec<L, U, Q> associatedMax
 	for(length_t i = 0, n = Result.length(); i < n; ++i)
 	{
 		T Test1 = max(x[i], y[i]);
-		T Test2 = max(z[i], w[i]);;
+		T Test2 = max(z[i], w[i]);
 		U Result1 = x[i] > y[i] ? a : b;
 		U Result2 = z[i] > w[i] ? c : d;
 		Result[i] = Test1 > Test2 ? Result1 : Result2;

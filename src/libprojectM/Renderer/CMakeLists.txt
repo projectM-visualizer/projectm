@@ -85,7 +85,7 @@ target_link_libraries(Renderer
         PRIVATE
         libprojectM::API # For export header
         PUBLIC
-        GLM::GLM
+        glm::glm
         hlslparser
         stb_image
         glad

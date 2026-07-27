@@ -1,6 +1,3 @@
-/// @ref gtx_compatibility
-/// @file glm/gtx/compatibility.inl
-
 #include <limits>
 
 namespace glm
@@ -13,7 +10,7 @@ namespace glm
 #		if GLM_HAS_CXX11_STL
 			return std::isfinite(x) != 0;
 #		elif GLM_COMPILER & GLM_COMPILER_VC
-			return _finite(x);
+			return _finite(x) != 0;
 #		elif GLM_COMPILER & GLM_COMPILER_GCC && GLM_PLATFORM & GLM_PLATFORM_ANDROID
 			return _isfinite(x) != 0;
 #		else
@@ -54,6 +51,17 @@ namespace glm
 	template<typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER vec<4, bool, Q> isfinite(
 		vec<4, T, Q> const& x)
+	{
+		return vec<4, bool, Q>(
+			isfinite(x.x),
+			isfinite(x.y),
+			isfinite(x.z),
+			isfinite(x.w));
+	}
+
+	template<typename T, qualifier Q>
+	GLM_FUNC_QUALIFIER vec<4, bool, Q> isfinite(
+		qua<T, Q> const& x)
 	{
 		return vec<4, bool, Q>(
 			isfinite(x.x),

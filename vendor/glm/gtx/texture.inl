@@ -1,5 +1,4 @@
 /// @ref gtx_texture
-/// @file glm/gtx/texture.inl
 
 namespace glm
 {
@@ -12,7 +11,7 @@ namespace glm
 	template <typename T>
 	inline T levels(T Extent)
 	{
-		return vec<1, T, defaultp>(Extent).x;
+		return levels(vec<1, T, defaultp>(Extent));
 	}
 }//namespace glm
 

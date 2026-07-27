@@ -16,12 +16,14 @@
 #pragma once
 
 // Dependencies
+#include "../ext/scalar_int_sized.hpp"
+#include "../ext/scalar_uint_sized.hpp"
 #include "../detail/qualifier.hpp"
-#include "../detail/type_int.hpp"
 #include "../detail/_vectorize.hpp"
+#include "type_precision.hpp"
 #include <limits>
 
-#if GLM_MESSAGES == GLM_MESSAGES_ENABLED && !defined(GLM_EXT_INCLUDED)
+#if GLM_MESSAGES == GLM_ENABLE && !defined(GLM_EXT_INCLUDED)
 #	pragma message("GLM: GLM_GTC_bitfield extension included")
 #endif
 
@@ -125,6 +127,18 @@ namespace glm
 	GLM_FUNC_DECL uint16 bitfieldInterleave(uint8 x, uint8 y);
 
 	/// Interleaves the bits of x and y.
+	/// The first bit is the first bit of v.x followed by the first bit of v.y.
+	/// The other bits are interleaved following the previous sequence.
+	///
+	/// @see gtc_bitfield
+	GLM_FUNC_DECL uint16 bitfieldInterleave(u8vec2 const& v);
+
+	/// Deinterleaves the bits of x.
+	///
+	/// @see gtc_bitfield
+	GLM_FUNC_DECL glm::u8vec2 bitfieldDeinterleave(glm::uint16 x);
+
+	/// Interleaves the bits of x and y.
 	/// The first bit is the first bit of x followed by the first bit of y.
 	/// The other bits are interleaved following the previous sequence.
 	///
@@ -139,6 +153,18 @@ namespace glm
 	GLM_FUNC_DECL uint32 bitfieldInterleave(uint16 x, uint16 y);
 
 	/// Interleaves the bits of x and y.
+	/// The first bit is the first bit of v.x followed by the first bit of v.y.
+	/// The other bits are interleaved following the previous sequence.
+	///
+	/// @see gtc_bitfield
+	GLM_FUNC_DECL uint32 bitfieldInterleave(u16vec2 const& v);
+
+	/// Deinterleaves the bits of x.
+	///
+	/// @see gtc_bitfield
+	GLM_FUNC_DECL glm::u16vec2 bitfieldDeinterleave(glm::uint32 x);
+
+	/// Interleaves the bits of x and y.
 	/// The first bit is the first bit of x followed by the first bit of y.
 	/// The other bits are interleaved following the previous sequence.
 	///
@@ -151,6 +177,18 @@ namespace glm
 	///
 	/// @see gtc_bitfield
 	GLM_FUNC_DECL uint64 bitfieldInterleave(uint32 x, uint32 y);
+
+	/// Interleaves the bits of x and y.
+	/// The first bit is the first bit of v.x followed by the first bit of v.y.
+	/// The other bits are interleaved following the previous sequence.
+	///
+	/// @see gtc_bitfield
+	GLM_FUNC_DECL uint64 bitfieldInterleave(u32vec2 const& v);
+
+	/// Deinterleaves the bits of x.
+	///
+	/// @see gtc_bitfield
+	GLM_FUNC_DECL glm::u32vec2 bitfieldDeinterleave(glm::uint64 x);
 
 	/// Interleaves the bits of x, y and z.
 	/// The first bit is the first bit of x followed by the first bit of y and the first bit of z.

@@ -1,5 +1,4 @@
 /// @ref gtx_fast_square_root
-/// @file glm/gtx/fast_square_root.inl
 
 namespace glm
 {
@@ -7,7 +6,7 @@ namespace glm
 	template<typename genType>
 	GLM_FUNC_QUALIFIER genType fastSqrt(genType x)
 	{
-		GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559, "'fastSqrt' only accept floating-point input");
+		GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559 || GLM_CONFIG_UNRESTRICTED_FLOAT, "'fastSqrt' only accept floating-point input");
 
 		return genType(1) / fastInverseSqrt(x);
 	}
@@ -15,19 +14,14 @@ namespace glm
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER vec<L, T, Q> fastSqrt(vec<L, T, Q> const& x)
 	{
-		return detail::functor1<L, T, T, Q>::call(fastSqrt, x);
+		return detail::functor1<vec, L, T, T, Q>::call(fastSqrt, x);
 	}
 
 	// fastInversesqrt
 	template<typename genType>
 	GLM_FUNC_QUALIFIER genType fastInverseSqrt(genType x)
 	{
-#		ifdef __CUDACC__ // Wordaround for a CUDA compiler bug up to CUDA6
-			vec<1, T, Q> tmp(detail::compute_inversesqrt<tvec1, genType, lowp, detail::is_aligned<lowp>::value>::call(vec<1, genType, lowp>(x)));
-			return tmp.x;
-#		else
-			return detail::compute_inversesqrt<1, genType, lowp, detail::is_aligned<lowp>::value>::call(vec<1, genType, lowp>(x)).x;
-#		endif
+		return detail::compute_inversesqrt<1, genType, lowp, detail::is_aligned<lowp>::value>::call(vec<1, genType, lowp>(x)).x;
 	}
 
 	template<length_t L, typename T, qualifier Q>
@@ -40,7 +34,7 @@ namespace glm
 	template<typename genType>
 	GLM_FUNC_QUALIFIER genType fastLength(genType x)
 	{
-		GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559, "'fastLength' only accept floating-point inputs");
+		GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559 || GLM_CONFIG_UNRESTRICTED_FLOAT, "'fastLength' only accept floating-point inputs");
 
 		return abs(x);
 	}
@@ -48,7 +42,7 @@ namespace glm
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER T fastLength(vec<L, T, Q> const& x)
 	{
-		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_iec559, "'fastLength' only accept floating-point inputs");
+		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_iec559 || GLM_CONFIG_UNRESTRICTED_FLOAT, "'fastLength' only accept floating-point inputs");
 
 		return fastSqrt(dot(x, x));
 	}

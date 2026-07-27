@@ -11,8 +11,7 @@
 ///
 /// Handles the interaction between pointers and vector, matrix types.
 ///
-/// This extension defines an overloaded function, glm::value_ptr, which
-/// takes any of the \ref core_template "core template types". It returns
+/// This extension defines an overloaded function, glm::value_ptr. It returns
 /// a pointer to the memory layout of the object. Matrix types store their values
 /// in column-major order.
 ///
@@ -51,7 +50,7 @@
 #include "../mat4x4.hpp"
 #include <cstring>
 
-#if GLM_MESSAGES == GLM_MESSAGES_ENABLED && !defined(GLM_EXT_INCLUDED)
+#if GLM_MESSAGES == GLM_ENABLE && !defined(GLM_EXT_INCLUDED)
 #	pragma message("GLM: GLM_GTC_type_ptr extension included")
 #endif
 
@@ -223,7 +222,7 @@ namespace glm
 	/// Build a quaternion from a pointer.
 	/// @see gtc_type_ptr
 	template<typename T>
-	GLM_FUNC_DECL tquat<T, defaultp> make_quat(T const * const ptr);
+	GLM_FUNC_DECL qua<T, defaultp> make_quat(T const * const ptr);
 
 	/// @}
 }//namespace glm

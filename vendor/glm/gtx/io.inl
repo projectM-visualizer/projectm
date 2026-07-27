@@ -1,11 +1,17 @@
 /// @ref gtx_io
-/// @file glm/gtx/io.inl
 /// @author Jan P Springer (regnirpsj@gmail.com)
 
 #include <iomanip>                  // std::fixed, std::setfill<>, std::setprecision, std::right, std::setw
 #include <ostream>                  // std::basic_ostream<>
 #include "../gtc/matrix_access.hpp" // glm::col, glm::row
 #include "../gtx/type_trait.hpp"    // glm::type<>
+
+#if GLM_COMPILER & GLM_COMPILER_CLANG
+#	pragma clang diagnostic push
+#	pragma clang diagnostic ignored "-Wpadded"
+#	pragma clang diagnostic ignored "-Wshorten-64-to-32"
+#	pragma clang diagnostic ignored "-Wglobal-constructors"
+#endif
 
 namespace glm{
 namespace io
@@ -168,11 +174,11 @@ namespace detail
 			{
 				io::basic_state_saver<CTy> const bss(os);
 
-				os << std::fixed << std::right << std::setprecision(fmt.precision) << std::setfill(fmt.space) << fmt.delim_left;
+				os << std::fixed << std::right << std::setprecision(static_cast<std::streamsize>(fmt.precision)) << std::setfill(fmt.space) << fmt.delim_left;
 
 				for(length_t i(0); i < components; ++i)
 				{
-					os << std::setw(fmt.width) << a[i];
+					os << std::setw(static_cast<int>(fmt.width)) << a[i];
 					if(components-1 != i)
 						os << fmt.separator;
 				}
@@ -196,7 +202,7 @@ namespace detail
 }//namespace detail
 
 	template<typename CTy, typename CTr, typename T, qualifier Q>
-	GLM_FUNC_QUALIFIER std::basic_ostream<CTy,CTr>& operator<<(std::basic_ostream<CTy,CTr>& os, tquat<T, Q> const& a)
+	GLM_FUNC_QUALIFIER std::basic_ostream<CTy,CTr>& operator<<(std::basic_ostream<CTy,CTr>& os, qua<T, Q> const& a)
 	{
 		return detail::print_vector_on(os, a);
 	}
@@ -388,6 +394,7 @@ namespace detail
 
 				switch(fmt.order)
 				{
+					default:
 					case io::column_major:
 					{
 						for(length_t i(0); i < rows; ++i)
@@ -439,3 +446,8 @@ namespace detail
 		return detail::print_matrix_pair_on(os, a);
 	}
 }//namespace glm
+
+#if GLM_COMPILER & GLM_COMPILER_CLANG
+#	pragma clang diagnostic pop
+#endif
+

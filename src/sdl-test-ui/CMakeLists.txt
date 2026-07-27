@@ -19,7 +19,7 @@ add_executable(projectM-Test-UI
 target_link_libraries(projectM-Test-UI
         PRIVATE
         libprojectM::playlist
-        GLM::GLM
+        glm::glm
         SDL2::SDL2
         SDL2::SDL2main
         ${CMAKE_DL_LIBS}

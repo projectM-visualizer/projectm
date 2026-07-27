@@ -1,11 +1,5 @@
 /// @ref core
-/// @file glm/detail/func_integer.inl
 
-#include "../ext/vec1.hpp"
-#include "type_vec2.hpp"
-#include "type_vec3.hpp"
-#include "type_vec4.hpp"
-#include "type_int.hpp"
 #include "_vectorize.hpp"
 #if(GLM_ARCH & GLM_ARCH_X86 && GLM_COMPILER & GLM_COMPILER_VC)
 #	include <intrin.h>
@@ -15,9 +9,11 @@
 
 #if !GLM_HAS_EXTENDED_INTEGER_TYPE
 #	if GLM_COMPILER & GLM_COMPILER_GCC
+#		pragma GCC diagnostic push
 #		pragma GCC diagnostic ignored "-Wlong-long"
 #	endif
 #	if (GLM_COMPILER & GLM_COMPILER_CLANG)
+#		pragma clang diagnostic push
 #		pragma clang diagnostic ignored "-Wc++11-long-long"
 #	endif
 #endif
@@ -153,7 +149,7 @@ namespace detail
 		{
 			GLM_FUNC_QUALIFIER static vec<L, int, Q> call(vec<L, T, Q> const& x)
 			{
-				return detail::functor1<L, int, T, Q>::call(compute_findMSB_32, x);
+				return detail::functor1<vec, L, int, T, Q>::call(compute_findMSB_32, x);
 			}
 		};
 
@@ -171,7 +167,7 @@ namespace detail
 		{
 			GLM_FUNC_QUALIFIER static vec<L, int, Q> call(vec<L, T, Q> const& x)
 			{
-				return detail::functor1<L, int, T, Q>::call(compute_findMSB_64, x);
+				return detail::functor1<vec, L, int, T, Q>::call(compute_findMSB_64, x);
 			}
 		};
 #		endif
@@ -181,80 +177,70 @@ namespace detail
 	// uaddCarry
 	GLM_FUNC_QUALIFIER uint uaddCarry(uint const& x, uint const& y, uint & Carry)
 	{
-		uint64 const Value64(static_cast<uint64>(x) + static_cast<uint64>(y));
-		uint64 const Max32((static_cast<uint64>(1) << static_cast<uint64>(32)) - static_cast<uint64>(1));
+		detail::uint64 const Value64(static_cast<detail::uint64>(x) + static_cast<detail::uint64>(y));
+		detail::uint64 const Max32((static_cast<detail::uint64>(1) << static_cast<detail::uint64>(32)) - static_cast<detail::uint64>(1));
 		Carry = Value64 > Max32 ? 1u : 0u;
-		return static_cast<uint32>(Value64 % (Max32 + static_cast<uint64>(1)));
+		return static_cast<uint>(Value64 % (Max32 + static_cast<detail::uint64>(1)));
 	}
 
 	template<length_t L, qualifier Q>
 	GLM_FUNC_QUALIFIER vec<L, uint, Q> uaddCarry(vec<L, uint, Q> const& x, vec<L, uint, Q> const& y, vec<L, uint, Q>& Carry)
 	{
-		vec<L, uint64, Q> Value64(vec<L, uint64, Q>(x) + vec<L, uint64, Q>(y));
-		vec<L, uint64, Q> Max32((static_cast<uint64>(1) << static_cast<uint64>(32)) - static_cast<uint64>(1));
-		Carry = mix(vec<L, uint32, Q>(0), vec<L, uint32, Q>(1), greaterThan(Value64, Max32));
-		return vec<L, uint32, Q>(Value64 % (Max32 + static_cast<uint64>(1)));
+		vec<L, detail::uint64, Q> Value64(vec<L, detail::uint64, Q>(x) + vec<L, detail::uint64, Q>(y));
+		vec<L, detail::uint64, Q> Max32((static_cast<detail::uint64>(1) << static_cast<detail::uint64>(32)) - static_cast<detail::uint64>(1));
+		Carry = mix(vec<L, uint, Q>(0), vec<L, uint, Q>(1), greaterThan(Value64, Max32));
+		return vec<L, uint, Q>(Value64 % (Max32 + static_cast<detail::uint64>(1)));
 	}
 
 	// usubBorrow
 	GLM_FUNC_QUALIFIER uint usubBorrow(uint const& x, uint const& y, uint & Borrow)
 	{
-		GLM_STATIC_ASSERT(sizeof(uint) == sizeof(uint32), "uint and uint32 size mismatch");
-
-		Borrow = x >= y ? static_cast<uint32>(0) : static_cast<uint32>(1);
-		if(y >= x)
-			return y - x;
+		Borrow = x >= y ? static_cast<uint>(0) : static_cast<uint>(1);
+		if(x >= y)
+			return x - y;
 		else
-			return static_cast<uint32>((static_cast<int64>(1) << static_cast<int64>(32)) + (static_cast<int64>(y) - static_cast<int64>(x)));
+			return static_cast<uint>((static_cast<detail::int64>(1) << static_cast<detail::int64>(32)) + (static_cast<detail::int64>(x) - static_cast<detail::int64>(y)));
 	}
 
 	template<length_t L, qualifier Q>
 	GLM_FUNC_QUALIFIER vec<L, uint, Q> usubBorrow(vec<L, uint, Q> const& x, vec<L, uint, Q> const& y, vec<L, uint, Q>& Borrow)
 	{
 		Borrow = mix(vec<L, uint, Q>(1), vec<L, uint, Q>(0), greaterThanEqual(x, y));
-		vec<L, uint, Q> const YgeX(y - x);
-		vec<L, uint, Q> const XgeY(vec<L, uint32, Q>((static_cast<int64>(1) << static_cast<int64>(32)) + (vec<L, int64, Q>(y) - vec<L, int64, Q>(x))));
-		return mix(XgeY, YgeX, greaterThanEqual(y, x));
+		vec<L, uint, Q> const XgeY(x - y);
+		vec<L, uint, Q> const YgX(vec<L, uint, Q>((static_cast<detail::int64>(1) << static_cast<detail::int64>(32)) + (vec<L, detail::int64, Q>(x) - vec<L, detail::int64, Q>(y))));
+		return mix(YgX, XgeY, greaterThanEqual(x, y));
 	}
 
 	// umulExtended
 	GLM_FUNC_QUALIFIER void umulExtended(uint const& x, uint const& y, uint & msb, uint & lsb)
 	{
-		GLM_STATIC_ASSERT(sizeof(uint) == sizeof(uint32), "uint and uint32 size mismatch");
-
-		uint64 Value64 = static_cast<uint64>(x) * static_cast<uint64>(y);
-		msb = static_cast<uint>(Value64 >> static_cast<uint64>(32));
+		detail::uint64 Value64 = static_cast<detail::uint64>(x) * static_cast<detail::uint64>(y);
+		msb = static_cast<uint>(Value64 >> static_cast<detail::uint64>(32));
 		lsb = static_cast<uint>(Value64);
 	}
 
 	template<length_t L, qualifier Q>
 	GLM_FUNC_QUALIFIER void umulExtended(vec<L, uint, Q> const& x, vec<L, uint, Q> const& y, vec<L, uint, Q>& msb, vec<L, uint, Q>& lsb)
 	{
-		GLM_STATIC_ASSERT(sizeof(uint) == sizeof(uint32), "uint and uint32 size mismatch");
-
-		vec<L, uint64, Q> Value64(vec<L, uint64, Q>(x) * vec<L, uint64, Q>(y));
-		msb = vec<L, uint32, Q>(Value64 >> static_cast<uint64>(32));
-		lsb = vec<L, uint32, Q>(Value64);
+		vec<L, detail::uint64, Q> Value64(vec<L, detail::uint64, Q>(x) * vec<L, detail::uint64, Q>(y));
+		msb = vec<L, uint, Q>(Value64 >> static_cast<detail::uint64>(32));
+		lsb = vec<L, uint, Q>(Value64);
 	}
 
 	// imulExtended
 	GLM_FUNC_QUALIFIER void imulExtended(int x, int y, int& msb, int& lsb)
 	{
-		GLM_STATIC_ASSERT(sizeof(int) == sizeof(int32), "int and int32 size mismatch");
-
-		int64 Value64 = static_cast<int64>(x) * static_cast<int64>(y);
-		msb = static_cast<int>(Value64 >> static_cast<int64>(32));
+		detail::int64 Value64 = static_cast<detail::int64>(x) * static_cast<detail::int64>(y);
+		msb = static_cast<int>(Value64 >> static_cast<detail::int64>(32));
 		lsb = static_cast<int>(Value64);
 	}
 
 	template<length_t L, qualifier Q>
 	GLM_FUNC_QUALIFIER void imulExtended(vec<L, int, Q> const& x, vec<L, int, Q> const& y, vec<L, int, Q>& msb, vec<L, int, Q>& lsb)
 	{
-		GLM_STATIC_ASSERT(sizeof(int) == sizeof(int32), "int and int32 size mismatch");
-
-		vec<L, int64, Q> Value64(vec<L, int64, Q>(x) * vec<L, int64, Q>(y));
-		lsb = vec<L, int32, Q>(Value64 & static_cast<int64>(0xFFFFFFFF));
-		msb = vec<L, int32, Q>((Value64 >> static_cast<int64>(32)) & static_cast<int64>(0xFFFFFFFF));
+		vec<L, detail::int64, Q> Value64(vec<L, detail::int64, Q>(x) * vec<L, detail::int64, Q>(y));
+		lsb = vec<L, int, Q>(Value64 & static_cast<detail::int64>(0xFFFFFFFF));
+		msb = vec<L, int, Q>((Value64 >> static_cast<detail::int64>(32)) & static_cast<detail::int64>(0xFFFFFFFF));
 	}
 
 	// bitfieldExtract
@@ -276,6 +262,8 @@ namespace detail
 	template<typename genIUType>
 	GLM_FUNC_QUALIFIER genIUType bitfieldInsert(genIUType const& Base, genIUType const& Insert, int Offset, int Bits)
 	{
+		GLM_STATIC_ASSERT(std::numeric_limits<genIUType>::is_integer, "'bitfieldInsert' only accept integer values");
+
 		return bitfieldInsert(vec<1, genIUType>(Base), vec<1, genIUType>(Insert), Offset, Bits).x;
 	}
 
@@ -284,20 +272,29 @@ namespace detail
 	{
 		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_integer, "'bitfieldInsert' only accept integer values");
 
-		T const Mask = static_cast<T>(detail::mask(Bits) << Offset);
-		return (Base & ~Mask) | (Insert & Mask);
+		T const Mask = detail::mask(static_cast<T>(Bits)) << Offset;
+		return (Base & ~Mask) | ((Insert << static_cast<T>(Offset)) & Mask);
 	}
 
+#if GLM_COMPILER & GLM_COMPILER_VC
+#	pragma warning(push)
+#	pragma warning(disable : 4309)
+#endif
+
 	// bitfieldReverse
-	template<typename genType>
-	GLM_FUNC_QUALIFIER genType bitfieldReverse(genType x)
+	template<typename genIUType>
+	GLM_FUNC_QUALIFIER genIUType bitfieldReverse(genIUType x)
 	{
-		return bitfieldReverse(glm::vec<1, genType, glm::defaultp>(x)).x;
+		GLM_STATIC_ASSERT(std::numeric_limits<genIUType>::is_integer, "'bitfieldReverse' only accept integer values");
+
+		return bitfieldReverse(glm::vec<1, genIUType, glm::defaultp>(x)).x;
 	}
 
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER vec<L, T, Q> bitfieldReverse(vec<L, T, Q> const& v)
 	{
+		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_integer, "'bitfieldReverse' only accept integer values");
+
 		vec<L, T, Q> x(v);
 		x = detail::compute_bitfieldReverseStep<L, T, Q, detail::is_aligned<Q>::value, sizeof(T) * 8>=  2>::call(x, static_cast<T>(0x5555555555555555ull), static_cast<T>( 1));
 		x = detail::compute_bitfieldReverseStep<L, T, Q, detail::is_aligned<Q>::value, sizeof(T) * 8>=  4>::call(x, static_cast<T>(0x3333333333333333ull), static_cast<T>( 2));
@@ -308,22 +305,30 @@ namespace detail
 		return x;
 	}
 
+#		if GLM_COMPILER & GLM_COMPILER_VC
+#			pragma warning(pop)
+#		endif
+
 	// bitCount
-	template<typename genType>
-	GLM_FUNC_QUALIFIER int bitCount(genType x)
+	template<typename genIUType>
+	GLM_FUNC_QUALIFIER int bitCount(genIUType x)
 	{
-		return bitCount(glm::vec<1, genType, glm::defaultp>(x)).x;
+		GLM_STATIC_ASSERT(std::numeric_limits<genIUType>::is_integer, "'bitCount' only accept integer values");
+
+		return bitCount(glm::vec<1, genIUType, glm::defaultp>(x)).x;
 	}
 
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER vec<L, int, Q> bitCount(vec<L, T, Q> const& v)
 	{
+		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_integer, "'bitCount' only accept integer values");
+
 #		if GLM_COMPILER & GLM_COMPILER_VC
 #			pragma warning(push)
 #			pragma warning(disable : 4310) //cast truncates constant value
 #		endif
 
-		vec<L, typename detail::make_unsigned<T>::type, Q> x(*reinterpret_cast<vec<L, typename detail::make_unsigned<T>::type, Q> const *>(&v));
+		vec<L, typename detail::make_unsigned<T>::type, Q> x(v);
 		x = detail::compute_bitfieldBitCountStep<L, typename detail::make_unsigned<T>::type, Q, detail::is_aligned<Q>::value, sizeof(T) * 8>=  2>::call(x, typename detail::make_unsigned<T>::type(0x5555555555555555ull), typename detail::make_unsigned<T>::type( 1));
 		x = detail::compute_bitfieldBitCountStep<L, typename detail::make_unsigned<T>::type, Q, detail::is_aligned<Q>::value, sizeof(T) * 8>=  4>::call(x, typename detail::make_unsigned<T>::type(0x3333333333333333ull), typename detail::make_unsigned<T>::type( 2));
 		x = detail::compute_bitfieldBitCountStep<L, typename detail::make_unsigned<T>::type, Q, detail::is_aligned<Q>::value, sizeof(T) * 8>=  8>::call(x, typename detail::make_unsigned<T>::type(0x0F0F0F0F0F0F0F0Full), typename detail::make_unsigned<T>::type( 4));
@@ -351,7 +356,7 @@ namespace detail
 	{
 		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_integer, "'findLSB' only accept integer values");
 
-		return detail::functor1<L, int, T, Q>::call(findLSB, x);
+		return detail::functor1<vec, L, int, T, Q>::call(findLSB, x);
 	}
 
 	// findMSB
@@ -368,11 +373,20 @@ namespace detail
 	{
 		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_integer, "'findMSB' only accept integer values");
 
-		return detail::compute_findMSB_vec<L, T, Q, sizeof(T) * 8>::call(v);
+		return detail::compute_findMSB_vec<L, T, Q, static_cast<int>(sizeof(T) * 8)>::call(v);
 	}
 }//namespace glm
 
-#if GLM_ARCH != GLM_ARCH_PURE && GLM_HAS_UNRESTRICTED_UNIONS
+#if !GLM_HAS_EXTENDED_INTEGER_TYPE
+#	if GLM_COMPILER & GLM_COMPILER_GCC
+#		pragma GCC diagnostic pop
+#	endif
+#	if (GLM_COMPILER & GLM_COMPILER_CLANG)
+#		pragma clang diagnostic pop
+#	endif
+#endif
+
+#if GLM_CONFIG_SIMD == GLM_ENABLE
 #	include "func_integer_simd.inl"
 #endif
 

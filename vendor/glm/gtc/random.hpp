@@ -14,10 +14,11 @@
 #pragma once
 
 // Dependency:
-#include "../vec2.hpp"
-#include "../vec3.hpp"
+#include "../ext/scalar_int_sized.hpp"
+#include "../ext/scalar_uint_sized.hpp"
+#include "../detail/qualifier.hpp"
 
-#if GLM_MESSAGES == GLM_MESSAGES_ENABLED && !defined(GLM_EXT_INCLUDED)
+#if GLM_MESSAGES == GLM_ENABLE && !defined(GLM_EXT_INCLUDED)
 #	pragma message("GLM: GLM_GTC_random extension included")
 #endif
 
@@ -51,25 +52,25 @@ namespace glm
 	template<typename genType>
 	GLM_FUNC_DECL genType gaussRand(genType Mean, genType Deviation);
 
-	/// Generate a random 2D vector which coordinates are regulary distributed on a circle of a given radius
+	/// Generate a random 2D vector which coordinates are regularly distributed on a circle of a given radius
 	///
 	/// @see gtc_random
 	template<typename T>
 	GLM_FUNC_DECL vec<2, T, defaultp> circularRand(T Radius);
 
-	/// Generate a random 3D vector which coordinates are regulary distributed on a sphere of a given radius
+	/// Generate a random 3D vector which coordinates are regularly distributed on a sphere of a given radius
 	///
 	/// @see gtc_random
 	template<typename T>
 	GLM_FUNC_DECL vec<3, T, defaultp> sphericalRand(T Radius);
 
-	/// Generate a random 2D vector which coordinates are regulary distributed within the area of a disk of a given radius
+	/// Generate a random 2D vector which coordinates are regularly distributed within the area of a disk of a given radius
 	///
 	/// @see gtc_random
 	template<typename T>
 	GLM_FUNC_DECL vec<2, T, defaultp> diskRand(T Radius);
 
-	/// Generate a random 3D vector which coordinates are regulary distributed within the volume of a ball of a given radius
+	/// Generate a random 3D vector which coordinates are regularly distributed within the volume of a ball of a given radius
 	///
 	/// @see gtc_random
 	template<typename T>

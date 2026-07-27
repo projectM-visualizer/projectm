@@ -6,9 +6,11 @@
 /// @defgroup core_func_exponential Exponential functions
 /// @ingroup core
 ///
-/// Include <glm/exponential.hpp> to use these core features.
+/// Provides GLSL exponential functions
 ///
 /// These all operate component-wise. The description is per component.
+///
+/// Include <glm/exponential.hpp> to use these core features.
 
 #pragma once
 
@@ -33,7 +35,7 @@ namespace glm
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_DECL vec<L, T, Q> pow(vec<L, T, Q> const& base, vec<L, T, Q> const& exponent);
 
-	/// Returns the natural exponentiation of x, i.e., e^x.
+	/// Returns the natural exponentiation of v, i.e., e^v.
 	///
 	/// @param v exp function is defined for input values of v defined in the range (inf-, inf+) in the limit of the type qualifier.
 	/// @tparam L An integer between 1 and 4 included that qualify the dimension of the vector.

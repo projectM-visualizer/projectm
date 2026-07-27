@@ -139,7 +139,7 @@ target_link_libraries(MilkdropPreset
         libprojectM::API # For export header
         PUBLIC
         hlslparser
-        GLM::GLM
+        glm::glm
         )
 
 if(BUILD_SHARED_LIBS)

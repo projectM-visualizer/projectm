@@ -8,7 +8,7 @@
 ///
 /// Include <glm/gtx/vector_query.hpp> to use the features of this extension.
 ///
-/// Query informations of vector types
+/// Query information of vector types
 
 #pragma once
 
@@ -19,9 +19,7 @@
 
 #ifndef GLM_ENABLE_EXPERIMENTAL
 #	error "GLM: GLM_GTX_vector_query is an experimental extension and may change in the future. Use #define GLM_ENABLE_EXPERIMENTAL before including it, if you really want to use it."
-#endif
-
-#if GLM_MESSAGES == GLM_MESSAGES_ENABLED && !defined(GLM_EXT_INCLUDED)
+#elif GLM_MESSAGES == GLM_ENABLE && !defined(GLM_EXT_INCLUDED)
 #	pragma message("GLM: GLM_GTX_vector_query extension included")
 #endif
 

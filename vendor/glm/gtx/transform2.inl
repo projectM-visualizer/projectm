@@ -1,5 +1,4 @@
 /// @ref gtx_transform2
-/// @file glm/gtx/transform2.inl
 
 namespace glm
 {
@@ -47,31 +46,34 @@ namespace glm
 	}
 
 	template<typename T, qualifier Q>
-	GLM_FUNC_QUALIFIER mat<3, 3, T, Q> reflect2D(mat<3, 3, T, Q> const& m, vec<3, T, Q> const& normal)
+	GLM_FUNC_QUALIFIER mat<3, 3, T, Q> reflect2D(mat<3, 3, T, Q> const& m, vec<2, T, Q> const& normal, T distance)
 	{
 		mat<3, 3, T, Q> r(static_cast<T>(1));
 		r[0][0] = static_cast<T>(1) - static_cast<T>(2) * normal.x * normal.x;
-		r[0][1] = -static_cast<T>(2) * normal.x * normal.y;
+		r[0][1] = -static_cast<T>(2) * normal.y * normal.x;
 		r[1][0] = -static_cast<T>(2) * normal.x * normal.y;
 		r[1][1] = static_cast<T>(1) - static_cast<T>(2) * normal.y * normal.y;
+		r[2][0] = -static_cast<T>(2) * normal.x * distance;
+		r[2][1] = -static_cast<T>(2) * normal.y * distance;
 		return m * r;
 	}
 
 	template<typename T, qualifier Q>
-	GLM_FUNC_QUALIFIER mat<4, 4, T, Q> reflect3D(mat<4, 4, T, Q> const& m, vec<3, T, Q> const& normal)
+	GLM_FUNC_QUALIFIER mat<4, 4, T, Q> reflect3D(mat<4, 4, T, Q> const& m, vec<3, T, Q> const& normal, T distance)
 	{
 		mat<4, 4, T, Q> r(static_cast<T>(1));
 		r[0][0] = static_cast<T>(1) - static_cast<T>(2) * normal.x * normal.x;
-		r[0][1] = -static_cast<T>(2) * normal.x * normal.y;
-		r[0][2] = -static_cast<T>(2) * normal.x * normal.z;
-
+		r[0][1] = -static_cast<T>(2) * normal.y * normal.x;
+		r[0][2] = -static_cast<T>(2) * normal.z * normal.x;
 		r[1][0] = -static_cast<T>(2) * normal.x * normal.y;
 		r[1][1] = static_cast<T>(1) - static_cast<T>(2) * normal.y * normal.y;
-		r[1][2] = -static_cast<T>(2) * normal.y * normal.z;
-
+		r[1][2] = -static_cast<T>(2) * normal.z * normal.y;
 		r[2][0] = -static_cast<T>(2) * normal.x * normal.z;
 		r[2][1] = -static_cast<T>(2) * normal.y * normal.z;
 		r[2][2] = static_cast<T>(1) - static_cast<T>(2) * normal.z * normal.z;
+		r[3][0] = -static_cast<T>(2) * normal.x * distance;
+		r[3][1] = -static_cast<T>(2) * normal.y * distance;
+		r[3][2] = -static_cast<T>(2) * normal.z * distance;
 		return m * r;
 	}
 
@@ -120,7 +122,7 @@ namespace glm
 	template<typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER mat<4, 4, T, Q> scaleBias(mat<4, 4, T, Q> const& m, T scale, T bias)
 	{
-		return m * scaleBias(scale, bias);
+		return m * scaleBias<T, Q>(scale, bias);
 	}
 }//namespace glm
 

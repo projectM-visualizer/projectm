@@ -11,10 +11,10 @@ include(FindPackageHandleStandardArgs)
 
 find_package_handle_standard_args(GLM DEFAULT_MSG GLM_INCLUDE_FILE GLM_INCLUDE_DIR)
 
-if(GLM_FOUND AND NOT TARGET GLM::GLM)
-    add_library(GLM::GLM INTERFACE IMPORTED)
+if(GLM_FOUND AND NOT TARGET glm::glm)
+    add_library(glm::glm INTERFACE IMPORTED)
 
-    set_target_properties(GLM::GLM PROPERTIES
+    set_target_properties(glm::glm PROPERTIES
             INTERFACE_INCLUDE_DIRECTORIES "${GLM_INCLUDE_DIR}"
             )
 endif()

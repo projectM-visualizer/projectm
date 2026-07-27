@@ -1,11 +1,5 @@
-/// @ref core
-/// @file glm/detail/func_geometric.inl
-
 #include "../exponential.hpp"
 #include "../common.hpp"
-#include "type_vec2.hpp"
-#include "type_vec4.hpp"
-#include "type_float.hpp"
 
 namespace glm{
 namespace detail
@@ -34,7 +28,7 @@ namespace detail
 	template<typename T, qualifier Q, bool Aligned>
 	struct compute_dot<vec<1, T, Q>, T, Aligned>
 	{
-		GLM_FUNC_QUALIFIER static T call(vec<1, T, Q> const& a, vec<1, T, Q> const& b)
+		GLM_FUNC_QUALIFIER GLM_CONSTEXPR static T call(vec<1, T, Q> const& a, vec<1, T, Q> const& b)
 		{
 			return a.x * b.x;
 		}
@@ -43,7 +37,7 @@ namespace detail
 	template<typename T, qualifier Q, bool Aligned>
 	struct compute_dot<vec<2, T, Q>, T, Aligned>
 	{
-		GLM_FUNC_QUALIFIER static T call(vec<2, T, Q> const& a, vec<2, T, Q> const& b)
+		GLM_FUNC_QUALIFIER GLM_CONSTEXPR static T call(vec<2, T, Q> const& a, vec<2, T, Q> const& b)
 		{
 			vec<2, T, Q> tmp(a * b);
 			return tmp.x + tmp.y;
@@ -53,7 +47,7 @@ namespace detail
 	template<typename T, qualifier Q, bool Aligned>
 	struct compute_dot<vec<3, T, Q>, T, Aligned>
 	{
-		GLM_FUNC_QUALIFIER static T call(vec<3, T, Q> const& a, vec<3, T, Q> const& b)
+		GLM_FUNC_QUALIFIER GLM_CONSTEXPR static T call(vec<3, T, Q> const& a, vec<3, T, Q> const& b)
 		{
 			vec<3, T, Q> tmp(a * b);
 			return tmp.x + tmp.y + tmp.z;
@@ -63,17 +57,22 @@ namespace detail
 	template<typename T, qualifier Q, bool Aligned>
 	struct compute_dot<vec<4, T, Q>, T, Aligned>
 	{
-		GLM_FUNC_QUALIFIER static T call(vec<4, T, Q> const& a, vec<4, T, Q> const& b)
+		GLM_FUNC_QUALIFIER GLM_CONSTEXPR static T call(vec<4, T, Q> const& a, vec<4, T, Q> const& b)
 		{
-			vec<4, T, Q> tmp(a * b);
-			return (tmp.x + tmp.y) + (tmp.z + tmp.w);
+			// VS 17.7.4 generates longer assembly (~20 instructions vs 11 instructions)
+			#if defined(_MSC_VER)
+				return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+			#else
+				vec<4, T, Q> tmp(a * b);
+				return (tmp.x + tmp.y) + (tmp.z + tmp.w);
+			#endif
 		}
 	};
 
 	template<typename T, qualifier Q, bool Aligned>
 	struct compute_cross
 	{
-		GLM_FUNC_QUALIFIER static vec<3, T, Q> call(vec<3, T, Q> const& x, vec<3, T, Q> const& y)
+		GLM_FUNC_QUALIFIER GLM_CONSTEXPR static vec<3, T, Q> call(vec<3, T, Q> const& x, vec<3, T, Q> const& y)
 		{
 			GLM_STATIC_ASSERT(std::numeric_limits<T>::is_iec559, "'cross' accepts only floating-point inputs");
 
@@ -81,6 +80,17 @@ namespace detail
 				x.y * y.z - y.y * x.z,
 				x.z * y.x - y.z * x.x,
 				x.x * y.y - y.x * x.y);
+		}
+
+		GLM_FUNC_QUALIFIER GLM_CONSTEXPR static vec<4, T, Q> call(vec<4, T, Q> const& x, vec<4, T, Q> const& y)
+		{
+			GLM_STATIC_ASSERT(std::numeric_limits<T>::is_iec559, "'cross' accepts only floating-point inputs");
+
+			return vec<4, T, Q>(
+				x.y * y.z - y.y * x.z,
+				x.z * y.x - y.z * x.x,
+				x.x * y.y - y.x * x.y,
+				0.0f);
 		}
 	};
 
@@ -122,7 +132,9 @@ namespace detail
 		{
 			T const dotValue(dot(N, I));
 			T const k(static_cast<T>(1) - eta * eta * (static_cast<T>(1) - dotValue * dotValue));
-			return (eta * I - (eta * dotValue + std::sqrt(k)) * N) * static_cast<T>(k >= static_cast<T>(0));
+			vec<L, T, Q> const Result =
+                (k >= static_cast<T>(0)) ? (eta * I - (eta * dotValue + std::sqrt(k)) * N) : vec<L, T, Q>(0);
+			return Result;
 		}
 	};
 }//namespace detail
@@ -161,14 +173,14 @@ namespace detail
 
 	// dot
 	template<typename T>
-	GLM_FUNC_QUALIFIER T dot(T x, T y)
+	GLM_FUNC_QUALIFIER GLM_CONSTEXPR T dot(T x, T y)
 	{
 		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_iec559, "'dot' accepts only floating-point inputs");
 		return x * y;
 	}
 
 	template<length_t L, typename T, qualifier Q>
-	GLM_FUNC_QUALIFIER T dot(vec<L, T, Q> const& x, vec<L, T, Q> const& y)
+	GLM_FUNC_QUALIFIER GLM_CONSTEXPR T dot(vec<L, T, Q> const& x, vec<L, T, Q> const& y)
 	{
 		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_iec559, "'dot' accepts only floating-point inputs");
 		return detail::compute_dot<vec<L, T, Q>, T, detail::is_aligned<Q>::value>::call(x, y);
@@ -176,11 +188,11 @@ namespace detail
 
 	// cross
 	template<typename T, qualifier Q>
-	GLM_FUNC_QUALIFIER vec<3, T, Q> cross(vec<3, T, Q> const& x, vec<3, T, Q> const& y)
+	GLM_FUNC_QUALIFIER GLM_CONSTEXPR vec<3, T, Q> cross(vec<3, T, Q> const& x, vec<3, T, Q> const& y)
 	{
 		return detail::compute_cross<T, Q, detail::is_aligned<Q>::value>::call(x, y);
 	}
-
+/*
 	// normalize
 	template<typename genType>
 	GLM_FUNC_QUALIFIER genType normalize(genType const& x)
@@ -189,7 +201,7 @@ namespace detail
 
 		return x < genType(0) ? genType(-1) : genType(1);
 	}
-
+*/
 	template<length_t L, typename T, qualifier Q>
 	GLM_FUNC_QUALIFIER vec<L, T, Q> normalize(vec<L, T, Q> const& x)
 	{
@@ -242,6 +254,6 @@ namespace detail
 	}
 }//namespace glm
 
-#if GLM_ARCH != GLM_ARCH_PURE && GLM_HAS_UNRESTRICTED_UNIONS
+#if GLM_CONFIG_SIMD == GLM_ENABLE
 #	include "func_geometric_simd.inl"
 #endif

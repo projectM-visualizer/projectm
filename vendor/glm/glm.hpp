@@ -1,14 +1,17 @@
 /// @ref core
 /// @file glm/glm.hpp
 ///
+/// @mainpage OpenGL Mathematics (GLM)
+/// - Website: <a href="https://glm.g-truc.net">glm.g-truc.net</a>
+/// - <a href="modules.html">GLM API documentation</a>
+/// - <a href="https://github.com/g-truc/glm/blob/master/manual.md">GLM Manual</a>
+///
 /// @defgroup core Core features
 ///
 /// @brief Features that implement in C++ the GLSL specification as closely as possible.
 ///
-/// The GLM core consists of @ref core_types "C++ types that mirror GLSL types" and
-/// C++ functions that mirror the GLSL functions. It also includes
-/// @ref core_precision "a set of qualifier-based types" that can be used in the appropriate
-/// functions. The C++ types are all based on a basic set of @ref core_template "template types".
+/// The GLM core consists of C++ types that mirror GLSL types and
+/// C++ functions that mirror the GLSL functions.
 ///
 /// The best documentation for GLM Core is the current GLSL specification,
 /// <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.clean.pdf">version 4.2
@@ -16,38 +19,53 @@
 ///
 /// GLM core functionalities require <glm/glm.hpp> to be included to be used.
 ///
-/// @defgroup core_types Types
 ///
-/// @brief The standard types defined by the specification.
+/// @defgroup core_vector Vector types
 ///
-/// These types are all typedefs of more generalized, template types. To see the definition
-/// of these template types, go to @ref core_template.
+/// Vector types of two to four components with an exhaustive set of operators.
 ///
 /// @ingroup core
 ///
-/// @defgroup core_precision Precision types
 ///
-/// @brief Non-GLSL types that are used to define qualifier-based types.
+/// @defgroup core_vector_precision Vector types with precision qualifiers
 ///
-/// The GLSL language allows the user to define the qualifier of a particular variable.
-/// In OpenGL's GLSL, these qualifier qualifiers have no effect; they are there for compatibility
-/// with OpenGL ES's qualifier qualifiers, where they @em do have an effect.
+/// @brief Vector types with precision qualifiers which may result in various precision in term of ULPs
+///
+/// GLSL allows defining qualifiers for particular variables.
+/// With OpenGL's GLSL, these qualifiers have no effect; they are there for compatibility,
+/// with OpenGL ES's GLSL, these qualifiers do have an effect.
 ///
 /// C++ has no language equivalent to qualifier qualifiers. So GLM provides the next-best thing:
-/// a number of typedefs of the @ref core_template that use a particular qualifier.
+/// a number of typedefs that use a particular qualifier.
 ///
 /// None of these types make any guarantees about the actual qualifier used.
 ///
 /// @ingroup core
 ///
-/// @defgroup core_template Template types
 ///
-/// @brief The generic template types used as the basis for the core types.
+/// @defgroup core_matrix Matrix types
 ///
-/// These types are all templates used to define the actual @ref core_types.
-/// These templates are implementation details of GLM types and should not be used explicitly.
+/// Matrix types of with C columns and R rows where C and R are values between 2 to 4 included.
+/// These types have exhaustive sets of operators.
 ///
 /// @ingroup core
+///
+///
+/// @defgroup core_matrix_precision Matrix types with precision qualifiers
+///
+/// @brief Matrix types with precision qualifiers which may result in various precision in term of ULPs
+///
+/// GLSL allows defining qualifiers for particular variables.
+/// With OpenGL's GLSL, these qualifiers have no effect; they are there for compatibility,
+/// with OpenGL ES's GLSL, these qualifiers do have an effect.
+///
+/// C++ has no language equivalent to qualifier qualifiers. So GLM provides the next-best thing:
+/// a number of typedefs that use a particular qualifier.
+///
+/// None of these types make any guarantees about the actual qualifier used.
+///
+/// @ingroup core
+///
 ///
 /// @defgroup ext Stable extensions
 ///
@@ -58,6 +76,7 @@
 /// Even if it's highly unrecommended, it's possible to include all the extensions at once by
 /// including <glm/ext.hpp>. Otherwise, each extension needs to be included  a specific file.
 ///
+///
 /// @defgroup gtc Recommended extensions
 ///
 /// @brief Additional features not specified by GLSL specification.
@@ -66,6 +85,7 @@
 ///
 /// Even if it's highly unrecommended, it's possible to include all the extensions at once by
 /// including <glm/ext.hpp>. Otherwise, each extension needs to be included  a specific file.
+///
 ///
 /// @defgroup gtx Experimental extensions
 ///
@@ -80,10 +100,6 @@
 /// at once by including <glm/ext.hpp>. Otherwise, each extension needs to be
 /// included  a specific file.
 ///
-/// @mainpage OpenGL Mathematics (GLM)
-/// - Website: <a href="https://glm.g-truc.net">glm.g-truc.net</a>
-/// - <a href="modules.html">GLM API documentation</a>
-/// - <a href="https://github.com/g-truc/glm/blob/master/manual.md">GLM Manual</a>
 
 #include "detail/_fixes.hpp"
 
@@ -97,11 +113,6 @@
 #include <limits>
 #include <cassert>
 #include "fwd.hpp"
-
-#if GLM_MESSAGES == GLM_MESSAGES_ENABLED && !defined(GLM_MESSAGE_CORE_INCLUDED_DISPLAYED)
-#	define GLM_MESSAGE_CORE_INCLUDED_DISPLAYED
-#	pragma message("GLM: Core library included")
-#endif//GLM_MESSAGES
 
 #include "vec2.hpp"
 #include "vec3.hpp"

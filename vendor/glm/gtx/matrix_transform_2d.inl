@@ -1,5 +1,4 @@
 /// @ref gtx_matrix_transform_2d
-/// @file glm/gtc/matrix_transform_2d.inl
 /// @author Miguel Ángel Pérez Martínez
 
 #include "../trigonometric.hpp"
