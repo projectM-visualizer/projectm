@@ -251,4 +251,4 @@ the [projectM Wiki](https://github.com/projectM-visualizer/projectm/wiki).
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=projectM-visualizer/projectm&type=Date)](https://star-history.com/#projectM-visualizer/projectm&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=projectM-visualizer/projectm&type=Date)](https://star-history.dera.page/#projectM-visualizer/projectm&Date)
