@@ -297,7 +297,6 @@ if(ENABLE_INSTALL)
 
         set(PKGCONFIG_PACKAGE_NAME "${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}")
         set(PKGCONFIG_PACKAGE_DESCRIPTION "projectM Music Visualizer")
-        set(PKGCONFIG_PACKAGE_REQUIREMENTS_ALL "opengl")
 
         generate_pkg_config_files(projectM ${PROJECTM_LIBRARY_BASE_OUTPUT_NAME})
 
