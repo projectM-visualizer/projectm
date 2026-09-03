@@ -255,7 +255,6 @@ message(STATUS "    Use system projectM-eval:    ${ENABLE_SYSTEM_PROJECTM_EVAL}"
 if(ENABLE_SYSTEM_PROJECTM_EVAL)
     message(STATUS "        projectM-eval version:       ${projectM-Eval_VERSION}")
 endif()
-message(STATUS "    Link UI with shared lib:     ${ENABLE_SHARED_LINKING}")
 message(STATUS "")
 message(STATUS "Targets and applications:")
 message(STATUS "==============================================")
