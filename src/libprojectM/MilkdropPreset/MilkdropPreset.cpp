@@ -237,12 +237,17 @@ void MilkdropPreset::Load(std::istream& stream)
 
 void MilkdropPreset::InitializePreset(PresetFileParser& parsedFile)
 {
+    // Save the currently bound framebuffer so we can restore it after creating attachments.
+    // This is important when the host application uses a non-default framebuffer.
+    GLint previousFramebuffer{};
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &previousFramebuffer);
+
     // Create the offscreen rendering surfaces.
     m_motionVectorUVMap = std::make_shared<Renderer::TextureAttachment>(GL_RG16F, GL_RG, GL_FLOAT, 0, 0);
     m_framebuffer.CreateColorAttachment(0, 0); // Main image 1
     m_framebuffer.CreateColorAttachment(1, 0); // Main image 2
 
-    Renderer::Framebuffer::Unbind();
+    glBindFramebuffer(GL_FRAMEBUFFER, previousFramebuffer);
 
     // Load global init variables into the state
     m_state.Initialize(parsedFile);

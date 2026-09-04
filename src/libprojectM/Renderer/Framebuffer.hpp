@@ -78,8 +78,22 @@ public:
 
     /**
      * @brief Binds the default framebuffer for both reading and writing.
+     *
+     * When using libprojectM inside a shared OpenGL context,
+     * the default framebuffer may not be FBO 0. Use the overloaded version with the
+     * actual default FBO ID in such cases.
      */
     static void Unbind();
+
+    /**
+     * @brief Binds the given framebuffer ID as the current read/write framebuffer.
+     *
+     * This overload should be used when the host application's default framebuffer
+     * object is not 0.
+     *
+     * @param defaultFramebufferObject The framebuffer ID to bind.
+     */
+    static void Unbind(GLuint defaultFramebufferObject);
 
     /**
      * @brief Sets the framebuffer texture size.

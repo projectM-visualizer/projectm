@@ -104,6 +104,9 @@ void CopyTexture::Draw(ShaderCache& shaderCache,
         return;
     }
 
+    GLint previousFramebuffer{};
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &previousFramebuffer);
+
     std::shared_ptr<class Texture> internalTexture;
 
     m_framebuffer.Bind(0);
@@ -125,7 +128,7 @@ void CopyTexture::Draw(ShaderCache& shaderCache,
         m_framebuffer.GetAttachment(0, TextureAttachment::AttachmentType::Color, 0)->Texture(internalTexture);
     }
 
-    Framebuffer::Unbind();
+    glBindFramebuffer(GL_FRAMEBUFFER, previousFramebuffer);
 }
 
 void CopyTexture::Draw(ShaderCache& shaderCache,
@@ -148,6 +151,9 @@ void CopyTexture::Draw(ShaderCache& shaderCache,
         return;
     }
 
+    GLint previousFramebuffer{};
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &previousFramebuffer);
+
     m_framebuffer.Bind(0);
 
     // Draw from unflipped texture
@@ -162,7 +168,7 @@ void CopyTexture::Draw(ShaderCache& shaderCache,
     m_framebuffer.RemoveColorAttachment(0, 0);
     m_framebuffer.SetAttachment(0, 0, tempAttachment);
 
-    Framebuffer::Unbind();
+    glBindFramebuffer(GL_FRAMEBUFFER, previousFramebuffer);
 }
 
 void CopyTexture::Draw(ShaderCache& shaderCache,
@@ -186,6 +192,9 @@ void CopyTexture::Draw(ShaderCache& shaderCache,
         return;
     }
 
+    GLint previousFramebuffer{};
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &previousFramebuffer);
+
     std::shared_ptr<class Texture> internalTexture;
 
     m_framebuffer.Bind(0);
@@ -200,7 +209,7 @@ void CopyTexture::Draw(ShaderCache& shaderCache,
     // Rebind our internal texture.
     m_framebuffer.GetAttachment(0, TextureAttachment::AttachmentType::Color, 0)->Texture(internalTexture);
 
-    Framebuffer::Unbind();
+    glBindFramebuffer(GL_FRAMEBUFFER, previousFramebuffer);
 }
 
 void CopyTexture::Draw(ShaderCache& shaderCache,
