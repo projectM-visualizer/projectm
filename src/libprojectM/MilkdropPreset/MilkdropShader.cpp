@@ -1,5 +1,6 @@
 #include "MilkdropShader.hpp"
 
+#include "MilkdropShaderPreprocess.hpp"
 #include "PresetState.hpp"
 #include "Utils.hpp"
 
@@ -331,182 +332,13 @@ auto MilkdropShader::Shader() -> Renderer::Shader&
 
 void MilkdropShader::PreprocessPresetShader(std::string& program)
 {
-    std::string shaderTypeString = "composite";
-    if (m_type == ShaderType::WarpShader)
-    {
-        shaderTypeString = "warp";
-    }
-
-    if (program.length() <= 0)
-    {
-        throw Renderer::ShaderException("[MilkdropShader] Preset " + shaderTypeString + " shader is declared, but empty.");
-    }
-
-    size_t found;
-
-    // Find "sampler_state" overrides and remove them first, as they're not supported by GLSL.
-    // The logic isn't totally fool-proof, but should work in general.
-    // Use a comment-stripped copy for searching so commented-out sampler_state blocks are skipped.
-    // StripComments preserves string length, so positions map 1:1 to the original.
-    std::string stripped = Utils::StripComments(program);
-    found = stripped.find("sampler_state");
-    while (found != std::string::npos)
-    {
-        // Now go backwards and find the assignment
-        found = stripped.rfind('=', found);
-        auto startPos = found;
-
-        // Find closing brace and semicolon
-        found = stripped.find('}', found);
-        found = stripped.find(';', found);
-
-        if (found != std::string::npos)
-        {
-            stripped.replace(startPos, found - startPos, "");
-        }
-        else
-        {
-            // No closing brace and semicolon.
-            break;
-        }
-
-        found = stripped.find("sampler_state");
-    }
-
-    // replace shader_body with entry point function
-    // Use the stripped copy so a commented-out shader_body is not matched.
-    found = stripped.find("shader_body");
-    if (found != std::string::npos)
-    {
-        if (m_type == ShaderType::WarpShader)
-        {
-            program.replace(int(found), 11, R"(
-void PS(float4 _vDiffuse : COLOR,
-        float4 _uv : TEXCOORD0,
-        float2 _rad_ang : TEXCOORD1,
-        out float4 _return_value : COLOR0,
-        out float4 _mv_tex_coords : COLOR1)
-)");
-        }
-        else
-        {
-            program.replace(int(found), 11, R"(
-void PS(float4 _vDiffuse : COLOR,
-        float2 _uv : TEXCOORD0,
-        float2 _rad_ang : TEXCOORD1,
-        out float4 _return_value : COLOR)
-)");
-        }
-    }
-    else
-    {
-        LOG_DEBUG("[MilkdropShader] Failed " + shaderTypeString + " shader code:\n" + program);
-        throw Renderer::ShaderException("[MilkdropShader] Preset " + shaderTypeString + " shader is missing \"shader_body\" entry point.");
-    }
-
-    // replace the "{" immediately following shader_body with some variable declarations
-    found = program.find('{', found);
-    if (found != std::string::npos)
-    {
-        std::string progMain = "{\nfloat3 ret = 0;\n";
-        if (m_type == ShaderType::WarpShader)
-        {
-            progMain.append("_mv_tex_coords.xy = _uv.xy;\n");
-        }
-        program.replace(int(found), 1, progMain);
-    }
-    else
-    {
-        LOG_DEBUG("[MilkdropShader] Failed " + shaderTypeString + " shader code:\n" + program);
-        throw Renderer::ShaderException("[MilkdropShader] Preset " + shaderTypeString + " shader has no opening braces.");
-    }
-
-    // replace "}" with return statement (this can probably be optimized for the GLSL conversion...)
-    found = program.rfind('}');
-    if (found != std::string::npos)
-    {
-        program.replace(int(found), 1, "_return_value = float4(ret.xyz, 1.0);\n"
-                                       "}\n");
-    }
-    else
-    {
-        LOG_DEBUG("[MilkdropShader] Failed " + shaderTypeString + " shader code:\n" + program);
-        throw Renderer::ShaderException("[MilkdropShader] Preset " + shaderTypeString + " shader has no closing brace.");
-    }
-
-    // Find matching closing brace and cut off excess text after shader's main function
-    int bracesOpen = 1;
-    size_t pos = found + 1;
-    for (; pos < program.length() && bracesOpen > 0; ++pos)
-    {
-        switch (program.at(pos))
-        {
-            case '/':
-                // Skip line comments until EoL to prevent false counting
-                if (pos < program.length() - 1 && program.at(pos + 1) == '/')
-                {
-                    for (; pos < program.length(); ++pos)
-                    {
-                        if (program.at(pos) == '\n')
-                        {
-                            break;
-                        }
-                    }
-                }
-                // Skip block comments to prevent false counting
-                else if (pos < program.length() - 1 && program.at(pos + 1) == '*')
-                {
-                    pos += 2;
-                    for (; pos < program.length() - 1; ++pos)
-                    {
-                        if (program.at(pos) == '*' && program.at(pos + 1) == '/')
-                        {
-                            ++pos; // skip past '/'
-                            break;
-                        }
-                    }
-                }
-                continue;
-
-            case '{':
-                bracesOpen++;
-                continue;
-
-            case '}':
-                bracesOpen--;
-        }
-    }
-
-    if (pos < program.length() - 1)
-    {
-        program.resize(pos);
-    }
-
-    std::string fullSource; //!< Full shader source before translation, includes all uniforms etc.
-
-    // First copy the generic "header" into the shader. Includes uniforms and some defines
-    // to unwrap the packed 4-element uniforms into single values.
-    fullSource.append(MilkdropStaticShaders::Get()->GetPresetShaderHeader());
-
-    if (m_type == ShaderType::WarpShader)
-    {
-        fullSource.append("#define rad _rad_ang.x\n"
-                          "#define ang _rad_ang.y\n"
-                          "#define uv _uv.xy\n"
-                          "#define uv_orig _uv.zw\n");
-    }
-    else
-    {
-        fullSource.append("#define rad _rad_ang.x\n"
-                          "#define ang _rad_ang.y\n"
-                          "#define uv _uv.xy\n"
-                          "#define uv_orig _uv.xy\n"
-                          "#define hue_shader _vDiffuse.xyz\n");
-    }
-
-    fullSource.append(program);
-
-    program = fullSource;
+    // The pure-text assembly lives in the GL-free free function
+    // AssembleApplyPreprocessorInput(type, body) so that external tooling (e.g. a build-time
+    // cache precompute step) and the runtime produce byte-identical preprocessor input. This
+    // wrapper preserves the original in/out contract (mutates `program` in place).
+    // GetReferencedSamplers still runs separately in LoadCode, so m_samplerNames population
+    // is unchanged.
+    program = AssembleApplyPreprocessorInput(m_type, program);
 }
 
 void MilkdropShader::GetReferencedSamplers(const std::string& program)
@@ -615,12 +447,45 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
     M4::HLSLTree tree(&allocator);
     M4::HLSLParser parser(&allocator, &tree);
 
-    // Preprocess define macros
+    // Preprocess define macros. Optionally short-circuit via the app-provided preprocessed-
+    // HLSL cache: the preprocessor output is a pure, deterministic function of `program`, so
+    // a hit lets us skip ApplyPreprocessor entirely. With no hooks registered this path is
+    // byte-identical to the historical behaviour.
     std::string sourcePreprocessed;
-    if (!parser.ApplyPreprocessor("", program.c_str(), program.size(), sourcePreprocessed))
+    const auto* preprocessCacheHooks = presetState.renderContext.preprocessCache;
+    bool preprocessCacheHit = false;
+    std::string preprocessCacheKey;
+    if (preprocessCacheHooks != nullptr && (preprocessCacheHooks->get != nullptr || preprocessCacheHooks->put != nullptr))
     {
-        LOG_DEBUG("[MilkdropShader] Failed " + shaderTypeString + " shader code:\n" + program);
-        throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: Preprocessing failed.");
+        preprocessCacheKey = ComputePreprocessCacheKey(program);
+    }
+    if (preprocessCacheHooks != nullptr && preprocessCacheHooks->get != nullptr)
+    {
+        // Sink appends the cached bytes into sourcePreprocessed for the duration of the call.
+        auto appendSink = [](void* sinkctx, const char* data, size_t len) {
+            auto* out = static_cast<std::string*>(sinkctx);
+            out->append(data, len);
+        };
+        preprocessCacheHit = preprocessCacheHooks->get(preprocessCacheHooks->user,
+                                                       preprocessCacheKey.data(), preprocessCacheKey.size(),
+                                                       &sourcePreprocessed, appendSink);
+    }
+
+    if (!preprocessCacheHit)
+    {
+        sourcePreprocessed.clear();
+        if (!parser.ApplyPreprocessor("", program.c_str(), program.size(), sourcePreprocessed))
+        {
+            LOG_DEBUG("[MilkdropShader] Failed " + shaderTypeString + " shader code:\n" + program);
+            throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: Preprocessing failed.");
+        }
+
+        if (preprocessCacheHooks != nullptr && preprocessCacheHooks->put != nullptr)
+        {
+            preprocessCacheHooks->put(preprocessCacheHooks->user,
+                                      preprocessCacheKey.data(), preprocessCacheKey.size(),
+                                      sourcePreprocessed.data(), sourcePreprocessed.size());
+        }
     }
 
     // Remove previous shader declarations
