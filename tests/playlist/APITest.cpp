@@ -435,9 +435,9 @@ TEST(projectMPlaylistAPI, SetPosition)
     EXPECT_CALL(mockPlaylist, SetPresetIndex(256))
         .Times(2)
         .WillRepeatedly(Return(512));
-    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, true, true))
+    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, true))
         .Times(1);
-    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, false, true))
+    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, false))
         .Times(1);
     EXPECT_CALL(mockPlaylist, PresetIndex())
         .Times(2)
@@ -468,9 +468,9 @@ TEST(projectMPlaylistAPI, PlayNext)
     EXPECT_CALL(mockPlaylist, NextPresetIndex())
         .Times(2)
         .WillRepeatedly(Return(512));
-    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, true, true))
+    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, true))
         .Times(1);
-    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, false, true))
+    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, false))
         .Times(1);
     EXPECT_CALL(mockPlaylist, PresetIndex())
         .Times(2)
@@ -501,9 +501,9 @@ TEST(projectMPlaylistAPI, PlayPrevious)
     EXPECT_CALL(mockPlaylist, PreviousPresetIndex())
         .Times(2)
         .WillRepeatedly(Return(512));
-    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, true, true))
+    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, true))
         .Times(1);
-    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, false, true))
+    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, false))
         .Times(1);
     EXPECT_CALL(mockPlaylist, PresetIndex())
         .Times(2)
@@ -534,9 +534,9 @@ TEST(projectMPlaylistAPI, PlayLast)
     EXPECT_CALL(mockPlaylist, PreviousPresetIndex())
         .Times(2)
         .WillRepeatedly(Return(512));
-    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, true, true))
+    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, true))
         .Times(1);
-    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, false, true))
+    EXPECT_CALL(mockPlaylist, PlayPresetIndex(512, false))
         .Times(1);
     EXPECT_CALL(mockPlaylist, PresetIndex())
         .Times(2)

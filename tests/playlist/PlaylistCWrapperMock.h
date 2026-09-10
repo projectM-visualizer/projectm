@@ -31,7 +31,7 @@ public:
     MOCK_METHOD(uint32_t, LastPresetIndex, (), ());
     MOCK_METHOD(uint32_t, PresetIndex, (), (const));
     MOCK_METHOD(uint32_t, SetPresetIndex, (uint32_t));
-    MOCK_METHOD(void, PlayPresetIndex, (uint32_t, bool, bool) );
+    MOCK_METHOD(void, PlayPresetIndex, (uint32_t, bool) );
     MOCK_METHOD(void, RemoveLastHistoryEntry, ());
     MOCK_METHOD(void, SetPresetSwitchedCallback, (projectm_playlist_preset_switched_event, void*) );
     MOCK_METHOD(void, SetPresetSwitchFailedCallback, (projectm_playlist_preset_switch_failed_event, void*) );
