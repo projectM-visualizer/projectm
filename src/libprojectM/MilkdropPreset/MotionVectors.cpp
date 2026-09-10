@@ -13,9 +13,18 @@ namespace MilkdropPreset {
 
 MotionVectors::MotionVectors(PresetState& presetState)
     : m_presetState(presetState)
-    , m_motionVectorMesh(Renderer::VertexBufferUsage::StreamDraw)
 {
-    m_motionVectorMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::Lines);
+    Init();
+}
+
+void MotionVectors::InitVertexAttrib()
+{
+    glEnableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(MotionVectorVertex), reinterpret_cast<void*>(offsetof(MotionVectorVertex, x)));
+    glVertexAttribIPointer(2, 1, GL_INT, sizeof(MotionVectorVertex), reinterpret_cast<void*>(offsetof(MotionVectorVertex, index)));
 }
 
 void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shared_ptr<Renderer::Texture> motionTexture)

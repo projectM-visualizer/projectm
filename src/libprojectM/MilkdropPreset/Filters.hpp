@@ -2,7 +2,7 @@
 
 #include "PresetState.hpp"
 
-#include <Renderer/Mesh.hpp>
+#include <Renderer/Backend/OpenGL/OpenGLRenderItem.hpp>
 
 namespace libprojectM {
 namespace MilkdropPreset {
@@ -10,11 +10,13 @@ namespace MilkdropPreset {
 /**
  * @brief Classic Milkdrop 1 postprocessing effects.
  */
-class Filters
+class Filters : public libprojectM::Renderer::Backend::OpenGL::OpenGLRenderItem
 {
 public:
     Filters() = delete;
     explicit Filters(const PresetState& presetState);
+
+    void InitVertexAttrib() override;
 
     /**
      * @brief Applies the configured filters to the current output.
