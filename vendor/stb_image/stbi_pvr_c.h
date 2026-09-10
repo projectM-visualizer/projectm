@@ -77,10 +77,9 @@ static int stbi__pvr_info(stbi__context *s, int *x, int *y, int *comp, int * isc
 		stbi__rewind(s);
 		return 0;
 	}
-
-	*x = s->img_x = header.dwWidth;
-	*y = s->img_y = header.dwHeight;
-	*comp = s->img_n = ( header.dwBitCount + 7 ) / 8;
+    if (x) *x = s->img_x = header.dwWidth;
+	if (y) *y = s->img_y = header.dwHeight;
+	if (comp) *comp = s->img_n = ( header.dwBitCount + 7 ) / 8;
 
 	if ( iscompressed )
 		*iscompressed = 0;
@@ -124,7 +123,7 @@ static int stbi__pvr_info(stbi__context *s, int *x, int *y, int *comp, int * isc
 			return 0;
 	}
 
-	*comp = s->img_n;
+	if (comp) *comp = s->img_n;
 
 	return 1;
 }
@@ -896,8 +895,8 @@ static void * stbi__pvr_load(stbi__context *s, int *x, int *y, int *comp, int re
 		return NULL;
 	}
 
-	*x = s->img_x = header.dwWidth;
-	*y = s->img_y = header.dwHeight;
+	if (x) *x = s->img_x = header.dwWidth;
+	if (y) *y = s->img_y = header.dwHeight;
 
 	/* Get if the texture is compressed and the texture mode ( 2bpp or 4bpp ) */
 	switch ( header.dwpfFlags & PVRTEX_PIXELTYPE )
@@ -937,7 +936,7 @@ static void * stbi__pvr_load(stbi__context *s, int *x, int *y, int *comp, int re
 			return NULL;
 	}
 
-	*comp = s->img_n;
+	if (comp) *comp = s->img_n;
 
 	// Load only the first mip map level
 	levelSize = (s->img_x * s->img_y * header.dwBitCount + 7) / 8;
@@ -960,7 +959,7 @@ static void * stbi__pvr_load(stbi__context *s, int *x, int *y, int *comp, int re
 		//	user has some requirements, meet them
 		if( req_comp != s->img_n ) {
 			pvr_res_data = stbi__convert_format( pvr_res_data, s->img_n, req_comp, s->img_x, s->img_y );
-			*comp = req_comp;
+			if (comp) *comp = req_comp;
 		}
 	}
 

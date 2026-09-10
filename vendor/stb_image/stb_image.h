@@ -6474,7 +6474,7 @@ static stbi_uc *stbi__pic_load_core(stbi__context *s,int width,int height,int *c
       if (packet->size != 8)  return stbi__errpuc("bad format","packet isn't 8bpp");
    } while (chained);
 
-   *comp = (act_comp & 0x10 ? 4 : 3); // has alpha channel?
+   if (comp) *comp = (act_comp & 0x10 ? 4 : 3); // has alpha channel?
 
    for(y=0; y<height; ++y) {
       int packet_idx;
@@ -7399,15 +7399,15 @@ static int stbi__hdr_info(stbi__context *s, int *x, int *y, int *comp)
        return 0;
    }
    token += 3;
-   *y = (int) strtol(token, &token, 10);
+   if (y) *y = (int) strtol(token, &token, 10);
    while (*token == ' ') ++token;
    if (strncmp(token, "+X ", 3)) {
        stbi__rewind( s );
        return 0;
    }
    token += 3;
-   *x = (int) strtol(token, NULL, 10);
-   *comp = 3;
+   if (x) *x = (int) strtol(token, NULL, 10);
+   if (comp) *comp = 3;
    return 1;
 }
 #endif // STBI_NO_HDR
@@ -7457,8 +7457,8 @@ static int stbi__psd_info(stbi__context *s, int *x, int *y, int *comp)
        stbi__rewind( s );
        return 0;
    }
-   *y = stbi__get32be(s);
-   *x = stbi__get32be(s);
+   if (y) *y = stbi__get32be(s);
+   if (x) *x = stbi__get32be(s);
    depth = stbi__get16be(s);
    if (depth != 8 && depth != 16) {
        stbi__rewind( s );
@@ -7468,7 +7468,7 @@ static int stbi__psd_info(stbi__context *s, int *x, int *y, int *comp)
        stbi__rewind( s );
        return 0;
    }
-   *comp = 4;
+   if (comp) *comp = 4;
    return 1;
 }
 

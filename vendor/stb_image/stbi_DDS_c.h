@@ -240,59 +240,62 @@ void stbi_decode_DXT_color_block(
 	//	done
 }
 
-static int stbi__dds_info( stbi__context *s, int *x, int *y, int *comp, int *iscompressed ) {
-	int is_compressed,has_alpha;
-	unsigned int flags;
-	DDS_header header={0};
+static int stbi__dds_info( stbi__context *s, int *x, int *y, int *comp, int *iscompressed )
+{
+    int is_compressed,has_alpha;
+    unsigned int flags;
+    DDS_header header={0};
 
-	if( sizeof( DDS_header ) != 128 )
-	{
-		return 0;
-	}
+    if( sizeof( DDS_header ) != 128 )
+    {
+        return 0;
+    }
 
-	stbi__getn( s, (stbi_uc*)(&header), 128 );
+    stbi__getn( s, (stbi_uc*)(&header), 128 );
 
-	if( header.dwMagic != (('D' << 0) | ('D' << 8) | ('S' << 16) | (' ' << 24)) ) {
-	   stbi__rewind( s );
-	   return 0;
-	}
-	if( header.dwSize != 124 ) {
-	   stbi__rewind( s );
-	   return 0;
-	}
-	flags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
-	if( (header.dwFlags & flags) != flags ) {
-	   stbi__rewind( s );
-	   return 0;
-	}
-	if( header.sPixelFormat.dwSize != 32 ) {
-	   stbi__rewind( s );
-	   return 0;
-	}
-	flags = DDPF_FOURCC | DDPF_RGB;
-	if( (header.sPixelFormat.dwFlags & flags) == 0 ) {
-	   stbi__rewind( s );
-	   return 0;
-	}
-	if( (header.sCaps.dwCaps1 & DDSCAPS_TEXTURE) == 0 ) {
-	   stbi__rewind( s );
-	   return 0;
-	}
+    if( header.dwMagic != (('D' << 0) | ('D' << 8) | ('S' << 16) | (' ' << 24)) ) {
+        stbi__rewind( s );
+        return 0;
+    }
+    if( header.dwSize != 124 ) {
+        stbi__rewind( s );
+        return 0;
+    }
+    flags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
+    if( (header.dwFlags & flags) != flags ) {
+        stbi__rewind( s );
+        return 0;
+    }
+    if( header.sPixelFormat.dwSize != 32 ) {
+        stbi__rewind( s );
+        return 0;
+    }
+    flags = DDPF_FOURCC | DDPF_RGB;
+    if( (header.sPixelFormat.dwFlags & flags) == 0 ) {
+        stbi__rewind( s );
+        return 0;
+    }
+    if( (header.sCaps.dwCaps1 & DDSCAPS_TEXTURE) == 0 ) {
+        stbi__rewind( s );
+        return 0;
+    }
 
-	is_compressed = (header.sPixelFormat.dwFlags & DDPF_FOURCC) / DDPF_FOURCC;
-	has_alpha = (header.sPixelFormat.dwFlags & DDPF_ALPHAPIXELS) / DDPF_ALPHAPIXELS;
+    is_compressed = (header.sPixelFormat.dwFlags & DDPF_FOURCC) / DDPF_FOURCC;
+    has_alpha = (header.sPixelFormat.dwFlags & DDPF_ALPHAPIXELS) / DDPF_ALPHAPIXELS;
 
-	*x = header.dwWidth;
-	*y = header.dwHeight;
+    if (x) *x = header.dwWidth;
+    if (y) *y = header.dwHeight;
 
-	if ( !is_compressed ) {
-		*comp = 3;
+    if (comp) {
+        if ( !is_compressed ) {
+            *comp = 3;
 
-		if ( has_alpha )
-			*comp = 4;
-	}
-	else
-		*comp = 4;
+            if ( has_alpha )
+                *comp = 4;
+        }
+        else
+            *comp = 4;
+    }
 
 	if ( iscompressed )
 		*iscompressed = is_compressed;
@@ -349,6 +352,12 @@ static void * stbi__dds_load(stbi__context *s, int *x, int *y, int *comp, int re
 	int block_pitch, num_blocks;
 	DDS_header header={0};
 	int i, sz, cf;
+    int dummy;
+
+    if (!x) x = &dummy;
+    if (!y) y = &dummy;
+    if (!comp) comp = &dummy;
+
 	//	load the header
 	if( sizeof( DDS_header ) != 128 )
 	{

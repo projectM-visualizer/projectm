@@ -3692,10 +3692,18 @@ HLSLMacro * HLSLParser::ProcessMacroFromIdentifier(std::string & sourcePreproces
             if (m_macros[i]->argument == NULL)
             {
                 // Macro without arguments
-                sourcePreprocessed.append("(");
-                sourcePreprocessed.append(m_macros[i]->value);
-                sourcePreprocessed.append(")");
-                addOriginalSource = false;
+                if (m_macros[i]->name == m_macros[i]->value)
+                {
+                    // Macro name and value are identical (#define xyz xyz)
+                    addOriginalSource = true;
+                }
+                else
+                {
+                    sourcePreprocessed.append("(");
+                    sourcePreprocessed.append(m_macros[i]->value);
+                    sourcePreprocessed.append(")");
+                    addOriginalSource = false;
+                }
             }
             else
             {
