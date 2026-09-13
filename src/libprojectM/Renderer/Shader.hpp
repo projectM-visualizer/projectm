@@ -80,6 +80,44 @@ public:
                         const std::string& fragmentShaderSource);
 
     /**
+     * Deferred GL compilation (GL_KHR_parallel_shader_compile):
+     *
+     * ANGLE backgrounds glCompileShader/glLinkProgram on a worker pool
+     * (GL_KHR_parallel_shader_compile), but ANY program-observing call — including the
+     * glDetachShader right after glLinkProgram in CompileProgram — synchronously resolves
+     * the link on the calling thread. While the defer flag is set (only around preset
+     * preload), CompileProgram skips the status queries AND the detach/delete cleanup,
+     * leaving the link in flight; callers poll PendingCompileReady() (non-blocking
+     * GL_COMPLETION_STATUS_KHR) and call FinalizeCompile() once ready. Bind()/Validate()/
+     * SetUniform* finalize lazily as a safety net, so a pending shader is always safe to
+     * use — first use just blocks until the background compile finishes.
+     */
+
+    /**
+     * @brief Globally enables/disables deferred compilation for subsequent CompileProgram calls.
+     * Render/GL thread only. Only set around preset preloading.
+     */
+    static void SetDeferCompilation(bool defer);
+
+    /**
+     * @brief Returns true if this shader has a deferred, not-yet-finalized link.
+     */
+    auto HasPendingCompile() const -> bool;
+
+    /**
+     * @brief Non-blocking: true once the deferred link has completed in the background
+     * (or if there is no pending compile). Does NOT resolve the link.
+     */
+    auto PendingCompileReady() const -> bool;
+
+    /**
+     * @brief Performs the deferred status check + shader cleanup for a pending compile.
+     * No-op if nothing is pending. Blocks if the background compile is still running.
+     * @throws ShaderException Thrown if the deferred compilation or linking failed.
+     */
+    void FinalizeCompile() const;
+
+    /**
      * @brief Validates that the program can run in the current state.
      * @param validationMessage The error message if validation failed.
      * @return true if the shader program is valid and can run, false if it broken.
@@ -194,7 +232,21 @@ private:
      */
     auto CompileShader(const std::string& source, GLenum type) -> GLuint;
 
+    /**
+     * @brief Lazily finalizes a pending deferred compile, swallowing (but logging) errors.
+     * Safety net for Bind()/Validate()/SetUniform* so render paths never throw.
+     */
+    void EnsureFinalizedNoThrow() const noexcept;
+
     GLuint m_shaderProgram{}; //!< The program ID.
+
+    // Deferred-compile state. Mutable because the lazy
+    // finalize safety net runs from const accessors (Bind/SetUniform are const).
+    mutable bool m_pendingLink{false};           //!< A deferred link has not been finalized yet.
+    mutable GLuint m_pendingVertexShader{};      //!< Attached vertex shader awaiting detach/delete.
+    mutable GLuint m_pendingFragmentShader{};    //!< Attached fragment shader awaiting detach/delete.
+    mutable std::string m_pendingVertexSource;   //!< Kept for the error log if the deferred link fails.
+    mutable std::string m_pendingFragmentSource; //!< Kept for the error log if the deferred link fails.
 };
 
 } // namespace Renderer

@@ -30,6 +30,7 @@
 
 #include <Renderer/CopyTexture.hpp>
 #include <Renderer/PresetTransition.hpp>
+#include <Renderer/Shader.hpp>
 #include <Renderer/ShaderCache.hpp>
 #include <Renderer/TextureManager.hpp>
 #include <Renderer/TransitionShaderManager.hpp>
@@ -69,6 +70,108 @@ void ProjectM::LoadPresetFile(const std::string& presetFilename, bool smoothTran
         LOG_ERROR(ex.what());
         PresetSwitchFailedEvent(presetFilename, ex.what());
     }
+}
+
+void ProjectM::PreloadPresetFile(const std::string& presetFilename)
+{
+    try
+    {
+        auto preset = m_presetFactoryManager->CreatePresetFromFile(presetFilename);
+        {
+            // Preload-scoped deferred GL compile: shader compiles started during
+            // Initialize() may run on the driver's worker pool
+            // (GL_KHR_parallel_shader_compile); the status checks + cleanup happen in
+            // FinalizePendingShaderCompile() once PreloadedPresetCompileReady() reports
+            // the background work done.
+            struct DeferGuard
+            {
+                DeferGuard() { Renderer::Shader::SetDeferCompilation(true); }
+                ~DeferGuard() { Renderer::Shader::SetDeferCompilation(false); }
+            } deferGuard;
+            preset->Initialize(GetRenderContext());
+        }
+
+        m_preloadedPreset = std::move(preset);
+        m_preloadedPresetName = presetFilename;
+        m_preloadedPresetWindowWidth = m_windowWidth;
+        m_preloadedPresetWindowHeight = m_windowHeight;
+    }
+    catch (const std::exception& ex)
+    {
+        m_preloadedPreset.reset();
+        m_preloadedPresetName.clear();
+        m_preloadedPresetWindowWidth = 0;
+        m_preloadedPresetWindowHeight = 0;
+        LOG_ERROR(ex.what());
+        PresetSwitchFailedEvent(presetFilename, ex.what());
+    }
+}
+
+auto ProjectM::ActivatePreloadedPreset(bool smoothTransition) -> bool
+{
+    if (m_preloadedPreset == nullptr)
+    {
+        return false;
+    }
+
+    if (m_preloadedPresetWindowWidth != m_windowWidth || m_preloadedPresetWindowHeight != m_windowHeight)
+    {
+        // Preset::Initialize() bakes the current render context into GL resources. If the
+        // surface changed after preload, discard the prepared preset and let the caller
+        // fall back to the normal load path for the new size.
+        m_preloadedPreset.reset();
+        m_preloadedPresetName.clear();
+        m_preloadedPresetWindowWidth = 0;
+        m_preloadedPresetWindowHeight = 0;
+        return false;
+    }
+
+    // Settle any deferred background shader compiles before handing the preset to the
+    // transition. Callers gate activation on PreloadedPresetCompileReady(), so this is
+    // normally an instant resolve; if a compile is genuinely still running it blocks here
+    // (correctness over smoothness). Per-shader failures fall back inside
+    // FinalizePendingShaderCompile; anything that still escapes discards the preload so
+    // the caller does a normal load instead.
+    try
+    {
+        m_preloadedPreset->FinalizePendingShaderCompile();
+    }
+    catch (const std::exception& ex)
+    {
+        LOG_ERROR(ex.what());
+        PresetSwitchFailedEvent(m_preloadedPresetName, ex.what());
+        m_preloadedPreset.reset();
+        m_preloadedPresetName.clear();
+        m_preloadedPresetWindowWidth = 0;
+        m_preloadedPresetWindowHeight = 0;
+        return false;
+    }
+
+    // Purge at handoff rather than preload: PurgeTextures() deliberately ages textures
+    // once per real preset load and may evict cache entries. Preloading happens while the
+    // active preset is still rendering, so aging early would count a speculative load as
+    // an active switch and could evict reusable textures before the handoff.
+    m_textureManager->PurgeTextures();
+    StartPresetTransitionInternal(std::move(m_preloadedPreset), !smoothTransition, true);
+    m_preloadedPresetName.clear();
+    m_preloadedPresetWindowWidth = 0;
+    m_preloadedPresetWindowHeight = 0;
+    return true;
+}
+
+auto ProjectM::HasPreloadedPreset() const -> bool
+{
+    return m_preloadedPreset != nullptr;
+}
+
+auto ProjectM::PreloadedPresetCompileReady() const -> bool
+{
+    return m_preloadedPreset != nullptr && m_preloadedPreset->PendingShaderCompileReady();
+}
+
+auto ProjectM::PreloadedPresetName() const -> const std::string&
+{
+    return m_preloadedPresetName;
 }
 
 void ProjectM::LoadPresetData(std::istream& presetData, bool smoothTransition)
@@ -287,6 +390,11 @@ void ProjectM::SetWindowSize(uint32_t width, uint32_t height)
 
 void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hardCut)
 {
+    StartPresetTransitionInternal(std::move(preset), hardCut, false);
+}
+
+void ProjectM::StartPresetTransitionInternal(std::unique_ptr<Preset>&& preset, bool hardCut, bool alreadyInitialized)
+{
     m_presetChangeNotified = m_presetLocked;
 
     if (preset == nullptr)
@@ -294,7 +402,10 @@ void ProjectM::StartPresetTransition(std::unique_ptr<Preset>&& preset, bool hard
         return;
     }
 
-    preset->Initialize(GetRenderContext());
+    if (!alreadyInitialized)
+    {
+        preset->Initialize(GetRenderContext());
+    }
 
     // If already in a transition, force immediate completion.
     if (m_transitioningPreset != nullptr)
