@@ -16,7 +16,7 @@ VertexIndexArray::VertexIndexArray(VertexBufferUsage usage)
 
 VertexIndexArray::~VertexIndexArray()
 {
-    glDeleteBuffers(1, &m_veabID);
+    if (m_veabID) glDeleteBuffers(1, &m_veabID);
 }
 
 void VertexIndexArray::Bind() const
@@ -96,13 +96,22 @@ void VertexIndexArray::Update()
         return;
     }
 
-    if (m_veabSize == m_indices.size())
+    const GLsizei dataSize = static_cast<GLsizei>(sizeof(uint32_t) * m_indices.size());
+    const GLenum usageGL = VertexBufferUsageToGL(m_vboUsage);
+
+    if (m_vboUsage == VertexBufferUsage::DynamicDraw || m_vboUsage == VertexBufferUsage::StreamDraw)
     {
-        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, static_cast<GLsizei>(sizeof(uint32_t) * m_indices.size()), m_indices.data());
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, dataSize, nullptr, usageGL);
+        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, dataSize, m_indices.data());
+        m_veabSize = m_indices.size();
+    }
+    else if (m_veabSize == m_indices.size())
+    {
+        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, dataSize, m_indices.data());
     }
     else
     {
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizei>(sizeof(uint32_t) * m_indices.size()), m_indices.data(), VertexBufferUsageToGL(m_vboUsage));
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, dataSize, m_indices.data(), usageGL);
         m_veabSize = m_indices.size();
     }
 }

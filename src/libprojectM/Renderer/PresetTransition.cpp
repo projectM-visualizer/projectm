@@ -15,6 +15,7 @@ PresetTransition::PresetTransition(const std::shared_ptr<Shader>& transitionShad
     , m_transitionShader(transitionShader)
     , m_durationSeconds(durationSeconds)
     , m_transitionStartTime(transitionStartTime)
+    , m_frameRandomEngine(m_randomDevice()) // Seed once at instantiation
 {
     m_mesh.SetRenderPrimitiveType(Mesh::PrimitiveType::TriangleStrip);
 
@@ -27,8 +28,10 @@ PresetTransition::PresetTransition(const std::shared_ptr<Shader>& transitionShad
 
     m_mesh.Update();
 
-    std::mt19937 rand32(m_randomDevice());
-    m_staticRandomValues = {rand32(), rand32(), rand32(), rand32()};
+    m_staticRandomValues = {static_cast<int>(m_frameRandomEngine()),
+                            static_cast<int>(m_frameRandomEngine()),
+                            static_cast<int>(m_frameRandomEngine()),
+                            static_cast<int>(m_frameRandomEngine())};
 }
 
 auto PresetTransition::IsDone(double currentFrameTime) const -> bool
@@ -52,8 +55,6 @@ void PresetTransition::Draw(const Preset& oldPreset,
     {
         return;
     }
-
-    std::mt19937 rand32(m_randomDevice());
 
     // Calculate progress values
     const auto secondsSinceStart = currentFrameTime - m_transitionStartTime;
@@ -87,10 +88,10 @@ void PresetTransition::Draw(const Preset& oldPreset,
 
     m_transitionShader->SetUniformInt4("iRandStatic", m_staticRandomValues);
 
-    m_transitionShader->SetUniformInt4("iRandFrame", {rand32(),
-                                                      rand32(),
-                                                      rand32(),
-                                                      rand32()});
+    m_transitionShader->SetUniformInt4("iRandFrame", {static_cast<int>(m_frameRandomEngine()),
+                                                      static_cast<int>(m_frameRandomEngine()),
+                                                      static_cast<int>(m_frameRandomEngine()),
+                                                      static_cast<int>(m_frameRandomEngine())});
 
     m_transitionShader->SetUniformFloat3("iBeatValues", {audioData.bass,
                                                          audioData.mid,
@@ -106,12 +107,19 @@ void PresetTransition::Draw(const Preset& oldPreset,
     m_transitionShader->SetUniformInt("iChannel1", 1);
     newPreset.OutputTexture()->Bind(1, m_presetSampler);
 
-    int textureUnit = 2;
-    std::vector<TextureSamplerDescriptor> noiseDescriptors(m_noiseTextureNames.size());
-    for (const auto& noiseTextureName : m_noiseTextureNames)
+    if (m_cachedNoiseDescriptors.empty() && context.textureManager != nullptr)
     {
-        noiseDescriptors[textureUnit - 2] = context.textureManager->GetTexture(noiseTextureName);
-        noiseDescriptors[textureUnit - 2].Bind(textureUnit, *m_transitionShader);
+        m_cachedNoiseDescriptors.reserve(m_noiseTextureNames.size());
+        for (const auto& noiseTextureName : m_noiseTextureNames)
+        {
+            m_cachedNoiseDescriptors.push_back(context.textureManager->GetTexture(noiseTextureName));
+        }
+    }
+
+    int textureUnit = 2;
+    for (auto& descriptor : m_cachedNoiseDescriptors)
+    {
+        descriptor.Bind(textureUnit, *m_transitionShader);
         textureUnit++;
     }
 
@@ -122,9 +130,9 @@ void PresetTransition::Draw(const Preset& oldPreset,
     oldPreset.OutputTexture()->Unbind(0);
     newPreset.OutputTexture()->Unbind(1);
 
-    for (int i = 2; i < textureUnit; i++)
+    for (size_t i = 0; i < m_cachedNoiseDescriptors.size(); ++i)
     {
-        noiseDescriptors[i - 2].Unbind(textureUnit);
+        m_cachedNoiseDescriptors[i].Unbind(static_cast<GLint>(i + 2));
     }
 
     Mesh::Unbind();

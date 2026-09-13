@@ -36,6 +36,11 @@ namespace Renderer {
 class Framebuffer
 {
 public:
+    Framebuffer(const Framebuffer&) = delete;
+    auto operator=(const Framebuffer&) -> Framebuffer& = delete;
+    Framebuffer(Framebuffer&& other) noexcept = default;
+    auto operator=(Framebuffer&& other) noexcept -> Framebuffer& = default;
+
     /**
      * @brief Creates a new framebuffer object with one framebuffer.
      */

@@ -49,6 +49,11 @@ public:
         TriangleFan    //!< Renders a fan of triangles, with the first vertex being used as the first vertex of all rendered triangles.
     };
 
+    Mesh(const Mesh&) = delete;
+    auto operator=(const Mesh&) -> Mesh& = delete;
+    Mesh(Mesh&& other) noexcept = default;
+    auto operator=(Mesh&& other) noexcept -> Mesh& = default;
+
     /**
      * Constructor. Creates the mesh with a default rendering mode of PrimitiveType::Lines.
      */

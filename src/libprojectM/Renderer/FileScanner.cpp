@@ -54,7 +54,7 @@ void FileScanner::Scan(ScanCallback callback)
 #ifdef PROJECTM_FILESYSTEM_USE_BOOST
                 if (!entry.path().has_extension() || (entry.status().type() != file_type::symlink_file && entry.status().type() != file_type::regular_file))
 #else
-                if (!entry.path().has_extension() || (is_symlink(entry.status()) && is_regular_file(entry.status())))
+        if (!entry.path().has_extension() || (!is_regular_file(entry.status()) && !is_symlink(entry.status())))
 #endif
                 {
                     continue;

@@ -9,6 +9,8 @@
 
 #include <random>
 
+#include "Renderer/TextureSamplerDescriptor.hpp"
+
 namespace libprojectM {
 namespace Renderer {
 
@@ -69,6 +71,7 @@ private:
                                                  "pw_noisevol_lq",
                                                  "noisevol_hq",
                                                  "pw_noisevol_hq"}; //!< Names of noise textures to retrieve from TextureManager.
+    std::vector<TextureSamplerDescriptor> m_cachedNoiseDescriptors;
 
     Mesh m_mesh;                                                                                      //!< The mesh used to draw the transition effect.
     std::shared_ptr<Shader> m_transitionShader;                                                       //!< The compiled shader used for this transition.
@@ -81,6 +84,7 @@ private:
     glm::ivec4 m_staticRandomValues{}; //!< Four random integers, remaining static during the whole transition.
 
     std::random_device m_randomDevice; //!< Seed for the random number generator
+    std::mt19937 m_frameRandomEngine; //!< Persistent engine for frame-based random values to prevent syscall per-frame.
 };
 
 } // namespace Renderer

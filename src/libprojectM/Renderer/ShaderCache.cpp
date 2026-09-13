@@ -22,12 +22,13 @@ void ShaderCache::Remove(const std::string& key)
 
 auto ShaderCache::Get(const std::string& key) const -> std::shared_ptr<Shader>
 {
-    if (m_cachedShaders.find(key) != m_cachedShaders.end())
+    const auto it = m_cachedShaders.find(key);
+    if (it != m_cachedShaders.end())
     {
-        return m_cachedShaders.at(key);
+        return it->second;
     }
 
-    return {};
+    return nullptr;
 }
 
 } // namespace Renderer
