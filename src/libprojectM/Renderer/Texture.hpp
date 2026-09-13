@@ -82,8 +82,8 @@ public:
     explicit Texture(std::string name, const void* data, GLenum target, int width, int height, int depth,
                      GLint internalFormat, GLenum format, GLenum type, bool isUserTexture);
 
-    Texture(Texture&& other) = default;
-    auto operator=(Texture&& other) -> Texture& = default;
+    Texture(Texture&& other) noexcept;
+    auto operator=(Texture&& other) noexcept -> Texture&;
 
     ~Texture();
 

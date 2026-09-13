@@ -61,6 +61,16 @@ auto BlendMode::FunctionToGL(Function func) -> GLuint
             return GL_ONE_MINUS_CONSTANT_ALPHA;
         case Function::SourceAlphaSaturate:
             return GL_SRC_ALPHA_SATURATE;
+#if defined(GL_SRC1_COLOR) && !defined(USE_GLES)
+        case Function::Source1Color:
+            return GL_SRC1_COLOR;
+        case Function::OneMinusSource1Color:
+            return GL_ONE_MINUS_SRC1_COLOR;
+        case Function::Source1Alpha:
+            return GL_SRC1_ALPHA;
+        case Function::OneMinusSource1Alpha:
+            return GL_ONE_MINUS_SRC1_ALPHA;
+#endif
     }
 }
 } // namespace Renderer

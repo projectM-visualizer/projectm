@@ -87,7 +87,7 @@ void TextureAttachment::ReplaceTexture(int width, int height)
         case AttachmentType::Depth:
             internalFormat = GL_DEPTH_COMPONENT16;
             textureFormat = GL_DEPTH_COMPONENT;
-            pixelFormat = GL_FLOAT;
+            pixelFormat = GL_UNSIGNED_SHORT;
             break;
         case AttachmentType::Stencil:
             internalFormat = GL_STENCIL_INDEX8;

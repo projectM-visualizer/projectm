@@ -15,6 +15,31 @@ Sampler::Sampler(const GLint wrapMode, const GLint filterMode)
 }
 
 
+Sampler::Sampler(Sampler&& other) noexcept
+    : m_samplerId(other.m_samplerId)
+    , m_wrapMode(other.m_wrapMode)
+    , m_filterMode(other.m_filterMode)
+{
+    other.m_samplerId = 0;
+}
+
+auto Sampler::operator=(Sampler&& other) noexcept -> Sampler&
+{
+    if (this != &other)
+    {
+        if (m_samplerId != 0)
+        {
+            glDeleteSamplers(1, &m_samplerId);
+        }
+        m_samplerId = other.m_samplerId;
+        m_wrapMode = other.m_wrapMode;
+        m_filterMode = other.m_filterMode;
+
+        other.m_samplerId = 0;
+    }
+    return *this;
+}
+
 Sampler::~Sampler()
 {
     glDeleteSamplers(1, &m_samplerId);

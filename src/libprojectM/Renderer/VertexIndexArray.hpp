@@ -16,6 +16,27 @@ namespace Renderer {
 class VertexIndexArray
 {
 public:
+    VertexIndexArray(const VertexIndexArray&) = delete;
+    auto operator=(const VertexIndexArray&) -> VertexIndexArray& = delete;
+    VertexIndexArray(VertexIndexArray&& other) noexcept
+        : m_veabID(other.m_veabID), m_veabSize(other.m_veabSize),
+          m_vboUsage(other.m_vboUsage), m_indices(std::move(other.m_indices)) {
+        other.m_veabID = 0;
+        other.m_veabSize = 0;
+    }
+    auto operator=(VertexIndexArray&& other) noexcept -> VertexIndexArray& {
+        if (this != &other) {
+            if (m_veabID) glDeleteBuffers(1, &m_veabID);
+            m_veabID = other.m_veabID;
+            m_veabSize = other.m_veabSize;
+            m_vboUsage = other.m_vboUsage;
+            m_indices = std::move(other.m_indices);
+            other.m_veabID = 0;
+            other.m_veabSize = 0;
+        }
+        return *this;
+    }
+
     /**
      * Constructor. Creates an empty index buffer with the default usage hint.
      */

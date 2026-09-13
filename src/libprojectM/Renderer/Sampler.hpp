@@ -37,8 +37,8 @@ public:
      */
     Sampler(GLint wrapMode, GLint filterMode);
 
-    Sampler(Sampler&& other) = default;
-    auto operator=(Sampler&& other) -> Sampler& = default;
+    Sampler(Sampler&& other) noexcept;
+    auto operator=(Sampler&& other) noexcept -> Sampler&;
 
     ~Sampler();
 

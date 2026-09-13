@@ -14,6 +14,7 @@
 
 #include <map>
 #include <string>
+#include <unordered_map>
 
 namespace libprojectM {
 namespace Renderer {
@@ -195,6 +196,8 @@ private:
     auto CompileShader(const std::string& source, GLenum type) -> GLuint;
 
     GLuint m_shaderProgram{}; //!< The program ID.
+    mutable std::unordered_map<std::string, GLint> m_uniformLocationCache;
+    auto GetUniformLocation(const char* name) const -> GLint;
 };
 
 } // namespace Renderer

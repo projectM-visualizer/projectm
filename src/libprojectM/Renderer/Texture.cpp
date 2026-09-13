@@ -60,6 +60,55 @@ Texture::Texture(std::string name, const void* data, GLenum target, int width, i
     Update(data);
 }
 
+Texture::Texture(Texture&& other) noexcept
+    : m_textureId(other.m_textureId)
+    , m_target(other.m_target)
+    , m_name(std::move(other.m_name))
+    , m_width(other.m_width)
+    , m_height(other.m_height)
+    , m_depth(other.m_depth)
+    , m_isUserTexture(other.m_isUserTexture)
+    , m_owned(other.m_owned)
+    , m_internalFormat(other.m_internalFormat)
+    , m_format(other.m_format)
+    , m_type(other.m_type)
+{
+    other.m_textureId = 0;
+    other.m_owned = false;
+    other.m_width = 0;
+    other.m_height = 0;
+    other.m_depth = 0;
+}
+
+auto Texture::operator=(Texture&& other) noexcept -> Texture&
+{
+    if (this != &other)
+    {
+        if (m_textureId > 0 && m_owned)
+        {
+            glDeleteTextures(1, &m_textureId);
+        }
+        m_textureId = other.m_textureId;
+        m_target = other.m_target;
+        m_name = std::move(other.m_name);
+        m_width = other.m_width;
+        m_height = other.m_height;
+        m_depth = other.m_depth;
+        m_isUserTexture = other.m_isUserTexture;
+        m_owned = other.m_owned;
+        m_internalFormat = other.m_internalFormat;
+        m_format = other.m_format;
+        m_type = other.m_type;
+
+        other.m_textureId = 0;
+        other.m_owned = false;
+        other.m_width = 0;
+        other.m_height = 0;
+        other.m_depth = 0;
+    }
+    return *this;
+}
+
 Texture::~Texture()
 {
     if (m_textureId > 0 && m_owned)

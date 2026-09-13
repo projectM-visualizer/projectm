@@ -42,12 +42,22 @@ TextureSamplerDescriptor TextureManager::GetTexture(const std::string& fullName)
     GLint filterMode;
 
     ExtractTextureSettings(fullName, wrapMode, filterMode, unqualifiedName);
-    if (m_textures.find(unqualifiedName) == m_textures.end())
+    const std::string lowerUnqualified = Utils::ToLower(unqualifiedName);
+
+    auto it = m_textures.find(lowerUnqualified);
+    if (it == m_textures.end())
     {
         return TryLoadingTexture(fullName);
     }
 
-    return {m_textures[unqualifiedName], m_samplers.at({wrapMode, filterMode}), fullName, unqualifiedName};
+    // Reset usage age to zero as specified by API contract
+    auto statIt = m_textureStats.find(lowerUnqualified);
+    if (statIt != m_textureStats.end())
+    {
+        statIt->second.age = 0;
+    }
+
+    return {it->second, m_samplers.at({wrapMode, filterMode}), fullName, unqualifiedName};
 }
 
 auto TextureManager::GetSampler(const std::string& fullName) -> std::shared_ptr<class Sampler>
@@ -136,33 +146,31 @@ void TextureManager::PurgeTextures()
         return;
     }
 
-    uint32_t biggestBytes = 0;
-    std::string biggestName;
-    for (const auto& stat : m_textureStats)
+    // Target threshold: retain maximum memory budget (e.g., 128MB)
+    constexpr uint64_t kMaxTextureMemoryBytes = 128ULL * 1024ULL * 1024ULL;
+    uint64_t totalBytes = 0;
+    for (const auto& stat : m_textureStats) {
+        totalBytes += stat.second.sizeBytes;
+    }
+
+    while (totalBytes > kMaxTextureMemoryBytes && !m_textureStats.empty())
     {
-        if (stat.second.sizeBytes > 0 && stat.second.age > 1)
+        uint32_t maxScore = 0;
+        std::string candidate;
+        for (const auto& stat : m_textureStats)
         {
-            auto sizeMultiplicator = 1.0f + static_cast<float>(stat.second.age - newest) / static_cast<float>(oldest - newest);
-            auto scaledSize = static_cast<uint32_t>(stat.second.sizeBytes * sizeMultiplicator);
-            if (scaledSize > biggestBytes)
+            if (stat.second.age > 1 && stat.second.sizeBytes >= maxScore)
             {
-                biggestBytes = scaledSize;
-                biggestName = stat.first;
+                maxScore = stat.second.sizeBytes;
+                candidate = stat.first;
             }
         }
+        if (candidate.empty()) break;
+        totalBytes -= m_textureStats.at(candidate).sizeBytes;
+        m_textures.erase(candidate);
+        m_textureStats.erase(candidate);
+        LOG_DEBUG("[TextureManager] Purged texture \"" + candidate + "\"");
     }
-
-    if (biggestName.empty())
-    {
-        return;
-    }
-
-    // Purge one texture. No need to inform presets, as the texture will stay alive until the preset
-    // is unloaded.
-    m_textures.erase(m_textures.find(biggestName));
-    m_textureStats.erase(m_textureStats.find(biggestName));
-
-    LOG_DEBUG("[TextureManager] Purged texture \"" + biggestName + "\"");
 }
 
 auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSamplerDescriptor

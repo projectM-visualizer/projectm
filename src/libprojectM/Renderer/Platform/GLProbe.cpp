@@ -358,7 +358,18 @@ auto ParseVersionString(const char* str, bool isGLES, int& major, int& minor) ->
         ++p;
     }
 
-    return (std::sscanf(p, "%d.%d", &major, &minor) == 2) && (major > 0);
+    if (std::sscanf(p, "%d.%d", &major, &minor) != 2 || major <= 0)
+    {
+        return false;
+    }
+
+    // Drivers reporting "3.3" or "3.2" instead of "3.30" / "3.20"
+    if (minor < 10)
+    {
+        minor *= 10;
+    }
+
+    return true;
 }
 
 /**

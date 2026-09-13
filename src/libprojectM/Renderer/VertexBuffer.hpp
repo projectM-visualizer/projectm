@@ -24,6 +24,27 @@ template<class VT>
 class VertexBuffer
 {
 public:
+    VertexBuffer(const VertexBuffer&) = delete;
+    auto operator=(const VertexBuffer&) -> VertexBuffer& = delete;
+    VertexBuffer(VertexBuffer&& other) noexcept
+        : m_vboID(other.m_vboID), m_vboSize(other.m_vboSize),
+          m_vboUsage(other.m_vboUsage), m_vertices(std::move(other.m_vertices)) {
+        other.m_vboID = 0;
+        other.m_vboSize = 0;
+    }
+    auto operator=(VertexBuffer&& other) noexcept -> VertexBuffer& {
+        if (this != &other) {
+            if (m_vboID) glDeleteBuffers(1, &m_vboID);
+            m_vboID = other.m_vboID;
+            m_vboSize = other.m_vboSize;
+            m_vboUsage = other.m_vboUsage;
+            m_vertices = std::move(other.m_vertices);
+            other.m_vboID = 0;
+            other.m_vboSize = 0;
+        }
+        return *this;
+    }
+
     /**
      * Constructor. Creates an empty buffer with the default usage hint.
      */
@@ -182,7 +203,7 @@ VertexBuffer<VT>::VertexBuffer(VertexBufferUsage usage)
 template<class VT>
 VertexBuffer<VT>::~VertexBuffer()
 {
-    glDeleteBuffers(1, &m_vboID);
+    if (m_vboID) glDeleteBuffers(1, &m_vboID);
 }
 
 template<class VT>
@@ -287,13 +308,23 @@ void VertexBuffer<VT>::Update()
         return;
     }
 
-    if (m_vboSize == m_vertices.size())
+    const GLsizei dataSize = static_cast<GLsizei>(sizeof(VT) * m_vertices.size());
+    const GLenum usageGL = VertexBufferUsageToGL(m_vboUsage);
+
+    if (m_vboUsage == VertexBufferUsage::DynamicDraw || m_vboUsage == VertexBufferUsage::StreamDraw)
     {
-        glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizei>(sizeof(VT) * m_vertices.size()), m_vertices.data());
+        // Orphan buffer by passing nullptr to discard previous GPU storage
+        glBufferData(GL_ARRAY_BUFFER, dataSize, nullptr, usageGL);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, dataSize, m_vertices.data());
+        m_vboSize = m_vertices.size();
+    }
+    else if (m_vboSize == m_vertices.size())
+    {
+        glBufferSubData(GL_ARRAY_BUFFER, 0, dataSize, m_vertices.data());
     }
     else
     {
-        glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(sizeof(VT) * m_vertices.size()), m_vertices.data(), VertexBufferUsageToGL(m_vboUsage));
+        glBufferData(GL_ARRAY_BUFFER, dataSize, m_vertices.data(), usageGL);
         m_vboSize = m_vertices.size();
     }
 }
