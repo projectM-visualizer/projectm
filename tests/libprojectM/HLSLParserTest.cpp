@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <Engine.h>
 #include <HLSLParser.h>
 #include <HLSLTree.h>
 
@@ -61,4 +62,36 @@ TEST(HLSLParser, ConstructorWithoutParensStillWorks)
     EXPECT_TRUE(ParseHLSL(
         "float2 var = float2(1.0, 2.0) * 2.0;\n"
     ));
+}
+
+TEST(HLSLParser, StringToDoubleStopsAfterNumber)
+{
+    const char* str = "1.5) * x;";
+    char* end = nullptr;
+    EXPECT_DOUBLE_EQ(M4::String_ToDouble(str, &end), 1.5);
+    EXPECT_EQ(end, str + 3);
+}
+
+TEST(HLSLParser, StringToDoubleWithExponent)
+{
+    const char* str = "1e-3;";
+    char* end = nullptr;
+    EXPECT_DOUBLE_EQ(M4::String_ToDouble(str, &end), 0.001);
+    EXPECT_EQ(end, str + 4);
+}
+
+TEST(HLSLParser, StringToDoubleAtEndOfInput)
+{
+    const char* str = ".25";
+    char* end = nullptr;
+    EXPECT_DOUBLE_EQ(M4::String_ToDouble(str, &end), 0.25);
+    EXPECT_EQ(end, str + 3);
+}
+
+TEST(HLSLParser, StringToDoubleRejectsIdentifier)
+{
+    const char* str = "e1 = 2.0;";
+    char* end = nullptr;
+    M4::String_ToDouble(str, &end);
+    EXPECT_EQ(end, str);
 }
