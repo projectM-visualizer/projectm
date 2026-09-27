@@ -345,7 +345,7 @@ void projectm_set_window_size(projectm_handle instance, size_t width, size_t hei
 
 unsigned int projectm_pcm_get_max_samples()
 {
-    return libprojectM::Audio::WaveformSamples;
+    return libprojectM::Audio::AudioBufferSamples;
 }
 
 template<class BufferType>

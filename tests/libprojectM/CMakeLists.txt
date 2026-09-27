@@ -3,6 +3,9 @@ find_package(GTest 1.10 REQUIRED NO_MODULE)
 add_executable(projectM-unittest
         HLSLParserTest.cpp
         HLSLModuloTest.cpp
+        MilkdropShaderCommentParsingTest.cpp
+        PCMTest.cpp
+        PresetFileParserTest.cpp
         WaveformAlignerTest.cpp
         PresetFileParserTest.cpp
         MilkdropShaderCommentParsingTest.cpp
