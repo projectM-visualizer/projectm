@@ -712,13 +712,15 @@ const int _binaryOpPriority[] =
     {
         2, 1, //  &&, ||
         8, 8, //  +,  -
-        9, 9, //  *,  /
+        9, 9, 9, //  *,  /,  %
         7, 7, //  <,  >,
         7, 7, //  <=, >=,
         6, 6, //  ==, !=
         5, 3, 4, // &, |, ^
     };
 
+static_assert(sizeof(_binaryOpPriority) / sizeof(_binaryOpPriority[0]) == HLSLBinaryOp_Assign,
+              "Binary operator priorities must match HLSLBinaryOp");
 
 // IC: I'm not sure this table is right, but any errors should be caught by the backend compiler.
 // Also, this is operator dependent. The type resulting from (float4 * float4x4) is not the same as (float4 + float4x4).
@@ -1234,10 +1236,6 @@ static bool GetBinaryOpResultType(HLSLBinaryOp binaryOp, const HLSLType& type1, 
 			result.baseType = HLSLBaseType( HLSLBaseType_Bool + numComponents - 1 );
 			break;
 		}
-    case HLSLBinaryOp_Mod:
-        result.baseType = HLSLBaseType_Int;
-        break;
-
     default:
         result.baseType = _binaryOpTypeLookup[type1.baseType - HLSLBaseType_FirstNumeric][type2.baseType - HLSLBaseType_FirstNumeric];
         break;
