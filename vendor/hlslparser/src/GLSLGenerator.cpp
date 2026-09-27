@@ -708,7 +708,18 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
 
 		//
 		bool vectorExpression = IsVectorType( binaryExpression->expression1->expressionType ) || IsVectorType( binaryExpression->expression2->expressionType );
-		if( vectorExpression && IsCompareOp( binaryExpression->binaryOp ))
+        if (binaryExpression->binaryOp == HLSLBinaryOp_Mod &&
+            baseTypeDescriptions[binaryExpression->expressionType.baseType].numericType == NumericType_Float)
+        {
+            // HLSL permits floating-point remainder; GLSL's % only accepts integers.
+            // mod agrees with HLSL % in its defined domain (operands of the same sign).
+            m_writer.Write("mod(");
+            OutputExpression(binaryExpression->expression1, &binaryExpression->expressionType);
+            m_writer.Write(", ");
+            OutputExpression(binaryExpression->expression2, &binaryExpression->expressionType);
+            m_writer.Write(")");
+        }
+        else if( vectorExpression && IsCompareOp( binaryExpression->binaryOp ))
 		{
 			switch (binaryExpression->binaryOp)
 			{
@@ -741,7 +752,7 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
 			case HLSLBinaryOp_Sub:          op = " - "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
 			case HLSLBinaryOp_Mul:          op = " * "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
 			case HLSLBinaryOp_Div:          op = " / "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
-            case HLSLBinaryOp_Mod:          op = " % "; dstType1 = dstType2 = &kIntType; break;
+            case HLSLBinaryOp_Mod:          op = " % "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
 			case HLSLBinaryOp_Less:         op = " < "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
 			case HLSLBinaryOp_Greater:      op = " > "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
 			case HLSLBinaryOp_LessEqual:    op = " <= "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
@@ -762,11 +773,14 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
 				ASSERT(0);
 			}
             if ((m_version == Version_110 || m_version == Version_120 || m_version == Version_100_ES) && binaryExpression->binaryOp == HLSLBinaryOp_Mod) {
-                m_writer.Write("(int(mod(");
-                OutputExpression(binaryExpression->expression1, dstType1);
-                m_writer.Write(",");
-                OutputExpression(binaryExpression->expression2, dstType2);
-                m_writer.Write(")))");
+                // Legacy GLSL has no integer %, so use a component-wise float fallback.
+                HLSLType floatType(static_cast<HLSLBaseType>(HLSLBaseType_Float +
+                    baseTypeDescriptions[binaryExpression->expressionType.baseType].numComponents - 1));
+                m_writer.Write("%s(mod(", GetTypeName(binaryExpression->expressionType));
+                OutputExpression(binaryExpression->expression1, &floatType);
+                m_writer.Write(", ");
+                OutputExpression(binaryExpression->expression2, &floatType);
+                m_writer.Write("))");
             } else {
                 bool handled = false;
                 if (m_options.flags & Flag_AlternateNanPropagation) {
