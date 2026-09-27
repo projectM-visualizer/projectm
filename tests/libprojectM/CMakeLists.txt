@@ -30,6 +30,7 @@ add_executable(projectM-unittest
         HLSLParserTest.cpp
         LoggingTest.cpp
         MilkdropShaderCommentParsingTest.cpp
+        PCMTest.cpp
         PresetFileParserTest.cpp
         WaveformAlignerTest.cpp
 
