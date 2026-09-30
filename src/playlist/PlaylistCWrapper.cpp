@@ -46,7 +46,7 @@ void PlaylistCWrapper::OnPresetSwitchRequested(bool isHardCut, void* userData)
 
     try
     {
-        playlist->PlayPresetIndex(playlist->NextPresetIndex(), isHardCut, true);
+        playlist->PlayPresetIndex(playlist->NextPresetIndex(), isHardCut);
     }
     catch (PlaylistEmptyException&)
     {
@@ -110,7 +110,7 @@ void PlaylistCWrapper::SetPresetLoadCallback(projectm_playlist_preset_load_event
 }
 
 
-void PlaylistCWrapper::PlayPresetIndex(uint32_t index, bool hardCut, bool resetFailureCount)
+void PlaylistCWrapper::PlayPresetIndex(uint32_t index, bool hardCut)
 {
     m_hardCutRequested = hardCut;
 
@@ -539,7 +539,7 @@ auto projectm_playlist_set_position(projectm_playlist_handle instance, uint32_t 
     try
     {
         auto newIndex = playlist->SetPresetIndex(new_position);
-        playlist->PlayPresetIndex(newIndex, hard_cut, true);
+        playlist->PlayPresetIndex(newIndex, hard_cut);
         return playlist->PresetIndex();
     }
     catch (libprojectM::Playlist::PlaylistEmptyException&)
@@ -556,7 +556,7 @@ uint32_t projectm_playlist_play_next(projectm_playlist_handle instance, bool har
     try
     {
         auto newIndex = playlist->NextPresetIndex();
-        playlist->PlayPresetIndex(newIndex, hard_cut, true);
+        playlist->PlayPresetIndex(newIndex, hard_cut);
         return playlist->PresetIndex();
     }
     catch (libprojectM::Playlist::PlaylistEmptyException&)
@@ -573,7 +573,7 @@ uint32_t projectm_playlist_play_previous(projectm_playlist_handle instance, bool
     try
     {
         auto newIndex = playlist->PreviousPresetIndex();
-        playlist->PlayPresetIndex(newIndex, hard_cut, true);
+        playlist->PlayPresetIndex(newIndex, hard_cut);
         return playlist->PresetIndex();
     }
     catch (libprojectM::Playlist::PlaylistEmptyException&)
@@ -591,7 +591,7 @@ uint32_t projectm_playlist_play_last(projectm_playlist_handle instance, bool har
     try
     {
         auto newIndex = playlist->LastPresetIndex();
-        playlist->PlayPresetIndex(newIndex, hard_cut, true);
+        playlist->PlayPresetIndex(newIndex, hard_cut);
         return playlist->PresetIndex();
     }
     catch (libprojectM::Playlist::PlaylistEmptyException&)

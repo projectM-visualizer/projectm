@@ -90,9 +90,9 @@ static int stbi__pkm_info(stbi__context *s, int *x, int *y, int *comp )
 	width = (header.iWidthMSB << 8) | header.iWidthLSB;
 	height = (header.iHeightMSB << 8) | header.iHeightLSB;
 
-	*x = s->img_x = width;
-	*y = s->img_y = height;
-	*comp = s->img_n = 3;
+	if (x) *x = s->img_x = width;
+	if (y) *y = s->img_y = height;
+	if (comp) *comp = s->img_n = 3;
 
 	stbi__rewind(s);
 
@@ -154,9 +154,9 @@ static void * stbi__pkm_load(stbi__context *s, int *x, int *y, int *comp, int re
 	width = (header.iWidthMSB << 8) | header.iWidthLSB;
 	height = (header.iHeightMSB << 8) | header.iHeightLSB;
 
-	*x = s->img_x = width;
-	*y = s->img_y = height;
-	*comp = s->img_n = 4;
+	if (x) *x = s->img_x = width;
+	if (y) *y = s->img_y = height;
+	if (comp) *comp = s->img_n = 4;
 
 	compressed_size = (((width + 3) & ~3) * ((height + 3) & ~3)) >> 1;
 
@@ -174,7 +174,7 @@ static void * stbi__pkm_load(stbi__context *s, int *x, int *y, int *comp, int re
 			//	user has some requirements, meet them
 			if( req_comp != s->img_n ) {
 				pkm_res_data = stbi__convert_format( pkm_res_data, s->img_n, req_comp, s->img_x, s->img_y );
-				*comp = req_comp;
+				if (comp) *comp = req_comp;
 			}
 		}
 
