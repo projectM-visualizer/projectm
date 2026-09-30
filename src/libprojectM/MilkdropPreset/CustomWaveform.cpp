@@ -74,10 +74,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
         return;
     }
 
-    int const maxSampleCount{m_spectrum ? Audio::SpectrumSamples : Audio::WaveformSamples};
-
-    int sampleCount = std::min(maxSampleCount, static_cast<int>(*m_perFrameContext.samples));
-    sampleCount -= m_sep;
+    int const maxInputSampleCount{m_spectrum ? Audio::SpectrumSamples : Audio::WaveformSamples};
 
     // Initialize and execute per-frame code
     LoadPerFrameEvaluationVariables(presetPerFrameContext);
@@ -86,7 +83,8 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     // Copy Q and T vars to per-point context
     InitPerPointEvaluationVariables();
 
-    sampleCount = std::min(maxSampleCount, static_cast<int>(*m_perFrameContext.samples));
+    const int sampleCount = std::min(CustomWaveformMaxSamples, std::max(0, static_cast<int>(*m_perFrameContext.samples)));
+    const int separation = std::min(sampleCount - 1, std::max(0, m_sep));
 
     // If there aren't enough samples to draw a single line or dot, skip drawing the waveform.
     if ((m_useDots && sampleCount < 1) || sampleCount < 2)
@@ -104,23 +102,36 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     const float mult = m_scaling * m_presetState.waveScale * (m_spectrum ? 0.15f : 0.004f);
 
     // PCM data smoothing
-    const int offset1 = m_spectrum ? 0 : (maxSampleCount - sampleCount) / 2 - m_sep / 2;
-    const int offset2 = m_spectrum ? 0 : (maxSampleCount - sampleCount) / 2 + m_sep / 2;
-    const float t = m_spectrum ? static_cast<float>(maxSampleCount - m_sep) / static_cast<float>(sampleCount) : 1.0f;
+    float scaling{1.0f};
+    if (m_spectrum)
+    {
+        // In spectrum mode, "separation" is the amount of spectrum samples to cut off of the right
+        // side of the frequency bands. The remaining samples will be scaled to the number of requested samples.
+        scaling = static_cast<float>(maxInputSampleCount - separation) / static_cast<float>(sampleCount);
+    }
+    else if (sampleCount > maxInputSampleCount)
+    {
+        // In oscilloscope mode, we ignore "separation", but use the scaling factor
+        // to eventually scale up the 480 waveform samples to a larger, requested amount.
+        scaling = static_cast<float>(maxInputSampleCount) / static_cast<float>(sampleCount);
+    }
     const float mix1 = std::pow(m_smoothing * 0.98f, 0.5f);
     const float mix2 = 1.0f - mix1;
 
     std::array<float, CustomWaveformMaxSamples> sampleDataL{};
     std::array<float, CustomWaveformMaxSamples> sampleDataR{};
 
-    sampleDataL[0] = pcmL[offset1];
-    sampleDataR[0] = pcmR[offset2];
+    sampleDataL[0] = pcmL[0];
+    sampleDataR[0] = pcmR[0];
 
     // Smooth forward
     for (int sample = 1; sample < sampleCount; sample++)
     {
-        sampleDataL[sample] = pcmL[static_cast<int>(sample * t) + offset1] * mix2 + sampleDataL[sample - 1] * mix1;
-        sampleDataR[sample] = pcmR[static_cast<int>(sample * t) + offset2] * mix2 + sampleDataR[sample - 1] * mix1;
+        const int pcmSample = static_cast<int>(static_cast<float>(sample) * scaling);
+        assert(pcmSample >= 0);
+        assert(pcmSample < maxInputSampleCount);
+        sampleDataL[sample] = pcmL[pcmSample] * mix2 + sampleDataL[sample - 1] * mix1;
+        sampleDataR[sample] = pcmR[pcmSample] * mix2 + sampleDataR[sample - 1] * mix1;
     }
 
     // Smooth backwards (this fixes the asymmetry of the beginning & end)
