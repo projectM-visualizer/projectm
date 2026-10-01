@@ -63,9 +63,19 @@ maintainer, as the projectM development team does not maintain any of the distri
 
 - [Google Play](https://play.google.com/store/apps/details?id=com.psperl.prjM)
 
-**Note**: Both the free and paid apps plus the Android TV app are _not_ created or supported by the projectM developers!
+**Note**: Both the free and paid apps are _not_ created or supported by the projectM developers!
 If you have technical troubles or other inquiries, please contact the app author via the means provided in the Play
 Store. Any bug reports in the projectM issue tracker regarding the apps will be closed immediately.
+
+#### Android TV
+
+- [Google Play](https://play.google.com/store/apps/details?id=com.psperl.projectMTV) (paid)
+- [ProjectM-TV](https://github.com/johnneerdael/projectm-tv) (open source, including latest projectm source code and cream of the crop preset pack)
+
+**Note**: Both the free and paid Android TV apps are _not_ created or supported by the projectM developers!
+If you have technical troubles or other inquiries, please contact the app author via the means provided in the Play
+Store. Any bug reports in the projectM issue tracker regarding the apps will be closed immediately. For the FOSS 
+project you can open an issue on the repository of ProjectM-TV
 
 #### Xbox / Windows Phone
 
