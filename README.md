@@ -70,7 +70,8 @@ Store. Any bug reports in the projectM issue tracker regarding the apps will be 
 #### Android TV / Google TV
 
 - [ProjectM TV](https://github.com/johnneerdael/projectm-tv) (free, open source; APK download, see the repository for
-  install instructions)
+  install instructions; based on projectM 4.1.7 including
+  [unreleased merged fixes](https://github.com/projectM-visualizer/projectm/pull/1031))
 - [Google Play](https://play.google.com/store/apps/details?id=com.psperl.projectMTV) (paid)
 
 **Note**: These apps are _not_ created or supported by the projectM developers, and bug reports in the projectM issue
