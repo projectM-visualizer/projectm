@@ -5,6 +5,8 @@
 #include <Renderer/BlendMode.hpp>
 #include <Renderer/TextureManager.hpp>
 
+#include <array>
+#include <optional>
 #include <vector>
 
 namespace libprojectM {
@@ -12,15 +14,14 @@ namespace MilkdropPreset {
 
 CustomShape::CustomShape(PresetState& presetState)
     : m_outlineMesh(Renderer::VertexBufferUsage::StreamDraw)
-    , m_fillMesh(Renderer::VertexBufferUsage::StreamDraw, true, false)
+    , m_batchMesh(Renderer::VertexBufferUsage::StreamDraw, true, false)
     , m_presetState(presetState)
     , m_perFrameContext(presetState.globalMemory, &presetState.globalRegisters)
 {
     m_outlineMesh.SetVertexCount(100);
     m_outlineMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::LineLoop);
 
-    m_fillMesh.SetVertexCount(102);
-    m_fillMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::TriangleFan);
+    m_batchMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::Triangles);
 
     m_perFrameContext.RegisterBuiltinVariables();
 }
@@ -83,6 +84,86 @@ void CustomShape::Draw()
 
     Renderer::BlendMode::SetBlendActive(true);
 
+    // Shape fills are batched: consecutive instances that share a blend mode and texturing
+    // are collected in m_batchMesh as one triangle list and drawn with a single call. A draw
+    // call per instance (a shape can have up to 1024) is very slow on drivers with a high
+    // per-draw cost, e.g. the OpenGL-over-Metal layer on macOS. Borders are drawn per
+    // instance right after flushing the batch, so the draw order stays exactly the same.
+    auto& batchVertices = m_batchMesh.Vertices().Get();
+    auto& batchColors = m_batchMesh.Colors().Get();
+    auto& batchUVs = m_batchMesh.UVs().Get();
+    auto& batchIndices = m_batchMesh.Indices().Get();
+    bool batchAdditive{false};
+    bool batchTextured{false};
+
+    // Aspect used for the UVs of textured instances; depends only on the shape's image.
+    std::optional<float> imageAspectY;
+
+    const auto flushBatch = [&]() {
+        if (batchIndices.empty())
+        {
+            return;
+        }
+
+        // Additive Drawing or Overwrite
+        Renderer::BlendMode::SetBlendFunction(Renderer::BlendMode::Function::SourceAlpha,
+                                              batchAdditive
+                                                  ? Renderer::BlendMode::Function::One
+                                                  : Renderer::BlendMode::Function::OneMinusSourceAlpha);
+
+        m_batchMesh.SetUseUV(batchTextured);
+
+        if (batchTextured)
+        {
+            auto shader = m_presetState.texturedShader.lock();
+            shader->Bind();
+            shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+            shader->SetUniformInt("texture_sampler", 0);
+
+            // Textured shape, either main texture or texture from "image" key
+            if (m_image.empty())
+            {
+                assert(!m_presetState.mainTexture.expired());
+                m_presetState.mainTexture.lock()->Bind(0);
+            }
+            else
+            {
+                auto desc = m_presetState.renderContext.textureManager->GetTexture(m_image);
+                if (!desc.Empty())
+                {
+                    desc.Bind(0, *shader);
+                }
+                else
+                {
+                    // No texture found, fall back to main texture.
+                    assert(!m_presetState.mainTexture.expired());
+                    m_presetState.mainTexture.lock()->Bind(0);
+                }
+            }
+
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        }
+        else
+        {
+            // Untextured (creates a color gradient: center=r/g/b/a to border=r2/b2/g2/a2)
+            auto shader = m_presetState.untexturedShader.lock();
+            shader->Bind();
+            shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+        }
+
+        m_batchMesh.Update();
+        m_batchMesh.Draw();
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        Renderer::Sampler::Unbind(0);
+
+        batchVertices.clear();
+        batchColors.clear();
+        batchUVs.clear();
+        batchIndices.clear();
+    };
+
     for (int instance = 0; instance < m_instances; instance++)
     {
         m_perFrameContext.LoadStateVariables(m_presetState, *this, instance);
@@ -98,17 +179,19 @@ void CustomShape::Draw()
             sides = 100;
         }
 
-        // Additive Drawing or Overwrite
-        Renderer::BlendMode::SetBlendFunction(Renderer::BlendMode::Function::SourceAlpha,
-                                              static_cast<int>(*m_perFrameContext.additive) != 0
-                                                  ? Renderer::BlendMode::Function::One
-                                                  : Renderer::BlendMode::Function::OneMinusSourceAlpha);
+        const bool additive = static_cast<int>(*m_perFrameContext.additive) != 0;
+        const bool textured = static_cast<int>(*m_perFrameContext.textured) != 0;
 
-        auto& vertexData = m_fillMesh.Vertices();
-        auto& colorData = m_fillMesh.Colors();
+        // The batch can only hold instances drawn with identical state.
+        if (additive != batchAdditive || textured != batchTextured)
+        {
+            flushBatch();
+            batchAdditive = additive;
+            batchTextured = textured;
+        }
 
-        vertexData[0] = Renderer::Point(static_cast<float>(*m_perFrameContext.x * 2.0 - 1.0),
-                                        static_cast<float>(*m_perFrameContext.y * -2.0 + 1.0));
+        const auto center = Renderer::Point(static_cast<float>(*m_perFrameContext.x * 2.0 - 1.0),
+                                            static_cast<float>(*m_perFrameContext.y * -2.0 + 1.0));
 
         // x = f*255.0 & 0xFF = (f*255.0) % 256
         // f' = x/255.0 = f % (256/255)
@@ -116,100 +199,73 @@ void CustomShape::Draw()
         // 2.0 -> 254 (0xFE)
         // -1.0 -> 0x01
 
-        colorData[0] = Renderer::Color::Modulo(Renderer::Color(static_cast<float>(*m_perFrameContext.r),
-                                                               static_cast<float>(*m_perFrameContext.g),
-                                                               static_cast<float>(*m_perFrameContext.b),
-                                                               static_cast<float>(*m_perFrameContext.a)));
+        const auto centerColor = Renderer::Color::Modulo(Renderer::Color(static_cast<float>(*m_perFrameContext.r),
+                                                                         static_cast<float>(*m_perFrameContext.g),
+                                                                         static_cast<float>(*m_perFrameContext.b),
+                                                                         static_cast<float>(*m_perFrameContext.a)));
 
-        colorData[1] = Renderer::Color::Modulo(Renderer::Color(static_cast<float>(*m_perFrameContext.r2),
-                                                               static_cast<float>(*m_perFrameContext.g2),
-                                                               static_cast<float>(*m_perFrameContext.b2),
-                                                               static_cast<float>(*m_perFrameContext.a2)));
+        const auto edgeColor = Renderer::Color::Modulo(Renderer::Color(static_cast<float>(*m_perFrameContext.r2),
+                                                                       static_cast<float>(*m_perFrameContext.g2),
+                                                                       static_cast<float>(*m_perFrameContext.b2),
+                                                                       static_cast<float>(*m_perFrameContext.a2)));
 
-        for (int i = 1; i < sides + 1; i++)
+        // Append this instance as a triangle fan around the center vertex (center + `sides`
+        // edge vertices), written as indexed triangles.
+        const auto baseIndex = static_cast<uint32_t>(batchVertices.size());
+
+        batchVertices.push_back(center);
+        batchColors.push_back(centerColor);
+
+        std::array<Renderer::Point, 100> edgePoints;
+
+        for (int i = 0; i < sides; i++)
         {
-            const float cornerProgress = static_cast<float>(i - 1) / static_cast<float>(sides);
+            const float cornerProgress = static_cast<float>(i) / static_cast<float>(sides);
             const float angle = cornerProgress * pi * 2.0f + static_cast<float>(*m_perFrameContext.ang) + pi * 0.25f;
 
             // Todo: There's still some issue with aspect ratio here, as everything gets squashed horizontally if Y > x.
-            vertexData[i] = Renderer::Point(vertexData[0].X() + static_cast<float>(*m_perFrameContext.rad) * cosf(angle) * m_presetState.renderContext.aspectY,
-                                            vertexData[0].Y() + static_cast<float>(*m_perFrameContext.rad) * sinf(angle));
+            edgePoints[i] = Renderer::Point(center.X() + static_cast<float>(*m_perFrameContext.rad) * cosf(angle) * m_presetState.renderContext.aspectY,
+                                            center.Y() + static_cast<float>(*m_perFrameContext.rad) * sinf(angle));
 
-            colorData[i] = colorData[1];
+            batchVertices.push_back(edgePoints[i]);
+            batchColors.push_back(edgeColor);
         }
 
-        // Duplicate last vertex.
-        vertexData[sides + 1] = vertexData[1];
-        colorData[sides + 1] = colorData[1];
-
-        m_fillMesh.SetUseUV(static_cast<int>(*m_perFrameContext.textured) != 0);
-
-        if (m_fillMesh.UseUV())
+        if (textured)
         {
-            auto shader = m_presetState.texturedShader.lock();
-            shader->Bind();
-            shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
-            shader->SetUniformInt("texture_sampler", 0);
-
-            // Textured shape, either main texture or texture from "image" key
-            auto textureAspectY = m_presetState.renderContext.aspectY;
-            if (m_image.empty())
+            if (!imageAspectY.has_value())
             {
-                assert(!m_presetState.mainTexture.expired());
-                m_presetState.mainTexture.lock()->Bind(0);
-            }
-            else
-            {
-                auto desc = m_presetState.renderContext.textureManager->GetTexture(m_image);
-                if (!desc.Empty())
+                imageAspectY = m_presetState.renderContext.aspectY;
+                if (!m_image.empty() && !m_presetState.renderContext.textureManager->GetTexture(m_image).Empty())
                 {
-                    desc.Bind(0, *shader);
-                    textureAspectY = 1.0f;
-                }
-                else
-                {
-                    // No texture found, fall back to main texture.
-                    assert(!m_presetState.mainTexture.expired());
-                    m_presetState.mainTexture.lock()->Bind(0);
+                    imageAspectY = 1.0f;
                 }
             }
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            batchUVs.push_back(Renderer::TextureUV(0.5f, 0.5f));
 
-            auto& uvs = m_fillMesh.UVs();
-
-            uvs[0] = Renderer::TextureUV(0.5f, 0.5f);
-
-            for (int i = 1; i < sides + 1; i++)
+            for (int i = 0; i < sides; i++)
             {
-                const float cornerProgress = static_cast<float>(i - 1) / static_cast<float>(sides);
+                const float cornerProgress = static_cast<float>(i) / static_cast<float>(sides);
                 const float angle = cornerProgress * pi * 2.0f + static_cast<float>(*m_perFrameContext.tex_ang) + pi * 0.25f;
 
-                uvs[i] = Renderer::TextureUV(0.5f + 0.5f * cosf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom) * textureAspectY,
-                                             1.0f - (0.5f - 0.5f * sinf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom))); // Vertical flip required!
+                batchUVs.push_back(Renderer::TextureUV(0.5f + 0.5f * cosf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom) * *imageAspectY,
+                                                       1.0f - (0.5f - 0.5f * sinf(angle) / static_cast<float>(*m_perFrameContext.tex_zoom)))); // Vertical flip required!
             }
-
-            uvs[sides + 1] = uvs[1];
         }
-        else
+
+        for (int i = 0; i < sides; i++)
         {
-            // Untextured (creates a color gradient: center=r/g/b/a to border=r2/b2/g2/a2)
-            auto shader = m_presetState.untexturedShader.lock();
-            shader->Bind();
-            shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+            batchIndices.push_back(baseIndex);
+            batchIndices.push_back(baseIndex + 1 + i);
+            batchIndices.push_back(baseIndex + 1 + (i + 1) % sides);
         }
-
-        m_fillMesh.Indices().Resize(sides + 2);
-        m_fillMesh.Indices().MakeContinuous();
-        m_fillMesh.Update();
-        m_fillMesh.Draw();
-
-        glBindTexture(GL_TEXTURE_2D, 0);
-        Renderer::Sampler::Unbind(0);
 
         if (*m_perFrameContext.border_a > 0.0001f)
         {
+            // Draw everything collected so far, this instance's fill included, before its border.
+            flushBatch();
+
             m_outlineMesh.Indices().Resize(sides);
             m_outlineMesh.Indices().MakeContinuous();
 
@@ -217,7 +273,7 @@ void CustomShape::Draw()
 
             for (int i = 0; i < sides; i++)
             {
-                points[i] = m_fillMesh.Vertex(i + 1);
+                points[i] = edgePoints[i];
             }
 
             auto shader = m_presetState.untexturedShader.lock();
@@ -277,6 +333,8 @@ void CustomShape::Draw()
             }
         }
     }
+
+    flushBatch();
 
     Renderer::Mesh::Unbind();
     Renderer::Shader::Unbind();
