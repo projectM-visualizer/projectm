@@ -9,6 +9,9 @@ if(NOT "@ENABLE_EMSCRIPTEN@") # ENABLE_EMSCRIPTEN
         find_dependency(OpenGL)
     endif()
 endif()
+if("@PROJECTM_EVAL_IMPORTED@" AND NOT "@BUILD_SHARED_LIBS@")
+    find_dependency(projectM-Eval)
+endif()
 if("@ENABLE_BOOST_FILESYSTEM@") # ENABLE_BOOST_FILESYSTEM
     if(POLICY CMP0167)
         cmake_policy(SET CMP0167 NEW)
