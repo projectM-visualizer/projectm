@@ -3,7 +3,7 @@ set(PROJECTM_VCS_VERSION "Unknown" CACHE STRING "projectM version control revisi
 # Currently only supporting Git.
 find_package(Git)
 
-if(Git_FOUND)
+if(Git_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
             OUTPUT_VARIABLE _git_ref
             ERROR_QUIET
