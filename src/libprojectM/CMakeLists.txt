@@ -62,6 +62,9 @@ target_include_directories(projectM_main
         "${MSVC_EXTRA_INCLUDE_DIR}"
         )
 
+# The objects of an external projectM-Eval library can't be pulled in, it has to be linked instead.
+get_target_property(PROJECTM_EVAL_IMPORTED projectM::Eval IMPORTED)
+
 # CMake cannot combine multiple static libraries using target_link_libraries.
 # This syntax will pull in the compiled object files into the final library.
 add_library(projectM
@@ -73,7 +76,7 @@ add_library(projectM
         $<TARGET_OBJECTS:hlslparser>
         $<TARGET_OBJECTS:stb_image>
         $<TARGET_OBJECTS:projectM_main>
-        $<TARGET_OBJECTS:projectM::Eval>
+        $<$<NOT:$<BOOL:${PROJECTM_EVAL_IMPORTED}>>:$<TARGET_OBJECTS:projectM::Eval>>
         $<TARGET_OBJECTS:glad_obj>
         )
 
@@ -96,6 +99,13 @@ target_link_libraries(projectM
         libprojectM::API
         ${PROJECTM_FILESYSTEM_LIBRARY}
         )
+
+if(PROJECTM_EVAL_IMPORTED)
+    target_link_libraries(projectM
+            PRIVATE
+            projectM::Eval
+            )
+endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     target_link_libraries(projectM
@@ -293,6 +303,10 @@ if(ENABLE_INSTALL)
             # We will just assume the build uses Boost from the default location (e.g. not a custom CMAKE_PREFIX_PATH) and
             # the library name is correct.
             set(PKGCONFIG_LIBS "${PKGCONFIG_LIBS} -lboost_filesystem")
+        endif()
+
+        if(PROJECTM_EVAL_IMPORTED AND NOT BUILD_SHARED_LIBS)
+            set(PKGCONFIG_PACKAGE_REQUIREMENTS_ALL "projectm-eval")
         endif()
 
         set(PKGCONFIG_PACKAGE_NAME "${PROJECTM_LIBRARY_BASE_OUTPUT_NAME}")
