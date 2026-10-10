@@ -15,6 +15,7 @@ namespace MilkdropPreset {
 CustomShape::CustomShape(PresetState& presetState)
     : m_outlineMesh(Renderer::VertexBufferUsage::StreamDraw)
     , m_batchMesh(Renderer::VertexBufferUsage::StreamDraw, true, false)
+    , m_outlineBatchMesh(Renderer::VertexBufferUsage::StreamDraw, true, false)
     , m_presetState(presetState)
     , m_perFrameContext(presetState.globalMemory, &presetState.globalRegisters)
 {
@@ -22,6 +23,7 @@ CustomShape::CustomShape(PresetState& presetState)
     m_outlineMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::LineLoop);
 
     m_batchMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::Triangles);
+    m_outlineBatchMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::Lines);
 
     m_perFrameContext.RegisterBuiltinVariables();
 }
@@ -88,16 +90,42 @@ void CustomShape::Draw()
     // are collected in m_batchMesh as one triangle list and drawn with a single call. A draw
     // call per instance (a shape can have up to 1024) is very slow on drivers with a high
     // per-draw cost, e.g. the OpenGL-over-Metal layer on macOS. Borders are drawn per
-    // instance right after flushing the batch, so the draw order stays exactly the same.
+    // instance right after flushing the batch, so the draw order stays exactly the same,
+    // except for additive instances: additive blending is order-independent, so their borders
+    // are collected in m_outlineBatchMesh as a line list and drawn right after the fills.
     auto& batchVertices = m_batchMesh.Vertices().Get();
     auto& batchColors = m_batchMesh.Colors().Get();
     auto& batchUVs = m_batchMesh.UVs().Get();
     auto& batchIndices = m_batchMesh.Indices().Get();
+    auto& outlineVertices = m_outlineBatchMesh.Vertices().Get();
+    auto& outlineColors = m_outlineBatchMesh.Colors().Get();
     bool batchAdditive{false};
     bool batchTextured{false};
 
     // Aspect used for the UVs of textured instances; depends only on the shape's image.
     std::optional<float> imageAspectY;
+
+    // Need to use +/- 1.0 here instead of 2.0 used in Milkdrop to achieve the same rendering result.
+    const auto incrementX = 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
+    const auto incrementY = 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeY);
+
+    // If thick outline is used, the border is drawn four times with slight offsets
+    // (top left, top right, bottom right, bottom left).
+    const std::array<Renderer::Point, 4> outlineOffsets{
+        Renderer::Point(0.0f, 0.0f), Renderer::Point(incrementX, 0.0f),
+        Renderer::Point(incrementX, incrementY), Renderer::Point(0.0f, incrementY)};
+    const auto iterations = m_thickOutline ? 4 : 1;
+
+    const auto bindOutlineState = [&]() {
+        auto shader = m_presetState.untexturedShader.lock();
+        shader->Bind();
+        shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+        shader->SetUniformFloat("vertex_point_size", 1.0f);
+        glLineWidth(1);
+#ifndef USE_GLES
+        glEnable(GL_LINE_SMOOTH);
+#endif
+    };
 
     const auto flushBatch = [&]() {
         if (batchIndices.empty())
@@ -162,6 +190,17 @@ void CustomShape::Draw()
         batchColors.clear();
         batchUVs.clear();
         batchIndices.clear();
+
+        // Borders of the additive instances just drawn, with the same blend function.
+        if (!outlineVertices.empty())
+        {
+            bindOutlineState();
+            m_outlineBatchMesh.Update();
+            m_outlineBatchMesh.Draw();
+
+            outlineVertices.clear();
+            outlineColors.clear();
+        }
     };
 
     for (int instance = 0; instance < m_instances; instance++)
@@ -263,6 +302,30 @@ void CustomShape::Draw()
 
         if (*m_perFrameContext.border_a > 0.0001f)
         {
+            const Renderer::Color borderColor(static_cast<float>(*m_perFrameContext.border_r),
+                                              static_cast<float>(*m_perFrameContext.border_g),
+                                              static_cast<float>(*m_perFrameContext.border_b),
+                                              static_cast<float>(*m_perFrameContext.border_a));
+
+            if (additive)
+            {
+                // Each loop edge as its own line segment, once per thick-outline offset.
+                for (auto iteration = 0; iteration < iterations; iteration++)
+                {
+                    const auto& offset = outlineOffsets[iteration];
+                    for (int i = 0; i < sides; i++)
+                    {
+                        const auto& from = edgePoints[i];
+                        const auto& to = edgePoints[(i + 1) % sides];
+                        outlineVertices.emplace_back(from.X() + offset.X(), from.Y() + offset.Y());
+                        outlineVertices.emplace_back(to.X() + offset.X(), to.Y() + offset.Y());
+                        outlineColors.push_back(borderColor);
+                        outlineColors.push_back(borderColor);
+                    }
+                }
+                continue;
+            }
+
             // Draw everything collected so far, this instance's fill included, before its border.
             flushBatch();
 
@@ -271,61 +334,15 @@ void CustomShape::Draw()
 
             auto& points = m_outlineMesh.Vertices();
 
-            for (int i = 0; i < sides; i++)
-            {
-                points[i] = edgePoints[i];
-            }
+            bindOutlineState();
+            glVertexAttrib4f(1, borderColor.R(), borderColor.G(), borderColor.B(), borderColor.A());
 
-            auto shader = m_presetState.untexturedShader.lock();
-            shader->Bind();
-            shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
-            shader->SetUniformFloat("vertex_point_size", 1.0f);
-
-            glVertexAttrib4f(1,
-                             static_cast<float>(*m_perFrameContext.border_r),
-                             static_cast<float>(*m_perFrameContext.border_g),
-                             static_cast<float>(*m_perFrameContext.border_b),
-                             static_cast<float>(*m_perFrameContext.border_a));
-            glLineWidth(1);
-#ifndef USE_GLES
-            glEnable(GL_LINE_SMOOTH);
-#endif
-
-            const auto iterations = m_thickOutline ? 4 : 1;
-
-            // Need to use +/- 1.0 here instead of 2.0 used in Milkdrop to achieve the same rendering result.
-            const auto incrementX = 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
-            const auto incrementY = 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeY);
-
-            // If thick outline is used, draw the shape four times with slight offsets
-            // (top left, top right, bottom right, bottom left).
             for (auto iteration = 0; iteration < iterations; iteration++)
             {
-                switch (iteration)
+                const auto& offset = outlineOffsets[iteration];
+                for (int i = 0; i < sides; i++)
                 {
-                    case 0:
-                        break;
-
-                    case 1:
-                        for (auto j = 0; j < sides; j++)
-                        {
-                            points[j].SetX(points[j].X() + incrementX);
-                        }
-                        break;
-
-                    case 2:
-                        for (auto j = 0; j < sides; j++)
-                        {
-                            points[j].SetY(points[j].Y() + incrementY);
-                        }
-                        break;
-
-                    case 3:
-                        for (auto j = 0; j < sides; j++)
-                        {
-                            points[j].SetX(points[j].X() - incrementX);
-                        }
-                        break;
+                    points[i] = Renderer::Point(edgePoints[i].X() + offset.X(), edgePoints[i].Y() + offset.Y());
                 }
 
                 m_outlineMesh.Update();
