@@ -17,8 +17,20 @@ namespace MilkdropPreset {
 
 Waveform::Waveform(PresetState& presetState)
     : m_presetState(presetState)
-    , m_waveMesh(Renderer::VertexBufferUsage::StreamDraw)
 {
+    Init();
+}
+
+void Waveform::InitVertexAttrib()
+{
+    glEnableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+    std::vector<Point> vertexData;
+    vertexData.resize(std::max(libprojectM::Audio::SpectrumSamples, libprojectM::Audio::WaveformSamples) * 2 + 2);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Point) * vertexData.size(), vertexData.data(), GL_STREAM_DRAW);
 }
 
 void Waveform::Draw(const PerFrameContext& presetPerFrameContext)

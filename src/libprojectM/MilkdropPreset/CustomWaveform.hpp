@@ -3,9 +3,7 @@
 #include "WaveformPerFrameContext.hpp"
 #include "WaveformPerPointContext.hpp"
 
-#include <Renderer/Color.hpp>
-#include <Renderer/Mesh.hpp>
-#include <Renderer/Point.hpp>
+#include <Renderer/Backend/OpenGL/OpenGLRenderItem.hpp>
 
 #include <vector>
 
@@ -14,7 +12,9 @@ namespace MilkdropPreset {
 
 class PresetFileParser;
 
-class CustomWaveform
+namespace MilkdropPreset {
+
+class CustomWaveform : public libprojectM::Renderer::Backend::OpenGL::OpenGLRenderItem
 {
 public:
 
@@ -24,12 +24,14 @@ public:
      */
     explicit CustomWaveform(PresetState& presetState);
 
+    void InitVertexAttrib() override;
+
     /**
      * @brief Loads the initial values and code from the preset file.
      * @param parsedFile The file parser with the preset data.
      * @param index The waveform index.
      */
-    void Initialize(PresetFileParser& parsedFile, int index);
+    void Initialize(::libprojectM::PresetFileParser& parsedFile, int index);
 
     /**
      * @brief Compiles all code blocks and runs the init expression.
@@ -69,10 +71,12 @@ private:
      *
      * Roughly doubles the number of points.
      *
-     * @param points A vector of points to be smoothed.
-     * @param colors A vector of colors for the points.
+     * @param inputVertices Array of input vertices to be smoothed.
+     * @param vertexCount Number of vertices in the input array.
+     * @param outputVertices Array to store the smoothed vertices.
+     * @return The number of vertices in the output array.
      */
-    void SmoothWave(const std::vector<Renderer::Point>& points, const std::vector<Renderer::Color>& colors);
+    static int SmoothWave(const ColoredPoint* inputVertices, int vertexCount, ColoredPoint* outputVertices);
 
     int m_index{0}; //!< Custom waveform index in the preset.
     bool m_enabled{false}; //!< Render waveform if non-zero.

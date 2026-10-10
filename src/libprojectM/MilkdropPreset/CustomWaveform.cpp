@@ -19,6 +19,8 @@ CustomWaveform::CustomWaveform(PresetState& presetState)
     , m_perPointContext(presetState.globalMemory, &presetState.globalRegisters)
     , m_mesh(Renderer::VertexBufferUsage::StreamDraw, true, false)
 {
+    Init();
+
     m_perFrameContext.RegisterBuiltinVariables();
     m_perPointContext.RegisterBuiltinVariables();
 

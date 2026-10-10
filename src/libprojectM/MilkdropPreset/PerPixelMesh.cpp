@@ -17,9 +17,9 @@ namespace libprojectM {
 namespace MilkdropPreset {
 
 PerPixelMesh::PerPixelMesh()
-    : m_warpMesh(Renderer::VertexBufferUsage::StreamDraw)
 {
-    m_warpMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::Triangles);
+    Init();
+}
 
     m_warpMesh.Bind();
     m_radiusAngleBuffer.Bind();
