@@ -179,6 +179,17 @@ void MilkdropPreset::DrawInitialImage(const std::shared_ptr<Renderer::Texture>& 
     m_flipTexture.Draw(*renderContext.shaderCache, image, m_framebuffer, m_previousFrameBuffer);
 }
 
+auto MilkdropPreset::PendingShaderCompileReady() const -> bool
+{
+    return m_perPixelMesh.WarpShaderCompileReady() && m_finalComposite.CompositeShaderCompileReady();
+}
+
+void MilkdropPreset::FinalizePendingShaderCompile()
+{
+    m_perPixelMesh.FinalizeWarpShaderCompile();
+    m_finalComposite.FinalizeCompositeShaderCompile(m_state);
+}
+
 void MilkdropPreset::BindFramebuffer()
 {
     if (m_framebuffer.Width() > 0 && m_framebuffer.Height() > 0)

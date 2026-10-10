@@ -40,7 +40,7 @@ extern "C" {
  * @param name The name of the function to resolve.
  * @param user_data A user-defined data pointer that is passed along with the load proc call,
  *                  e.g. context information.
- * @since 4.2.0
+ * @since 4.3.0
  */
 typedef void* (*projectm_load_proc)(const char* name, void* user_data);
 
@@ -73,7 +73,7 @@ PROJECTM_EXPORT projectm_handle projectm_create();
  * @param user_data Custom user data pointer to pass along to the load_proc call, e.g. context information. Optional, may be NULL.
  * @return A projectM handle for the newly created instance that must be used in subsequent API calls.
  *         NULL if the instance could not be created successfully.
- * @since 4.2.0
+ * @since 4.3.0
  */
 PROJECTM_EXPORT projectm_handle projectm_create_with_opengl_load_proc(projectm_load_proc load_proc, void* user_data);
 
@@ -107,6 +107,62 @@ PROJECTM_EXPORT void projectm_destroy(projectm_handle instance);
  */
 PROJECTM_EXPORT void projectm_load_preset_file(projectm_handle instance, const char* filename,
                                                bool smooth_transition);
+
+/**
+ * @brief Loads and initializes a preset in the background without switching to it.
+ *
+ * The preset is fully created and initialized (including shader compilation), then retained
+ * until projectm_activate_preloaded_preset() is called. This lets applications that control
+ * the preset rotation themselves prepare the next preset ahead of time, so the visible
+ * switch no longer pays the load/initialize cost (which can reach hundreds of milliseconds
+ * for complex presets on slower devices).
+ *
+ * Only one preset can be preloaded at a time; a subsequent call replaces the previous one.
+ * If the preset can't be loaded, the preset switch failed callback is invoked and no preset
+ * is retained. Must be called from the rendering thread with the GL context active, like
+ * projectm_load_preset_file().
+ *
+ * @param instance The projectM instance handle.
+ * @param filename The preset filename to preload.
+ * @since 4.3.0
+ */
+PROJECTM_EXPORT void projectm_preload_preset_file(projectm_handle instance, const char* filename);
+
+/**
+ * @brief Switches to the previously preloaded preset without re-initializing it.
+ *
+ * Returns false if no preset is preloaded, or if the window size changed since the preload
+ * (the prepared preset is then discarded, as its GL resources were sized for the old
+ * surface). In both cases the caller should fall back to projectm_load_preset_file().
+ *
+ * @param instance The projectM instance handle.
+ * @param smooth_transition If true, the new preset is smoothly blended over.
+ * @return True if the preloaded preset was activated.
+ * @since 4.3.0
+ */
+PROJECTM_EXPORT bool projectm_activate_preloaded_preset(projectm_handle instance,
+                                                        bool smooth_transition);
+
+/**
+ * @brief Returns true if a preset is currently preloaded and awaiting activation.
+ *
+ * @param instance The projectM instance handle.
+ * @return True if a preset is preloaded.
+ * @since 4.3.0
+ */
+PROJECTM_EXPORT bool projectm_has_preloaded_preset(projectm_handle instance);
+
+/**
+ * @brief Non-blocking: true once the preloaded preset's deferred background shader
+ *        compiles have finished (GL_KHR_parallel_shader_compile). False if nothing is
+ *        preloaded. Gate projectm_activate_preloaded_preset() on this to keep the
+ *        finalize step instant.
+ *
+ * @param instance The projectM instance handle.
+ * @return True if the preloaded preset is ready for instant activation.
+ * @since 4.3.0
+ */
+PROJECTM_EXPORT bool projectm_preloaded_preset_compile_ready(projectm_handle instance);
 
 /**
  * @brief Loads a preset from the data pointer.

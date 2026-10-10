@@ -5,8 +5,20 @@
 
 #include <vector>
 
+// Non-blocking link-completion poll (GL_KHR_parallel_shader_compile).
+// Value per the KHR extension spec.
+#ifndef GL_COMPLETION_STATUS_KHR
+#define GL_COMPLETION_STATUS_KHR 0x91B1
+#endif
+
 namespace libprojectM {
 namespace Renderer {
+
+namespace {
+// When set (render/GL thread only, around preset
+// preload), CompileProgram leaves the link in flight instead of resolving it.
+bool s_deferCompilation{false};
+} // namespace
 
 Shader::Shader()
     : m_shaderProgram(glCreateProgram())
@@ -17,18 +29,131 @@ Shader::~Shader()
 {
     if (m_shaderProgram)
     {
+        // Note: deleting a program with a pending background link resolves (blocks on)
+        // the link inside ANGLE first. Acceptable: only reached when a preload is
+        // discarded, and by then the compile is normally long finished.
         glDeleteProgram(m_shaderProgram);
+    }
+    if (m_pendingVertexShader)
+    {
+        glDeleteShader(m_pendingVertexShader);
+    }
+    if (m_pendingFragmentShader)
+    {
+        glDeleteShader(m_pendingFragmentShader);
+    }
+}
+
+void Shader::SetDeferCompilation(bool defer)
+{
+    s_deferCompilation = defer;
+}
+
+auto Shader::HasPendingCompile() const -> bool
+{
+    return m_pendingLink;
+}
+
+auto Shader::PendingCompileReady() const -> bool
+{
+    if (!m_pendingLink)
+    {
+        return true;
+    }
+
+    // Explicitly non-resolving in ANGLE: reports whether the background link (including
+    // the Metal shader-library subtasks) has finished, without waiting for it.
+    GLint completed{GL_FALSE};
+    glGetProgramiv(m_shaderProgram, GL_COMPLETION_STATUS_KHR, &completed);
+    return completed == GL_TRUE;
+}
+
+void Shader::FinalizeCompile() const
+{
+    if (!m_pendingLink)
+    {
+        return;
+    }
+    m_pendingLink = false;
+
+    // The detach/delete below is what resolves the link inside ANGLE (blocking if the
+    // background compile is still running — callers gate on PendingCompileReady()).
+    glDetachShader(m_shaderProgram, m_pendingVertexShader);
+    glDetachShader(m_shaderProgram, m_pendingFragmentShader);
+    glDeleteShader(m_pendingVertexShader);
+    glDeleteShader(m_pendingFragmentShader);
+    m_pendingVertexShader = 0;
+    m_pendingFragmentShader = 0;
+
+    std::string vertexShaderSource;
+    std::string fragmentShaderSource;
+    std::swap(vertexShaderSource, m_pendingVertexSource);
+    std::swap(fragmentShaderSource, m_pendingFragmentSource);
+
+    GLint programLinked{};
+    glGetProgramiv(m_shaderProgram, GL_LINK_STATUS, &programLinked);
+    if (programLinked == GL_TRUE)
+    {
+        return;
+    }
+
+    GLint infoLogLength{};
+    glGetProgramiv(m_shaderProgram, GL_INFO_LOG_LENGTH, &infoLogLength);
+    std::vector<char> message(infoLogLength + 1);
+    glGetProgramInfoLog(m_shaderProgram, infoLogLength, nullptr, message.data());
+
+    std::string linkError = "[Shader] Error linking deferred shader program: " + std::string(message.data());
+    LOG_ERROR(linkError);
+    LOG_DEBUG("[Shader] Vertex shader source: " + vertexShaderSource);
+    LOG_DEBUG("[Shader] Fragment shader source: " + fragmentShaderSource);
+    throw ShaderException(linkError);
+}
+
+void Shader::EnsureFinalizedNoThrow() const noexcept
+{
+    if (!m_pendingLink)
+    {
+        return;
+    }
+    try
+    {
+        FinalizeCompile();
+    }
+    catch (const ShaderException& ex)
+    {
+        // Safety net only: real preload paths finalize explicitly (with fallback
+        // handling) before first use. A shader that fails here draws nothing.
+        LOG_ERROR(std::string("[Shader] Deferred compile failed at first use: ") + ex.message());
     }
 }
 
 void Shader::CompileProgram(const std::string& vertexShaderSource,
                             const std::string& fragmentShaderSource)
 {
+    // Recompiling a shader that still has a deferred link in flight: settle it first.
+    EnsureFinalizedNoThrow();
+
     auto vertexShader = CompileShader(vertexShaderSource, GL_VERTEX_SHADER);
     auto fragmentShader = CompileShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
 
     glAttachShader(m_shaderProgram, vertexShader);
     glAttachShader(m_shaderProgram, fragmentShader);
+
+    if (s_deferCompilation)
+    {
+        // Leave the link running on the driver's worker pool. Everything past
+        // glLinkProgram that touches the program — INCLUDING the glDetachShader in the
+        // normal path below — may synchronously resolve the link on this thread (ANGLE
+        // does), so all of it moves to FinalizeCompile().
+        glLinkProgram(m_shaderProgram);
+
+        m_pendingLink = true;
+        m_pendingVertexShader = vertexShader;
+        m_pendingFragmentShader = fragmentShader;
+        m_pendingVertexSource = vertexShaderSource;
+        m_pendingFragmentSource = fragmentShaderSource;
+        return;
+    }
 
     glLinkProgram(m_shaderProgram);
 
@@ -59,6 +184,8 @@ void Shader::CompileProgram(const std::string& vertexShaderSource,
 
 bool Shader::Validate(std::string& validationMessage) const
 {
+    EnsureFinalizedNoThrow();
+
     GLint result{GL_FALSE};
     int infoLogLength;
 
@@ -78,6 +205,10 @@ bool Shader::Validate(std::string& validationMessage) const
 
 void Shader::Bind() const
 {
+    // Every render path binds before setting uniforms, so finalizing here covers the
+    // deferred-compile safety net for all program uses.
+    EnsureFinalizedNoThrow();
+
     if (m_shaderProgram > 0)
     {
         glUseProgram(m_shaderProgram);
@@ -198,6 +329,13 @@ GLuint Shader::CompileShader(const std::string& source, GLenum type)
     glShaderSource(shader, 1, &shaderSourceCStr, nullptr);
 
     glCompileShader(shader);
+
+    if (s_deferCompilation)
+    {
+        // The status query would synchronously resolve the background translate job.
+        // Compile errors surface as a link failure in FinalizeCompile() instead.
+        return shader;
+    }
 
     glGetShaderiv(shader, GL_COMPILE_STATUS, &shaderCompiled);
     if (shaderCompiled == GL_TRUE)
