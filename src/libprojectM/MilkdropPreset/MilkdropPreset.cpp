@@ -187,6 +187,14 @@ void MilkdropPreset::BindFramebuffer()
     }
 }
 
+void MilkdropPreset::UpdateWatches(ExpressionVariableWatcher& watcher)
+{
+}
+
+void MilkdropPreset::RemoveWatches()
+{
+}
+
 void MilkdropPreset::PerFrameUpdate()
 {
     m_perFrameContext.LoadStateVariables(m_state);
@@ -227,7 +235,7 @@ void MilkdropPreset::Load(std::istream& stream)
 
     if (!parser.Read(stream))
     {
-        const std::string error =  "[MilkdropPreset] Could not parse preset data.";
+        const std::string error = "[MilkdropPreset] Could not parse preset data.";
         LOG_ERROR(error)
         throw MilkdropPresetLoadException(error);
     }
