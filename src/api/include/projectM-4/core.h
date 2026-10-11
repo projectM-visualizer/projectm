@@ -129,6 +129,24 @@ PROJECTM_EXPORT void projectm_load_preset_file(projectm_handle instance, const c
 PROJECTM_EXPORT void projectm_preload_preset_file(projectm_handle instance, const char* filename);
 
 /**
+ * @brief Loads and initializes preset data in the background without switching to it.
+ *
+ * The preset is fully created and initialized (including shader compilation), then retained
+ * until projectm_activate_preloaded_preset() is called. This is the in-memory equivalent of
+ * projectm_preload_preset_file().
+ *
+ * Only one preset can be preloaded at a time; a subsequent call replaces the previous one.
+ * If the preset can't be loaded, the preset switch failed callback is invoked and no preset
+ * is retained. Must be called from the rendering thread with the GL context active, like
+ * projectm_load_preset_data().
+ *
+ * @param instance The projectM instance handle.
+ * @param data The preset data in Milkdrop format.
+ * @since 4.3.0
+ */
+PROJECTM_EXPORT void projectm_preload_preset_data(projectm_handle instance, const char* data);
+
+/**
  * @brief Switches to the previously preloaded preset without re-initializing it.
  *
  * Returns false if no preset is preloaded, or if the window size changed since the preload

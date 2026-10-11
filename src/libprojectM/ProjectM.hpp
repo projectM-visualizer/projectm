@@ -102,6 +102,18 @@ public:
     void PreloadPresetFile(const std::string& presetFilename);
 
     /**
+     * @brief Loads and initializes preset data in the background without switching to it.
+     *
+     * The preset is fully created and initialized (including shader compilation), then
+     * retained until ActivatePreloadedPreset() is called. Only one preset can be
+     * preloaded at a time; a subsequent call replaces the previous one. On failure,
+     * PresetSwitchFailedEvent() is fired and no preset is retained.
+     *
+     * @param presetData The preset data stream to preload.
+     */
+    void PreloadPresetData(std::istream& presetData);
+
+    /**
      * @brief Switches to the previously preloaded preset without re-initializing it.
      *
      * Returns false (and discards the preloaded preset where appropriate) if no preset

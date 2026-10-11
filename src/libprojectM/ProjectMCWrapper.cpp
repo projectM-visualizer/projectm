@@ -120,6 +120,13 @@ void projectm_preload_preset_file(projectm_handle instance, const char* filename
     projectMInstance->PreloadPresetFile(filename);
 }
 
+void projectm_preload_preset_data(projectm_handle instance, const char* data)
+{
+    std::stringstream presetDataStream(data);
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->PreloadPresetData(presetDataStream);
+}
+
 bool projectm_activate_preloaded_preset(projectm_handle instance, bool smooth_transition)
 {
     auto projectMInstance = handle_to_instance(instance);

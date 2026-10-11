@@ -107,6 +107,36 @@ void ProjectM::PreloadPresetFile(const std::string& presetFilename)
     }
 }
 
+void ProjectM::PreloadPresetData(std::istream& presetData)
+{
+    try
+    {
+        auto preset = m_presetFactoryManager->CreatePresetFromStream(".milk", presetData);
+        {
+            struct DeferGuard
+            {
+                DeferGuard() { Renderer::Shader::SetDeferCompilation(true); }
+                ~DeferGuard() { Renderer::Shader::SetDeferCompilation(false); }
+            } deferGuard;
+            preset->Initialize(GetRenderContext());
+        }
+
+        m_preloadedPreset = std::move(preset);
+        m_preloadedPresetName.clear();
+        m_preloadedPresetWindowWidth = m_windowWidth;
+        m_preloadedPresetWindowHeight = m_windowHeight;
+    }
+    catch (const std::exception& ex)
+    {
+        m_preloadedPreset.reset();
+        m_preloadedPresetName.clear();
+        m_preloadedPresetWindowWidth = 0;
+        m_preloadedPresetWindowHeight = 0;
+        LOG_ERROR(ex.what());
+        PresetSwitchFailedEvent("", ex.what());
+    }
+}
+
 auto ProjectM::ActivatePreloadedPreset(bool smoothTransition) -> bool
 {
     if (m_preloadedPreset == nullptr)
