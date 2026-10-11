@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <regex>
 #include <set>
+#include <utility>
 
 namespace libprojectM {
 namespace MilkdropPreset {
@@ -62,12 +63,12 @@ void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
     std::locale loc;
 
     // Now request the textures and descriptors from the texture manager.
-    for (const auto& name : m_samplerNames)
+    for (const auto& userSampler : m_samplerNames)
     {
-        std::string baseName = name;
-        if (name.length() > 3 && name.at(2) == '_')
+        std::string baseName = userSampler.name;
+        if (userSampler.name.length() > 3 && userSampler.name.at(2) == '_')
         {
-            baseName = name.substr(3);
+            baseName = userSampler.name.substr(3);
         }
 
         std::string lowerCaseName = Utils::ToLower(baseName);
@@ -76,8 +77,8 @@ void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
         if (lowerCaseName == "main")
         {
             Renderer::TextureSamplerDescriptor desc(presetState.mainTexture.lock(),
-                                                    presetState.renderContext.textureManager->GetSampler(name),
-                                                    name,
+                                                    presetState.renderContext.textureManager->GetSampler(userSampler.name),
+                                                    userSampler.name,
                                                     "main");
             m_mainTextureDescriptors.push_back(std::move(desc));
             continue;
@@ -120,24 +121,27 @@ void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
                 {
                     // Use existing texture descriptor.
                     m_textureSamplerDescriptors.push_back(presetState.randomTextureDescriptors.at(randomSlot));
+                    m_textureSamplerDescriptors.back().PrefixSampler(userSampler.needsSamplerPrefix);
                     continue;
                 }
 
                 // Slot empty, request a new random texture.
-                auto desc = presetState.renderContext.textureManager->GetRandomTexture(name);
+                auto desc = presetState.renderContext.textureManager->GetRandomTexture(userSampler.name);
 
                 // Also store a copy in preset state!
                 presetState.randomTextureDescriptors.insert({randomSlot, desc});
 
                 m_textureSamplerDescriptors.push_back(std::move(desc));
+                m_textureSamplerDescriptors.back().PrefixSampler(userSampler.needsSamplerPrefix);
                 continue;
             }
 
             // Fall through if slot number is out of range and treat as normal texture.
         }
 
-        auto desc = presetState.renderContext.textureManager->GetTexture(name);
+        auto desc = presetState.renderContext.textureManager->GetTexture(userSampler.name);
         m_textureSamplerDescriptors.push_back(std::move(desc));
+        m_textureSamplerDescriptors.back().PrefixSampler(userSampler.needsSamplerPrefix);
     }
 
     // Now that we have the textures, transpile the code.
@@ -329,6 +333,32 @@ auto MilkdropShader::Shader() -> Renderer::Shader&
     return m_shader;
 }
 
+MilkdropShader::UserSampler::UserSampler(const char* samplerName)
+    : name(std::string(samplerName))
+{
+}
+
+MilkdropShader::UserSampler::UserSampler(std::string samplerName)
+    : name(std::move(samplerName))
+{
+}
+
+MilkdropShader::UserSampler::UserSampler(std::string samplerName, bool needsPrefix)
+    : name(std::move(samplerName))
+    , needsSamplerPrefix(needsPrefix)
+{
+}
+
+auto MilkdropShader::UserSampler::operator==(const UserSampler& other) const -> bool
+{
+    return name == other.name && needsSamplerPrefix == other.needsSamplerPrefix;
+}
+
+auto MilkdropShader::UserSampler::operator<(const UserSampler& other) const -> bool
+{
+    return name < other.name || (name == other.name && needsSamplerPrefix != other.needsSamplerPrefix);
+}
+
 void MilkdropShader::PreprocessPresetShader(std::string& program)
 {
     std::string shaderTypeString = "composite";
@@ -515,12 +545,12 @@ void MilkdropShader::GetReferencedSamplers(const std::string& program)
     m_samplerNames.clear();
 
     // "main" should always be present.
-    m_samplerNames.insert("main");
+    m_samplerNames.emplace("main");
 
     // Strip comments so that commented-out sampler/texsize declarations are not matched.
     std::string const stripped = Utils::StripComments(program);
 
-    // Search for sampler usage
+    // Search for direct sampler usage
     auto found = stripped.find("sampler_", 0);
     while (found != std::string::npos)
     {
@@ -533,11 +563,32 @@ void MilkdropShader::GetReferencedSamplers(const std::string& program)
             // Skip "sampler_state", as it's a reserved word and not a sampler.
             if (sampler != "state")
             {
-                m_samplerNames.insert(sampler);
+                m_samplerNames.emplace(sampler);
             }
         }
 
         found = stripped.find("sampler_", found);
+    }
+
+    // Search for user-declared samplers which don't start with "sampler_" - we assume a space after `sampler`.
+    found = stripped.find("sampler ", 0);
+    while (found != std::string::npos)
+    {
+        found += 8;
+        // Trim additional whitespace
+        while (found < stripped.size() && (stripped.at(found) == ' ' || stripped.at(found) == '\n' || stripped.at(found) == '\r'))
+        {
+            ++found;
+        }
+        size_t const end = stripped.find_first_of(" ;,\n\r)", found);
+
+        if (end != std::string::npos && (stripped.find("sampler_", found) == std::string::npos || stripped.find("sampler_", found) > end))
+        {
+            std::string const sampler = stripped.substr(static_cast<int>(found), static_cast<int>(end - found));
+            m_samplerNames.emplace(sampler, false);
+        }
+
+        found = stripped.find("sampler ", found);
     }
 
     // Also search for texsize usage, some presets don't reference the sampler.
@@ -550,7 +601,7 @@ void MilkdropShader::GetReferencedSamplers(const std::string& program)
         if (end != std::string::npos)
         {
             std::string const sampler = stripped.substr(static_cast<int>(found), static_cast<int>(end - found));
-            m_samplerNames.insert(sampler);
+            m_samplerNames.emplace(sampler);
         }
 
         found = stripped.find("texsize_", found);
@@ -562,7 +613,7 @@ void MilkdropShader::GetReferencedSamplers(const std::string& program)
         std::locale loc;
         while (samplerName != m_samplerNames.end())
         {
-            std::string lowerCaseName = Utils::ToLower(*samplerName);
+            std::string lowerCaseName = Utils::ToLower(samplerName->name);
             if (lowerCaseName.length() == 6 &&
                 lowerCaseName.substr(0, 4) == "rand" && std::isdigit(lowerCaseName.at(4), loc) && std::isdigit(lowerCaseName.at(5), loc))
             {
@@ -570,7 +621,7 @@ void MilkdropShader::GetReferencedSamplers(const std::string& program)
                 additionalName++;
                 if (additionalName != m_samplerNames.end())
                 {
-                    std::string addLowerCaseName = Utils::ToLower(*additionalName);
+                    std::string addLowerCaseName = Utils::ToLower(additionalName->name);
                     if (addLowerCaseName.length() > 7 &&
                         addLowerCaseName.substr(0, 6) == lowerCaseName &&
                         addLowerCaseName[6] == '_')
@@ -713,18 +764,18 @@ void MilkdropShader::UpdateMaxBlurLevel(BlurTexture::BlurLevel requestedLevel)
 
     if (m_maxBlurLevelRequired == BlurTexture::BlurLevel::Blur3)
     {
-        m_samplerNames.insert("blur1");
-        m_samplerNames.insert("blur2");
-        m_samplerNames.insert("blur3");
+        m_samplerNames.emplace("blur1");
+        m_samplerNames.emplace("blur2");
+        m_samplerNames.emplace("blur3");
     }
     else if (m_maxBlurLevelRequired == BlurTexture::BlurLevel::Blur2)
     {
-        m_samplerNames.insert("blur1");
-        m_samplerNames.insert("blur2");
+        m_samplerNames.emplace("blur1");
+        m_samplerNames.emplace("blur2");
     }
     else
     {
-        m_samplerNames.insert("blur1");
+        m_samplerNames.emplace("blur1");
     }
 }
 

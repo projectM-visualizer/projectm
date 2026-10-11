@@ -69,6 +69,22 @@ public:
 
 private:
     /**
+     * Struct to hold a user-declared sampler.
+     */
+    struct UserSampler
+    {
+        explicit UserSampler(const char* samplerName);
+        explicit UserSampler(std::string samplerName);
+        explicit UserSampler(std::string samplerName, bool needsPrefix);
+
+        std::string name;
+        bool needsSamplerPrefix{true};
+
+        auto operator==(const UserSampler& other) const -> bool;
+        auto operator<(const UserSampler& other) const -> bool;
+    };
+
+    /**
      * @brief Prepares the shader code to be translated into GLSL.
      * @param program The program code to work on.
      */
@@ -98,9 +114,9 @@ private:
     std::string m_fragmentShaderCode;          //!< The original preset fragment shader code.
     std::string m_preprocessedCode;            //!< The preprocessed preset shader code.
 
-    std::set<std::string> m_samplerNames;                                        //!< All sampler names referenced in the shader code.
-    std::vector<Renderer::TextureSamplerDescriptor> m_mainTextureDescriptors;              //!< Descriptors for all main texture references.
-    std::vector<Renderer::TextureSamplerDescriptor> m_textureSamplerDescriptors;           //!< Descriptors of all referenced samplers in the shader code.
+    std::set<UserSampler> m_samplerNames;                                        //!< All sampler names referenced in the shader code.
+    std::vector<Renderer::TextureSamplerDescriptor> m_mainTextureDescriptors;    //!< Descriptors for all main texture references.
+    std::vector<Renderer::TextureSamplerDescriptor> m_textureSamplerDescriptors; //!< Descriptors of all referenced samplers in the shader code.
     BlurTexture::BlurLevel m_maxBlurLevelRequired{BlurTexture::BlurLevel::None}; //!< Max blur level of main texture required by this shader.
 
     std::array<float, 4> m_randValues{};               //!< Random values which don't change every frame.

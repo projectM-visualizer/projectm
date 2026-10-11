@@ -30,7 +30,14 @@ void TextureSamplerDescriptor::Bind(GLint unit, const Shader& shader) const
     {
         m_texture->Bind(unit, m_sampler);
 
-        shader.SetUniformInt(std::string("sampler_" + m_samplerName).c_str(), unit);
+        if (m_prefixSampler)
+        {
+            shader.SetUniformInt(std::string("sampler_" + m_samplerName).c_str(), unit);
+        }
+        else
+        {
+            shader.SetUniformInt(std::string(m_samplerName).c_str(), unit);
+        }
         // Might be setting this more than once if the texture is used with different wrap/filter modes, but this rarely happens.
         shader.SetUniformFloat4(std::string("texsize_" + m_sizeName).c_str(), {m_texture->Width(),
                                                                                m_texture->Height(),
@@ -86,12 +93,17 @@ auto TextureSamplerDescriptor::SamplerDeclaration() const -> std::string
     std::string declaration = "uniform ";
     if (m_texture->Type() == GL_TEXTURE_3D)
     {
-        declaration.append("sampler3D sampler_");
+        declaration.append("sampler3D ");
     }
     else
     {
-        declaration.append("sampler2D sampler_");
+        declaration.append("sampler2D ");
     }
+    if (m_prefixSampler)
+    {
+        declaration.append("sampler_");
+    }
+
     declaration.append(m_samplerName);
     declaration.append(";\n");
 
@@ -151,6 +163,16 @@ void TextureSamplerDescriptor::TryUpdate(TextureManager& textureManager)
 
     m_texture = desc.m_texture;
     m_sampler = desc.m_sampler;
+}
+
+void TextureSamplerDescriptor::PrefixSampler(bool prefix)
+{
+    m_prefixSampler = prefix;
+}
+
+auto TextureSamplerDescriptor::PrefixSampler() const -> bool
+{
+    return m_prefixSampler;
 }
 
 } // namespace Renderer
