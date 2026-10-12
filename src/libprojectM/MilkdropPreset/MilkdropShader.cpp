@@ -1,5 +1,6 @@
 #include "MilkdropShader.hpp"
 
+#include "LineGeometry.hpp"
 #include "PresetState.hpp"
 #include "Utils.hpp"
 
@@ -153,8 +154,13 @@ void MilkdropShader::LoadVariables(const PresetState& presetState, const PerFram
 
     auto floatTime = static_cast<float>(presetState.renderContext.time);
     auto timeSincePresetStartWrapped = floatTime - static_cast<int>(floatTime / 10000.0) * 10000;
-    auto mipX = logf(static_cast<float>(presetState.renderContext.viewportSizeX)) / logf(2.0f);
-    auto mipY = logf(static_cast<float>(presetState.renderContext.viewportSizeY)) / logf(2.0f);
+    // Above the line reference area, texsize, texsize_main and mip_* report the reference-sized canvas
+    // the preset was made for (ShaderCanvasSize()); the textures keep the render size.
+    const auto& context = presetState.renderContext;
+    const auto canvas = ShaderCanvasSize(context.viewportSizeX, context.viewportSizeY,
+                                         context.lineReferenceWidth, context.lineReferenceHeight);
+    auto mipX = logf(static_cast<float>(canvas.width)) / logf(2.0f);
+    auto mipY = logf(static_cast<float>(canvas.height)) / logf(2.0f);
     auto mipAvg = 0.5f * (mipX + mipY);
 
     BlurTexture::Values blurMin;
@@ -202,10 +208,10 @@ void MilkdropShader::LoadVariables(const PresetState& presetState, const PerFram
                                       blurMin[2],
                                       blurMin[0],
                                       blurMax[0]});
-    m_shader.SetUniformFloat4("_c7", {presetState.renderContext.viewportSizeX,
-                                      presetState.renderContext.viewportSizeY,
-                                      1.0f / static_cast<float>(presetState.renderContext.viewportSizeX),
-                                      1.0f / static_cast<float>(presetState.renderContext.viewportSizeY)});
+    m_shader.SetUniformFloat4("_c7", {canvas.width,
+                                      canvas.height,
+                                      1.0f / static_cast<float>(canvas.width),
+                                      1.0f / static_cast<float>(canvas.height)});
 
     m_shader.SetUniformFloat4("_c8", {0.5f + 0.5f * cosf(floatTime * 0.329f + 1.2f),
                                       0.5f + 0.5f * cosf(floatTime * 1.293f + 3.9f),
@@ -311,6 +317,15 @@ void MilkdropShader::LoadVariables(const PresetState& presetState, const PerFram
         desc.Texture(presetState.mainTexture);
         desc.Bind(textureUnit, m_shader);
         textureUnit++;
+    }
+    if (!m_mainTextureDescriptors.empty() &&
+        (canvas.width != context.viewportSizeX || canvas.height != context.viewportSizeY))
+    {
+        // texsize_main is the canvas size the preset sees, like texsize (Bind() set the texture's).
+        m_shader.SetUniformFloat4("texsize_main", {canvas.width,
+                                                   canvas.height,
+                                                   1.0f / static_cast<float>(canvas.width),
+                                                   1.0f / static_cast<float>(canvas.height)});
     }
     presetState.blurTexture.Bind(textureUnit, m_shader);
     for (auto& desc : m_textureSamplerDescriptors)

@@ -22,6 +22,7 @@
 #include "MilkdropPreset.hpp"
 
 #include "Factory.hpp"
+#include "LineGeometry.hpp"
 #include "MilkdropPresetExceptions.hpp"
 #include "PresetFileParser.hpp"
 
@@ -122,7 +123,9 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     {
         const auto warpedImage = m_framebuffer.GetColorAttachmentTexture(m_previousFrameBuffer, 0);
         assert(warpedImage.get());
-        m_state.blurTexture.Update(*warpedImage, m_perFrameContext);
+        m_state.blurTexture.Update(*warpedImage, m_perFrameContext,
+                                   LineScale(m_state.renderContext.viewportSizeX, m_state.renderContext.viewportSizeY,
+                                             m_state.renderContext.lineReferenceWidth, m_state.renderContext.lineReferenceHeight));
     }
 
     // Draw audio-data-related stuff

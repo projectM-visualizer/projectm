@@ -49,7 +49,7 @@ public:
     /**
      * Destructor.
      */
-    virtual ~BlurTexture() = default;
+    virtual ~BlurTexture();
 
     /**
      * @brief Initializes the blur texture.
@@ -75,8 +75,11 @@ public:
      * @brief Renders the required blur passes on the given texture.
      * @param sourceTexture The texture to create the blur levels from.
      * @param perFrameContext The per-frame variables.
+     * @param referenceScale The line scale (LineScale()). Above 1 the blur levels are made as from a
+     *                       source of the line reference's size, the source size divided by it, so
+     *                       the blurs keep their share of the picture; 0 or 1: from the source.
      */
-    void Update(const Renderer::Texture& sourceTexture, const PerFrameContext& perFrameContext);
+    void Update(const Renderer::Texture& sourceTexture, const PerFrameContext& perFrameContext, float referenceScale = 0.0f);
 
     /**
      * @brief Binds the user-readable blur textures to the texture slots starting with the given index.
@@ -102,9 +105,10 @@ private:
 
     /**
      * Allocates the blur textures.
-     * @param sourceTexture The source texture.
+     * @param sourceWidth Width of the source the blur levels are made from (see BlurSourceFor()).
+     * @param sourceHeight Height of the source the blur levels are made from.
      */
-    void AllocateTextures(const Renderer::Texture& sourceTexture);
+    void AllocateTextures(int sourceWidth, int sourceHeight);
 
     Renderer::Mesh m_blurMesh; //!< The blur mesh (a simple quad).
 
@@ -116,6 +120,7 @@ private:
 
     Renderer::Framebuffer m_blurFramebuffer;                                        //!< The framebuffer used to draw the blur textures.
     std::shared_ptr<Renderer::Sampler> m_blurSampler;                               //!< The blur sampler.
+    GLuint m_mipmapSampler{};                                                       //!< Trilinear sampler for a scaled-down first pass.
     std::array<std::shared_ptr<Renderer::Texture>, NumBlurTextures> m_blurTextures; //!< The blur textures for each pass.
     BlurLevel m_blurLevel{BlurLevel::None};                                         //!< Current blur level.
 };

@@ -97,6 +97,52 @@ auto SampleDecisionWidth(int viewportWidth, int viewportHeight, int referenceWid
 auto MaximizeColorsTextureSize(int viewportWidth, int viewportHeight, int referenceWidth, int referenceHeight) -> int;
 
 /**
+ * @brief Size and mipmap level of the source the blur levels are made from.
+ */
+struct BlurSource
+{
+    int width{0};    //!< Width the blur chain treats its source as having.
+    int height{0};   //!< Height the blur chain treats its source as having.
+    float lod{0.0f}; //!< Mipmap level the first blur pass reads the source at (0: the source itself).
+};
+
+/**
+ * @brief The source the blur levels are made from: the source itself, or above the line reference
+ *        area a source of the reference's area (the source size divided by the line scale), read from
+ *        the source's mipmaps at log2 of the actual ratio.
+ *
+ * MilkDrop's blur levels are fixed fractions of its texture, blurred by a few of their texels, so their
+ * radius is a share of the picture only at one render size. With the reference's size they keep the
+ * share they had at the reference, like the lines.
+ * @param referenceScale LineScale(); 0 or 1 keep the source (MilkDrop).
+ */
+auto BlurSourceFor(int sourceWidth, int sourceHeight, float referenceScale) -> BlurSource;
+
+/**
+ * @brief Canvas size in pixels as told to preset code: texsize, texsize_main, mip_x/y/avg and
+ *        pixelsx/pixelsy.
+ */
+struct CanvasSize
+{
+    int width{0};
+    int height{0};
+};
+
+/**
+ * @brief The canvas size preset shaders and equations see: above the line reference area the
+ *        reference's area at the render's aspect ratio (the render size divided by LineScale(), the
+ *        size BlurSourceFor() makes the blur levels from), otherwise the render size.
+ *
+ * In MilkDrop texsize is the internal canvas, and presets step by texsize.zw texels and turn uv into
+ * pixels with texsize.xy, tuned on a canvas of about the reference size. The textures stay at the
+ * render size and are sampled as before; only the reported size follows the reference, so the steps
+ * and frequencies keep their share of the picture, like the lines.
+ * @return The render size when quad lines are off (no reference size), or at or below the reference
+ *         area, as in MilkDrop.
+ */
+auto ShaderCanvasSize(int viewportWidth, int viewportHeight, int referenceWidth, int referenceHeight) -> CanvasSize;
+
+/**
  * @brief Quad line style matching MilkDrop's thin (1 px) or thick line of this kind, at this scale.
  * @param viewportWidth Render width in pixels; MilkDrop's thick-line offsets depend on it.
  * @param viewportHeight Render height in pixels; MilkDrop's thick-line offsets depend on it.

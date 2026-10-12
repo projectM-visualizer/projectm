@@ -6,6 +6,7 @@
 #include <cmath>
 #include <vector>
 
+using libprojectM::MilkdropPreset::BlurSourceFor;
 using libprojectM::MilkdropPreset::DotStyleFor;
 using libprojectM::MilkdropPreset::LineBatch;
 using libprojectM::MilkdropPreset::LineKind;
@@ -14,6 +15,7 @@ using libprojectM::MilkdropPreset::LineStyleFor;
 using libprojectM::MilkdropPreset::MaximizeColorsTextureSize;
 using libprojectM::MilkdropPreset::PassOffsetFor;
 using libprojectM::MilkdropPreset::SampleDecisionWidth;
+using libprojectM::MilkdropPreset::ShaderCanvasSize;
 using Point = libprojectM::MilkdropPreset::ColoredPoint;
 
 namespace {
@@ -170,6 +172,125 @@ TEST(LineGeometry, MaximizeColorsTextureSizeIsTheRenderSizeAtOrBelowTheReference
 }
 
 // Without line scaling the blur levels are made from the source itself, as in MilkDrop.
+TEST(LineGeometry, BlurSourceIsTheSourceWithoutScale)
+{
+    for (float scale : {0.0f, 1.0f})
+    {
+        const auto source = BlurSourceFor(1920, 1080, scale);
+        EXPECT_EQ(source.width, 1920);
+        EXPECT_EQ(source.height, 1080);
+        EXPECT_EQ(source.lod, 0.0f);
+    }
+}
+
+// Above the reference area the blur levels are made as from a source of the reference's area (the
+// source divided by the line scale), read from the source's mipmaps at log2 of that scale.
+TEST(LineGeometry, BlurSourceFollowsTheLineScale)
+{
+    const auto hd = BlurSourceFor(1920, 1080, LineScale(1920, 1080, 1024, 768));
+    EXPECT_EQ(hd.width, 1182);
+    EXPECT_EQ(hd.height, 665);
+    EXPECT_NEAR(hd.lod, std::log2(1920.0f / 1182.0f), 1e-6f);
+
+    const auto uhd = BlurSourceFor(3840, 2160, LineScale(3840, 2160, 1024, 768));
+    EXPECT_EQ(uhd.width, 1182);
+    EXPECT_EQ(uhd.height, 665);
+    EXPECT_NEAR(uhd.lod, std::log2(3840.0f / 1182.0f), 1e-6f);
+
+    const auto ref4x3 = BlurSourceFor(2048, 1536, LineScale(2048, 1536, 1024, 768));
+    EXPECT_EQ(ref4x3.width, 1024);
+    EXPECT_EQ(ref4x3.height, 768);
+    EXPECT_FLOAT_EQ(ref4x3.lod, 1.0f);
+
+    const auto ref1080 = BlurSourceFor(3840, 2160, LineScale(3840, 2160, 1920, 1080));
+    EXPECT_EQ(ref1080.width, 1920);
+    EXPECT_EQ(ref1080.height, 1080);
+    EXPECT_FLOAT_EQ(ref1080.lod, 1.0f);
+}
+
+// The scaled source is never empty and never larger than the source.
+TEST(LineGeometry, BlurSourceStaysWithinTheSource)
+{
+    for (float scale : {1.01f, 1.5f, 3.0f, 100.0f, 10000.0f})
+    {
+        const auto source = BlurSourceFor(3840, 2160, scale);
+        EXPECT_GE(source.width, 1) << scale;
+        EXPECT_GE(source.height, 1) << scale;
+        EXPECT_LE(source.width, 3840) << scale;
+        EXPECT_LE(source.height, 2160) << scale;
+        EXPECT_GE(source.lod, 0.0f) << scale;
+    }
+}
+
+// Without a reference size, and at or below its area, presets see the render size (texsize, pixelsx/y),
+// as in MilkDrop.
+TEST(LineGeometry, ShaderCanvasSizeIsTheRenderSizeWithoutScale)
+{
+    const auto noReference = ShaderCanvasSize(3840, 2160, 0, 0);
+    EXPECT_EQ(noReference.width, 3840);
+    EXPECT_EQ(noReference.height, 2160);
+
+    const auto partialReference = ShaderCanvasSize(3840, 2160, 1024, 0);
+    EXPECT_EQ(partialReference.width, 3840);
+    EXPECT_EQ(partialReference.height, 2160);
+
+    const auto atReference = ShaderCanvasSize(1024, 768, 1024, 768);
+    EXPECT_EQ(atReference.width, 1024);
+    EXPECT_EQ(atReference.height, 768);
+
+    const auto belowReference = ShaderCanvasSize(1182, 665, 1024, 768); // area just under the reference's
+    EXPECT_EQ(belowReference.width, 1182);
+    EXPECT_EQ(belowReference.height, 665);
+
+    const auto small = ShaderCanvasSize(640, 360, 1024, 768);
+    EXPECT_EQ(small.width, 640);
+    EXPECT_EQ(small.height, 360);
+}
+
+// Above the reference area presets see the reference's area at the render's aspect ratio (the render
+// size divided by the line scale), so texel steps and uv-to-pixel factors keep their share of the
+// picture. It is the size the blur levels are made from.
+TEST(LineGeometry, ShaderCanvasSizeFollowsTheReferenceAboveIt)
+{
+    const auto hd = ShaderCanvasSize(1920, 1080, 1024, 768);
+    EXPECT_EQ(hd.width, 1182);
+    EXPECT_EQ(hd.height, 665);
+
+    const auto uhd = ShaderCanvasSize(3840, 2160, 1024, 768);
+    EXPECT_EQ(uhd.width, 1182);
+    EXPECT_EQ(uhd.height, 665);
+
+    const auto ref4x3 = ShaderCanvasSize(2048, 1536, 1024, 768);
+    EXPECT_EQ(ref4x3.width, 1024);
+    EXPECT_EQ(ref4x3.height, 768);
+
+    const auto portrait = ShaderCanvasSize(1080, 1920, 768, 1024);
+    EXPECT_EQ(portrait.width, 665);
+    EXPECT_EQ(portrait.height, 1182);
+
+    for (int height : {1260, 1330, 1440})
+    {
+        const int width = height * 16 / 9;
+        const auto canvas = ShaderCanvasSize(width, height, 1024, 768);
+        const auto blur = BlurSourceFor(width, height, LineScale(width, height, 1024, 768));
+        EXPECT_EQ(canvas.width, blur.width) << height;
+        EXPECT_EQ(canvas.height, blur.height) << height;
+    }
+}
+
+// The reported canvas is never empty and never larger than the render.
+TEST(LineGeometry, ShaderCanvasSizeStaysWithinTheRender)
+{
+    for (int reference : {1, 2, 100, 1024})
+    {
+        const auto canvas = ShaderCanvasSize(3840, 2160, reference, reference);
+        EXPECT_GE(canvas.width, 1) << reference;
+        EXPECT_GE(canvas.height, 1) << reference;
+        EXPECT_LE(canvas.width, 3840) << reference;
+        EXPECT_LE(canvas.height, 2160) << reference;
+    }
+}
+
 TEST(LineGeometry, ThinLinesAreOnePixelAtReference)
 {
     for (auto kind : {LineKind::MainWave, LineKind::CustomWave, LineKind::ShapeBorder, LineKind::MotionVector})

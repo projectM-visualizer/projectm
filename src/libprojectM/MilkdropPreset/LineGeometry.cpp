@@ -55,6 +55,26 @@ auto MaximizeColorsTextureSize(int viewportWidth, int viewportHeight, int refere
     return std::max(viewportWidth, viewportHeight);
 }
 
+auto BlurSourceFor(int sourceWidth, int sourceHeight, float referenceScale) -> BlurSource
+{
+    if (referenceScale <= 1.0f || sourceWidth <= 0 || sourceHeight <= 0)
+    {
+        return {sourceWidth, sourceHeight, 0.0f};
+    }
+    BlurSource source;
+    source.width = std::max(1, static_cast<int>(std::lround(static_cast<float>(sourceWidth) / referenceScale)));
+    source.height = std::max(1, static_cast<int>(std::lround(static_cast<float>(sourceHeight) / referenceScale)));
+    source.lod = std::log2(static_cast<float>(sourceWidth) / static_cast<float>(source.width));
+    return source;
+}
+
+auto ShaderCanvasSize(int viewportWidth, int viewportHeight, int referenceWidth, int referenceHeight) -> CanvasSize
+{
+    const auto source = BlurSourceFor(viewportWidth, viewportHeight,
+                                      LineScale(viewportWidth, viewportHeight, referenceWidth, referenceHeight));
+    return {source.width, source.height};
+}
+
 auto LineStyleFor(LineKind kind, bool thick, float scale, int viewportWidth, int viewportHeight) -> LineStyle
 {
     // MilkDrop's thick-line offsets in the strip's own -1...1 coordinates, before vertex_transformation:
