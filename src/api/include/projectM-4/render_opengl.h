@@ -77,8 +77,12 @@ PROJECTM_EXPORT void projectm_opengl_burn_texture(projectm_handle instance, uint
  *
  * Thick lines are drawn like Milkdrop's: the thin line four times with small offsets, which scale
  * the same way. Waveform dots are drawn with a matching point size and their alpha is adjusted to
- * the drawn area. Milkdrop's waveform sample count rule and the spiro/hash wave fade, which both
- * depend on the render size, follow the reference size above its area.
+ * the drawn area.
+ *
+ * Above the reference area, other Milkdrop quantities that depend on the render size follow the
+ * reference size too: the waveform sample count rule, the spiro/hash wave fade, the size of the
+ * blur levels, and the canvas size preset code sees (texsize, texsize_main, mip_x/y/avg, pixelsx
+ * and pixelsy). Textures keep the render size.
  *
  * Edges are hard, like Milkdrop's lines, unless projectm_opengl_set_line_antialiasing() is enabled.
  * If the driver rejects the line shaders, lines are drawn as OpenGL lines.
