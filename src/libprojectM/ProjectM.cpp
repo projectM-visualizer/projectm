@@ -583,6 +583,20 @@ void ProjectM::TouchDestroyAll()
     // UNIMPLEMENTED
 }
 
+void ProjectM::SetPreprocessCacheHooks(const projectm_preprocess_cache_hooks* hooks)
+{
+    if (hooks != nullptr)
+    {
+        m_preprocessCacheHooks = *hooks;
+        m_preprocessCacheHooksSet = true;
+    }
+    else
+    {
+        m_preprocessCacheHooks = projectm_preprocess_cache_hooks{};
+        m_preprocessCacheHooksSet = false;
+    }
+}
+
 auto ProjectM::GetRenderContext() -> Renderer::RenderContext
 {
     Renderer::RenderContext ctx{};
@@ -605,6 +619,7 @@ auto ProjectM::GetRenderContext() -> Renderer::RenderContext
 
     ctx.textureManager = m_textureManager.get();
     ctx.shaderCache = m_shaderCache.get();
+    ctx.preprocessCache = m_preprocessCacheHooksSet ? &m_preprocessCacheHooks : nullptr;
 
     if (m_transition)
     {
