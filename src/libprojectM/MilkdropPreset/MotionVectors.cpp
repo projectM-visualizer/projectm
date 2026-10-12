@@ -67,7 +67,7 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
     const float lineScale = LineScale(context.viewportSizeX, context.viewportSizeY,
                                       context.lineReferenceWidth, context.lineReferenceHeight);
     const bool quadLines = lineScale > 0.0f && GetQuadShader() != nullptr;
-    m_vectorStarts.Get().clear();
+    m_vectorStarts.clear();
 
     m_motionVectorMesh.SetVertexCount(static_cast<std::size_t>(countX + 1) * 2); // countX + 1 lines for each grid row, 2 vertices each.
 
@@ -122,7 +122,7 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
             {
                 for (int v = 0; v < vertex; v += 2)
                 {
-                    m_vectorStarts.Get().push_back(lineVertices[v]);
+                    m_vectorStarts.push_back(lineVertices[v]);
                 }
                 continue;
             }
@@ -210,22 +210,25 @@ std::shared_ptr<Renderer::Shader> MotionVectors::GetQuadShader()
 
 void MotionVectors::DrawQuads(const PerFrameContext& presetPerFrameContext, float lineScale, float minimumLength)
 {
-    if (m_vectorStarts.Empty())
+    if (m_vectorStarts.empty())
     {
         return;
     }
 
-    m_quadArray.Bind();
-    if (!m_quadArrayInitialized)
+    if (!m_quadArray)
     {
-        m_vectorStarts.InitializeAttributePointer(0);
+        m_quadArray = std::make_unique<Renderer::VertexArray>();
+        m_quadVertices = std::make_unique<Renderer::VertexBuffer<Renderer::Point>>(Renderer::VertexBufferUsage::StreamDraw);
+        m_quadArray->Bind();
+        m_quadVertices->InitializeAttributePointer(0);
         Renderer::VertexBuffer<Renderer::Point>::SetEnableAttributeArray(0, true);
         glVertexAttribDivisor(0, 1);
         // The color is the constant attribute value set in Draw().
         Renderer::VertexBuffer<Renderer::Point>::SetEnableAttributeArray(1, false);
-        m_quadArrayInitialized = true;
     }
-    m_vectorStarts.Update();
+    m_quadArray->Bind();
+    m_quadVertices->Set(m_vectorStarts);
+    m_quadVertices->Update();
 
     const auto& context = m_presetState.renderContext;
     auto shader = GetQuadShader();
@@ -243,7 +246,7 @@ void MotionVectors::DrawQuads(const PerFrameContext& presetPerFrameContext, floa
     shader->SetUniformInt("warp_coordinates", 0);
 
     // One quad (four vertices) per vector start.
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(m_vectorStarts.Size()));
+    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(m_vectorStarts.size()));
 
     Renderer::VertexArray::Unbind();
 }

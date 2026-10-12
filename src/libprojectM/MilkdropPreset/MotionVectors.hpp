@@ -9,6 +9,7 @@
 #include <Renderer/VertexBuffer.hpp>
 
 #include <memory>
+#include <vector>
 
 namespace libprojectM {
 namespace MilkdropPreset {
@@ -53,9 +54,9 @@ private:
 
     Renderer::Mesh m_motionVectorMesh; //!< The Motion Vector geometry.
 
-    Renderer::VertexArray m_quadArray;                                                       //!< Vertex array for the scaled quad vectors.
-    Renderer::VertexBuffer<Renderer::Point> m_vectorStarts{Renderer::VertexBufferUsage::StreamDraw}; //!< Start points of the scaled quad vectors.
-    bool m_quadArrayInitialized{false};                                                      //!< m_quadArray's attributes are set up.
+    std::vector<Renderer::Point> m_vectorStarts;                              //!< Start points of the scaled quad vectors.
+    std::unique_ptr<Renderer::VertexArray> m_quadArray;                       //!< Vertex array for the scaled quad vectors, created on first use.
+    std::unique_ptr<Renderer::VertexBuffer<Renderer::Point>> m_quadVertices; //!< Uploaded start points, created on first use.
     std::weak_ptr<Renderer::Shader> m_motionVectorQuadShader;                                //!< The scaled quad-line motion vector shader.
     bool m_quadShaderFailed{false};                                                          //!< The quad-line shader did not compile; draw GL lines.
 
