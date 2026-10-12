@@ -194,6 +194,31 @@ public:
 
     void SetTexelOffsets(float texelOffsetX, float texelOffsetY);
 
+    /**
+     * @brief Returns the line reference size (see projectm_opengl_set_line_reference_size()).
+     * @param width Receives the reference width, 0 if lines are drawn as GL lines.
+     * @param height Receives the reference height, 0 if lines are drawn as GL lines.
+     */
+    void LineReferenceSize(uint32_t& width, uint32_t& height) const;
+
+    /**
+     * @brief Draws lines as quads that are 1 px wide at and below this size's area and widen by the
+     *        square root of the area ratio above it (see projectm_opengl_set_line_reference_size()).
+     * @param width Reference width in pixels. 0 in either dimension keeps Milkdrop's 1 px GL lines.
+     * @param height Reference height in pixels. 0 in either dimension keeps Milkdrop's 1 px GL lines.
+     */
+    void SetLineReferenceSize(uint32_t width, uint32_t height);
+
+    /**
+     * @brief Returns whether scaled lines have an anti-aliased edge.
+     */
+    auto LineAntialiasing() const -> bool;
+
+    /**
+     * @brief Gives scaled lines an anti-aliased edge (see projectm_opengl_set_line_antialiasing()).
+     */
+    void SetLineAntialiasing(bool enabled);
+
     void Touch(float touchX, float touchY, int pressure, int touchType);
 
     void TouchDrag(float touchX, float touchY, int pressure);
@@ -324,6 +349,9 @@ private:
     float m_previousFrameVolume{};   //!< Volume in previous frame, used for hard cuts.
     float m_texelOffsetX{0.0};       //!< Horizontal warp shader texel offset
     float m_texelOffsetY{0.0};       //!< Vertical warp shader texel offset
+    uint32_t m_lineReferenceWidth{0};  //!< Render width at which scaled lines are 1 px wide; 0 for GL lines.
+    uint32_t m_lineReferenceHeight{0}; //!< Render height at which scaled lines are 1 px wide; 0 for GL lines.
+    bool m_lineAntialiasing{false};    //!< Scaled lines get an anti-aliased edge.
 
     std::vector<std::string> m_textureSearchPaths;     ///!< List of paths to search for texture files
     Renderer::TextureLoadCallback m_textureLoadCallback; //!< Optional callback for loading textures from non-filesystem sources.

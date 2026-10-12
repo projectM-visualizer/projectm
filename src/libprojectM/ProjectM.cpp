@@ -36,6 +36,8 @@
 
 #include <UserSprites/SpriteManager.hpp>
 
+#include <algorithm>
+
 namespace libprojectM {
 
 ProjectM::ProjectM()
@@ -558,6 +560,30 @@ void ProjectM::SetTexelOffsets(float texelOffsetX, float texelOffsetY)
     m_texelOffsetY = texelOffsetY;
 }
 
+void ProjectM::LineReferenceSize(uint32_t& width, uint32_t& height) const
+{
+    width = m_lineReferenceWidth;
+    height = m_lineReferenceHeight;
+}
+
+void ProjectM::SetLineReferenceSize(uint32_t width, uint32_t height)
+{
+    // Both dimensions or none; capped so the render context's int fields and area maths stay exact.
+    const bool enabled = width > 0 && height > 0;
+    m_lineReferenceWidth = enabled ? std::min<uint32_t>(width, 65535) : 0;
+    m_lineReferenceHeight = enabled ? std::min<uint32_t>(height, 65535) : 0;
+}
+
+auto ProjectM::LineAntialiasing() const -> bool
+{
+    return m_lineAntialiasing;
+}
+
+void ProjectM::SetLineAntialiasing(bool enabled)
+{
+    m_lineAntialiasing = enabled;
+}
+
 auto ProjectM::PCM() -> libprojectM::Audio::PCM&
 {
     return m_audioStorage;
@@ -602,6 +628,9 @@ auto ProjectM::GetRenderContext() -> Renderer::RenderContext
 
     ctx.texelOffsetX = m_texelOffsetX;
     ctx.texelOffsetY = m_texelOffsetY;
+    ctx.lineReferenceWidth = static_cast<int>(m_lineReferenceWidth);
+    ctx.lineReferenceHeight = static_cast<int>(m_lineReferenceHeight);
+    ctx.lineAntialiasing = m_lineAntialiasing;
 
     ctx.textureManager = m_textureManager.get();
     ctx.shaderCache = m_shaderCache.get();

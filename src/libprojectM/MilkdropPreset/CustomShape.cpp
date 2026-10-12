@@ -1,5 +1,6 @@
 #include "CustomShape.hpp"
 
+#include "LineRenderer.hpp"
 #include "PresetFileParser.hpp"
 
 #include <Renderer/BlendMode.hpp>
@@ -82,6 +83,13 @@ void CustomShape::Draw()
     }
 
     Renderer::BlendMode::SetBlendActive(true);
+
+    const auto& context = m_presetState.renderContext;
+    const float lineScale = LineScale(context.viewportSizeX, context.viewportSizeY,
+                                      context.lineReferenceWidth, context.lineReferenceHeight);
+    const bool quadBorders = lineScale > 0.0f && m_presetState.lineRenderer.Prepare(context);
+    const auto borderStyle = LineStyleFor(LineKind::ShapeBorder, m_thickOutline, lineScale,
+                                          context.viewportSizeX, context.viewportSizeY);
 
     for (int instance = 0; instance < m_instances; instance++)
     {
@@ -208,7 +216,11 @@ void CustomShape::Draw()
         glBindTexture(GL_TEXTURE_2D, 0);
         Renderer::Sampler::Unbind(0);
 
-        if (*m_perFrameContext.border_a > 0.0001f)
+        if (*m_perFrameContext.border_a > 0.0001f && quadBorders)
+        {
+            DrawQuadBorder(sides, borderStyle);
+        }
+        else if (*m_perFrameContext.border_a > 0.0001f)
         {
             m_outlineMesh.Indices().Resize(sides);
             m_outlineMesh.Indices().MakeContinuous();
@@ -285,6 +297,32 @@ void CustomShape::Draw()
     glDisable(GL_LINE_SMOOTH);
 #endif
     Renderer::BlendMode::SetBlendActive(false);
+}
+
+void CustomShape::DrawQuadBorder(int sides, const LineStyle& style)
+{
+    // The outline as one closed strip in the border color. The blend function is the instance's
+    // (set before the fill); the line renderer draws the style's passes (four offset passes when
+    // thick, like the GL-line outline).
+    m_borderPoints.resize(static_cast<size_t>(sides));
+    for (int i = 0; i < sides; i++)
+    {
+        const auto& corner = m_fillMesh.Vertex(static_cast<uint32_t>(i + 1));
+        m_borderPoints[static_cast<size_t>(i)] = {corner.X(), corner.Y(),
+                                                  static_cast<float>(*m_perFrameContext.border_r),
+                                                  static_cast<float>(*m_perFrameContext.border_g),
+                                                  static_cast<float>(*m_perFrameContext.border_b),
+                                                  static_cast<float>(*m_perFrameContext.border_a)};
+    }
+
+    m_lineBatch.Clear();
+    const auto strip = m_lineBatch.Append(m_borderPoints.data(), m_borderPoints.size(), true);
+
+    auto& lines = m_presetState.lineRenderer;
+    lines.Upload(m_lineBatch);
+    lines.Begin(PresetState::orthogonalProjection, m_presetState.renderContext);
+    lines.Draw(strip, style);
+    lines.End();
 }
 
 } // namespace MilkdropPreset

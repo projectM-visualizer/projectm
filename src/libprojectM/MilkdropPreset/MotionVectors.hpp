@@ -1,9 +1,12 @@
 #pragma once
 
+#include "LineGeometry.hpp"
 #include "PerFrameContext.hpp"
 #include "PresetState.hpp"
 
 #include <Renderer/Mesh.hpp>
+#include <Renderer/VertexArray.hpp>
+#include <Renderer/VertexBuffer.hpp>
 
 #include <memory>
 
@@ -35,9 +38,26 @@ public:
 private:
     std::shared_ptr<Renderer::Shader> GetShader();
 
+    /**
+     * @brief Gets (or compiles) the scaled quad-line program for motion vectors.
+     * @return The program, or nullptr if the driver rejects it (the vectors are drawn as GL lines then).
+     */
+    std::shared_ptr<Renderer::Shader> GetQuadShader();
+
+    /**
+     * @brief Draws one scaled quad per start point in m_vectorStarts, in one instanced call.
+     */
+    void DrawQuads(const PerFrameContext& presetPerFrameContext, float lineScale, float minimumLength);
+
     PresetState& m_presetState; //!< The global preset state.
 
     Renderer::Mesh m_motionVectorMesh; //!< The Motion Vector geometry.
+
+    Renderer::VertexArray m_quadArray;                                                       //!< Vertex array for the scaled quad vectors.
+    Renderer::VertexBuffer<Renderer::Point> m_vectorStarts{Renderer::VertexBufferUsage::StreamDraw}; //!< Start points of the scaled quad vectors.
+    bool m_quadArrayInitialized{false};                                                      //!< m_quadArray's attributes are set up.
+    std::weak_ptr<Renderer::Shader> m_motionVectorQuadShader;                                //!< The scaled quad-line motion vector shader.
+    bool m_quadShaderFailed{false};                                                          //!< The quad-line shader did not compile; draw GL lines.
 
     std::weak_ptr<Renderer::Shader> m_motionVectorShader;                                                           //!< The motion vector shader, calculates the trace positions in the GPU.
     std::shared_ptr<Renderer::Sampler> m_sampler{std::make_shared<Renderer::Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR)}; //!< The texture sampler.

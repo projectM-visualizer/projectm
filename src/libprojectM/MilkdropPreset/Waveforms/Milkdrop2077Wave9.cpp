@@ -10,7 +10,7 @@ void Milkdrop2077Wave9::GenerateVertices(const PresetState& presetState, const P
 {
     m_samples = Audio::WaveformSamples / 2;
 
-    if (m_samples > presetState.renderContext.viewportSizeX / 3)
+    if (m_samples > SampleDecisionWidth(presetState) / 3)
     {
         m_samples /= 3;
     }

@@ -254,6 +254,30 @@ void projectm_opengl_burn_texture(projectm_handle instance, uint32_t texture, in
     projectMInstance->BurnInTexture(texture, left, top, width, height);
 }
 
+void projectm_opengl_set_line_reference_size(projectm_handle instance, uint32_t width, uint32_t height)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->SetLineReferenceSize(width, height);
+}
+
+void projectm_opengl_get_line_reference_size(projectm_handle instance, uint32_t* width, uint32_t* height)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->LineReferenceSize(*width, *height);
+}
+
+void projectm_opengl_set_line_antialiasing(projectm_handle instance, bool enabled)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->SetLineAntialiasing(enabled);
+}
+
+bool projectm_opengl_get_line_antialiasing(projectm_handle instance)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    return projectMInstance->LineAntialiasing();
+}
+
 void projectm_set_frame_time(projectm_handle instance, double seconds_since_first_frame)
 {
     auto projectMInstance = handle_to_instance(instance);
