@@ -23,6 +23,9 @@ using libprojectM::MilkdropPreset::MilkdropStaticShaders;
 
 static auto floatRand = []() { return static_cast<float>(rand() % 7381) / 7380.0f; };
 
+static const std::regex samplerDeclaration("sampler(2D|3D|)(\\s+|\\().*");
+static const std::regex texSizeDeclaration("float4\\s+texsize_.*");
+
 MilkdropShader::MilkdropShader(ShaderType type)
     : m_type(type)
     , m_randValues({floatRand(), floatRand(), floatRand(), floatRand()})
@@ -628,17 +631,10 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
     //       The below code causes invalid syntax as it leaves part of the expression.
     //       Leaving it in causes HLSLParser to add "sampler_XYZ = sampler2D( <unknown expression> );"
     //       in the main() function, which is also bad...
-    std::smatch matches;
-    while (std::regex_search(sourcePreprocessed, matches, std::regex("sampler(2D|3D|)(\\s+|\\().*")))
-    {
-        sourcePreprocessed.replace(matches.position(), matches.length(), "");
-    }
+    Utils::EraseRegexMatches(sourcePreprocessed, "sampler", samplerDeclaration);
 
     // Remove previous texsize declarations
-    while (std::regex_search(sourcePreprocessed, matches, std::regex("float4\\s+texsize_.*")))
-    {
-        sourcePreprocessed.replace(matches.position(), matches.length(), "");
-    }
+    Utils::EraseRegexMatches(sourcePreprocessed, "float4", texSizeDeclaration);
 
     // Collect unique samplers and texsize uniforms
     std::set<std::string> samplerDeclarations;

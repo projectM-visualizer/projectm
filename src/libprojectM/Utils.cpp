@@ -77,5 +77,23 @@ auto StripComments(const std::string& source) -> std::string
     return result;
 }
 
+void EraseRegexMatches(std::string& text, const std::string& prefix, const std::regex& pattern)
+{
+    std::smatch match;
+    size_t pos = 0;
+    while ((pos = text.find(prefix, pos)) != std::string::npos)
+    {
+        if (std::regex_search(text.cbegin() + pos, text.cend(), match, pattern, std::regex_constants::match_continuous))
+        {
+            text.erase(pos, match.length());
+            pos = 0; // The erase can create a new match further up.
+        }
+        else
+        {
+            pos++;
+        }
+    }
+}
+
 } // namespace Utils
 } // namespace libprojectM
