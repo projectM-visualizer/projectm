@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ExpressionVariableWatcher.hpp"
+
 #include <Audio/FrameAudioData.hpp>
 
 #include <Renderer/RenderContext.hpp>
@@ -26,7 +28,7 @@ public:
      * @param audioData Audio data to be used by the preset.
      * @param renderContext The current render context data.
      */
-    virtual void RenderFrame(const libprojectM::Audio::FrameAudioData& audioData,
+    virtual void RenderFrame(const Audio::FrameAudioData& audioData,
                              const Renderer::RenderContext& renderContext) = 0;
 
     /**
@@ -59,6 +61,23 @@ public:
      * presets.
      */
     virtual void BindFramebuffer() = 0;
+
+    /**
+     * @brief Update the preset's internal watcher bindings.
+     *
+     * Used to initially add watches and must also be called each time the watches have changed.
+     *
+     * The preset will internally store pointers to the watch structures and update them if
+     * applicable.
+     *
+     * @param watcher The variable watcher to retrieve the bindings from.
+     */
+    virtual void UpdateWatches(ExpressionVariableWatcher& watcher) = 0;
+
+    /**
+     * @brief Remove any previous expression variable watch bindings.
+     */
+    virtual void RemoveWatches() = 0;
 
     inline void SetFilename(const std::string& filename)
     {
