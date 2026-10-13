@@ -1,5 +1,6 @@
 #pragma once
 
+#include <regex>
 #include <string>
 
 namespace libprojectM {
@@ -21,6 +22,17 @@ void ToUpperInPlace(std::string& str);
  * @return A copy of the source with all comment content replaced by spaces.
  */
 auto StripComments(const std::string& source) -> std::string;
+
+/**
+ * @brief Erases all matches of a regex from a string.
+ *
+ * Only tries the regex where prefix occurs, which is much faster than std::regex_search().
+ *
+ * @param text The string to erase the matches from.
+ * @param prefix The literal text every match starts with.
+ * @param pattern The regex to erase.
+ */
+void EraseRegexMatches(std::string& text, const std::string& prefix, const std::regex& pattern);
 
 } // namespace Utils
 } // namespace libprojectM
