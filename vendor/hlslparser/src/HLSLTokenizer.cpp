@@ -286,6 +286,12 @@ void HLSLTokenizer::Next(const bool EOLSkipping)
     }
 
     size_t length = m_buffer - start;
+    if (length >= s_maxIdentifier)
+    {
+        Error("Syntax error: identifier longer than %d characters", s_maxIdentifier - 1);
+        m_token = HLSLToken_EndOfStream;
+        return;
+    }
     memcpy(m_identifier, start, length);
     m_identifier[length] = 0;
     
