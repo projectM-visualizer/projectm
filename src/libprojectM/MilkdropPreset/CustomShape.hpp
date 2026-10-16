@@ -46,7 +46,8 @@ public:
 
 private:
     Renderer::Mesh m_outlineMesh; //!< The shape's border/outline mesh.
-    Renderer::Mesh m_fillMesh; //!< The shape's color/texture mesh.
+    Renderer::Mesh m_batchMesh; //!< Collects the fills of consecutive instances with identical state, drawn in one call.
+    Renderer::Mesh m_outlineBatchMesh; //!< Collects the borders of additive instances, drawn in one call after their fills.
 
     std::string m_image; //!< Texture filename to be rendered on this shape.
 
