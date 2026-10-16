@@ -6,7 +6,6 @@
 #include <Renderer/TextureManager.hpp>
 
 #include <array>
-#include <optional>
 #include <vector>
 
 namespace libprojectM {
@@ -103,7 +102,9 @@ void CustomShape::Draw()
     bool batchTextured{false};
 
     // Aspect used for the UVs of textured instances; depends only on the shape's image.
-    std::optional<float> imageAspectY;
+    // Computed on first use, as looking up the image may load it from disk.
+    float imageAspectYValue{0.0f};
+    const float* imageAspectY{nullptr};
 
     // Need to use +/- 1.0 here instead of 2.0 used in Milkdrop to achieve the same rendering result.
     const auto incrementX = 1.0f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
@@ -272,13 +273,14 @@ void CustomShape::Draw()
 
         if (textured)
         {
-            if (!imageAspectY.has_value())
+            if (imageAspectY == nullptr)
             {
-                imageAspectY = m_presetState.renderContext.aspectY;
+                imageAspectYValue = m_presetState.renderContext.aspectY;
                 if (!m_image.empty() && !m_presetState.renderContext.textureManager->GetTexture(m_image).Empty())
                 {
-                    imageAspectY = 1.0f;
+                    imageAspectYValue = 1.0f;
                 }
+                imageAspectY = &imageAspectYValue;
             }
 
             batchUVs.push_back(Renderer::TextureUV(0.5f, 0.5f));
