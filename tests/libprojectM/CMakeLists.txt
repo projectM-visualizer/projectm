@@ -29,8 +29,10 @@ test_api_headers(TestMainAPIHeaders
 add_executable(projectM-unittest
         HLSLParserTest.cpp
         HLSLModuloTest.cpp
+        LineBatchTest.cpp
         LineGeometryTest.cpp
         LoggingTest.cpp
+        MeshTest.cpp
         MilkdropShaderCommentParsingTest.cpp
         PCMTest.cpp
         PresetFileParserTest.cpp

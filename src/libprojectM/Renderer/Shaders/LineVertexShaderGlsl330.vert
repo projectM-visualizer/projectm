@@ -14,7 +14,7 @@ layout(location = 5) in vec4 color_b;
 uniform mat4 vertex_transformation;
 uniform vec2 viewport_size;
 uniform highp float half_width;
-uniform vec2 pass_offset;        // vertex stage only: this pass's translation, see LineStyle::passOffsetX
+uniform vec2 pass_offset;        // vertex stage only: this pass's translation, in strip coordinates
 uniform highp float antialias;   // 1: one-pixel anti-aliased edge; 0: hard edge (see the fragment shader)
 uniform vec2 tie_bias;           // vertex stage only: render pixels added to every corner, see LineTieBias()
 

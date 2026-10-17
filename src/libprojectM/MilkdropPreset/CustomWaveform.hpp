@@ -106,8 +106,8 @@ private:
 
     Renderer::Mesh m_mesh; //!< Points in this waveform.
 
-    LineBatch m_lineBatch;                  //!< This frame's strip, for the quad-line renderer.
-    std::vector<ColoredPoint> m_linePoints; //!< The smoothed points with their colors, for the batch.
+    Renderer::LineBatch m_lineBatch;                  //!< This frame's strip, for the quad-line renderer.
+    std::vector<Renderer::ColoredPoint> m_linePoints; //!< The smoothed points with their colors, for the batch.
 
     friend class WaveformPerFrameContext;
     friend class WaveformPerPointContext;

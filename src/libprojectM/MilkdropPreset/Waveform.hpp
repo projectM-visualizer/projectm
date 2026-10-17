@@ -51,9 +51,9 @@ private:
     float m_tempAlpha{0.0f}; //!< Calculated alpha value.
     int m_samples{};         //!< Number of samples in the current waveform. Depends on the mode.
 
-    LineBatch m_lineBatch;                   //!< This frame's waveform strips, for the quad-line renderer.
-    std::vector<LineBatch::Strip> m_strips;  //!< The strips in m_lineBatch.
-    std::vector<ColoredPoint> m_coloredWave; //!< One wave with its color, for the batch.
+    Renderer::LineBatch m_lineBatch;                   //!< This frame's waveform strips, for the quad-line renderer.
+    std::vector<Renderer::LineBatch::Strip> m_strips;  //!< The strips in m_lineBatch.
+    std::vector<Renderer::ColoredPoint> m_coloredWave; //!< One wave with its color, for the batch.
 };
 
 } // namespace MilkdropPreset

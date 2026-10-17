@@ -8,7 +8,7 @@
 #include "Constants.hpp"
 
 #include "BlurTexture.hpp"
-#include "LineRenderer.hpp"
+#include <Renderer/LineRenderer.hpp>
 
 #include <Audio/FrameAudioData.hpp>
 
@@ -156,7 +156,7 @@ public:
 
     std::weak_ptr<Renderer::Shader> untexturedShader; //!< Shader used to draw untextured primitives, e.g. waveforms.
     std::weak_ptr<Renderer::Shader> texturedShader;   //!< Shader used to draw textured primitives, e.g. textured shapes and the warp mesh.
-    LineRenderer lineRenderer;                        //!< Draws scaled quad lines if a line reference size is set.
+    Renderer::LineRenderer lineRenderer;              //!< Draws scaled quad lines if a line reference size is set.
 
     std::weak_ptr<Renderer::Texture> mainTexture; //!< A weak reference to the main texture in the preset framebuffer.
     BlurTexture blurTexture;                      //!< The blur textures used in this preset. Contents depend on the shader code using GetBlurX().

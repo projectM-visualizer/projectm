@@ -2,6 +2,7 @@
 
 #include "LineGeometry.hpp"
 
+#include <Renderer/Mesh.hpp>
 #include <Renderer/RenderContext.hpp>
 #include <Renderer/Shader.hpp>
 
@@ -9,9 +10,10 @@
 #include <glm/vec2.hpp>
 
 #include <memory>
+#include <string>
 
 namespace libprojectM {
-namespace MilkdropPreset {
+namespace Renderer {
 
 /**
  * @brief The quad lines' vertex offset in render pixels, which decides pixel-border ties.
@@ -28,7 +30,7 @@ auto LineTieBias() -> glm::vec2;
 /**
  * @brief Draws line strips as quads, one instance per segment, with miter joins (issue #682).
  *
- * Upload() a LineBatch, Begin() once for its transformation, then Draw() its strips and End().
+ * Upload() a LineBatch, Begin() once for its transformation, then Draw() each strip/pass and End().
  * Other draws may run between Begin() and Draw(): Draw() binds its own program and buffers. The
  * caller sets blending.
  *
@@ -39,7 +41,7 @@ class LineRenderer
 {
 public:
     LineRenderer() = default;
-    ~LineRenderer();
+    ~LineRenderer() = default;
 
     LineRenderer(const LineRenderer&) = delete;
     auto operator=(const LineRenderer&) -> LineRenderer& = delete;
@@ -49,19 +51,22 @@ public:
      * @param context The render context holding the shader cache.
      * @return False if the program cannot be compiled or linked; nothing is drawn then.
      */
-    auto Prepare(const Renderer::RenderContext& context) -> bool;
+    auto Prepare(const RenderContext& context) -> bool;
+
+    /** Returns the generic line fragment shader, including the platform version header. */
+    static auto FragmentShaderSource() -> std::string;
 
     void Upload(const LineBatch& batch);
-    void Begin(const glm::mat4& transformation, const Renderer::RenderContext& context);
-    void Draw(const LineBatch::Strip& strip, const LineStyle& style);
+    void Begin(const glm::mat4& transformation, const RenderContext& context);
+    void Draw(const LineBatch::Strip& strip, float halfWidth, const glm::vec2& passOffset = glm::vec2(0.0f));
     void End();
 
 private:
-    std::shared_ptr<Renderer::Shader> m_shader; //!< Line program, from the shader cache.
-    bool m_failed{false};                       //!< The program did not compile or link; draw GL lines.
-    GLuint m_vaoId{0};                          //!< Vertex array with six per-instance attributes.
-    GLuint m_vboId{0};                          //!< Padded strip points.
-    bool m_ready{false};                        //!< Begin() found a program, uploaded points and a non-empty viewport.
+    std::shared_ptr<Shader> m_shader; //!< Line program, from the shader cache.
+    bool m_failed{false};             //!< The program did not compile or link; draw GL lines.
+    std::unique_ptr<Mesh> m_mesh;     //!< Lazily created instance buffer and attribute layout.
+    int m_firstPoint{-1};             //!< Last strip offset configured on this mesh.
+    bool m_ready{false};              //!< Begin() found a program, uploaded points and a non-empty viewport.
 
     // The per-draw uniforms' values as last set on the program; Begin() forgets them, so the first
     // Draw() after it sets them again. Draw() skips sets that would not change anything.
@@ -91,5 +96,5 @@ private:
     bool m_enabled{false}; //!< This object enabled GL_PROGRAM_POINT_SIZE.
 };
 
-} // namespace MilkdropPreset
+} // namespace Renderer
 } // namespace libprojectM

@@ -54,11 +54,10 @@ private:
 
     Renderer::Mesh m_motionVectorMesh; //!< The Motion Vector geometry.
 
-    std::vector<Renderer::Point> m_vectorStarts;                              //!< Start points of the scaled quad vectors.
-    std::unique_ptr<Renderer::VertexArray> m_quadArray;                       //!< Vertex array for the scaled quad vectors, created on first use.
-    std::unique_ptr<Renderer::VertexBuffer<Renderer::Point>> m_quadVertices; //!< Uploaded start points, created on first use.
-    std::weak_ptr<Renderer::Shader> m_motionVectorQuadShader;                                //!< The scaled quad-line motion vector shader.
-    bool m_quadShaderFailed{false};                                                          //!< The quad-line shader did not compile; draw GL lines.
+    std::vector<Renderer::Point> m_vectorStarts;              //!< Start points of the scaled quad vectors.
+    std::unique_ptr<Renderer::Mesh> m_quadMesh;               //!< Scaled quad instances, created on first use.
+    std::weak_ptr<Renderer::Shader> m_motionVectorQuadShader; //!< The scaled quad-line motion vector shader.
+    bool m_quadShaderFailed{false};                           //!< The quad-line shader did not compile; draw GL lines.
 
     std::weak_ptr<Renderer::Shader> m_motionVectorShader;                                                           //!< The motion vector shader, calculates the trace positions in the GPU.
     std::shared_ptr<Renderer::Sampler> m_sampler{std::make_shared<Renderer::Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR)}; //!< The texture sampler.

@@ -1,7 +1,7 @@
 #include "MotionVectors.hpp"
 
-#include "LineRenderer.hpp"
 #include "MilkdropStaticShaders.hpp"
+#include <Renderer/LineRenderer.hpp>
 
 #include <Renderer/BlendMode.hpp>
 #include <Renderer/ShaderCache.hpp>
@@ -191,7 +191,7 @@ std::shared_ptr<Renderer::Shader> MotionVectors::GetQuadShader()
         try
         {
             shader->CompileProgram(staticShaders->GetMotionVectorLineVertexShader(),
-                                   staticShaders->GetLineFragmentShader());
+                                   Renderer::LineRenderer::FragmentShaderSource());
         }
         catch (const Renderer::ShaderException&)
         {
@@ -215,38 +215,32 @@ void MotionVectors::DrawQuads(const PerFrameContext& presetPerFrameContext, floa
         return;
     }
 
-    if (!m_quadArray)
+    if (!m_quadMesh)
     {
-        m_quadArray = std::make_unique<Renderer::VertexArray>();
-        m_quadVertices = std::make_unique<Renderer::VertexBuffer<Renderer::Point>>(Renderer::VertexBufferUsage::StreamDraw);
-        m_quadArray->Bind();
-        m_quadVertices->InitializeAttributePointer(0);
-        Renderer::VertexBuffer<Renderer::Point>::SetEnableAttributeArray(0, true);
-        glVertexAttribDivisor(0, 1);
-        // The color is the constant attribute value set in Draw().
-        Renderer::VertexBuffer<Renderer::Point>::SetEnableAttributeArray(1, false);
+        m_quadMesh = std::make_unique<Renderer::Mesh>(Renderer::VertexBufferUsage::StreamDraw);
+        m_quadMesh->SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::TriangleStrip);
     }
-    m_quadArray->Bind();
-    m_quadVertices->Set(m_vectorStarts);
-    m_quadVertices->Update();
+    m_quadMesh->UpdateInstanceData(m_vectorStarts.data(), sizeof(Renderer::Point) * m_vectorStarts.size());
+    m_quadMesh->SetInstanceAttributes({{0, 2, GL_FLOAT, GL_FALSE, sizeof(Renderer::Point), 0, 1}});
+    // Attribute 1 stays disabled, using the constant color set in Draw().
 
     const auto& context = m_presetState.renderContext;
     auto shader = GetQuadShader();
     shader->Bind();
     shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
     shader->SetUniformFloat2("viewport_size", glm::vec2(static_cast<float>(context.viewportSizeX),
-                                                       static_cast<float>(context.viewportSizeY)));
+                                                        static_cast<float>(context.viewportSizeY)));
     shader->SetUniformFloat("half_width", LineStyleFor(LineKind::MotionVector, false, lineScale,
                                                        context.viewportSizeX, context.viewportSizeY)
                                               .halfWidth);
     shader->SetUniformFloat("antialias", context.lineAntialiasing ? 1.0f : 0.0f);
-    shader->SetUniformFloat2("tie_bias", LineTieBias());
+    shader->SetUniformFloat2("tie_bias", Renderer::LineTieBias());
     shader->SetUniformFloat("length_multiplier", static_cast<float>(*presetPerFrameContext.mv_l));
     shader->SetUniformFloat("minimum_length", minimumLength);
     shader->SetUniformInt("warp_coordinates", 0);
 
     // One quad (four vertices) per vector start.
-    glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, static_cast<GLsizei>(m_vectorStarts.size()));
+    m_quadMesh->DrawInstanced(4, static_cast<uint32_t>(m_vectorStarts.size()));
 
     Renderer::VertexArray::Unbind();
 }

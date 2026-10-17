@@ -1,8 +1,8 @@
 #include "CustomWaveform.hpp"
 
-#include "LineRenderer.hpp"
 #include "PerFrameContext.hpp"
 #include "PresetFileParser.hpp"
+#include <Renderer/LineRenderer.hpp>
 
 #include <Renderer/BlendMode.hpp>
 
@@ -212,7 +212,7 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     shader->Bind();
     shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
     shader->SetUniformFloat("vertex_point_size", scaledDots ? dot.size : (m_drawThick ? 2.0f : 1.0f));
-    const ScopedProgramPointSize programPointSize(scaledDots);
+    const Renderer::ScopedProgramPointSize programPointSize(scaledDots);
 
     auto iterations = (m_drawThick && !m_useDots) ? 4 : 1;
 
@@ -299,7 +299,7 @@ void CustomWaveform::DrawQuadLines(float lineScale)
     auto& lines = m_presetState.lineRenderer;
     lines.Upload(m_lineBatch);
     lines.Begin(PresetState::orthogonalProjection, context);
-    lines.Draw(strip, LineStyleFor(LineKind::CustomWave, m_drawThick, lineScale, context.viewportSizeX, context.viewportSizeY));
+    DrawLine(lines, strip, LineStyleFor(LineKind::CustomWave, m_drawThick, lineScale, context.viewportSizeX, context.viewportSizeY));
     lines.End();
 
     Renderer::BlendMode::SetBlendActive(false);

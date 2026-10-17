@@ -1,5 +1,7 @@
 #include "LineGeometry.hpp"
 
+#include <Renderer/LineRenderer.hpp>
+
 #include <algorithm>
 #include <cmath>
 
@@ -138,41 +140,13 @@ auto DotStyleFor(LineKind kind, bool thick, float scale) -> DotStyle
     return style;
 }
 
-void LineBatch::Clear()
+void DrawLine(Renderer::LineRenderer& renderer, const Renderer::LineBatch::Strip& strip, const LineStyle& style)
 {
-    m_points.clear();
-}
-
-auto LineBatch::Append(const ColoredPoint* points, size_t count, bool loop) -> Strip
-{
-    Strip strip;
-    strip.firstPoint = static_cast<int>(m_points.size());
-    if (points == nullptr || count < 2)
+    for (int pass = 0; pass < style.passes; pass++)
     {
-        return strip;
+        const auto offset = PassOffsetFor(style, pass);
+        renderer.Draw(strip, style.halfWidth, {offset.x, offset.y});
     }
-
-    if (loop)
-    {
-        m_points.push_back(points[count - 1]);
-        m_points.insert(m_points.end(), points, points + count);
-        m_points.push_back(points[0]);
-        m_points.push_back(points[1]);
-        strip.segments = static_cast<int>(count);
-    }
-    else
-    {
-        m_points.push_back(points[0]);
-        m_points.insert(m_points.end(), points, points + count);
-        m_points.push_back(points[count - 1]);
-        strip.segments = static_cast<int>(count - 1);
-    }
-    return strip;
-}
-
-auto LineBatch::Points() const -> const std::vector<ColoredPoint>&
-{
-    return m_points;
 }
 
 } // namespace MilkdropPreset

@@ -1,7 +1,7 @@
 #include "CustomShape.hpp"
 
-#include "LineRenderer.hpp"
 #include "PresetFileParser.hpp"
+#include <Renderer/LineRenderer.hpp>
 
 #include <Renderer/BlendMode.hpp>
 #include <Renderer/TextureManager.hpp>
@@ -321,7 +321,7 @@ void CustomShape::DrawQuadBorder(int sides, const LineStyle& style)
     auto& lines = m_presetState.lineRenderer;
     lines.Upload(m_lineBatch);
     lines.Begin(PresetState::orthogonalProjection, m_presetState.renderContext);
-    lines.Draw(strip, style);
+    DrawLine(lines, strip, style);
     lines.End();
 }
 

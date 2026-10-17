@@ -56,8 +56,8 @@ private:
     void DrawQuadBorder(int sides, const LineStyle& style);
 
     Renderer::Mesh m_outlineMesh; //!< The shape's border/outline mesh.
-    LineBatch m_lineBatch;                    //!< The current instance's outline, for the quad-line renderer.
-    std::vector<ColoredPoint> m_borderPoints; //!< Outline corners with the border color.
+    Renderer::LineBatch m_lineBatch;                    //!< The current instance's outline, for the quad-line renderer.
+    std::vector<Renderer::ColoredPoint> m_borderPoints; //!< Outline corners with the border color.
     Renderer::Mesh m_fillMesh; //!< The shape's color/texture mesh.
 
     std::string m_image; //!< Texture filename to be rendered on this shape.

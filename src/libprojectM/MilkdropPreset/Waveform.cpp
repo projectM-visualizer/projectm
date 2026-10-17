@@ -1,8 +1,8 @@
 #include "Waveform.hpp"
 
-#include "LineRenderer.hpp"
 #include "PerFrameContext.hpp"
 #include "PresetState.hpp"
+#include <Renderer/LineRenderer.hpp>
 
 #include "Waveforms/Factory.hpp"
 
@@ -60,7 +60,7 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
     shader->Bind();
     shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjectionFlipped);
     shader->SetUniformFloat("vertex_point_size", scaledDots ? dot.size : 1.0f);
-    const ScopedProgramPointSize programPointSize(scaledDots);
+    const Renderer::ScopedProgramPointSize programPointSize(scaledDots);
 
     // Additive wave drawing (vice overwrite)
     if (m_presetState.additiveWaves)
@@ -185,7 +185,7 @@ void Waveform::DrawQuadLines(const std::array<Waveforms::WaveformMath::VertexLis
                                     context.viewportSizeX, context.viewportSizeY);
     for (const auto& strip : m_strips)
     {
-        lines.Draw(strip, style);
+        DrawLine(lines, strip, style);
     }
     lines.End();
 
