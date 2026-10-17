@@ -1,5 +1,6 @@
 #pragma once
 
+#include "LineGeometry.hpp"
 #include "WaveformPerFrameContext.hpp"
 #include "WaveformPerPointContext.hpp"
 
@@ -74,6 +75,12 @@ private:
      */
     void SmoothWave(const std::vector<Renderer::Point>& points, const std::vector<Renderer::Color>& colors);
 
+    /**
+     * @brief Draws the smoothed wave in m_mesh as a scaled quad line strip.
+     * @param lineScale The line width factor, see LineScale().
+     */
+    void DrawQuadLines(float lineScale);
+
     int m_index{0}; //!< Custom waveform index in the preset.
     bool m_enabled{false}; //!< Render waveform if non-zero.
     int m_samples{WaveformMaxPoints}; //!< Number of samples/vertices in the waveform.
@@ -98,6 +105,9 @@ private:
     WaveformPerPointContext m_perPointContext; //!< Holds the code execution context for per-point expressions
 
     Renderer::Mesh m_mesh; //!< Points in this waveform.
+
+    Renderer::LineBatch m_lineBatch;                  //!< This frame's strip, for the quad-line renderer.
+    std::vector<Renderer::ColoredPoint> m_linePoints; //!< The smoothed points with their colors, for the batch.
 
     friend class WaveformPerFrameContext;
     friend class WaveformPerPointContext;

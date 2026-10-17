@@ -7,6 +7,7 @@ uniform vec4 _c0; // source texsize (.xy), and inverse (.zw)
 uniform vec4 _c1; // w1..w4
 uniform vec4 _c2; // d1..d4
 uniform vec4 _c3; // scale, bias, w_div
+uniform float source_lod; // mipmap level of the source: 0, or the line reference scale's log2 (first pass)
 
 out vec4 color;
 
@@ -32,17 +33,17 @@ void main(){
     vec2 uv2 = fragment_texture.xy + srctexsize.zw*vec2(1.0,1.0);
 
     vec3 blur =
-    (texture(texture_sampler, uv2 + vec2(d1 * srctexsize.z, 0)).xyz +
-    texture(texture_sampler, uv2 + vec2(-d1 * srctexsize.z, 0)).xyz) *
+    (textureLod(texture_sampler, uv2 + vec2(d1 * srctexsize.z, 0), source_lod).xyz +
+    textureLod(texture_sampler, uv2 + vec2(-d1 * srctexsize.z, 0), source_lod).xyz) *
     w1 +
-    (texture(texture_sampler, uv2 + vec2(d2 * srctexsize.z, 0)).xyz +
-    texture(texture_sampler, uv2 + vec2(-d2 * srctexsize.z, 0)).xyz) *
+    (textureLod(texture_sampler, uv2 + vec2(d2 * srctexsize.z, 0), source_lod).xyz +
+    textureLod(texture_sampler, uv2 + vec2(-d2 * srctexsize.z, 0), source_lod).xyz) *
     w2 +
-    (texture(texture_sampler, uv2 + vec2(d3 * srctexsize.z, 0)).xyz +
-    texture(texture_sampler, uv2 + vec2(-d3 * srctexsize.z, 0)).xyz) *
+    (textureLod(texture_sampler, uv2 + vec2(d3 * srctexsize.z, 0), source_lod).xyz +
+    textureLod(texture_sampler, uv2 + vec2(-d3 * srctexsize.z, 0), source_lod).xyz) *
     w3 +
-    (texture(texture_sampler, uv2 + vec2(d4 * srctexsize.z, 0)).xyz +
-    texture(texture_sampler, uv2 + vec2(-d4 * srctexsize.z, 0)).xyz) *
+    (textureLod(texture_sampler, uv2 + vec2(d4 * srctexsize.z, 0), source_lod).xyz +
+    textureLod(texture_sampler, uv2 + vec2(-d4 * srctexsize.z, 0), source_lod).xyz) *
     w4;
 
     blur.xyz *= w_div;

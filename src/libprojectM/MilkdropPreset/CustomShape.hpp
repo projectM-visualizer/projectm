@@ -1,12 +1,15 @@
 #pragma once
 
 #include "Constants.hpp"
+#include "LineGeometry.hpp"
 #include "PresetState.hpp"
 #include "ShapePerFrameContext.hpp"
 
 #include <Renderer/Mesh.hpp>
 
 #include <projectm-eval.h>
+
+#include <vector>
 
 namespace libprojectM {
 namespace MilkdropPreset {
@@ -45,7 +48,16 @@ public:
     void Draw();
 
 private:
+    /**
+     * @brief Draws the current instance's outline as a scaled quad line loop.
+     * @param sides Number of corners; the fill mesh holds them at vertices 1...sides.
+     * @param style The line style for the outline.
+     */
+    void DrawQuadBorder(int sides, const LineStyle& style);
+
     Renderer::Mesh m_outlineMesh; //!< The shape's border/outline mesh.
+    Renderer::LineBatch m_lineBatch;                    //!< The current instance's outline, for the quad-line renderer.
+    std::vector<Renderer::ColoredPoint> m_borderPoints; //!< Outline corners with the border color.
     Renderer::Mesh m_fillMesh; //!< The shape's color/texture mesh.
 
     std::string m_image; //!< Texture filename to be rendered on this shape.

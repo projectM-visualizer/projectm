@@ -42,6 +42,13 @@ public:
 
 protected:
     /**
+     * @brief Render width for Milkdrop's "a third of the samples on narrow renders" rule.
+     * The render width, or with a line reference size the reference-equivalent width, so the sample
+     * count follows the reference like the line width. See MilkdropPreset::SampleDecisionWidth().
+     */
+    static auto SampleDecisionWidth(const PresetState& presetState) -> int;
+
+    /**
      * @brief Indicates whether the waveform uses spectrum or normal oscilloscope data.
      * @return true if the waveform needs spectrum data, false if it only needs oscilloscope data.
      */

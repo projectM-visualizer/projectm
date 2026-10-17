@@ -1,6 +1,7 @@
 #include "MotionVectors.hpp"
 
 #include "MilkdropStaticShaders.hpp"
+#include <Renderer/LineRenderer.hpp>
 
 #include <Renderer/BlendMode.hpp>
 #include <Renderer/ShaderCache.hpp>
@@ -61,6 +62,13 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
     float const inverseHeight = 1.25f / static_cast<float>(m_presetState.renderContext.viewportSizeY);
     float const minimumLength = sqrtf(inverseWidth * inverseWidth + inverseHeight * inverseHeight);
 
+    // With a line reference size, every vector is a scaled quad, all drawn in one instanced call.
+    const auto& context = m_presetState.renderContext;
+    const float lineScale = LineScale(context.viewportSizeX, context.viewportSizeY,
+                                      context.lineReferenceWidth, context.lineReferenceHeight);
+    const bool quadLines = lineScale > 0.0f && GetQuadShader() != nullptr;
+    m_vectorStarts.clear();
+
     m_motionVectorMesh.SetVertexCount(static_cast<std::size_t>(countX + 1) * 2); // countX + 1 lines for each grid row, 2 vertices each.
 
     Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::OneMinusSourceAlpha);
@@ -81,10 +89,13 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
                      static_cast<float>(*presetPerFrameContext.mv_b),
                      static_cast<float>(*presetPerFrameContext.mv_a));
 
-    glLineWidth(1);
+    if (!quadLines)
+    {
+        glLineWidth(1);
 #ifndef USE_GLES
-    glEnable(GL_LINE_SMOOTH);
+        glEnable(GL_LINE_SMOOTH);
 #endif
+    }
 
     auto& lineVertices = m_motionVectorMesh.Vertices();
 
@@ -107,10 +118,24 @@ void MotionVectors::Draw(const PerFrameContext& presetPerFrameContext, std::shar
                 }
             }
 
+            if (quadLines)
+            {
+                for (int v = 0; v < vertex; v += 2)
+                {
+                    m_vectorStarts.push_back(lineVertices[v]);
+                }
+                continue;
+            }
+
             // Draw a row of lines.
             m_motionVectorMesh.Update();
             m_motionVectorMesh.Draw();
         }
+    }
+
+    if (quadLines)
+    {
+        DrawQuads(presetPerFrameContext, lineScale, minimumLength);
     }
 
     Renderer::Mesh::Unbind();
@@ -145,6 +170,79 @@ std::shared_ptr<Renderer::Shader> MotionVectors::GetShader()
     m_motionVectorShader = shader;
 
     return shader;
+}
+
+std::shared_ptr<Renderer::Shader> MotionVectors::GetQuadShader()
+{
+    if (m_quadShaderFailed)
+    {
+        return {};
+    }
+    auto shader = m_motionVectorQuadShader.lock();
+    if (!shader)
+    {
+        shader = m_presetState.renderContext.shaderCache->Get("milkdrop_motion_vector_quad_lines");
+    }
+    if (!shader)
+    {
+        auto staticShaders = libprojectM::MilkdropPreset::MilkdropStaticShaders::Get();
+
+        shader = std::make_shared<Renderer::Shader>();
+        try
+        {
+            shader->CompileProgram(staticShaders->GetMotionVectorLineVertexShader(),
+                                   Renderer::LineRenderer::FragmentShaderSource());
+        }
+        catch (const Renderer::ShaderException&)
+        {
+            // A driver that rejects the program: the vectors are drawn as GL lines.
+            m_quadShaderFailed = true;
+            return {};
+        }
+
+        m_presetState.renderContext.shaderCache->Insert("milkdrop_motion_vector_quad_lines", shader);
+    }
+
+    m_motionVectorQuadShader = shader;
+
+    return shader;
+}
+
+void MotionVectors::DrawQuads(const PerFrameContext& presetPerFrameContext, float lineScale, float minimumLength)
+{
+    if (m_vectorStarts.empty())
+    {
+        return;
+    }
+
+    if (!m_quadMesh)
+    {
+        m_quadMesh = std::make_unique<Renderer::Mesh>(Renderer::VertexBufferUsage::StreamDraw);
+        m_quadMesh->SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::TriangleStrip);
+    }
+    m_quadMesh->UpdateInstanceData(m_vectorStarts.data(), sizeof(Renderer::Point) * m_vectorStarts.size());
+    m_quadMesh->SetInstanceAttributes({{0, 2, GL_FLOAT, GL_FALSE, sizeof(Renderer::Point), 0, 1}});
+    // Attribute 1 stays disabled, using the constant color set in Draw().
+
+    const auto& context = m_presetState.renderContext;
+    auto shader = GetQuadShader();
+    shader->Bind();
+    shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
+    shader->SetUniformFloat2("viewport_size", glm::vec2(static_cast<float>(context.viewportSizeX),
+                                                        static_cast<float>(context.viewportSizeY)));
+    shader->SetUniformFloat("half_width", LineStyleFor(LineKind::MotionVector, false, lineScale,
+                                                       context.viewportSizeX, context.viewportSizeY)
+                                              .halfWidth);
+    shader->SetUniformFloat("antialias", context.lineAntialiasing ? 1.0f : 0.0f);
+    shader->SetUniformFloat2("tie_bias", Renderer::LineTieBias());
+    shader->SetUniformFloat("length_multiplier", static_cast<float>(*presetPerFrameContext.mv_l));
+    shader->SetUniformFloat("minimum_length", minimumLength);
+    shader->SetUniformInt("warp_coordinates", 0);
+
+    // One quad (four vertices) per vector start.
+    m_quadMesh->DrawInstanced(4, static_cast<uint32_t>(m_vectorStarts.size()));
+
+    Renderer::VertexArray::Unbind();
 }
 
 } // namespace MilkdropPreset

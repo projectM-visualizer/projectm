@@ -253,6 +253,8 @@ projectMSDL *setupSDLApp() {
         projectm_set_beat_sensitivity(projectMHandle, config.read<float>("Beat Sensitivity", 1.0));
         projectm_set_aspect_correction(projectMHandle, config.read<bool>("Aspect Correction", true));
         projectm_set_fps(projectMHandle, config.read<int32_t>("FPS", 60));
+        projectm_opengl_set_line_reference_size(projectMHandle, config.read<uint32_t>("Line Reference Width", 0), config.read<uint32_t>("Line Reference Height", 0));
+        projectm_opengl_set_line_antialiasing(projectMHandle, config.read<bool>("Line Antialiasing", false));
 
         app->setFps(config.read<uint32_t>("FPS", 60));
     }

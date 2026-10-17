@@ -1,5 +1,6 @@
 #include "Waveforms/WaveformMath.hpp"
 
+#include "LineGeometry.hpp"
 #include "PerFrameContext.hpp"
 #include "PresetState.hpp"
 
@@ -9,6 +10,13 @@
 namespace libprojectM {
 namespace MilkdropPreset {
 namespace Waveforms {
+
+auto WaveformMath::SampleDecisionWidth(const PresetState& presetState) -> int
+{
+    const auto& context = presetState.renderContext;
+    return MilkdropPreset::SampleDecisionWidth(context.viewportSizeX, context.viewportSizeY,
+                                               context.lineReferenceWidth, context.lineReferenceHeight);
+}
 
 auto WaveformMath::GetVertices(const PresetState& presetState,
                                const PerFrameContext& presetPerFrameContext) -> std::array<VertexList, 2>

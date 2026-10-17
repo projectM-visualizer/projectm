@@ -2,6 +2,7 @@
 
 #include "PerFrameContext.hpp"
 #include "PresetFileParser.hpp"
+#include <Renderer/LineRenderer.hpp>
 
 #include <Renderer/BlendMode.hpp>
 
@@ -170,10 +171,32 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
 
     SmoothWave(points, colors);
 
+    const auto& context = m_presetState.renderContext;
+    const float lineScale = LineScale(context.viewportSizeX, context.viewportSizeY,
+                                      context.lineReferenceWidth, context.lineReferenceHeight);
+    if (lineScale > 0.0f && !m_useDots && m_presetState.lineRenderer.Prepare(context))
+    {
+        DrawQuadLines(lineScale);
+        return;
+    }
+
 #ifndef USE_GLES
     glDisable(GL_LINE_SMOOTH);
 #endif
     glLineWidth(1);
+
+    // With a line reference size, dots get a size that keeps their share of the picture, and their
+    // alpha is faded by the difference between the wanted and the drawn (whole-pixel) area.
+    const bool scaledDots = lineScale > 0.0f && m_useDots;
+    const auto dot = DotStyleFor(LineKind::CustomWave, m_drawThick, lineScale);
+    if (scaledDots && dot.alphaScale < 1.0f)
+    {
+        auto& meshColors = m_mesh.Colors();
+        for (size_t index = 0; index < m_mesh.Indices().Size(); index++)
+        {
+            meshColors[index].SetA(meshColors[index].A() * dot.alphaScale);
+        }
+    }
 
     // Additive wave drawing (vice overwrite)
     if (m_additive)
@@ -188,7 +211,8 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
     auto shader = m_presetState.untexturedShader.lock();
     shader->Bind();
     shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
-    shader->SetUniformFloat("vertex_point_size", m_drawThick ? 2.0f : 1.0f);
+    shader->SetUniformFloat("vertex_point_size", scaledDots ? dot.size : (m_drawThick ? 2.0f : 1.0f));
+    const Renderer::ScopedProgramPointSize programPointSize(scaledDots);
 
     auto iterations = (m_drawThick && !m_useDots) ? 4 : 1;
 
@@ -238,6 +262,46 @@ void CustomWaveform::Draw(const PerFrameContext& presetPerFrameContext)
 
     m_mesh.Unbind();
     Renderer::Shader::Unbind();
+    Renderer::BlendMode::SetBlendActive(false);
+}
+
+void CustomWaveform::DrawQuadLines(float lineScale)
+{
+    const size_t count = m_mesh.Indices().Size();
+    const auto& vertices = m_mesh.Vertices();
+    const auto& colors = m_mesh.Colors();
+
+    m_linePoints.resize(count);
+    for (size_t index = 0; index < count; index++)
+    {
+        m_linePoints[index] = {vertices[index].X(), vertices[index].Y(),
+                               colors[index].R(), colors[index].G(), colors[index].B(), colors[index].A()};
+    }
+
+    m_lineBatch.Clear();
+    const auto strip = m_lineBatch.Append(m_linePoints.data(), m_linePoints.size(), false);
+    if (strip.segments == 0)
+    {
+        return;
+    }
+
+    // Additive wave drawing (vice overwrite)
+    if (m_additive)
+    {
+        Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::One);
+    }
+    else
+    {
+        Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::OneMinusSourceAlpha);
+    }
+
+    const auto& context = m_presetState.renderContext;
+    auto& lines = m_presetState.lineRenderer;
+    lines.Upload(m_lineBatch);
+    lines.Begin(PresetState::orthogonalProjection, context);
+    DrawLine(lines, strip, LineStyleFor(LineKind::CustomWave, m_drawThick, lineScale, context.viewportSizeX, context.viewportSizeY));
+    lines.End();
+
     Renderer::BlendMode::SetBlendActive(false);
 }
 

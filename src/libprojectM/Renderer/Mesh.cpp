@@ -3,6 +3,14 @@
 namespace libprojectM {
 namespace Renderer {
 
+Mesh::~Mesh()
+{
+    if (m_instanceBuffer != 0)
+    {
+        glDeleteBuffers(1, &m_instanceBuffer);
+    }
+}
+
 Mesh::Mesh()
 {
     Initialize();
@@ -119,7 +127,49 @@ void Mesh::Draw()
         m_indices.Update();
     }
 
-    GLuint primitiveType{GL_LINES};
+    glDrawElements(GLPrimitiveType(), m_indices.Size(), GL_UNSIGNED_INT, nullptr);
+
+    VertexArray::Unbind();
+}
+
+void Mesh::UpdateInstanceData(const void* data, size_t size)
+{
+    if (m_instanceBuffer == 0)
+    {
+        glGenBuffers(1, &m_instanceBuffer);
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, m_instanceBuffer);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(size), data, GL_STREAM_DRAW);
+    VertexBuffer<Point>::Unbind();
+}
+
+void Mesh::SetInstanceAttributes(std::initializer_list<VertexAttribute> attributes, size_t baseOffset)
+{
+    m_vertexArray.Bind();
+    glBindBuffer(GL_ARRAY_BUFFER, m_instanceBuffer);
+    for (const auto& attribute : attributes)
+    {
+        glEnableVertexAttribArray(attribute.index);
+        glVertexAttribPointer(attribute.index, attribute.size, attribute.type, attribute.normalized,
+                              attribute.stride, reinterpret_cast<const void*>(baseOffset + attribute.offset));
+        glVertexAttribDivisor(attribute.index, attribute.divisor);
+    }
+}
+
+void Mesh::DrawInstanced(uint32_t verticesPerInstance, uint32_t instanceCount)
+{
+    if (verticesPerInstance == 0 || instanceCount == 0)
+    {
+        return;
+    }
+    m_vertexArray.Bind();
+    glDrawArraysInstanced(GLPrimitiveType(), 0, static_cast<GLsizei>(verticesPerInstance), static_cast<GLsizei>(instanceCount));
+    VertexArray::Unbind();
+}
+
+auto Mesh::GLPrimitiveType() const -> GLenum
+{
+    GLenum primitiveType{GL_LINES};
     switch (m_primitiveType)
     {
         case PrimitiveType::Points:
@@ -145,9 +195,7 @@ void Mesh::Draw()
             break;
     }
 
-    glDrawElements(primitiveType, m_indices.Size(), GL_UNSIGNED_INT, nullptr);
-
-    VertexArray::Unbind();
+    return primitiveType;
 }
 
 void Mesh::Initialize()
