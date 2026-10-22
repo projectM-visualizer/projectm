@@ -1810,7 +1810,22 @@ bool HLSLParser::ParseStatement(HLSLStatement*& statement, const HLSLType& retur
         {
             return false;
         }
-        ParseExpression(forStatement->increment);
+        if (ParseExpression(forStatement->increment))
+        {
+            // The increment may be a comma-separated list of expressions,
+            // e.g. "i++, j++". Chain them like an expression list.
+            HLSLExpression* lastExpression = forStatement->increment;
+            while (Accept(','))
+            {
+                HLSLExpression* expression = NULL;
+                if (!ParseExpression(expression))
+                {
+                    return false;
+                }
+                lastExpression->nextExpression = expression;
+                lastExpression = expression;
+            }
+        }
         if (!Expect(')'))
         {
             return false;
