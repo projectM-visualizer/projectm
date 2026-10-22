@@ -1005,8 +1005,10 @@ void HLSLTreeVisitor::VisitForStatement(HLSLForStatement * node)
     if (node->condition) {
         VisitExpression(node->condition);
     }
-    if (node->increment) {
-        VisitExpression(node->increment);
+    HLSLExpression * increment = node->increment;
+    while (increment != NULL) {
+        VisitExpression(increment);
+        increment = increment->nextExpression;
     }
     VisitStatements(node->statement);
 }
