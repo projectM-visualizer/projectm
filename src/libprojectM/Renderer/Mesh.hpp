@@ -8,7 +8,9 @@
 #include "Renderer/VertexBufferUsage.hpp"
 #include "Renderer/VertexIndexArray.hpp"
 
+#include <cstddef>
 #include <cstdint>
+#include <initializer_list>
 
 namespace libprojectM {
 namespace Renderer {
@@ -28,12 +30,17 @@ namespace Renderer {
  *
  * Keep in mind that only 8 attribute arrays are guaranteed to be supported by the OpenGL spec.
  *
- * The Mesh class always uses vertex indices to render, using glDrawElements. If the index buffer is
+ * Draw() uses vertex indices to render, using glDrawElements. If the index buffer is
  * empty on the first draw call, it will be populated with a 1:1 mapping of the vertex buffer. If
  * the vertex count changes, the caller has to make sure that the index array is updated accordingly.
  *
  * @note When using this class, attributes indices 1 and 2 will be toggled according to the
  * attribute enable flags. When using additional vertex arrays, make sure to start with index 3.
+ *
+ * The separate instanced path uses an interleaved instance buffer with caller-defined attributes.
+ * UpdateInstanceData() uploads that buffer, SetInstanceAttributes() defines its layout and offsets,
+ * and DrawInstanced() draws a fixed number of vertices per instance without an index buffer.
+ * Do not call Update() between setting custom attributes and drawing: it toggles attributes 1/2.
  */
 class Mesh
 {
@@ -47,6 +54,17 @@ public:
         Triangles,     //!< Renders vertices as individual triangles, with three vertices/indices making up one triangle.
         TriangleStrip, //!< Renders vertices as a continuous strip of triangles, where 2 vertices are shared between each old and new triangle.
         TriangleFan    //!< Renders a fan of triangles, with the first vertex being used as the first vertex of all rendered triangles.
+    };
+
+    /** An attribute in the interleaved instance buffer. Offsets and stride are in bytes. */
+    struct VertexAttribute {
+        GLuint index;
+        GLint size;
+        GLenum type;
+        GLboolean normalized;
+        GLsizei stride;
+        size_t offset;
+        GLuint divisor;
     };
 
     /**
@@ -74,7 +92,7 @@ public:
     /**
      * Default destructor.
      */
-    virtual ~Mesh() = default;
+    virtual ~Mesh();
 
     /**
      * Returns the currently set primitive type which is rendered when calling Draw().
@@ -337,11 +355,34 @@ public:
      */
     void Draw();
 
+    /**
+     * Uploads an interleaved instance stream, creating its buffer on first use.
+     * Replaces the buffer storage on every upload so in-flight draws can finish with the old data.
+     * The caller retains ownership of data; no CPU copy is kept. Leaves the array buffer unbound.
+     */
+    void UpdateInstanceData(const void* data, size_t size);
+
+    /**
+     * Binds this mesh and configures attributes reading the instance stream.
+     * Adds baseOffset to each attribute offset, e.g. to select a strip inside an uploaded batch.
+     * Leaves the VAO and array buffer bound. Requires UpdateInstanceData() first.
+     */
+    void SetInstanceAttributes(std::initializer_list<VertexAttribute> attributes, size_t baseOffset = 0);
+
+    /**
+     * Draws verticesPerInstance vertices per instance using glDrawArraysInstanced.
+     * Counts are independent of the regular vertex and index buffers. Zero counts draw nothing.
+     * Binds and unbinds this mesh's VAO; the caller sets shaders, blending and instance attributes.
+     */
+    void DrawInstanced(uint32_t verticesPerInstance, uint32_t instanceCount);
+
 private:
     /**
      * Binds the internal buffers to the vertex array object and initializes the array pointers.
      */
     void Initialize();
+
+    auto GLPrimitiveType() const -> GLenum;
 
     PrimitiveType m_primitiveType{PrimitiveType::Lines}; //!< Mesh render primitive type.
 
@@ -355,6 +396,7 @@ private:
     VertexBuffer<TextureUV> m_textureUVs; //!< Vertex texture coordinates.
 
     VertexIndexArray m_indices; //!< The vertex indices used for rendering.
+    GLuint m_instanceBuffer{0}; //!< Optional interleaved instance stream, created only on upload.
 };
 
 } // namespace Renderer

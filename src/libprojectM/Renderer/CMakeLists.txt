@@ -15,8 +15,18 @@ generate_shader_resources(${CMAKE_CURRENT_BINARY_DIR}/BuiltInTransitionsResource
         ${TRANSITION_SHADER_FILES}
         )
 
+generate_shader_resources(${CMAKE_CURRENT_BINARY_DIR}/LineShaderResources.hpp
+        Shaders/LineVertexShaderGlsl330.vert
+        Shaders/LineFragmentShaderGlsl330.frag
+        )
+
 add_library(Renderer OBJECT
         ${CMAKE_CURRENT_BINARY_DIR}/BuiltInTransitionsResources.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/LineShaderResources.hpp
+        LineGeometry.cpp
+        LineGeometry.hpp
+        LineRenderer.cpp
+        LineRenderer.hpp
         BlendMode.cpp
         BlendMode.hpp
         Color.hpp

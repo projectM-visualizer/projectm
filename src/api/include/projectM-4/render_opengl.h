@@ -63,6 +63,71 @@ PROJECTM_EXPORT void projectm_opengl_render_frame_fbo(projectm_handle instance, 
  */
 PROJECTM_EXPORT void projectm_opengl_burn_texture(projectm_handle instance, uint32_t texture, int left, int top, int width, int height);
 
+/**
+ * @brief Draws lines so they keep their share of the picture at large render sizes.
+ *
+ * By default, waveforms, custom waves, shape outlines and motion vectors are drawn as 1 px wide
+ * OpenGL lines, as in Milkdrop. The higher the render resolution, the smaller the share of the
+ * picture they cover, so many presets get thin and dark on 4K screens.
+ *
+ * With a reference size, lines are drawn as quads instead, one instance per segment with miter
+ * joins. They are 1 px wide at and below the reference size's area and widen by the square root of
+ * the area ratio above it, so a line covers the same share of the picture at any size and aspect
+ * ratio. Below the reference area, lines stay 1 px wide at full brightness.
+ *
+ * Thick lines are drawn like Milkdrop's: the thin line four times with small offsets, which scale
+ * the same way. Waveform dots are drawn with a matching point size and their alpha is adjusted to
+ * the drawn area.
+ *
+ * Above the reference area, other Milkdrop quantities that depend on the render size follow the
+ * reference size too: the waveform sample count rule, the spiro/hash wave fade, the size of the
+ * blur levels, and the canvas size preset code sees (texsize, texsize_main, mip_x/y/avg, pixelsx
+ * and pixelsy). Textures keep the render size.
+ *
+ * Edges are hard, like Milkdrop's lines, unless projectm_opengl_set_line_antialiasing() is enabled.
+ * If the driver rejects the line shaders, lines are drawn as OpenGL lines.
+ *
+ * Milkdrop's authoring resolution, 1024x768, is a good reference size.
+ *
+ * @param instance The projectM instance handle.
+ * @param width Width of the reference size in pixels, or 0 to draw 1 px OpenGL lines (the default).
+ * @param height Height of the reference size in pixels, or 0 to draw 1 px OpenGL lines (the default).
+ * @since 4.2.0
+ */
+PROJECTM_EXPORT void projectm_opengl_set_line_reference_size(projectm_handle instance, uint32_t width, uint32_t height);
+
+/**
+ * @brief Returns the line reference size set with projectm_opengl_set_line_reference_size().
+ *
+ * @param instance The projectM instance handle.
+ * @param width Receives the reference width, or 0 if lines are drawn as OpenGL lines.
+ * @param height Receives the reference height, or 0 if lines are drawn as OpenGL lines.
+ * @since 4.2.0
+ */
+PROJECTM_EXPORT void projectm_opengl_get_line_reference_size(projectm_handle instance, uint32_t* width, uint32_t* height);
+
+/**
+ * @brief Gives scaled lines a one-pixel anti-aliased edge.
+ *
+ * Off by default: lines have hard edges like Milkdrop's, which presets that feed their image back
+ * are tuned for (a soft edge made such a preset 14% darker in testing). Has no effect while no line
+ * reference size is set (see projectm_opengl_set_line_reference_size()), and none on dots.
+ *
+ * @param instance The projectM instance handle.
+ * @param enabled True for anti-aliased edges.
+ * @since 4.2.0
+ */
+PROJECTM_EXPORT void projectm_opengl_set_line_antialiasing(projectm_handle instance, bool enabled);
+
+/**
+ * @brief Returns whether scaled lines have an anti-aliased edge.
+ *
+ * @param instance The projectM instance handle.
+ * @return True if anti-aliased edges are enabled.
+ * @since 4.2.0
+ */
+PROJECTM_EXPORT bool projectm_opengl_get_line_antialiasing(projectm_handle instance);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

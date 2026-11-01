@@ -1,12 +1,17 @@
 #pragma once
 
+#include "LineGeometry.hpp"
 #include "WaveformMode.hpp"
 
 #include "Waveforms/WaveformMath.hpp"
 
 #include <Renderer/Mesh.hpp>
 
+#include <glm/vec4.hpp>
+
+#include <array>
 #include <memory>
+#include <vector>
 
 namespace libprojectM {
 namespace MilkdropPreset {
@@ -22,7 +27,17 @@ public:
     void Draw(const PerFrameContext& presetPerFrameContext);
 
 private:
-    void MaximizeColors(const PerFrameContext& presetPerFrameContext);
+    /**
+     * @brief Draws the waveform lines as scaled quad lines (line reference size set, not dots).
+     */
+    void DrawQuadLines(const std::array<Waveforms::WaveformMath::VertexList, 2>& waves,
+                       const PerFrameContext& presetPerFrameContext, float lineScale);
+
+    /**
+     * @brief Calculates the wave color, with the alpha faded by mode, volume and render size.
+     * @return The wave color and alpha.
+     */
+    auto MaximizeColors(const PerFrameContext& presetPerFrameContext) -> glm::vec4;
     void ModulateOpacityByVolume(const PerFrameContext& presetPerFrameContext);
 
     PresetState& m_presetState; //!< The preset state.
@@ -35,6 +50,10 @@ private:
 
     float m_tempAlpha{0.0f}; //!< Calculated alpha value.
     int m_samples{};         //!< Number of samples in the current waveform. Depends on the mode.
+
+    Renderer::LineBatch m_lineBatch;                   //!< This frame's waveform strips, for the quad-line renderer.
+    std::vector<Renderer::LineBatch::Strip> m_strips;  //!< The strips in m_lineBatch.
+    std::vector<Renderer::ColoredPoint> m_coloredWave; //!< One wave with its color, for the batch.
 };
 
 } // namespace MilkdropPreset

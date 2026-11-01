@@ -2,6 +2,7 @@
 
 #include "PerFrameContext.hpp"
 #include "PresetState.hpp"
+#include <Renderer/LineRenderer.hpp>
 
 #include "Waveforms/Factory.hpp"
 
@@ -34,15 +35,32 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
         }
     }
 
+    auto smoothedVertices = m_waveformMath->GetVertices(m_presetState, presetPerFrameContext);
+
+    const auto& context = m_presetState.renderContext;
+    const float lineScale = LineScale(context.viewportSizeX, context.viewportSizeY,
+                                      context.lineReferenceWidth, context.lineReferenceHeight);
+    if (lineScale > 0.0f && !m_presetState.waveDots && m_presetState.lineRenderer.Prepare(context))
+    {
+        DrawQuadLines(smoothedVertices, presetPerFrameContext, lineScale);
+        return;
+    }
+
 #ifndef USE_GLES
     glDisable(GL_LINE_SMOOTH);
 #endif
     glLineWidth(1);
 
+    // With a line reference size, dots are drawn once at a size that keeps their share of the
+    // picture, instead of four times at a one-pixel offset.
+    const bool scaledDots = lineScale > 0.0f && m_presetState.waveDots;
+    const auto dot = DotStyleFor(LineKind::MainWave, true, lineScale);
+
     auto shader = m_presetState.untexturedShader.lock();
     shader->Bind();
     shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjectionFlipped);
-    shader->SetUniformFloat("vertex_point_size", 1.0f);
+    shader->SetUniformFloat("vertex_point_size", scaledDots ? dot.size : 1.0f);
+    const Renderer::ScopedProgramPointSize programPointSize(scaledDots);
 
     // Additive wave drawing (vice overwrite)
     if (m_presetState.additiveWaves)
@@ -54,8 +72,6 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
         Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::OneMinusSourceAlpha);
     }
 
-    auto smoothedVertices = m_waveformMath->GetVertices(m_presetState, presetPerFrameContext);
-
     for (auto& smoothedWave : smoothedVertices)
     {
         if (smoothedWave.empty())
@@ -64,10 +80,11 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
         }
 
         m_tempAlpha = static_cast<float>(*presetPerFrameContext.wave_a);
-        MaximizeColors(presetPerFrameContext);
+        const auto color = MaximizeColors(presetPerFrameContext);
+        glVertexAttrib4f(1, color.r, color.g, color.b, scaledDots ? color.a * dot.alphaScale : color.a);
 
         // Always draw "thick" dots.
-        const auto iterations = m_presetState.waveThick || m_presetState.waveDots ? 4 : 1;
+        const auto iterations = scaledDots ? 1 : (m_presetState.waveThick || m_presetState.waveDots ? 4 : 1);
 
         const auto incrementX = 2.0f / static_cast<float>(m_presetState.renderContext.viewportSizeX);
         const auto incrementY = 2.0f / static_cast<float>(m_presetState.renderContext.viewportSizeY);
@@ -117,9 +134,62 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
         }
     }
 
-    Renderer::BlendMode::SetBlendActive(false);;
+    Renderer::BlendMode::SetBlendActive(false);
     Renderer::Mesh::Unbind();
     Renderer::Shader::Unbind();
+}
+
+void Waveform::DrawQuadLines(const std::array<Waveforms::WaveformMath::VertexList, 2>& waves,
+                             const PerFrameContext& presetPerFrameContext, float lineScale)
+{
+    m_lineBatch.Clear();
+    m_strips.clear();
+    for (const auto& wave : waves)
+    {
+        if (wave.empty())
+        {
+            continue;
+        }
+
+        m_tempAlpha = static_cast<float>(*presetPerFrameContext.wave_a);
+        const auto color = MaximizeColors(presetPerFrameContext);
+
+        m_coloredWave.resize(wave.size());
+        for (size_t point = 0; point < wave.size(); point++)
+        {
+            m_coloredWave[point] = {wave[point].X(), wave[point].Y(), color.r, color.g, color.b, color.a};
+        }
+        m_strips.push_back(m_lineBatch.Append(m_coloredWave.data(), m_coloredWave.size(), m_waveformMath->IsLoop()));
+    }
+
+    if (m_lineBatch.Points().empty())
+    {
+        return;
+    }
+
+    // Additive wave drawing (vice overwrite)
+    if (m_presetState.additiveWaves)
+    {
+        Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::One);
+    }
+    else
+    {
+        Renderer::BlendMode::Set(true, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::OneMinusSourceAlpha);
+    }
+
+    const auto& context = m_presetState.renderContext;
+    auto& lines = m_presetState.lineRenderer;
+    lines.Upload(m_lineBatch);
+    lines.Begin(PresetState::orthogonalProjectionFlipped, context);
+    const auto style = LineStyleFor(LineKind::MainWave, m_presetState.waveThick, lineScale,
+                                    context.viewportSizeX, context.viewportSizeY);
+    for (const auto& strip : m_strips)
+    {
+        DrawLine(lines, strip, style);
+    }
+    lines.End();
+
+    Renderer::BlendMode::SetBlendActive(false);
 }
 
 void Waveform::ModulateOpacityByVolume(const PerFrameContext& presetPerFrameContext)
@@ -143,13 +213,17 @@ void Waveform::ModulateOpacityByVolume(const PerFrameContext& presetPerFrameCont
     }
 }
 
-void Waveform::MaximizeColors(const PerFrameContext& presetPerFrameContext)
+auto Waveform::MaximizeColors(const PerFrameContext& presetPerFrameContext) -> glm::vec4
 {
     //wave color brightening
     //
     //forces max color value to 1.0 and scales
     // the rest accordingly
-    int texsize = std::max(m_presetState.renderContext.viewportSizeX, m_presetState.renderContext.viewportSizeY);
+    // Above the line reference size, the fade follows the reference like the line width does
+    // (see MaximizeColorsTextureSize()).
+    const auto& context = m_presetState.renderContext;
+    const int texsize = MaximizeColorsTextureSize(context.viewportSizeX, context.viewportSizeY,
+                                                  context.lineReferenceWidth, context.lineReferenceHeight);
 
     if (m_mode == WaveformMode::CenteredSpiro || m_mode == WaveformMode::ExplosiveHash)
     {
@@ -242,7 +316,7 @@ void Waveform::MaximizeColors(const PerFrameContext& presetPerFrameContext)
         }
     }
 
-    glVertexAttrib4f(1, waveR, waveG, waveB, m_tempAlpha);
+    return {waveR, waveG, waveB, m_tempAlpha};
 }
 
 } // namespace MilkdropPreset

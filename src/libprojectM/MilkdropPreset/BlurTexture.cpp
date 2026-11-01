@@ -1,5 +1,6 @@
 #include "BlurTexture.hpp"
 
+#include "LineGeometry.hpp"
 #include "PerFrameContext.hpp"
 #include "PresetState.hpp"
 
@@ -22,6 +23,12 @@ BlurTexture::BlurTexture()
 
     // Initialize blur mesh with a single fullscreen quad.
     m_blurMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::TriangleStrip);
+
+    glGenSamplers(1, &m_mipmapSampler);
+    glSamplerParameteri(m_mipmapSampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glSamplerParameteri(m_mipmapSampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glSamplerParameteri(m_mipmapSampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glSamplerParameteri(m_mipmapSampler, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     m_blurMesh.Vertices().Set({{-1.0f, -1.0f},
                                {1.0f, -1.0f},
@@ -46,6 +53,11 @@ BlurTexture::BlurTexture()
 
         m_blurTextures[i] = std::make_shared<Renderer::Texture>(textureName, 0, GL_TEXTURE_2D, 0, 0, false);
     }
+}
+
+BlurTexture::~BlurTexture()
+{
+    glDeleteSamplers(1, &m_mipmapSampler);
 }
 
 void BlurTexture::Initialize(const Renderer::RenderContext& renderContext)
@@ -103,7 +115,7 @@ auto BlurTexture::GetDescriptorsForBlurLevel(BlurTexture::BlurLevel blurLevel) c
     return descriptors;
 }
 
-void BlurTexture::Update(const Renderer::Texture& sourceTexture, const PerFrameContext& perFrameContext)
+void BlurTexture::Update(const Renderer::Texture& sourceTexture, const PerFrameContext& perFrameContext, float referenceScale)
 {
     if (m_blurLevel == BlurLevel::None)
     {
@@ -116,7 +128,19 @@ void BlurTexture::Update(const Renderer::Texture& sourceTexture, const PerFrameC
         return;
     }
 
-    AllocateTextures(sourceTexture);
+    // Milkdrop's blur levels are fixed fractions of its texture, blurred by a few of their texels, so
+    // their radius is a share of the picture only at one render size. Above the line reference size
+    // they are made as from a source of the reference's size (BlurSourceFor()), so the blur textures
+    // keep the reference's size and their share of the picture. The first pass reads the source's
+    // mipmaps at that scale, so every source pixel counts.
+    const bool scaled = referenceScale > 1.0f;
+    const auto blurSource = BlurSourceFor(sourceTexture.Width(), sourceTexture.Height(), referenceScale);
+    AllocateTextures(blurSource.width, blurSource.height);
+    if (scaled)
+    {
+        sourceTexture.Bind(0);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
 
     unsigned int const passes = static_cast<int>(m_blurLevel) * 2;
     auto const blur1EdgeDarken = static_cast<float>(*perFrameContext.blur1_edge_darken);
@@ -177,6 +201,10 @@ void BlurTexture::Update(const Renderer::Texture& sourceTexture, const PerFrameC
 
         blurShader->Bind();
         blurShader->SetUniformInt("texture_sampler", 0);
+        if ((pass % 2) == 0)
+        {
+            blurShader->SetUniformFloat("source_lod", pass == 0 ? blurSource.lod : 0.0f);
+        }
 
         glViewport(0, 0, m_blurTextures[pass]->Width(), m_blurTextures[pass]->Height());
 
@@ -191,10 +219,17 @@ void BlurTexture::Update(const Renderer::Texture& sourceTexture, const PerFrameC
             m_blurTextures[pass - 1]->Bind(0);
             blurShader->SetUniformInt("flipVertical", 0);
         }
-        m_blurSampler->Bind(0);
+        if (pass == 0 && scaled)
+        {
+            glBindSampler(0, m_mipmapSampler);
+        }
+        else
+        {
+            m_blurSampler->Bind(0);
+        }
 
-        float srcWidth = static_cast<float>((pass == 0) ? sourceTexture.Width() : m_blurTextures[pass - 1]->Width());
-        float srcHeight = static_cast<float>((pass == 0) ? sourceTexture.Height() : m_blurTextures[pass - 1]->Height());
+        float srcWidth = static_cast<float>((pass == 0) ? blurSource.width : m_blurTextures[pass - 1]->Width());
+        float srcHeight = static_cast<float>((pass == 0) ? blurSource.height : m_blurTextures[pass - 1]->Height());
 
         float scaleNow = scale[pass / 2];
         float biasNow = bias[pass / 2];
@@ -325,10 +360,10 @@ void BlurTexture::GetSafeBlurMinMaxValues(const PerFrameContext& perFrameContext
     }
 }
 
-void BlurTexture::AllocateTextures(const Renderer::Texture& sourceTexture)
+void BlurTexture::AllocateTextures(int sourceWidth, int sourceHeight)
 {
-    int width = sourceTexture.Width();
-    int height = sourceTexture.Height();
+    int width = sourceWidth;
+    int height = sourceHeight;
 
     if (m_blurTextures[0] != nullptr &&
         width > 0 &&
@@ -373,8 +408,8 @@ void BlurTexture::AllocateTextures(const Renderer::Texture& sourceTexture)
         m_blurTextures[i] = std::make_shared<Renderer::Texture>(textureName, width2, height2, false);
     }
 
-    m_sourceTextureWidth = sourceTexture.Width();
-    m_sourceTextureHeight = sourceTexture.Height();
+    m_sourceTextureWidth = sourceWidth;
+    m_sourceTextureHeight = sourceHeight;
 }
 
 } // namespace MilkdropPreset

@@ -1,5 +1,6 @@
 #include "PerPixelContext.hpp"
 
+#include "LineGeometry.hpp"
 #include "MilkdropPresetExceptions.hpp"
 #include "PerFrameContext.hpp"
 
@@ -84,8 +85,11 @@ void PerPixelContext::LoadStateReadOnlyVariables(PresetState& state, PerFrameCon
     *treb_att = static_cast<PRJM_EVAL_F>(*perFrameState.treb_att);
     *meshx = static_cast<PRJM_EVAL_F>(state.renderContext.perPixelMeshX);
     *meshy = static_cast<PRJM_EVAL_F>(state.renderContext.perPixelMeshY);
-    *pixelsx = static_cast<PRJM_EVAL_F>(state.renderContext.viewportSizeX);
-    *pixelsy = static_cast<PRJM_EVAL_F>(state.renderContext.viewportSizeY);
+    // Above the line reference area, the canvas size the preset was made for (ShaderCanvasSize()).
+    const auto canvas = ShaderCanvasSize(state.renderContext.viewportSizeX, state.renderContext.viewportSizeY,
+                                         state.renderContext.lineReferenceWidth, state.renderContext.lineReferenceHeight);
+    *pixelsx = static_cast<PRJM_EVAL_F>(canvas.width);
+    *pixelsy = static_cast<PRJM_EVAL_F>(canvas.height);
     *aspectx = static_cast<PRJM_EVAL_F>(state.renderContext.aspectX);
     *aspecty = static_cast<PRJM_EVAL_F>(state.renderContext.aspectY);
 }

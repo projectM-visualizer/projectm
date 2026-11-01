@@ -30,6 +30,10 @@ public:
     float invAspectX{1.0};     //!< Inverse X aspect ratio.
     float invAspectY{1.0};     //!< Inverse Y aspect ratio.
 
+    int lineReferenceWidth{0};    //!< Render width at which scaled lines are 1 px wide; 0 draws 1 px GL lines.
+    int lineReferenceHeight{0};   //!< Render height at which scaled lines are 1 px wide; 0 draws 1 px GL lines.
+    bool lineAntialiasing{false}; //!< Scaled lines get a one-pixel anti-aliased edge instead of a hard one.
+
     int perPixelMeshX{64}; //!< Per-pixel/per-vertex mesh X resolution.
     int perPixelMeshY{48}; //!< Per-pixel/per-vertex mesh Y resolution.
 

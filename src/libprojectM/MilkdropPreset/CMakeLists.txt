@@ -2,6 +2,7 @@ set(SHADER_FILES
         Shaders/Blur1FragmentShaderGlsl330.frag
         Shaders/Blur2FragmentShaderGlsl330.frag
         Shaders/BlurVertexShaderGlsl330.vert
+        Shaders/MotionVectorLineVertexShaderGlsl330.vert
         Shaders/PresetCompVertexShaderGlsl330.vert
         Shaders/PresetMotionVectorsVertexShaderGlsl330.vert
         Shaders/PresetShaderHeaderGlsl330.inc
@@ -57,6 +58,8 @@ add_library(MilkdropPreset OBJECT
         FinalComposite.hpp
         IdlePreset.cpp
         IdlePreset.hpp
+        LineGeometry.cpp
+        LineGeometry.hpp
         MilkdropPreset.cpp
         MilkdropPreset.hpp
         MilkdropPresetExceptions.hpp
