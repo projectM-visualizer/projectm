@@ -1,10 +1,12 @@
 #include <gtest/gtest.h>
 
 #include <Engine.h>
+#include <GLSLGenerator.h>
 #include <HLSLParser.h>
 #include <HLSLTree.h>
 
 #include <cstring>
+#include <string>
 
 namespace {
 
@@ -94,4 +96,41 @@ TEST(HLSLParser, StringToDoubleRejectsIdentifier)
     char* end = nullptr;
     M4::String_ToDouble(str, &end);
     EXPECT_EQ(end, str);
+}
+
+// Issue #1043: the comma operator in the increment part of a for loop
+// was rejected with "expected ')'".
+TEST(HLSLParser, ForLoopIncrementWithCommaOperator)
+{
+    EXPECT_TRUE(ParseHLSL(
+        "float4 PS(float4 position : TEXCOORD0) : COLOR0 {\n"
+        "  int j = 100;\n"
+        "  float sum = 0.0;\n"
+        "  for (int i = 0; i < 10; i++, j++) { sum += j; }\n"
+        "  return float4(sum, 0, 0, 1);\n"
+        "}\n"
+    ));
+}
+
+TEST(HLSLParser, ForLoopIncrementWithCommaOperatorGeneratesGLSL)
+{
+    const char* code =
+        "float4 PS(float4 position : TEXCOORD0) : COLOR0 {\n"
+        "  int j = 100;\n"
+        "  int k = 0;\n"
+        "  float sum = 0.0;\n"
+        "  for (int i = 0; i < 10; i++, j++, k += 2) { sum += j + k; }\n"
+        "  return float4(sum, 0, 0, 1);\n"
+        "}\n";
+
+    M4::Allocator allocator;
+    M4::HLSLTree tree(&allocator);
+    M4::HLSLParser parser(&allocator, &tree);
+    ASSERT_TRUE(parser.Parse("test.hlsl", code, strlen(code)));
+
+    M4::GLSLGenerator generator;
+    ASSERT_TRUE(generator.Generate(&tree, M4::GLSLGenerator::Target_FragmentShader,
+                                   M4::GLSLGenerator::Version_330, "PS"));
+    std::string glsl = generator.GetResult();
+    EXPECT_NE(glsl.find("(i++), (j++), (k += 2)) {"), std::string::npos) << glsl;
 }
