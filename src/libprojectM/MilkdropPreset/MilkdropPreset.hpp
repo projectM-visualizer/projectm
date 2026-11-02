@@ -24,6 +24,7 @@
 #pragma once
 
 #include "Border.hpp"
+#include "Constants.hpp"
 #include "CustomShape.hpp"
 #include "CustomWaveform.hpp"
 #include "DarkenCenter.hpp"
@@ -32,29 +33,35 @@
 #include "PerFrameContext.hpp"
 #include "PerPixelContext.hpp"
 #include "PerPixelMesh.hpp"
-#include "Preset.hpp"
 #include "Waveform.hpp"
+
+#include <ExpressionVariableWatcher.hpp>
+#include <Preset.hpp>
+
+#include <Audio/FrameAudioData.hpp>
 
 #include <Renderer/CopyTexture.hpp>
 #include <Renderer/Framebuffer.hpp>
+#include <Renderer/RenderContext.hpp>
+#include <Renderer/Texture.hpp>
+#include <Renderer/TextureAttachment.hpp>
 
+#include <array>
+#include <istream>
 #include <memory>
 #include <string>
 
 namespace libprojectM {
-class PresetFileParser;
-
 namespace MilkdropPreset {
 
 class Factory;
 
-class MilkdropPreset : public ::libprojectM::Preset
+class MilkdropPreset : public Preset
 {
 
 public:
     /**
      * @brief LoadCode a MilkdropPreset by filename with input and output buffers specified.
-     * @param factory The factory class that created this preset instance.
      * @param absoluteFilePath the absolute file path of a MilkdropPreset to load from the file system
      */
     MilkdropPreset(const std::string& absoluteFilePath);
@@ -62,7 +69,6 @@ public:
     /**
      * @brief LoadCode a MilkdropPreset from an input stream with input and output buffers specified.
      * @param presetData an already initialized input stream to read the MilkdropPreset file from
-     * @param presetOutputs initialized and filled with data parsed from a MilkdropPreset
      */
     MilkdropPreset(std::istream& presetData);
 
@@ -77,7 +83,7 @@ public:
      * @param audioData The frame audio data.
      * @param renderContext The current rendering context/information.
      */
-    void RenderFrame(const libprojectM::Audio::FrameAudioData& audioData,
+    void RenderFrame(const Audio::FrameAudioData& audioData,
                      const Renderer::RenderContext& renderContext) override;
 
     auto OutputTexture() const -> std::shared_ptr<Renderer::Texture> override;
@@ -85,6 +91,10 @@ public:
     void DrawInitialImage(const std::shared_ptr<Renderer::Texture>& image, const Renderer::RenderContext& renderContext) override;
 
     void BindFramebuffer() override;
+
+    void UpdateWatches(ExpressionVariableWatcher& watcher) override;
+
+    void RemoveWatches() override;
 
 private:
     void PerFrameUpdate();
