@@ -83,6 +83,29 @@ void PerPixelMesh::CompileWarpShader(PresetState& presetState)
     }
 }
 
+auto PerPixelMesh::WarpShaderCompileReady() const -> bool
+{
+    return !m_warpShader || m_warpShader->Shader().PendingCompileReady();
+}
+
+void PerPixelMesh::FinalizeWarpShaderCompile()
+{
+    if (m_warpShader && m_warpShader->Shader().HasPendingCompile())
+    {
+        try
+        {
+            m_warpShader->Shader().FinalizeCompile();
+            LOG_DEBUG("[PerPixelMesh] Successfully finalized deferred warp shader compile.");
+        }
+        catch (Renderer::ShaderException&)
+        {
+            // Same failure handling as CompileWarpShader: fall back to no warp shader.
+            LOG_ERROR("[PerPixelMesh] Error compiling warp shader code (deferred).");
+            m_warpShader.reset();
+        }
+    }
+}
+
 void PerPixelMesh::Draw(const PresetState& presetState,
                         const PerFrameContext& perFrameContext,
                         PerPixelContext& perPixelContext)
