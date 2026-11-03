@@ -62,6 +62,8 @@ add_library(MilkdropPreset OBJECT
         MilkdropPresetExceptions.hpp
         MilkdropShader.cpp
         MilkdropShader.hpp
+        MilkdropShaderPreprocess.cpp
+        MilkdropShaderPreprocess.hpp
         MilkdropStaticShaders.cpp.in
         MilkdropStaticShaders.hpp.in
         MotionVectors.cpp
