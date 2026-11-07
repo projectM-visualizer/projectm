@@ -93,57 +93,55 @@ auto Playlist::AddPath(const std::string& path, uint32_t index, bool recursive, 
 {
     uint32_t presetsAdded{0};
 
+    // Note: AddItem() already increments the playback history indices for each inserted item.
+    auto addEntry = [&](const directory_entry& entry) {
+        if (!is_regular_file(entry) || entry.path().extension() != ".milk")
+        {
+            return;
+        }
+
+        std::string filename;
+        try
+        {
+            filename = entry.path().string();
+        }
+        catch (std::exception&)
+        {
+            // The file name can't be represented as a narrow string, e.g. on Windows if it contains
+            // characters outside the active ANSI code page. Skip it instead of aborting the whole scan.
+            return;
+        }
+
+        uint32_t currentIndex{InsertAtEnd};
+        if (index < InsertAtEnd)
+        {
+            currentIndex = index + presetsAdded;
+        }
+        if (AddItem(filename, currentIndex, allowDuplicates))
+        {
+            presetsAdded++;
+        }
+    };
+
     if (recursive)
     {
         try
         {
             for (const auto& entry : recursive_directory_iterator(path))
             {
-                if (is_regular_file(entry) && entry.path().extension() == ".milk")
-                {
-                    uint32_t currentIndex{InsertAtEnd};
-                    if (index < InsertAtEnd)
-                    {
-                        currentIndex = index + presetsAdded;
-                    }
-                    if (AddItem(entry.path().string(), currentIndex, allowDuplicates))
-                    {
-                        presetsAdded++;
-                    }
-                }
+                addEntry(entry);
             }
         }
         catch (std::exception&)
         {
             // Todo: Add failure feedback
-            return presetsAdded;
         }
     }
     else
     {
         for (const auto& entry : directory_iterator(path))
         {
-            if (is_regular_file(entry) && entry.path().extension() == ".milk")
-            {
-                uint32_t currentIndex{InsertAtEnd};
-                if (index < InsertAtEnd)
-                {
-                    currentIndex = index + presetsAdded;
-                }
-                if (AddItem(entry.path().string(), currentIndex, allowDuplicates))
-                {
-                    presetsAdded++;
-                }
-            }
-        }
-    }
-
-    // Increment indices of items in playback history equal or grater than the newly added index.
-    for (auto& historyItem : m_presetHistory)
-    {
-        if (historyItem >= index)
-        {
-            historyItem += presetsAdded;
+            addEntry(entry);
         }
     }
 
