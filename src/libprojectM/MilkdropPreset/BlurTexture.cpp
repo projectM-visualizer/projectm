@@ -18,8 +18,6 @@ BlurTexture::BlurTexture()
     : m_blurMesh(Renderer::VertexBufferUsage::StaticDraw, false, true)
     , m_blurSampler(std::make_shared<Renderer::Sampler>(GL_CLAMP_TO_EDGE, GL_LINEAR))
 {
-    m_blurFramebuffer.CreateColorAttachment(0, 0);
-
     // Initialize blur mesh with a single fullscreen quad.
     m_blurMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::TriangleStrip);
 
@@ -178,6 +176,10 @@ void BlurTexture::Update(const Renderer::Texture& sourceTexture, const PerFrameC
         blurShader->Bind();
         blurShader->SetUniformInt("texture_sampler", 0);
 
+        // Render straight into the blur texture. Drawing into a shared texture
+        // and copying the result out after each pass costs tile-based GPUs an
+        // extra flush and copy per pass.
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_blurTextures[pass]->TextureID(), 0);
         glViewport(0, 0, m_blurTextures[pass]->Width(), m_blurTextures[pass]->Height());
 
         // hook up correct source texture - assume there is only one, at stage 0
@@ -256,12 +258,10 @@ void BlurTexture::Update(const Renderer::Texture& sourceTexture, const PerFrameC
 
         // Draw fullscreen quad
         m_blurMesh.Draw();
-
-        // Save to blur texture
-        m_blurTextures[pass]->Bind(0);
-        glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, m_blurTextures[pass]->Width(), m_blurTextures[pass]->Height());
-        m_blurTextures[pass]->Unbind(0);
     }
+
+    // Detach the last blur texture, so it can be sampled without a feedback loop.
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
 
     Renderer::Mesh::Unbind();
     Renderer::BlendMode::Set(false, Renderer::BlendMode::Function::SourceAlpha, Renderer::BlendMode::Function::OneMinusSourceAlpha);
@@ -356,12 +356,6 @@ void BlurTexture::AllocateTextures(const Renderer::Texture& sourceTexture)
         }
         int width2 = ((width + 3) / 16) * 16;
         int height2 = ((height + 3) / 4) * 4;
-
-        if (i == 0)
-        {
-            // Only use as much space as needed to render the blur textures.
-            m_blurFramebuffer.SetSize(width2, height2);
-        }
 
         std::string textureName;
         if (i % 2 == 1)
