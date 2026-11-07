@@ -643,6 +643,7 @@ struct HLSLForStatement : public HLSLStatement
     HLSLForStatement()
     {
         initialization = NULL;
+        initializationWithoutType = NULL;
         condition = NULL;
         increment = NULL;
         statement = NULL;

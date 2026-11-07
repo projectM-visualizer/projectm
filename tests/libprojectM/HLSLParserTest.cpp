@@ -1,10 +1,12 @@
 #include <gtest/gtest.h>
 
 #include <Engine.h>
+#include <GLSLGenerator.h>
 #include <HLSLParser.h>
 #include <HLSLTree.h>
 
 #include <cstring>
+#include <string>
 
 namespace {
 
@@ -94,4 +96,56 @@ TEST(HLSLParser, StringToDoubleRejectsIdentifier)
     char* end = nullptr;
     M4::String_ToDouble(str, &end);
     EXPECT_EQ(end, str);
+}
+
+// Regression tests for issue #1043: comma operator in for loop increment.
+TEST(HLSLParser, ForLoopCommaIncrement)
+{
+    EXPECT_TRUE(ParseHLSL(
+        "float4 PS() : COLOR {\n"
+        "  float sum = 0.0; int j = 100;\n"
+        "  for (int i = 0; i < 10; i++, j++) { sum += (float)j; }\n"
+        "  return float4(sum, 0.0, 0.0, 1.0);\n"
+        "}\n"
+    ));
+}
+
+TEST(HLSLParser, ForLoopThreeCommaIncrements)
+{
+    EXPECT_TRUE(ParseHLSL(
+        "float4 PS() : COLOR {\n"
+        "  int j = 0; int k = 0;\n"
+        "  for (int i = 0; i < 10; i++, j += 2, k--) { }\n"
+        "  return float4(0.0, 0.0, 0.0, 1.0);\n"
+        "}\n"
+    ));
+}
+
+TEST(HLSLParser, ForLoopTrailingCommaIsRejected)
+{
+    EXPECT_FALSE(ParseHLSL(
+        "float4 PS() : COLOR {\n"
+        "  for (int i = 0; i < 10; i++,) { }\n"
+        "  return float4(0.0, 0.0, 0.0, 1.0);\n"
+        "}\n"
+    ));
+}
+
+TEST(HLSLParser, ForLoopCommaIncrementGeneratesGLSL)
+{
+    const char* code =
+        "float4 PS() : COLOR {\n"
+        "  float sum = 0.0; int j = 100;\n"
+        "  for (int i = 0; i < 10; i++, j++) { sum += (float)j; }\n"
+        "  return float4(sum, 0.0, 0.0, 1.0);\n"
+        "}\n";
+    M4::Allocator allocator;
+    M4::HLSLTree tree(&allocator);
+    M4::HLSLParser parser(&allocator, &tree);
+    ASSERT_TRUE(parser.Parse("test.hlsl", code, strlen(code)));
+
+    M4::GLSLGenerator generator;
+    ASSERT_TRUE(generator.Generate(&tree, M4::GLSLGenerator::Target_FragmentShader, M4::GLSLGenerator::Version_330, "PS"));
+    std::string result = generator.GetResult();
+    EXPECT_NE(result.find("(i++), (j++))"), std::string::npos) << result;
 }

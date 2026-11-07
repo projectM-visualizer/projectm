@@ -1810,7 +1810,22 @@ bool HLSLParser::ParseStatement(HLSLStatement*& statement, const HLSLType& retur
         {
             return false;
         }
-        ParseExpression(forStatement->increment);
+        if (ParseExpression(forStatement->increment))
+        {
+            // Support the comma operator in the increment part, e.g. "i++, j++".
+            // Additional expressions are chained via nextExpression.
+            HLSLExpression* lastIncrement = forStatement->increment;
+            while (Accept(','))
+            {
+                HLSLExpression* nextIncrement = NULL;
+                if (!ParseExpression(nextIncrement))
+                {
+                    return false;
+                }
+                lastIncrement->nextExpression = nextIncrement;
+                lastIncrement = nextIncrement;
+            }
+        }
         if (!Expect(')'))
         {
             return false;

@@ -1426,7 +1426,7 @@ void GLSLGenerator::OutputStatements(int indent, HLSLStatement* statement, const
             m_writer.Write("; ");
             OutputExpression(forStatement->condition, &kBoolType);
             m_writer.Write("; ");
-            OutputExpression(forStatement->increment);
+            OutputExpressionList(forStatement->increment);
             m_writer.Write(") {");
             m_writer.EndLine();
             OutputStatements(indent + 1, forStatement->statement, returnType);
