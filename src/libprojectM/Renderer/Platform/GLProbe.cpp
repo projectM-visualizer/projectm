@@ -70,7 +70,7 @@ struct ResolvedGLFunctions {
     using GetStringFn = decltype(+glGetString);
     using GetErrorFn = decltype(+glGetError);
     using GetIntegervFn = decltype(+glGetIntegerv);
-    using GetStringiFn = const GLubyte* (*) (GLenum, GLuint);
+    using GetStringiFn = PFNGLGETSTRINGIPROC;
 
     GetStringFn getString{};     //!< Typed pointer to glGetString (required).
     GetErrorFn getError{};       //!< Typed pointer to glGetError (required).
