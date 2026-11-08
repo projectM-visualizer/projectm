@@ -25,7 +25,18 @@ void Shader::CompileProgram(const std::string& vertexShaderSource,
                             const std::string& fragmentShaderSource)
 {
     auto vertexShader = CompileShader(vertexShaderSource, GL_VERTEX_SHADER);
-    auto fragmentShader = CompileShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
+
+    GLuint fragmentShader{};
+    try
+    {
+        fragmentShader = CompileShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
+    }
+    catch (...)
+    {
+        // Don't leak the already compiled vertex shader if the fragment shader fails to compile.
+        glDeleteShader(vertexShader);
+        throw;
+    }
 
     glAttachShader(m_shaderProgram, vertexShader);
     glAttachShader(m_shaderProgram, fragmentShader);
