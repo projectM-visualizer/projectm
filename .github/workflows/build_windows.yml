@@ -171,3 +171,36 @@ jobs:
         with:
             name: projectm-windows-${{ matrix.libs }}-${{ matrix.fslib }}-${{ matrix.arch }}-${{ matrix.runs-on }}
             path: install/*
+
+  build-uwp:
+    name: "Windows Store (UWP), Arch: ${{ matrix.arch }}"
+    # The windows-2022 image includes the v142 toolset with UWP support.
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ['x64', 'Win32']
+
+    steps:
+      - name: Checkout libprojectM
+        uses: actions/checkout@v7
+        with:
+          submodules: 'recursive'
+
+      - name: Configure Build
+        run: |
+          cmake -G "Visual Studio 17 2022" `
+            -A "${{ matrix.arch }}" `
+            -T v142 `
+            -S "${{ github.workspace }}" `
+            -B "${{ github.workspace }}/cmake-build" `
+            -DCMAKE_SYSTEM_NAME=WindowsStore `
+            -DCMAKE_SYSTEM_VERSION=10.0 `
+            -DENABLE_PLAYLIST=YES `
+            -DBUILD_TESTING=NO
+
+      - name: Build Debug
+        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --parallel
+
+      - name: Build Release
+        run: cmake --build "${{ github.workspace }}/cmake-build" --config "Release" --parallel
