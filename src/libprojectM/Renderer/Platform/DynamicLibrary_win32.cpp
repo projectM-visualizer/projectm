@@ -1,6 +1,9 @@
 #ifdef _WIN32
 
 #include "DynamicLibrary.hpp"
+
+// Windows Store (UWP) apps use DynamicLibrary_uwp.cpp instead.
+#ifndef PLATFORM_WINDOWS_STORE_APP
 #include "PlatformLibraryNames.hpp"
 
 #include "Logging.hpp"
@@ -505,5 +508,7 @@ auto DynamicLibrary::FindGlobalSymbol(const char* name) -> void*
 } // namespace Platform
 } // namespace Renderer
 } // namespace libprojectM
+
+#endif // !PLATFORM_WINDOWS_STORE_APP
 
 #endif // _WIN32

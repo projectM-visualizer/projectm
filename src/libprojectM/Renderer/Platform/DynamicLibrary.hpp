@@ -7,6 +7,20 @@
 #include <type_traits>
 
 // -------------------------------------------------------------------------
+// Windows Store (UWP) detection
+// -------------------------------------------------------------------------
+//
+// UWP apps can only use the app partition of the Win32 API: no LoadLibrary(Ex),
+// GetModuleHandle or GetSystemDirectory, and no process environment (getenv).
+// DynamicLibrary_uwp.cpp replaces DynamicLibrary_win32.cpp for these builds.
+#ifdef _WIN32
+#include <winapifamily.h>
+#if !WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+#define PLATFORM_WINDOWS_STORE_APP 1
+#endif
+#endif
+
+// -------------------------------------------------------------------------
 // Minimal EGL calling-convention support
 // -------------------------------------------------------------------------
 //
