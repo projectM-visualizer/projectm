@@ -128,6 +128,13 @@ auto Texture::Empty() const -> bool
 
 void Texture::Update(const void* data) const
 {
+    // Pixel data passed to projectM is tightly packed, but the default unpack alignment is 4 bytes per row.
+    // With 3-channel (or 1/2-channel) data and a width that isn't a multiple of 4, GL would expect padded rows,
+    // skewing the image and reading past the end of the buffer.
+    GLint previousUnpackAlignment{4};
+    glGetIntegerv(GL_UNPACK_ALIGNMENT, &previousUnpackAlignment);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
     glBindTexture(m_target, m_textureId);
     switch (m_target)
     {
@@ -142,6 +149,8 @@ void Texture::Update(const void* data) const
             break;
     }
     glBindTexture(m_target, 0);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, previousUnpackAlignment);
 }
 
 void Texture::CreateNewTexture()
