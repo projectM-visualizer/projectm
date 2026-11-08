@@ -95,7 +95,8 @@ endif()
 
 # Compiler-/system-dependent options, including dependencies.
 cmake_dependent_option(BUILD_SHARED_LIBS "Build and install libprojectM as a shared libraries. If OFF, builds as static libraries." ON "NOT ENABLE_EMSCRIPTEN" OFF)
-cmake_dependent_option(ENABLE_GLES "Enable OpenGL ES support" OFF "NOT ENABLE_EMSCRIPTEN AND NOT CMAKE_SYSTEM_NAME STREQUAL Android" ON)
+# Windows Store (UWP) apps can't use desktop OpenGL, only OpenGL ES, e.g. through ANGLE.
+cmake_dependent_option(ENABLE_GLES "Enable OpenGL ES support" OFF "NOT ENABLE_EMSCRIPTEN AND NOT CMAKE_SYSTEM_NAME STREQUAL Android AND NOT CMAKE_SYSTEM_NAME STREQUAL WindowsStore" ON)
 cmake_dependent_option(ENABLE_INSTALL "Enable installing projectM libraries and headers." OFF "NOT PROJECT_IS_TOP_LEVEL" ON)
 cmake_dependent_option(ENABLE_MACOS_FRAMEWORK "Build as macOS Framework bundles instead of plain shared libraries." OFF "CMAKE_SYSTEM_NAME STREQUAL Darwin AND BUILD_SHARED_LIBS" OFF)
 
@@ -174,6 +175,12 @@ else()
             set(PROJECTM_OPENGL_LIBRARIES OpenGL::GL)
         endif()
     endif()
+endif()
+
+# Windows Store (UWP) projects enable SDL checks, which turn the CRT deprecation warnings
+# for POSIX names (strdup, stricmp) and functions like fopen or sscanf into errors.
+if(CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS _CRT_NONSTDC_NO_WARNINGS)
 endif()
 
 # Disable trace/debug logging in release builds unless explicitly requested

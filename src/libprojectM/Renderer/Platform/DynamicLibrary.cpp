@@ -12,7 +12,12 @@ auto EnvFlagEnabled(const char* name, bool defaultValue) -> bool
     {
         return defaultValue;
     }
+#ifdef PLATFORM_WINDOWS_STORE_APP
+    // UWP apps have no process environment, so all variables are unset.
+    const char* v = nullptr;
+#else
     const char* v = std::getenv(name);
+#endif
     if (v == nullptr || v[0] == '\0')
     {
         return defaultValue;

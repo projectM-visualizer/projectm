@@ -1,9 +1,9 @@
 add_compile_definitions(
         DATADIR_PATH="${PROJECTM_DATADIR_PATH}"
         $<IF:$<PLATFORM_ID:Darwin>,GL_SILENCE_DEPRECATION,>
-        $<IF:$<PLATFORM_ID:Windows>,NOMINMAX,>
-        $<IF:$<PLATFORM_ID:Windows>,WIN32_LEAN_AND_MEAN,>
-        $<IF:$<PLATFORM_ID:Windows>,STBI_NO_DDS,>
+        $<IF:$<OR:$<PLATFORM_ID:Windows>,$<PLATFORM_ID:WindowsStore>>,NOMINMAX,>
+        $<IF:$<OR:$<PLATFORM_ID:Windows>,$<PLATFORM_ID:WindowsStore>>,WIN32_LEAN_AND_MEAN,>
+        $<IF:$<OR:$<PLATFORM_ID:Windows>,$<PLATFORM_ID:WindowsStore>>,STBI_NO_DDS,>
         )
 
 include_directories(
