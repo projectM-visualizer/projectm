@@ -67,13 +67,16 @@ public:
      */
     auto Shader() -> Renderer::Shader&;
 
-private:
     /**
      * @brief Prepares the shader code to be translated into GLSL.
+     * Doesn't require an OpenGL context.
      * @param program The program code to work on.
+     * @param type The type of the shader the code belongs to.
+     * @throws Renderer::ShaderException if the code is empty or misses the shader_body entry point or braces.
      */
-    void PreprocessPresetShader(std::string& program);
+    static void PreprocessPresetShader(std::string& program, ShaderType type);
 
+private:
     /**
      * @brief Searches for sampler references in the program and stores them in m_samplerNames.
      * @param program The program code to work on.

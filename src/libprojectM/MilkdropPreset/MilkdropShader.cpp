@@ -57,7 +57,7 @@ void MilkdropShader::LoadCode(const std::string& presetShaderCode)
     m_preprocessedCode = m_fragmentShaderCode;
 
     GetReferencedSamplers(m_preprocessedCode);
-    PreprocessPresetShader(m_preprocessedCode);
+    PreprocessPresetShader(m_preprocessedCode, m_type);
 }
 
 void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
@@ -332,10 +332,10 @@ auto MilkdropShader::Shader() -> Renderer::Shader&
     return m_shader;
 }
 
-void MilkdropShader::PreprocessPresetShader(std::string& program)
+void MilkdropShader::PreprocessPresetShader(std::string& program, ShaderType type)
 {
     std::string shaderTypeString = "composite";
-    if (m_type == ShaderType::WarpShader)
+    if (type == ShaderType::WarpShader)
     {
         shaderTypeString = "warp";
     }
@@ -355,6 +355,8 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
     found = stripped.find("sampler_state");
     while (found != std::string::npos)
     {
+        auto const samplerStatePos = found;
+
         // Now go backwards and find the assignment
         found = stripped.rfind('=', found);
         auto startPos = found;
@@ -363,9 +365,12 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
         found = stripped.find('}', found);
         found = stripped.find(';', found);
 
-        if (found != std::string::npos)
+        // Only remove the range if it actually contains this sampler_state, so unrelated code is never removed.
+        if (startPos != std::string::npos && found != std::string::npos && found > samplerStatePos)
         {
-            stripped.replace(startPos, found - startPos, "");
+            // Remove the block from the actual program, then re-strip so positions keep mapping 1:1.
+            program.replace(startPos, found - startPos, "");
+            stripped = Utils::StripComments(program);
         }
         else
         {
@@ -381,7 +386,7 @@ void MilkdropShader::PreprocessPresetShader(std::string& program)
     found = stripped.find("shader_body");
     if (found != std::string::npos)
     {
-        if (m_type == ShaderType::WarpShader)
+        if (type == ShaderType::WarpShader)
         {
             program.replace(int(found), 11, R"(
 void PS(float4 _vDiffuse : COLOR,
@@ -412,7 +417,7 @@ void PS(float4 _vDiffuse : COLOR,
     if (found != std::string::npos)
     {
         std::string progMain = "{\nfloat3 ret = 0;\n";
-        if (m_type == ShaderType::WarpShader)
+        if (type == ShaderType::WarpShader)
         {
             progMain.append("_mv_tex_coords.xy = _uv.xy;\n");
         }
@@ -491,7 +496,7 @@ void PS(float4 _vDiffuse : COLOR,
     // to unwrap the packed 4-element uniforms into single values.
     fullSource.append(MilkdropStaticShaders::Get()->GetPresetShaderHeader());
 
-    if (m_type == ShaderType::WarpShader)
+    if (type == ShaderType::WarpShader)
     {
         fullSource.append("#define rad _rad_ang.x\n"
                           "#define ang _rad_ang.y\n"

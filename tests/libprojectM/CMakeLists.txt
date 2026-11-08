@@ -31,6 +31,7 @@ add_executable(projectM-unittest
         HLSLModuloTest.cpp
         LoggingTest.cpp
         MilkdropShaderCommentParsingTest.cpp
+        MilkdropShaderPreprocessTest.cpp
         PCMTest.cpp
         PresetFileParserTest.cpp
         UtilsTest.cpp
