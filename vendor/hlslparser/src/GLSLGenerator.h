@@ -131,7 +131,7 @@ private:
 
 private:
 
-    static const int    s_numReservedWords = 9;
+    static const int    s_numReservedWords = 10;
     static const char*  s_reservedWord[s_numReservedWords];
 
     CodeWriter          m_writer;

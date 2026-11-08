@@ -67,6 +67,13 @@ public:
      */
     auto Shader() -> Renderer::Shader&;
 
+    /**
+     * @brief Removes the sampler and texsize declarations of the preset from the preprocessed shader code.
+     * These are declared by projectM itself. Doesn't require an OpenGL context.
+     * @param program The preprocessed program code to work on.
+     */
+    static void RemoveSamplerAndTexSizeDeclarations(std::string& program);
+
 private:
     /**
      * @brief Prepares the shader code to be translated into GLSL.
