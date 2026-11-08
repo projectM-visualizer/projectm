@@ -33,6 +33,7 @@ add_executable(projectM-unittest
         LoggingTest.cpp
         EquationCompileErrorTest.cpp
         MilkdropShaderCommentParsingTest.cpp
+        MilkdropShaderPreprocessTest.cpp
         PCMTest.cpp
         PresetFileParserTest.cpp
         UtilsTest.cpp
