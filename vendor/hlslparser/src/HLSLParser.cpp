@@ -3461,9 +3461,17 @@ bool HLSLParser::ParsePreprocessorDefine()
         }
 
         // Macro value
+        bool firstValueToken = true;
         while(m_tokenizer.GetToken() != HLSLToken_EndOfLine)
         {
             bool addOriginalSource = true;
+
+            // Keep the whitespace between tokens, e.g. in "float x", but not before the value.
+            if (!firstValueToken)
+            {
+                value.append(m_tokenizer.getLastPos(false), m_tokenizer.getLastPos(true) - m_tokenizer.getLastPos(false));
+            }
+            firstValueToken = false;
 
             if (m_tokenizer.GetToken() == HLSLToken_Identifier)
             {
@@ -3498,9 +3506,12 @@ bool HLSLParser::ParsePreprocessorDefine()
     else
     {
         // Macro value
+        bool firstValueToken = true;
         while(m_tokenizer.GetToken() != HLSLToken_EndOfLine)
         {
-            const char * start = m_tokenizer.getLastPos(true);
+            // Keep the whitespace between tokens, e.g. in "sampler sampler_name;", but not before the value.
+            const char * start = m_tokenizer.getLastPos(firstValueToken);
+            firstValueToken = false;
 
             std::string valueAdd(start, m_tokenizer.getCurrentPos() - start);
             value.append(valueAdd);
@@ -3546,10 +3557,19 @@ bool HLSLParser::ApplyPreprocessor(const char* fileName, const char* buffer, siz
         HLSLMacro * macro = m_macros[index];
         m_tokenizer = HLSLTokenizer(fileName, macro->value, strlen(macro->value));
         std::string valueProcessed;
+        bool firstValueToken = true;
 
         while (m_tokenizer.GetToken() != HLSLToken_EndOfStream)
         {
             bool addOriginalSource = true;
+
+            // Keep the whitespace between tokens, but not before the value.
+            if (!firstValueToken)
+            {
+                valueProcessed.append(m_tokenizer.getLastPos(false), m_tokenizer.getLastPos(true) - m_tokenizer.getLastPos(false));
+            }
+            firstValueToken = false;
+
             if (m_tokenizer.GetToken() == HLSLToken_Identifier)
             {
                 HLSLMacro * matchedMacro = ProcessMacroFromIdentifier(valueProcessed, addOriginalSource);
@@ -3694,6 +3714,13 @@ HLSLMacro * HLSLParser::ProcessMacroFromIdentifier(std::string & sourcePreproces
                 {
                     // Macro name and value are identical (#define xyz xyz)
                     addOriginalSource = true;
+                }
+                else if (strchr(m_macros[i]->value, ';') != NULL)
+                {
+                    // The value is a statement or declaration, e.g. "sampler sampler_name;", which can't be
+                    // put in parentheses like an expression.
+                    sourcePreprocessed.append(m_macros[i]->value);
+                    addOriginalSource = false;
                 }
                 else
                 {
