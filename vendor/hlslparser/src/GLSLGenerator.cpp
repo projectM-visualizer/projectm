@@ -2033,7 +2033,9 @@ void GLSLGenerator::OutputEntryCaller(HLSLFunction* entryFunction)
     for(HLSLDeclaration *declaration : globalVarsAssignments)
     {
         m_writer.BeginLine(1, declaration->fileName, declaration->line);
-        OutputDeclarationBody( declaration->type, GetSafeIdentifierName( declaration->name ) );
+        // This is an assignment to the already declared global, so only write its name. For arrays,
+        // OutputDeclarationBody() would add the size, e.g. "a[5] = ...", which assigns to an element out of bounds.
+        m_writer.Write("%s", GetSafeIdentifierName(declaration->name));
 
         OutputDeclarationAssignment(declaration);
         m_writer.EndLine(";");
@@ -2130,7 +2132,7 @@ void GLSLGenerator::OutputDeclarationAssignment(HLSLDeclaration* declaration)
    if( declaration->type.array )
    {
        m_writer.Write( "%s[]( ", GetTypeName( declaration->type ) );
-       OutputExpressionList( declaration->assignment );
+       OutputArrayInitializerList( declaration->type, declaration->assignment );
        m_writer.Write( " )" );
    }
    else
@@ -2160,6 +2162,67 @@ void GLSLGenerator::OutputDeclarationAssignment(HLSLDeclaration* declaration)
            m_writer.Write( " )" );
        }
    }
+}
+
+void GLSLGenerator::OutputArrayInitializerList(const HLSLType& type, HLSLExpression* expression)
+{
+    // HLSL allows initializing an array of vectors with a flat list of scalars, e.g.
+    // "float4 a[2] = { 1, 2, 3, 4, 5, 6, 7, 8 };", but GLSL's array constructor needs one value per element.
+    // Group the values into vector constructors, counting the components each value provides.
+    const BaseTypeDescription& elementDescription = baseTypeDescriptions[type.baseType];
+    const int elementComponents = elementDescription.numComponents * elementDescription.height;
+
+    bool needsGrouping = false;
+    if (elementDescription.numDimensions == 1)
+    {
+        for (HLSLExpression* value = expression; value != NULL; value = value->nextExpression)
+        {
+            const BaseTypeDescription& valueDescription = baseTypeDescriptions[value->expressionType.baseType];
+            if (valueDescription.numComponents * valueDescription.height != elementComponents)
+            {
+                needsGrouping = true;
+                break;
+            }
+        }
+    }
+
+    if (!needsGrouping)
+    {
+        OutputExpressionList(expression);
+        return;
+    }
+
+    HLSLType scalarType(static_cast<HLSLBaseType>(type.baseType - (elementDescription.numComponents - 1)));
+    int components = 0;
+    bool firstElement = true;
+    for (HLSLExpression* value = expression; value != NULL; value = value->nextExpression)
+    {
+        if (components == 0)
+        {
+            m_writer.Write(firstElement ? "%s(" : ", %s(", GetTypeName(type));
+            firstElement = false;
+        }
+        else
+        {
+            m_writer.Write(", ");
+        }
+
+        const BaseTypeDescription& valueDescription = baseTypeDescriptions[value->expressionType.baseType];
+        const int valueComponents = valueDescription.numComponents * valueDescription.height;
+        OutputExpression(value, valueComponents == 1 ? &scalarType : NULL);
+
+        components += valueComponents;
+        if (components >= elementComponents)
+        {
+            m_writer.Write(")");
+            components = 0;
+        }
+    }
+
+    if (components > 0)
+    {
+        m_writer.Write(")");
+    }
 }
 
 void GLSLGenerator::OutputDeclaration(const HLSLType& type, const char* name)

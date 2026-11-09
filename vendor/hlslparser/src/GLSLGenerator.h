@@ -96,6 +96,7 @@ private:
 	void OutputDeclarationBody( const HLSLType& type, const char* name );
     void OutputDeclaration(const HLSLType& type, const char* name);
     void OutputDeclarationAssignment(HLSLDeclaration* declaration);
+    void OutputArrayInitializerList(const HLSLType& type, HLSLExpression* expression);
     void OutputCast(const HLSLType& type);
 
     void OutputSetOutAttribute(const char* semantic, const char* resultName);
