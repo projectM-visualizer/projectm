@@ -124,7 +124,9 @@ void PerPixelContext::CompilePerPixelCode(const std::string& perPixelCode)
             error = "[PerPixelContext] Could not compile per-pixel code.";
         }
         LOG_DEBUG("[PerPixelContext] Failed per-pixel code:\n" + perPixelCode);
-        throw MilkdropCompileException(error);
+        // Like Milkdrop, only this code block is disabled, the preset is still used.
+        LOG_WARN(error);
+        return;
     }
 }
 
