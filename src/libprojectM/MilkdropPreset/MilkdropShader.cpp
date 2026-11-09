@@ -121,8 +121,10 @@ void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
             {
                 if (presetState.randomTextureDescriptors.find(randomSlot) != presetState.randomTextureDescriptors.end())
                 {
-                    // Use existing texture descriptor.
-                    m_textureSamplerDescriptors.push_back(presetState.randomTextureDescriptors.at(randomSlot));
+                    // Use the texture already assigned to this slot, but with the sampler name used in this shader.
+                    // The other shader might have used it with a different prefix, e.g. "rand00" and "rand00_smalltiled".
+                    const auto& slotDescriptor = presetState.randomTextureDescriptors.at(randomSlot);
+                    m_textureSamplerDescriptors.emplace_back(slotDescriptor.Texture(), slotDescriptor.Sampler(), name, name);
                     continue;
                 }
 

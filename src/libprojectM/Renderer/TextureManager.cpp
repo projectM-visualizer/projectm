@@ -294,7 +294,7 @@ auto TextureManager::GetRandomTexture(const std::string& randomName) -> TextureS
     if (m_scannedTextureFiles.empty())
     {
         LOG_DEBUG("[TextureManager] Texture file list is empty.");
-        return {};
+        return {m_placeholderTexture, GetSampler(randomName), randomName, randomName};
     }
 
     std::string prefix;
@@ -331,7 +331,8 @@ auto TextureManager::GetRandomTexture(const std::string& randomName) -> TextureS
     if (selectedFilename.empty())
     {
         LOG_DEBUG("[TextureManager] No random texture found. Prefix: \"" + prefix + "\".");
-        return {};
+        // Like a missing regular texture, use the placeholder, so the shader still declares the sampler and compiles.
+        return {m_placeholderTexture, GetSampler(randomName), randomName, randomName};
     }
 
     // Use selected filename to load the texture.
