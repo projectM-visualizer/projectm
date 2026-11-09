@@ -28,6 +28,7 @@ test_api_headers(TestMainAPIHeaders
 
 add_executable(projectM-unittest
         HLSLParserTest.cpp
+        HLSLAlternateMultiplyTest.cpp
         HLSLModuloTest.cpp
         LoggingTest.cpp
         MilkdropShaderCommentParsingTest.cpp
