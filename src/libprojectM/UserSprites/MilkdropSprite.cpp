@@ -69,10 +69,10 @@ void MilkdropSprite::Init(const std::string& spriteData, const Renderer::RenderC
     // which gives way better results and users can easily convert any image to PNG.
 
     // Load and compile code
-    auto initCode = parser.GetCode("init_");
+    auto initCode = parser.GetEquationCode("init_");
     m_codeContext.RunInitCode(initCode, renderContext);
 
-    auto perFrameCode = parser.GetCode("code_");
+    auto perFrameCode = parser.GetEquationCode("code_");
     if (!perFrameCode.empty())
     {
         m_codeContext.perFrameCodeHandle = projectm_eval_code_compile(m_codeContext.spriteCodeContext, perFrameCode.c_str());

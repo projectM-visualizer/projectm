@@ -134,25 +134,25 @@ void PresetState::Initialize(PresetFileParser& parsedFile)
     }
 
     // Code:
-    perFrameInitCode = parsedFile.GetCode("per_frame_init_");
-    perFrameCode = parsedFile.GetCode("per_frame_");
-    perPixelCode = parsedFile.GetCode("per_pixel_");
+    perFrameInitCode = parsedFile.GetEquationCode("per_frame_init_");
+    perFrameCode = parsedFile.GetEquationCode("per_frame_");
+    perPixelCode = parsedFile.GetEquationCode("per_pixel_");
 
     // Custom waveform code:
     for (int i = 0; i < CustomWaveformCount; i++)
     {
         std::string const wavePrefix = "wave_" + std::to_string(i) + "_";
-        customWaveInitCode[i] = parsedFile.GetCode(wavePrefix + "init");
-        customWavePerFrameCode[i] = parsedFile.GetCode(wavePrefix + "per_frame");
-        customWavePerPointCode[i] = parsedFile.GetCode(wavePrefix + "per_point");
+        customWaveInitCode[i] = parsedFile.GetEquationCode(wavePrefix + "init");
+        customWavePerFrameCode[i] = parsedFile.GetEquationCode(wavePrefix + "per_frame");
+        customWavePerPointCode[i] = parsedFile.GetEquationCode(wavePrefix + "per_point");
     }
 
     // Custom shape code:
     for (int i = 0; i < CustomShapeCount; i++)
     {
         std::string const shapePrefix = "shape_" + std::to_string(i) + "_";
-        customShapeInitCode[i] = parsedFile.GetCode(shapePrefix + "init");
-        customShapePerFrameCode[i] = parsedFile.GetCode(shapePrefix + "per_frame");
+        customShapeInitCode[i] = parsedFile.GetEquationCode(shapePrefix + "init");
+        customShapePerFrameCode[i] = parsedFile.GetEquationCode(shapePrefix + "per_frame");
     }
 
     // Shader code:
