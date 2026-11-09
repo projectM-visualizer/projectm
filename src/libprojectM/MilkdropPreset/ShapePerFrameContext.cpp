@@ -160,7 +160,13 @@ void ShapePerFrameContext::EvaluateInitCode(const std::string& perFrameInitCode,
             error = "[ShapePerFrameContext] Could not compile custom shape " + std::to_string(shape.m_index) + " per-frame init code.";
         }
         LOG_DEBUG("[ShapePerFrameContext] Failed custom shape per-frame INIT code:\n" + perFrameInitCode);
-        throw MilkdropCompileException(error);
+        // Like Milkdrop, only this code block is disabled, the preset is still used.
+        LOG_WARN(error);
+        for (auto* tVar : t_vars)
+        {
+            *tVar = 0;
+        }
+        return;
     }
 
     projectm_eval_code_execute(initCode);
@@ -195,7 +201,9 @@ void ShapePerFrameContext::CompilePerFrameCode(const std::string& perFrameCode,
             error = "[ShapePerFrameContext] Could not compile custom shape " + std::to_string(shape.m_index) + " per-frame code.";
         }
         LOG_DEBUG("[ShapePerFrameContext] Failed custom shape per-frame code:\n" + perFrameCode);
-        throw MilkdropCompileException(error);
+        // Like Milkdrop, only this code block is disabled, the preset is still used.
+        LOG_WARN(error);
+        return;
     }
 }
 

@@ -35,7 +35,7 @@ public:
 
     /**
      * @brief Compiles and runs the preset init code.
-     * @throws MilkdropCompileException Thrown if the custom wave init code couldn't be compiled.
+     * If the custom wave init code can't be compiled, a warning is logged and the code is skipped, like in Milkdrop.
      * @param perFrameInitCode The init code.
      * @param waveform The waveform this context belongs to.
      */
@@ -43,7 +43,7 @@ public:
 
     /**
      * @brief Compiles the per-frame code and stores the code handle in the class.
-     * @throws MilkdropCompileException Thrown if the custom wave per-frame code couldn't be compiled.
+     * If the custom wave per-frame code can't be compiled, a warning is logged and the code is skipped, like in Milkdrop.
      * @param perFrameCode The code to compile.
      * @param waveform The waveform this context belongs to.
      */

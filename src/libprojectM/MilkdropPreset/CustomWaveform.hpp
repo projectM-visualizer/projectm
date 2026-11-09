@@ -33,7 +33,7 @@ public:
 
     /**
      * @brief Compiles all code blocks and runs the init expression.
-     * @throws MilkdropCompileException Thrown if one of the code blocks couldn't be compiled.
+     * If one of the code blocks can't be compiled, a warning is logged and the code is skipped, like in Milkdrop.
      * @param presetPerFrameContext The per-frame context to retrieve the init Q vars from.
      */
     void CompileCodeAndRunInitExpressions(const PerFrameContext& presetPerFrameContext);
