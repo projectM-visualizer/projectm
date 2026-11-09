@@ -441,7 +441,13 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
 
     if (m_options.flags & Flag_AlternateNanPropagation) {
         /* Implement alternate functions that propagate NaNs like shader model 3 and DX9. */
-        m_writer.WriteLine(0, "float %s(int i_x, int i_y) { float x=float(i_x); float y=float(i_y); if (x == 0.0 || y == 0.0) { return 0.0; } else { return (x * y); } }", m_altMultFunction);
+        // In HLSL, int * int is an int, and the generated code uses the result as one. Integers have no NaN,
+        // so a plain multiplication is enough. Returning a float here breaks GLSL ES, which has no implicit
+        // conversions between int and float.
+        m_writer.WriteLine(0, "int %s(int x, int y) { return x * y; }", m_altMultFunction);
+        m_writer.WriteLine(0, "ivec2 %s(ivec2 x, ivec2 y) { return x * y; }", m_altMultFunction);
+        m_writer.WriteLine(0, "ivec3 %s(ivec3 x, ivec3 y) { return x * y; }", m_altMultFunction);
+        m_writer.WriteLine(0, "ivec4 %s(ivec4 x, ivec4 y) { return x * y; }", m_altMultFunction);
         m_writer.WriteLine(0, "float %s(int i_x, float y) { float x=float(i_x); if (x == 0.0 || y == 0.0) { return 0.0; } else { return (x * y); } }", m_altMultFunction);
         m_writer.WriteLine(0, "float %s(float x, int i_y) { float y=float(i_y); if (x == 0.0 || y == 0.0) { return 0.0; } else { return (x * y); } }", m_altMultFunction);
         m_writer.WriteLine(0, "float %s(float x, float y) { if (x == 0.0 || y == 0.0) { return 0.0; } else { return (x * y); } }", m_altMultFunction);
