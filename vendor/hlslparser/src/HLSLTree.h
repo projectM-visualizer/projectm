@@ -1071,6 +1071,9 @@ public:
 
 // Tree transformations:
 extern void PruneTree(HLSLTree* tree, const char* entryName0, const char* entryName1 = NULL);
+// Hides all functions that the entry function doesn't call, directly or indirectly. HLSL compilers ignore
+// these, so they may contain code that isn't valid, e.g. a missing return statement, which GLSL compilers reject.
+extern void HideUnusedFunctions(HLSLTree* tree, const char* entryName);
 extern void SortTree(HLSLTree* tree);
 extern void GroupParameters(HLSLTree* tree);
 extern void HideUnusedArguments(HLSLFunction * function);

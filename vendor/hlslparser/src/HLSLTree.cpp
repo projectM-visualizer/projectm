@@ -1272,6 +1272,63 @@ void PruneTree(HLSLTree* tree, const char* entryName0, const char* entryName1/*=
 }
 
 
+// Marks functions as visible if they're called from the visited code, recursively. Unlike
+// MarkVisibleStatementsVisitor, it doesn't change the visibility of any other statements.
+class MarkCalledFunctionsVisitor : public HLSLTreeVisitor
+{
+public:
+    virtual void VisitFunction(HLSLFunction * node)
+    {
+        node->hidden = false;
+        HLSLTreeVisitor::VisitFunction(node);
+
+        if (node->forward != NULL && node->forward->hidden)
+            VisitFunction(node->forward);
+    }
+
+    virtual void VisitFunctionCall(HLSLFunctionCall * node)
+    {
+        HLSLTreeVisitor::VisitFunctionCall(node);
+
+        if (node->function->hidden)
+        {
+            VisitFunction(const_cast<HLSLFunction*>(node->function));
+        }
+    }
+};
+
+void HideUnusedFunctions(HLSLTree* tree, const char* entryName)
+{
+    HLSLFunction* entry = tree->FindFunction(entryName);
+    if (entry == NULL)
+    {
+        return;
+    }
+
+    HLSLRoot* root = tree->GetRoot();
+
+    for (HLSLStatement* statement = root->statement; statement != NULL; statement = statement->nextStatement)
+    {
+        if (statement->nodeType == HLSLNodeType_Function)
+        {
+            statement->hidden = true;
+        }
+    }
+
+    MarkCalledFunctionsVisitor mark;
+    mark.VisitFunction(entry);
+
+    // Functions can also be called from global initializers.
+    for (HLSLStatement* statement = root->statement; statement != NULL; statement = statement->nextStatement)
+    {
+        if (statement->nodeType != HLSLNodeType_Function && !statement->hidden)
+        {
+            mark.VisitTopLevelStatement(statement);
+        }
+    }
+}
+
+
 void SortTree(HLSLTree * tree)
 {
     // Stable sort so that statements are in this order:
