@@ -510,14 +510,6 @@ STBIDEF int   stbi_zlib_decode_noheader_buffer(char *obuffer, int olen, const ch
 #include "stbi_DDS.h"
 #endif
 
-#ifndef STBI_NO_PVR
-#include "stbi_pvr.h"
-#endif
-
-#ifndef STBI_NO_PKM
-#include "stbi_pkm.h"
-#endif
-
 #ifndef STBI_NO_EXT
 #include "stbi_ext.h"
 #endif
@@ -903,18 +895,6 @@ static int      stbi__dds_test(stbi__context *s);
 static stbi_uc *stbi__dds_load(stbi__context *s, int *x, int *y, int *comp, int req_comp);
 #endif
 
-#ifndef STBI_NO_PVR
-#include "stbi_pvr.h"
-static int      stbi__pvr_test(stbi__context *s);
-static stbi_uc *stbi__pvr_load(stbi__context *s, int *x, int *y, int *comp, int req_comp);
-#endif
-
-#ifndef STBI_NO_PKM
-#include "stbi_pkm.h"
-static int      stbi__pkm_test(stbi__context *s);
-static stbi_uc *stbi__pkm_load(stbi__context *s, int *x, int *y, int *comp, int req_comp);
-#endif
-
 // this is not threadsafe
 static const char *stbi__g_failure_reason;
 
@@ -994,12 +974,6 @@ static unsigned char *stbi__load_main(stbi__context *s, int *x, int *y, int *com
    #endif
    #ifndef STBI_NO_DDS
    if (stbi__dds_test(s))  return stbi__dds_load(s,x,y,comp,req_comp);
-   #endif
-   #ifndef STBI_NO_PVR
-   if (stbi__pvr_test(s))  return stbi__pvr_load(s,x,y,comp,req_comp);
-   #endif
-   #ifndef STBI_NO_PKM
-   if (stbi__pkm_test(s))  return stbi__pkm_load(s,x,y,comp,req_comp);
    #endif
    #ifndef STBI_NO_HDR
    if (stbi__hdr_test(s)) {
@@ -6370,16 +6344,6 @@ STBIDEF int stbi_info_from_callbacks(stbi_io_callbacks const *c, void *user, int
 // add in my DDS loading support
 #ifndef STBI_NO_DDS
 #include "stbi_DDS_c.h"
-#endif
-
-// add in my pvr loading support
-#ifndef STBI_NO_PVR
-#include "stbi_pvr_c.h"
-#endif
-
-// add in my pkm ( ETC1 ) loading support
-#ifndef STBI_NO_PKM
-#include "stbi_pkm_c.h"
 #endif
 
 #ifndef STBI_NO_EXT

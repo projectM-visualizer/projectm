@@ -467,32 +467,6 @@ unsigned int SOIL_direct_load_DDS_from_memory(
 		int flags,
 		int loading_as_cubemap );
 
-/** Loads the PVR texture directly to the GPU memory ( if supported ) */
-unsigned int SOIL_direct_load_PVR(
-		const char *filename,
-		unsigned int reuse_texture_ID,
-		int flags,
-		int loading_as_cubemap );
-
-/** Loads the PVR texture directly to the GPU memory ( if supported ) */
-unsigned int SOIL_direct_load_PVR_from_memory(
-		const unsigned char *const buffer,
-		int buffer_length,
-		unsigned int reuse_texture_ID,
-		int flags,
-		int loading_as_cubemap );
-
-/** Loads the PVR texture directly to the GPU memory ( if supported ) */
-unsigned int SOIL_direct_load_ETC1(const char *filename,
-		unsigned int reuse_texture_ID,
-		int flags );
-
-/** Loads the PVR texture directly to the GPU memory ( if supported ) */
-unsigned int SOIL_direct_load_ETC1_from_memory(const unsigned char *const buffer,
-		int buffer_length,
-		unsigned int reuse_texture_ID,
-		int flags );
-
 #ifdef __cplusplus
 }
 #endif
