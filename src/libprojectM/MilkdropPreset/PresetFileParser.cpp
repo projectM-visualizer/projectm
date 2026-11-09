@@ -106,6 +106,45 @@ auto PresetFileParser::GetCode(const std::string& keyPrefix) const -> std::strin
     return codeStr;
 }
 
+auto PresetFileParser::GetEquationCode(const std::string& keyPrefix) const -> std::string
+{
+    auto lowerKey = ToLower(keyPrefix);
+
+    std::string code;
+    std::string key(lowerKey.length() + 5, '\0'); //!< Allocate a string that can hold up to 5 digits.
+
+    key.replace(0, lowerKey.length(), lowerKey);
+
+    for (int index{1}; index <= 99999; ++index)
+    {
+        key.replace(lowerKey.length(), 5, std::to_string(index));
+        if (m_presetValues.find(key) == m_presetValues.end())
+        {
+            break;
+        }
+
+        const auto& line = m_presetValues.at(key);
+
+        // Same as Milkdrop's ReadCode() and StripLinefeedCharsAndComments(): Skip a leading backtick, cut off
+        // // and \\ comments until the end of the line and append the remainder without a line break.
+        size_t start = (!line.empty() && line.at(0) == '`') ? 1 : 0;
+        size_t end = start;
+        while (end < line.length())
+        {
+            if (end + 1 < line.length() &&
+                ((line[end] == '/' && line[end + 1] == '/') || (line[end] == '\\' && line[end + 1] == '\\')))
+            {
+                break;
+            }
+            ++end;
+        }
+
+        code.append(line, start, end - start);
+    }
+
+    return code;
+}
+
 auto PresetFileParser::GetInt(const std::string& key, int defaultValue) -> int
 {
     auto lowerKey = ToLower(key);

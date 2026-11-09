@@ -132,6 +132,55 @@ TEST(PresetFileParser, GetCodeShaderSyntax)
     EXPECT_EQ(code, "r=1.0;\ng=1.0;\nb=1.0;\n");
 }
 
+TEST(PresetFileParser, GetEquationCodeJoinsLinesWithoutSeparator)
+{
+    PresetFileParser parser;
+    ASSERT_TRUE(parser.Read(std::string(fileParserTestDataPath) + "parser-code.milk"));
+
+    EXPECT_EQ(parser.GetEquationCode("per_frame_"), "r=1.0;g=1.0;b=1.0;");
+}
+
+TEST(PresetFileParser, GetEquationCodeWithGap)
+{
+    PresetFileParser parser;
+    ASSERT_TRUE(parser.Read(std::string(fileParserTestDataPath) + "parser-code.milk"));
+
+    EXPECT_EQ(parser.GetEquationCode("per_frame_gap_"), "r=1.0;g=1.0;");
+}
+
+TEST(PresetFileParser, GetEquationCodeStripsComments)
+{
+    PresetFileParser parser;
+    ASSERT_TRUE(parser.Read(std::string(fileParserTestDataPath) + "parser-code.milk"));
+
+    EXPECT_EQ(parser.GetEquationCode("per_frame_trim_"), "  r = 1.0; g = 1.0;                   b =           1.0;");
+}
+
+TEST(PresetFileParser, GetEquationCodeKeepsMultilineComment)
+{
+    PresetFileParser parser;
+    ASSERT_TRUE(parser.Read(std::string(fileParserTestDataPath) + "parser-code.milk"));
+
+    EXPECT_EQ(parser.GetEquationCode("multiline_comment_"), "r = 1.0; /* Comment...g = 1.0;... ends here */b = 1.0;");
+}
+
+TEST(PresetFileParser, GetEquationCodeRejoinsWrappedNamesAndNumbers)
+{
+    PresetFileParser parser;
+    ASSERT_TRUE(parser.Read(std::string(fileParserTestDataPath) + "parser-code.milk"));
+
+    EXPECT_EQ(parser.GetEquationCode("per_frame_split_"), "x=above(treb,treb_att)+0.25;");
+    EXPECT_EQ(parser.GetEquationCode("per_frame_part_"), "k1 = is_beat*2;");
+}
+
+TEST(PresetFileParser, GetEquationCodeStripsBacktick)
+{
+    PresetFileParser parser;
+    ASSERT_TRUE(parser.Read(std::string(fileParserTestDataPath) + "parser-code.milk"));
+
+    EXPECT_EQ(parser.GetEquationCode("warp_"), "r=1.0;g=1.0;b=1.0;");
+}
+
 TEST(PresetFileParser, GetIntValid)
 {
     PresetFileParser parser;
