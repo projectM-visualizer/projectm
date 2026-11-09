@@ -33,3 +33,13 @@ multiline_comment_3=... ends here */b = 1.0;
 warp_1=`r=1.0;
 warp_2=`g=1.0;
 warp_3=`b=1.0;
+
+// Milkdrop's editor wrapped long lines when saving, often in the middle of a name or number
+per_frame_split_1=x=above(treb,t
+per_frame_split_2=reb_att)+0.2
+per_frame_split_3=5;
+
+// A line that only contains a part of a name
+per_frame_part_1=k1 = is_
+per_frame_part_2=
+per_frame_part_3=beat*2;
