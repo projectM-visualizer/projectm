@@ -178,6 +178,10 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
         ChooseUniqueName( s_reservedWord[i], m_reservedWord[i], sizeof(m_reservedWord[i]) );
     }
 
+    // HLSL compilers only compile functions that the entry point uses, but GLSL compilers reject invalid code
+    // in any function, e.g. a missing return statement. Don't output the unused ones.
+    HideUnusedFunctions(m_tree, m_entryName);
+
     ChooseUniqueName("m_scalar_swizzle2", m_scalarSwizzle2Function, sizeof(m_scalarSwizzle2Function));
     ChooseUniqueName("m_scalar_swizzle3", m_scalarSwizzle3Function, sizeof(m_scalarSwizzle3Function));
     ChooseUniqueName("m_scalar_swizzle4", m_scalarSwizzle4Function, sizeof(m_scalarSwizzle4Function));

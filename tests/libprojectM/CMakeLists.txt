@@ -31,6 +31,7 @@ add_executable(projectM-unittest
         HLSLAlternateMultiplyTest.cpp
         HLSLModuloTest.cpp
         HLSLArrayInitializerTest.cpp
+        HLSLUnusedFunctionTest.cpp
         LoggingTest.cpp
         EquationCompileErrorTest.cpp
         MilkdropShaderCommentParsingTest.cpp
