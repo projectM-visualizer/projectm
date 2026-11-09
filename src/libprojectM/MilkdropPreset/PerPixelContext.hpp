@@ -48,7 +48,7 @@ public:
 
     /**
      * @brief Compiles the per-pixel code and stores the code handle in the class.
-     * @throws MilkdropCompileException Thrown if the per-pixel code couldn't be compiled.
+     * If the per-pixel code can't be compiled, a warning is logged and the code is skipped, like in Milkdrop.
      * @param perPixelCode The code to compile.
      */
     void CompilePerPixelCode(const std::string& perPixelCode);

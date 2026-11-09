@@ -139,7 +139,14 @@ void PerFrameContext::EvaluateInitCode(PresetState& state)
             error = "[PerFrameContext] Could not compile per-frame init code.";
         }
         LOG_DEBUG("[PerFrameContext] Failed per-frame INIT code:\n" + state.perFrameInitCode);
-        throw MilkdropCompileException(error);
+        // Like Milkdrop, only this code block is disabled, the preset is still used.
+        LOG_WARN(error);
+        for (int q = 0; q < QVarCount; q++)
+        {
+            q_values_after_init_code[q] = 0;
+            state.frameQVariables[q] = 0;
+        }
+        return;
     }
 
     projectm_eval_code_execute(initCode);
@@ -260,7 +267,9 @@ void PerFrameContext::CompilePerFrameCode(const std::string& perFrameCode)
             error = "[PerFrameContext] Could not compile per-frame code.";
         }
         LOG_DEBUG("[PerFrameContext] Failed per-frame code:\n" + perFrameCode);
-        throw MilkdropCompileException(error);
+        // Like Milkdrop, only this code block is disabled, the preset is still used.
+        LOG_WARN(error);
+        return;
     }
 }
 

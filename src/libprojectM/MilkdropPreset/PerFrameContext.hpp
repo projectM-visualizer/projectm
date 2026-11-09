@@ -46,14 +46,14 @@ public:
 
     /**
      * @brief Compiles and runs the preset init code.
-     * @throws MilkdropCompileException Thrown if the per-frame init code couldn't be compiled.
+     * If the per-frame init code can't be compiled, a warning is logged and the code is skipped, like in Milkdrop.
      * @param perFrameInitCode The init code.
      */
     void EvaluateInitCode(PresetState& state);
 
     /**
      * @brief Compiles the per-frame code and stores the code handle in the class.
-     * @throws MilkdropCompileException Thrown if the per-frame code couldn't be compiled.
+     * If the per-frame code can't be compiled, a warning is logged and the code is skipped, like in Milkdrop.
      * @param perFrameCode The code to compile.
      */
     void CompilePerFrameCode(const std::string& perFrameCode);

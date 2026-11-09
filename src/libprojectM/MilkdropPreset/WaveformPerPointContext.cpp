@@ -110,7 +110,9 @@ void WaveformPerPointContext::CompilePerPointCode(const std::string& perPointCod
             error = "[WaveformPerPointContext] Could not compile custom wave " + std::to_string(waveform.m_index) + " per-point code.";
         }
         LOG_DEBUG("[WaveformPerPointContext] Failed custom wave " + std::to_string(waveform.m_index) + " per-point code:\n" + perPointCode);
-        throw MilkdropCompileException(error);
+        // Like Milkdrop, only this code block is disabled, the preset is still used.
+        LOG_WARN(error);
+        return;
     }
 }
 

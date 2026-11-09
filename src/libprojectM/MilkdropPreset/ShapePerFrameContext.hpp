@@ -41,7 +41,7 @@ public:
 
     /**
      * @brief Compiles and runs the preset init code.
-     * @throws MilkdropCompileException Thrown if one of the custom shape init code couldn't be compiled.
+     * If one of the custom shape init code can't be compiled, a warning is logged and the code is skipped, like in Milkdrop.
      * @param perFrameInitCode The init code.
      * @param shape The shape this context belongs to.
      */
@@ -49,7 +49,7 @@ public:
 
     /**
      * @brief Compiles the per-frame code and stores the code handle in the class.
-     * @throws MilkdropCompileException Thrown if one of the per-frame code couldn't be compiled.
+     * If one of the per-frame code can't be compiled, a warning is logged and the code is skipped, like in Milkdrop.
      * @param perFrameCode The code to compile.
      * @param shape The shape this context belongs to.
      */

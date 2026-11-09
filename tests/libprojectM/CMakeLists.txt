@@ -31,6 +31,7 @@ add_executable(projectM-unittest
         HLSLAlternateMultiplyTest.cpp
         HLSLModuloTest.cpp
         LoggingTest.cpp
+        EquationCompileErrorTest.cpp
         MilkdropShaderCommentParsingTest.cpp
         PCMTest.cpp
         PresetFileParserTest.cpp
@@ -49,6 +50,7 @@ add_executable(projectM-unittest
 target_compile_definitions(projectM-unittest
         PRIVATE
         PROJECTM_TEST_DATA_DIR="${CMAKE_CURRENT_LIST_DIR}/data"
+        $<TARGET_PROPERTY:projectM::Eval,INTERFACE_COMPILE_DEFINITIONS>
         )
 
 # Test includes a header file from libprojectM with its full path in the source dir.
@@ -57,6 +59,8 @@ target_include_directories(projectM-unittest
         "${PROJECTM_SOURCE_DIR}/src/libprojectM"
         "${PROJECTM_SOURCE_DIR}"
         "${PROJECTM_SOURCE_DIR}/vendor/hlslparser/src"
+        # For tests using the expression contexts directly.
+        $<TARGET_PROPERTY:projectM::Eval,INTERFACE_INCLUDE_DIRECTORIES>
         )
 
 target_link_libraries(projectM-unittest
