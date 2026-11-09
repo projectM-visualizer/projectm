@@ -520,8 +520,22 @@ void MilkdropShader::GetReferencedSamplers(const std::string& program)
     // "main" should always be present.
     m_samplerNames.insert("main");
 
+    // Samplers can also be named via macros, e.g. "#define base main" and "tex2D(base, uv)", which the HLSL
+    // preprocessor turns into "sampler_fw_main". Search the macro-expanded code as well, so these are declared.
+    std::string searchCode = program;
+    {
+        M4::Allocator allocator;
+        M4::HLSLTree tree(&allocator);
+        M4::HLSLParser parser(&allocator, &tree);
+        std::string expandedCode;
+        if (parser.ApplyPreprocessor("", program.c_str(), program.size(), expandedCode))
+        {
+            searchCode.append("\n").append(expandedCode);
+        }
+    }
+
     // Strip comments so that commented-out sampler/texsize declarations are not matched.
-    std::string const stripped = Utils::StripComments(program);
+    std::string const stripped = Utils::StripComments(searchCode);
 
     // Search for sampler usage
     auto found = stripped.find("sampler_", 0);
