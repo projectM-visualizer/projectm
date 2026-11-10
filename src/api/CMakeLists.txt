@@ -55,6 +55,9 @@ target_include_directories(projectM_api
         INTERFACE
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
+        # The public headers include the generated projectM_export.h and version.h by file name,
+        # so they also resolve inside a framework's flat Headers directory.
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4>"
         "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}>"
         )
 
