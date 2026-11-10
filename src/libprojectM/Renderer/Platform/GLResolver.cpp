@@ -408,6 +408,7 @@ auto GLResolver::Initialize(UserResolver resolver, void* userData) -> bool
             {
                 currentContext.eglCurrent = true;
                 currentContext.eglAvailable = true;
+                state.m_appManagedContext = true;
                 LOG_INFO(std::string("[GLResolver] Current context could not be probed: ") +
                          reason +
                          "; assuming app-managed EGL/GLES context because a user resolver was supplied");
@@ -567,6 +568,17 @@ auto GLResolver::VerifyBeforeUse(const ResolverState& state, std::string& reason
     // Gate to detected backend.
     const auto currentContext = ProbeCurrentContext(state);
     const bool backendOk = VerifyBackendIsCurrent(state.m_backend, currentContext);
+
+    if (!backendOk && state.m_appManagedContext)
+    {
+        // Initialize() could not probe the context and the application supplied its own resolver,
+        // so the probes cannot see this context type; trust the application.
+        if (EnableGLResolverTraceLogging())
+        {
+            LOG_INFO("[GLResolver] Context is application-managed (user resolver); skipping the backend gate");
+        }
+        return true;
+    }
 
     if (!backendOk)
     {
