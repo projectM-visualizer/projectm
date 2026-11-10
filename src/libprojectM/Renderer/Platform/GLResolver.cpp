@@ -13,6 +13,10 @@
 #ifdef _WIN32
 
 #include <limits>
+
+#ifdef __APPLE__
+#include <TargetConditionals.h>
+#endif
 #include <windows.h>
 
 #endif
@@ -29,6 +33,24 @@ namespace Renderer {
 namespace Platform {
 
 namespace {
+
+/**
+ * @brief True on Apple's embedded platforms (iOS, iPadOS, tvOS, watchOS, visionOS).
+ *
+ * These have no system EGL or desktop GL library and no CGL; GL ES comes from the application
+ * (Apple's OpenGL ES framework through a static table, or an ANGLE build through
+ * eglGetProcAddress). When the application supplies a resolver there, it is authoritative: the
+ * resolver opens no native libraries and does no global symbol lookup, so no dlopen/dlsym runs
+ * on library names that do not exist on these platforms.
+ */
+constexpr auto IsAppleEmbeddedPlatform() -> bool
+{
+#if defined(__APPLE__) && TARGET_OS_IPHONE
+    return true;
+#else
+    return false;
+#endif
+}
 
 auto StrictContextGateEnabled() -> bool
 {
@@ -373,9 +395,13 @@ auto GLResolver::Initialize(UserResolver resolver, void* userData) -> bool
 
 #ifndef __EMSCRIPTEN__
 
-    // Find source for gl functions. Emscripten does not have libs.
-    OpenNativeLibraries(state);
-    ResolveProviderFunctions(state);
+    // Find source for gl functions. Emscripten does not have libs. On Apple's embedded platforms
+    // a user resolver is authoritative (see IsAppleEmbeddedPlatform()).
+    if (!(IsAppleEmbeddedPlatform() && state.m_userResolver != nullptr))
+    {
+        OpenNativeLibraries(state);
+        ResolveProviderFunctions(state);
+    }
 
 #endif
 
@@ -1176,8 +1202,10 @@ auto GLResolver::ResolveProcAddress(const ResolverState& state, const char* name
     if (state.m_userResolver != nullptr)
     {
         void* ptr = state.m_userResolver(name, state.m_userData);
-        if (ptr != nullptr)
+        if (ptr != nullptr || IsAppleEmbeddedPlatform())
         {
+            // On Apple's embedded platforms the user resolver is authoritative: no fallback to
+            // provider, global or library symbol lookup.
             return ptr;
         }
     }
