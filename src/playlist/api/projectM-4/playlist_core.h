@@ -27,7 +27,7 @@
 #pragma once
 
 #include "projectM-4/types.h"
-#include "projectM-4/playlist_types.h"
+#include "playlist_types.h"
 
 #ifdef __cplusplus
 extern "C" {
