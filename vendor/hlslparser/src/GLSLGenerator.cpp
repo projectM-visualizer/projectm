@@ -788,7 +788,7 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
                         // Punt to function that does not follow IEEE 754 NaN propagation rules
                         m_writer.Write("%s(", m_altMultFunction);
                         OutputExpression(binaryExpression->expression1, dstType1);
-                        m_writer.Write(",", op);
+                        m_writer.Write(",");
                         OutputExpression(binaryExpression->expression2, dstType2);
                         m_writer.Write(")");
                         handled = true;

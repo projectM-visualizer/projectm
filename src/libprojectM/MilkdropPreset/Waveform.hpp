@@ -34,7 +34,6 @@ private:
     std::unique_ptr<Waveforms::WaveformMath> m_waveformMath; //!< The waveform vertex math implementation.
 
     float m_tempAlpha{0.0f}; //!< Calculated alpha value.
-    int m_samples{};         //!< Number of samples in the current waveform. Depends on the mode.
 };
 
 } // namespace MilkdropPreset
