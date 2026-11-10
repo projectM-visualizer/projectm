@@ -26,7 +26,7 @@
 
 #pragma once
 
-#include "projectM-4/playlist_types.h"
+#include "playlist_types.h"
 
 #include <stdint.h>
 #include <stdbool.h>

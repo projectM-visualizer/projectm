@@ -168,3 +168,100 @@ jobs:
         with:
             name: projectm-osx-framework-${{ matrix.cxx_interface && 'cxx' || 'c-only' }}-${{ matrix.arch }}-${{ matrix.runs-on }}
             path: install/*
+
+  build-framework-embedded:
+    name: "Framework: ${{ matrix.platform }} (${{ matrix.sdk }})"
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: iOS
+            sdk: iphoneos
+            target: arm64-apple-ios15.0
+            plist_platform: iPhoneOS
+          - platform: iOS
+            sdk: iphonesimulator
+            target: arm64-apple-ios15.0-simulator
+            plist_platform: iPhoneSimulator
+          - platform: tvOS
+            sdk: appletvos
+            target: arm64-apple-tvos15.0
+            plist_platform: AppleTVOS
+
+    steps:
+      - name: Install Packages
+        run: brew install ninja
+
+      - uses: actions/checkout@v7
+        with:
+          submodules: 'recursive'
+
+      - name: Configure Framework Build
+        run: |
+          cmake -G "Ninja" \
+            -S "${{ github.workspace }}" \
+            -B "${{ github.workspace }}/cmake-build" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/install" \
+            -DCMAKE_SYSTEM_NAME="${{ matrix.platform }}" \
+            -DCMAKE_OSX_SYSROOT="${{ matrix.sdk }}" \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0 \
+            -DBUILD_SHARED_LIBS=ON \
+            -DENABLE_GLES=ON \
+            -DENABLE_MACOS_FRAMEWORK=ON
+
+      - name: Build
+        run: cmake --build "${{ github.workspace }}/cmake-build" --parallel
+
+      - name: Install
+        run: cmake --build "${{ github.workspace }}/cmake-build" --target install
+
+      - name: Validate Frameworks
+        run: |
+          set -e
+          lib="${{ github.workspace }}/install/lib"
+          for fw in projectM-4 projectM-4-playlist; do
+            dir="$lib/$fw.framework"
+            echo "--- $fw.framework ---"
+            ls -la "$dir" "$dir/Headers"
+            # Shallow bundle: binary, Info.plist and Headers at the root, no Versions directory.
+            test -f "$dir/$fw" || { echo "FAIL: missing binary"; exit 1; }
+            test -f "$dir/Info.plist" || { echo "FAIL: missing Info.plist"; exit 1; }
+            test -d "$dir/Headers" || { echo "FAIL: missing Headers"; exit 1; }
+            test ! -e "$dir/Versions" || { echo "FAIL: unexpected Versions directory"; exit 1; }
+            plutil -lint "$dir/Info.plist"
+            test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$dir/Info.plist")" = "$fw"
+            test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleSupportedPlatforms:0' "$dir/Info.plist")" = "${{ matrix.plist_platform }}"
+            test "$(/usr/libexec/PlistBuddy -c 'Print :MinimumOSVersion' "$dir/Info.plist")" = "15.0"
+            install_name=$(otool -D "$dir/$fw" | tail -1)
+            echo "Install name: $install_name"
+            test "$install_name" = "@rpath/$fw.framework/$fw"
+            vtool -show-build "$dir/$fw"
+          done
+          otool -L "$lib/projectM-4-playlist.framework/projectM-4-playlist" | grep -q "@rpath/projectM-4.framework/projectM-4" \
+            || { echo "FAIL: playlist does not reference projectM-4.framework"; exit 1; }
+
+      - name: Compile and Link Against Frameworks
+        run: |
+          set -e
+          cat > test.c <<'SRC'
+          #include <projectM-4/projectM.h>
+          #include <projectM-4/playlist.h>
+
+          int main(void)
+          {
+              projectm_handle pm = projectm_create();
+              projectm_playlist_handle playlist = projectm_playlist_create(pm);
+              projectm_playlist_destroy(playlist);
+              projectm_destroy(pm);
+              return 0;
+          }
+          SRC
+          xcrun --sdk "${{ matrix.sdk }}" clang -target "${{ matrix.target }}" -Wall -Werror \
+            -F "${{ github.workspace }}/install/lib" \
+            -framework projectM-4 -framework projectM-4-playlist \
+            -Wl,-rpath,@executable_path/Frameworks \
+            test.c -o test-app
+          otool -L test-app

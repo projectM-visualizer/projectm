@@ -26,10 +26,10 @@
 
 #pragma once
 
-#include "projectM-4/playlist_callbacks.h"
-#include "projectM-4/playlist_core.h"
-#include "projectM-4/playlist_filter.h"
-#include "projectM-4/playlist_items.h"
-#include "projectM-4/playlist_memory.h"
-#include "projectM-4/playlist_playback.h"
-#include "projectM-4/playlist_types.h"
+#include "playlist_callbacks.h"
+#include "playlist_core.h"
+#include "playlist_filter.h"
+#include "playlist_items.h"
+#include "playlist_memory.h"
+#include "playlist_playback.h"
+#include "playlist_types.h"

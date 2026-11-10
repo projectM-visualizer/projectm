@@ -13,11 +13,13 @@
 #ifdef _WIN32
 
 #include <limits>
+#include <windows.h>
+
+#endif
 
 #ifdef __APPLE__
+
 #include <TargetConditionals.h>
-#endif
-#include <windows.h>
 
 #endif
 
