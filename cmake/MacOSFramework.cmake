@@ -1,5 +1,10 @@
 # MacOSFramework.cmake
-# Build macOS framework bundles from scratch, with proper header hierarchy support.
+# Build Apple framework bundles from scratch, with proper header hierarchy support.
+#
+# On macOS the bundle is versioned (Versions/A with symlinks). On iOS, tvOS, watchOS and visionOS
+# it is shallow, as those platforms require: the binary, Info.plist and Headers sit at the bundle
+# root, and the C headers go directly into Headers/ so that clients include them as
+# <FRAMEWORK_NAME/header.h>. In both layouts the library's install name points into the bundle.
 #
 # This module provides functions to create macOS framework bundles manually,
 # bypassing CMake's built-in FRAMEWORK support which doesn't preserve header
@@ -48,6 +53,12 @@ function(create_macos_framework)
     set(_versions_dir "${_framework_dir}/Versions")
     set(_version_a_dir "${_versions_dir}/A")
 
+    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        set(_shallow FALSE)
+    else()
+        set(_shallow TRUE)
+    endif()
+
     # Headers are placed in Headers/<header-subdir>/ to support existing include patterns.
     # By default, header-subdir is the framework name, but can be overridden with HEADER_SUBDIR.
     # Users should add -I <framework>/Headers to their include path.
@@ -56,8 +67,51 @@ function(create_macos_framework)
     else()
         set(_header_subdir "${FW_FRAMEWORK_NAME}")
     endif()
-    set(_headers_dir "${_version_a_dir}/Headers/${_header_subdir}")
-    set(_resources_dir "${_version_a_dir}/Resources")
+    if(_shallow)
+        # Shallow bundle: headers flat in Headers/, Info.plist and binary at the root.
+        set(_bundle_dir "${_framework_dir}")
+        set(_headers_dir "${_framework_dir}/Headers")
+        set(_resources_dir "${_framework_dir}")
+        set(_install_name "@rpath/${FW_FRAMEWORK_NAME}.framework/${FW_FRAMEWORK_NAME}")
+    else()
+        set(_bundle_dir "${_version_a_dir}")
+        set(_headers_dir "${_version_a_dir}/Headers/${_header_subdir}")
+        set(_resources_dir "${_version_a_dir}/Resources")
+        set(_install_name "@rpath/${FW_FRAMEWORK_NAME}.framework/Versions/A/${FW_FRAMEWORK_NAME}")
+    endif()
+
+    # The library's install name must point into the bundle, not at the plain dylib name.
+    set_target_properties(${FW_TARGET} PROPERTIES NO_SONAME ON)
+    target_link_options(${FW_TARGET} PRIVATE "LINKER:-install_name,${_install_name}")
+
+    # Keys that iOS-family bundles need in addition to the macOS ones.
+    set(_platform_plist_keys "")
+    if(_shallow)
+        # CFBundleSupportedPlatforms uses the SDK platform names (iPhoneOS, AppleTVSimulator, ...).
+        set(_platform_names_iOS "iPhone")
+        set(_platform_names_tvOS "AppleTV")
+        set(_platform_names_watchOS "Watch")
+        set(_platform_names_visionOS "XR")
+        set(_supported_platform "${_platform_names_${CMAKE_SYSTEM_NAME}}")
+        if(NOT _supported_platform)
+            set(_supported_platform "${CMAKE_SYSTEM_NAME}")
+        endif()
+        if(CMAKE_OSX_SYSROOT MATCHES "[Ss]imulator")
+            string(APPEND _supported_platform "Simulator")
+        else()
+            string(APPEND _supported_platform "OS")
+        endif()
+        set(_platform_plist_keys "
+    <key>CFBundleSupportedPlatforms</key>
+    <array>
+        <string>${_supported_platform}</string>
+    </array>")
+        if(CMAKE_OSX_DEPLOYMENT_TARGET)
+            string(APPEND _platform_plist_keys "
+    <key>MinimumOSVersion</key>
+    <string>${CMAKE_OSX_DEPLOYMENT_TARGET}</string>")
+        endif()
+    endif()
 
     # Marker file to track framework creation
     set(_framework_marker "${CMAKE_CURRENT_BINARY_DIR}/${FW_FRAMEWORK_NAME}.framework.marker")
@@ -82,7 +136,7 @@ function(create_macos_framework)
     <key>CFBundleShortVersionString</key>
     <string>${FW_VERSION}</string>
     <key>CFBundleVersion</key>
-    <string>${FW_VERSION}</string>
+    <string>${FW_VERSION}</string>${_platform_plist_keys}
 </dict>
 </plist>")
 
@@ -131,6 +185,21 @@ function(create_macos_framework)
         endforeach()
     endif()
 
+    # Layout-specific steps: macOS gets Versions/A plus symlinks; shallow bundles need none.
+    if(_shallow)
+        set(_layout_commands "")
+    else()
+        set(_layout_commands
+            # Create symlinks (Current -> A)
+            COMMAND ${CMAKE_COMMAND} -E create_symlink "A" "${_versions_dir}/Current"
+
+            # Create top-level symlinks
+            COMMAND ${CMAKE_COMMAND} -E create_symlink "Versions/Current/${FW_FRAMEWORK_NAME}" "${_framework_dir}/${FW_FRAMEWORK_NAME}"
+            COMMAND ${CMAKE_COMMAND} -E create_symlink "Versions/Current/Headers" "${_framework_dir}/Headers"
+            COMMAND ${CMAKE_COMMAND} -E create_symlink "Versions/Current/Resources" "${_framework_dir}/Resources"
+        )
+    endif()
+
     # Create custom command to build the framework
     # Note: We use a marker file as OUTPUT since the actual output path depends on the target
     add_custom_command(
@@ -139,12 +208,12 @@ function(create_macos_framework)
         COMMAND ${CMAKE_COMMAND} -E rm -rf "${_framework_dir}"
 
         # Create directory structure
-        COMMAND ${CMAKE_COMMAND} -E make_directory "${_version_a_dir}"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${_bundle_dir}"
         COMMAND ${CMAKE_COMMAND} -E make_directory "${_headers_dir}"
         COMMAND ${CMAKE_COMMAND} -E make_directory "${_resources_dir}"
 
         # Copy the dylib
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:${FW_TARGET}>" "${_version_a_dir}/${FW_FRAMEWORK_NAME}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:${FW_TARGET}>" "${_bundle_dir}/${FW_FRAMEWORK_NAME}"
 
         # Copy Info.plist
         COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_info_plist_file}" "${_resources_dir}/Info.plist"
@@ -152,13 +221,7 @@ function(create_macos_framework)
         # Copy headers
         ${_header_copy_commands}
 
-        # Create symlinks (Current -> A)
-        COMMAND ${CMAKE_COMMAND} -E create_symlink "A" "${_versions_dir}/Current"
-
-        # Create top-level symlinks
-        COMMAND ${CMAKE_COMMAND} -E create_symlink "Versions/Current/${FW_FRAMEWORK_NAME}" "${_framework_dir}/${FW_FRAMEWORK_NAME}"
-        COMMAND ${CMAKE_COMMAND} -E create_symlink "Versions/Current/Headers" "${_framework_dir}/Headers"
-        COMMAND ${CMAKE_COMMAND} -E create_symlink "Versions/Current/Resources" "${_framework_dir}/Resources"
+        ${_layout_commands}
 
         # Create marker file
         COMMAND ${CMAKE_COMMAND} -E touch "${_framework_marker}"

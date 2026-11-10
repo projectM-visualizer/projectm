@@ -97,7 +97,7 @@ endif()
 cmake_dependent_option(BUILD_SHARED_LIBS "Build and install libprojectM as a shared libraries. If OFF, builds as static libraries." ON "NOT ENABLE_EMSCRIPTEN" OFF)
 cmake_dependent_option(ENABLE_GLES "Enable OpenGL ES support" OFF "NOT ENABLE_EMSCRIPTEN AND NOT CMAKE_SYSTEM_NAME STREQUAL Android" ON)
 cmake_dependent_option(ENABLE_INSTALL "Enable installing projectM libraries and headers." OFF "NOT PROJECT_IS_TOP_LEVEL" ON)
-cmake_dependent_option(ENABLE_MACOS_FRAMEWORK "Build as macOS Framework bundles instead of plain shared libraries." OFF "CMAKE_SYSTEM_NAME STREQUAL Darwin AND BUILD_SHARED_LIBS" OFF)
+cmake_dependent_option(ENABLE_MACOS_FRAMEWORK "Build as Apple Framework bundles instead of plain shared libraries (versioned on macOS, shallow on iOS, tvOS and visionOS)." OFF "APPLE AND BUILD_SHARED_LIBS" OFF)
 
 # Experimental/unsupported features
 option(ENABLE_CXX_INTERFACE "Enable exporting C++ symbols for ProjectM and PCM classes, not only the C API. Warning: This is not very portable." OFF)
