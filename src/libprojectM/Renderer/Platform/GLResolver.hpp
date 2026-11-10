@@ -387,6 +387,14 @@ private:
         UserResolver m_userResolver{nullptr}; //!< User provided function resolver. Optional, may be null.
         void* m_userData{nullptr};            //!< User data to pass to user provided function resolver.
 
+        /**
+         * True when a user resolver was supplied and no current context could be probed during
+         * Initialize(), so the context is assumed to be managed by the application (for example
+         * EAGL on iOS, which none of the probed backends can see). VerifyBeforeUse() then trusts
+         * the application instead of re-probing a backend that can never appear current.
+         */
+        bool m_appManagedContext{false};
+
         DynamicLibrary m_eglLib; //!< EGL library handle. Optional, may be empty.
         DynamicLibrary m_glLib;  //!< GL library handle. Optional, may be empty.
         DynamicLibrary m_glxLib; //!< GLX library handle. Optional, may be empty.
