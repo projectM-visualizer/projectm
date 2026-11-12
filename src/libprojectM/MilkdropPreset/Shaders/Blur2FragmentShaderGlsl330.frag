@@ -24,9 +24,8 @@ void main(){
     // note: if you just take one sample at exactly uv.xy, you get an avg of 4
     // pixels.
 
-    // + moves blur UP, LEFT by TWO-pixel increments! (since texture is 1/2 the
-    // size of blur1_ps)
-    vec2 uv2 = fragment_texture.xy + srctexsize.zw*vec2(0,0);
+    // No offset needed, see the first pass.
+    vec2 uv2 = fragment_texture.xy;
 
     vec3 blur =
     (texture(texture_sampler, uv2 + vec2(0, d1 * srctexsize.w)).xyz +
