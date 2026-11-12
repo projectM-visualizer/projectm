@@ -28,8 +28,10 @@ void main(){
     // note: if you just take one sample at exactly uv.xy, you get an avg of 4
     // pixels.
 
-    // + moves blur UP, LEFT by 1-pixel increments
-    vec2 uv2 = fragment_texture.xy + srctexsize.zw*vec2(1.0,1.0);
+    // Milkdrop adds one source pixel here to make up for Direct3D 9's half-pixel offset, which
+    // samples half a target pixel up and left of the pixel center. OpenGL samples at the pixel
+    // center, so adding it would move each blur level up and left instead.
+    vec2 uv2 = fragment_texture.xy;
 
     vec3 blur =
     (texture(texture_sampler, uv2 + vec2(d1 * srctexsize.z, 0)).xyz +
