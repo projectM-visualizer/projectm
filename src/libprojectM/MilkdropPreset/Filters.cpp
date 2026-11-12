@@ -9,10 +9,16 @@ namespace MilkdropPreset {
 
 Filters::Filters(const PresetState& presetState)
     : m_presetState(presetState)
-    , m_filterMesh(Renderer::VertexBufferUsage::StaticDraw)
 {
-    m_filterMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::TriangleStrip);
-    m_filterMesh.SetVertexCount(4);
+    Init();
+}
+
+void Filters::InitVertexAttrib()
+{
+    glEnableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Point), reinterpret_cast<void*>(offsetof(Point, x)));
 }
 
 void Filters::Draw()

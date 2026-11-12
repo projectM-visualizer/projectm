@@ -7,10 +7,19 @@ namespace MilkdropPreset {
 
 VideoEcho::VideoEcho(const PresetState& presetState)
     : m_presetState(presetState)
-    , m_echoMesh(Renderer::VertexBufferUsage::DynamicDraw, true, true)
 {
-    m_echoMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::TriangleStrip);
-    m_echoMesh.SetVertexCount(4);
+    Init();
+}
+
+void VideoEcho::InitVertexAttrib()
+{
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x))); // Position
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, r))); // Color
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, u))); // Texture coordinates
 }
 
 void VideoEcho::Draw()

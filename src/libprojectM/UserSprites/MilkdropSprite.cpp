@@ -30,8 +30,18 @@ namespace UserSprites {
 MilkdropSprite::MilkdropSprite()
     : m_mesh(Renderer::VertexBufferUsage::DynamicDraw, false, true)
 {
-    m_mesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::TriangleStrip);
-    m_mesh.SetVertexCount(4);
+    // Do not call Init() here; OpenGLRenderItem::Init() will be called by the rendering system when needed.
+}
+
+void MilkdropSprite::InitVertexAttrib()
+{
+    glEnableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, x))); // Position
+    // Color (index 1) is passed as a 4-float constant vertex attribute.
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedPoint), reinterpret_cast<void*>(offsetof(TexturedPoint, u))); // Texture coordinate
 }
 
 void MilkdropSprite::Init(const std::string& spriteData, const Renderer::RenderContext& renderContext)
