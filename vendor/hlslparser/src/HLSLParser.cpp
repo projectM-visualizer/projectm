@@ -444,6 +444,23 @@ const Intrinsic _intrinsic[] =
         Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Uint3 ),
         Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Uint4 ),
 
+        Intrinsic( "all", HLSLBaseType_Bool, HLSLBaseType_Float ),
+        Intrinsic( "all", HLSLBaseType_Bool, HLSLBaseType_Float2 ),
+        Intrinsic( "all", HLSLBaseType_Bool, HLSLBaseType_Float3 ),
+        Intrinsic( "all", HLSLBaseType_Bool, HLSLBaseType_Float4 ),
+        Intrinsic( "all", HLSLBaseType_Bool, HLSLBaseType_Bool ),
+        Intrinsic( "all", HLSLBaseType_Bool, HLSLBaseType_Bool2 ),
+        Intrinsic( "all", HLSLBaseType_Bool, HLSLBaseType_Bool3 ),
+        Intrinsic( "all", HLSLBaseType_Bool, HLSLBaseType_Bool4 ),
+        Intrinsic( "all", HLSLBaseType_Bool, HLSLBaseType_Int ),
+        Intrinsic( "all", HLSLBaseType_Bool, HLSLBaseType_Int2 ),
+        Intrinsic( "all", HLSLBaseType_Bool, HLSLBaseType_Int3 ),
+        Intrinsic( "all", HLSLBaseType_Bool, HLSLBaseType_Int4 ),
+        Intrinsic( "all", HLSLBaseType_Bool, HLSLBaseType_Uint ),
+        Intrinsic( "all", HLSLBaseType_Bool, HLSLBaseType_Uint2 ),
+        Intrinsic( "all", HLSLBaseType_Bool, HLSLBaseType_Uint3 ),
+        Intrinsic( "all", HLSLBaseType_Bool, HLSLBaseType_Uint4 ),
+
         INTRINSIC_FLOAT1_FUNCTION( "asin" ),
         INTRINSIC_FLOAT1_FUNCTION( "atan" ),
         INTRINSIC_FLOAT2_FUNCTION( "atan2" ),
@@ -2429,28 +2446,37 @@ bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, char& need
     {
         // Check for a casting operator.
         HLSLType type;
+        bool parsedConstructor = false;
         if (AcceptType(false, type))
         {
             // This is actually a type constructor like (float2(...
             if (Accept('('))
             {
                 needsExpressionEndChar = expressionEndChar;
-                return ParsePartialConstructor(expression, type.baseType, type.typeName);
+                if (!ParsePartialConstructor(expression, type.baseType, type.typeName))
+                {
+                    return false;
+                }
+                // Continue below to also parse postfix operators, e.g. the swizzle in (float3(a, b, c).xyy * d)
+                parsedConstructor = true;
             }
-            HLSLCastingExpression* castingExpression = m_tree->AddNode<HLSLCastingExpression>(fileName, line);
-            castingExpression->type = type;
-            expression = castingExpression;
-            castingExpression->expressionType = type;
-            return Expect(')') && ParseExpression(castingExpression->expression);
+            else
+            {
+                HLSLCastingExpression* castingExpression = m_tree->AddNode<HLSLCastingExpression>(fileName, line);
+                castingExpression->type = type;
+                expression = castingExpression;
+                castingExpression->expressionType = type;
+                return Expect(')') && ParseExpression(castingExpression->expression);
+            }
         }
 
         int numArguments = 0;
-        if (!ParseExpressionList(expressionEndChar, false, expression, numArguments))
+        if (!parsedConstructor && !ParseExpressionList(expressionEndChar, false, expression, numArguments))
         {
             return false;
         }
 
-        if (expressionEndChar == ')')
+        if (!parsedConstructor && expressionEndChar == ')')
         {
             // Allows comma separated expression lists, HLSL compiler keeps the last one
             HLSLExpression* lastExpression = expression;
@@ -3898,13 +3924,29 @@ bool HLSLParser::AcceptInterpolationModifier(int& flags)
         flags |= HLSLTypeFlag_NoPerspective;
         return true;
     }
-    else if (Accept("sample"))
+    else if (m_tokenizer.GetToken() == HLSLToken_Identifier &&
+             String_Equal("sample", m_tokenizer.GetIdentifier()) &&
+             NextIsIdentifier())
     {
+        // "sample" is only a modifier if a type or another modifier follows, e.g. "sample float4 x".
+        // Shader model 2/3 code (like Milkdrop presets) also uses it as a variable name: "float3 sample = ...;".
+        m_tokenizer.Next();
         flags |= HLSLTypeFlag_Sample;
         return true;
     }
 
     return false;
+}
+
+bool HLSLParser::NextIsIdentifier()
+{
+    // Peeks at the source following the current token without consuming anything.
+    const char* pos = m_tokenizer.getCurrentPos();
+    while (*pos != '\0' && isspace(static_cast<unsigned char>(*pos)))
+    {
+        pos++;
+    }
+    return *pos == '_' || isalpha(static_cast<unsigned char>(*pos));
 }
 
 

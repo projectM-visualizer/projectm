@@ -27,6 +27,7 @@ test_api_headers(TestMainAPIHeaders
         )
 
 add_executable(projectM-unittest
+        HLSLMilkdropCompatTest.cpp
         HLSLParserTest.cpp
         HLSLModuloTest.cpp
         LoggingTest.cpp

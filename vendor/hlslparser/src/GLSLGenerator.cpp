@@ -41,6 +41,7 @@ const char* GLSLGenerator::s_reservedWord[] =
         "dFdy",
         "filter",
 		"main",
+        "sample",
     };
 
 static const char* GetTypeName(const HLSLType& type)
@@ -967,6 +968,73 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
 
             handled = true;
         }
+        else if (String_Equal(functionName, "any") || String_Equal(functionName, "all"))
+        {
+            HLSLExpression* argument[1];
+            if (GetFunctionArguments(functionCall, argument, 1) != 1)
+            {
+                Error("%s expects 1 argument", functionName);
+                return;
+            }
+
+            // GLSL's any() and all() only take boolean vectors, while HLSL also accepts scalars and
+            // numeric vectors, testing each component for being non-zero.
+            const char* boolVectorCast = NULL;
+            switch (argument[0]->expressionType.baseType)
+            {
+            case HLSLBaseType_Bool:
+                m_writer.Write("(");
+                OutputExpression(argument[0]);
+                m_writer.Write(")");
+                handled = true;
+                break;
+
+            case HLSLBaseType_Float:
+            case HLSLBaseType_Int:
+            case HLSLBaseType_Uint:
+                m_writer.Write("bool(");
+                OutputExpression(argument[0]);
+                m_writer.Write(")");
+                handled = true;
+                break;
+
+            case HLSLBaseType_Bool2:
+            case HLSLBaseType_Bool3:
+            case HLSLBaseType_Bool4:
+                boolVectorCast = "";
+                break;
+
+            case HLSLBaseType_Float2:
+            case HLSLBaseType_Int2:
+            case HLSLBaseType_Uint2:
+                boolVectorCast = "bvec2";
+                break;
+
+            case HLSLBaseType_Float3:
+            case HLSLBaseType_Int3:
+            case HLSLBaseType_Uint3:
+                boolVectorCast = "bvec3";
+                break;
+
+            case HLSLBaseType_Float4:
+            case HLSLBaseType_Int4:
+            case HLSLBaseType_Uint4:
+                boolVectorCast = "bvec4";
+                break;
+
+            default:
+                // Matrices etc. are written as-is.
+                break;
+            }
+
+            if (boolVectorCast != NULL)
+            {
+                m_writer.Write("%s(%s(", functionName, boolVectorCast);
+                OutputExpression(argument[0]);
+                m_writer.Write("))");
+                handled = true;
+            }
+        }
         else if (String_Equal(functionName, "saturate"))
         {
             HLSLExpression* argument[1];
@@ -976,8 +1044,18 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
                 return;
             }
             m_writer.Write("clamp(");
-            OutputExpression(argument[0]);
             HLSLBaseType baseType = argument[0]->expressionType.baseType;
+            if (baseType >= HLSLBaseType_Bool && baseType <= HLSLBaseType_Bool4)
+            {
+                // HLSL converts booleans to float, GLSL's clamp() has no boolean overload.
+                const HLSLType floatType(HLSLBaseType(HLSLBaseType_Float + (baseType - HLSLBaseType_Bool)));
+                OutputExpression(argument[0], &floatType);
+                baseType = floatType.baseType;
+            }
+            else
+            {
+                OutputExpression(argument[0]);
+            }
             switch (baseType) {
             case HLSLBaseType_Float:
             case HLSLBaseType_Float2:
