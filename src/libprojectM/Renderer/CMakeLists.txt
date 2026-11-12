@@ -20,6 +20,7 @@ add_library(Renderer OBJECT
         BlendMode.cpp
         BlendMode.hpp
         Color.hpp
+        ColorFormat.hpp
         CopyTexture.cpp
         CopyTexture.hpp
         FileScanner.cpp

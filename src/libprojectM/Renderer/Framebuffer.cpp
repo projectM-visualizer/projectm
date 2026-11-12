@@ -217,6 +217,35 @@ void Framebuffer::CreateColorAttachment(int framebufferIndex, int attachmentInde
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+auto Framebuffer::SetColorAttachmentFormat(int framebufferIndex, int attachmentIndex,
+                                           GLint internalFormat, GLenum format, GLenum type) -> bool
+{
+    if (framebufferIndex < 0 || framebufferIndex >= static_cast<int>(m_framebufferIds.size()))
+    {
+        return false;
+    }
+
+    const auto& attachments = m_attachments.at(framebufferIndex);
+    const auto attachment = attachments.find(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+    if (attachment == attachments.end() || !attachment->second->SetFormat(internalFormat, format, type))
+    {
+        return false;
+    }
+
+    if (m_width > 0 && m_height > 0)
+    {
+        // The attachment has a new texture now.
+        glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferIds.at(framebufferIndex));
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + attachmentIndex, GL_TEXTURE_2D, attachment->second->Texture()->TextureID(), 0);
+
+        // Reset to previous read/draw buffers
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, m_framebufferIds.at(m_readFramebuffer));
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_framebufferIds.at(m_drawFramebuffer));
+    }
+
+    return true;
+}
+
 void Framebuffer::RemoveColorAttachment(int framebufferIndex, int attachmentIndex)
 {
     RemoveAttachment(framebufferIndex,  GL_COLOR_ATTACHMENT0 + attachmentIndex);

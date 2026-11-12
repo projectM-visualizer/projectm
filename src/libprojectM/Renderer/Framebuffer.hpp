@@ -147,6 +147,22 @@ public:
                                GLint internalFormat, GLenum format, GLenum type);
 
     /**
+     * @brief Sets the texture format of a color attachment.
+     * Reallocates the texture if the format differs from the current one. The contents are lost.
+     * Sets the read/write FBOs to the previously used ones in this instance. If a different
+     * Framebuffer instance was used to read or draw, it must be bound again explicitly after this call.
+     * @param framebufferIndex The framebuffer index.
+     * @param attachmentIndex The index of the color attachment.
+     * @param internalFormat OpenGL internal format, e.g. GL_RGBA8
+     * @param format OpenGL color format, e.g. GL_RGBA
+     * @param type OpenGL component storage type, e.g. GL_UNSIGNED_BYTE
+     * @return true if the format was changed, false if it already was the requested one or the
+     *         attachment doesn't exist.
+     */
+    auto SetColorAttachmentFormat(int framebufferIndex, int attachmentIndex,
+                                  GLint internalFormat, GLenum format, GLenum type) -> bool;
+
+    /**
      * Removes the color attachment from the given slot, if there is any assigned.
      * Sets the read/write FBOs to the previously used ones in this instance. If a different
      * Framebuffer instance was used to read or draw, it must be bound again explicitly after this call.

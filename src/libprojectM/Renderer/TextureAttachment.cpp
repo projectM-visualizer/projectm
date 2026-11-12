@@ -56,14 +56,38 @@ void TextureAttachment::SetSize(int width, int height)
     }
 }
 
-void TextureAttachment::ReplaceTexture(int width, int height)
+auto TextureAttachment::SetFormat(GLint internalFormat, GLenum format, GLenum type) -> bool
+{
+    // An unset format is the same as the default one, see ReplaceTexture().
+    const bool isDefaultFormat = internalFormat == GL_RGBA && format == GL_RGBA && type == GL_UNSIGNED_BYTE;
+
+    if (m_attachmentType != AttachmentType::Color ||
+        (m_internalFormat == internalFormat && m_format == format && m_type == type) ||
+        (m_internalFormat == 0 && isDefaultFormat))
+    {
+        return false;
+    }
+
+    m_internalFormat = internalFormat;
+    m_format = format;
+    m_type = type;
+
+    if (!m_texture->Empty())
+    {
+        ReplaceTexture(m_texture->Width(), m_texture->Height(), true);
+    }
+
+    return true;
+}
+
+void TextureAttachment::ReplaceTexture(int width, int height, bool force)
 {
     GLint internalFormat;
     GLint textureFormat;
     GLenum pixelFormat;
 
     // Don't replace if size hasn't changed
-    if (m_texture->Width() == width && m_texture->Height() == height)
+    if (!force && m_texture->Width() == width && m_texture->Height() == height)
     {
         return;
     }

@@ -4,6 +4,7 @@
  */
 #pragma once
 
+#include <Renderer/ColorFormat.hpp>
 #include <Renderer/Framebuffer.hpp>
 #include <Renderer/Mesh.hpp>
 #include <Renderer/RenderContext.hpp>
@@ -65,6 +66,13 @@ public:
     void SetRequiredBlurLevel(BlurLevel level);
 
     /**
+     * @brief Sets the format of the image the blur textures are created from.
+     * The blur textures are created with the same number of bits per color channel on the next update.
+     * @param colorFormat The format of the main image.
+     */
+    void SetColorFormat(const Renderer::ColorFormat& colorFormat);
+
+    /**
      * @brief Returns a list of descriptors for the given blur level.
      * The blur textures don't need to be present and can be empty placeholders.
      * @param blurLevel The blur level.
@@ -113,6 +121,9 @@ private:
 
     int m_sourceTextureWidth{};  //!< Width of the source texture used to create the blur textures.
     int m_sourceTextureHeight{}; //!< Height of the source texture used to create the blur textures.
+
+    Renderer::ColorFormat m_colorFormat;        //!< Format of the image the blur textures are created from.
+    Renderer::ColorFormat m_textureColorFormat; //!< Format the current blur textures were created for.
 
     Renderer::Framebuffer m_blurFramebuffer;                                        //!< The framebuffer used to draw the blur textures.
     std::shared_ptr<Renderer::Sampler> m_blurSampler;                               //!< The blur sampler.
