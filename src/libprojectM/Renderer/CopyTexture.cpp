@@ -238,6 +238,11 @@ auto CopyTexture::Texture() -> std::shared_ptr<class Texture>
     return m_framebuffer.GetColorAttachmentTexture(0, 0);
 }
 
+void CopyTexture::SetColorFormat(const ColorFormat& colorFormat)
+{
+    m_framebuffer.SetColorAttachmentFormat(0, 0, colorFormat.internalFormat, colorFormat.format, colorFormat.type);
+}
+
 void CopyTexture::UpdateTextureSize(int width, int height)
 {
     if (m_width == width &&

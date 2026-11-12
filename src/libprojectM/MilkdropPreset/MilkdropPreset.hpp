@@ -35,6 +35,7 @@
 #include "Preset.hpp"
 #include "Waveform.hpp"
 
+#include <Renderer/ColorFormat.hpp>
 #include <Renderer/CopyTexture.hpp>
 #include <Renderer/Framebuffer.hpp>
 
@@ -101,6 +102,13 @@ private:
      * @brief Compiles the warp and composite shaders.
      */
     void LoadShaderCode();
+
+    /**
+     * @brief Sets the texture format of the main images, the flip texture and the blur textures.
+     * Reallocates the textures if the format differs from the current one.
+     * @param colorFormat The format to use.
+     */
+    void UpdateColorFormat(const Renderer::ColorFormat& colorFormat);
 
     auto ParseFilename(const std::string& filename) -> std::string;
 

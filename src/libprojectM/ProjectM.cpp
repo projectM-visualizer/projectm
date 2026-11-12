@@ -121,6 +121,9 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
         return;
     }
 
+    // Internal images are rendered with the color depth of the target framebuffer.
+    m_targetColorBits = QueryColorBits(targetFramebufferObject);
+
     // Update FPS and other timer values.
     m_timeKeeper->UpdateTimers();
 
@@ -217,6 +220,34 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
 
     m_frameCount++;
     m_previousFrameVolume = audioData.vol;
+}
+
+auto ProjectM::QueryColorBits(uint32_t framebufferObject) -> int
+{
+    GLint previousFramebuffer{};
+    glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &previousFramebuffer);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(framebufferObject));
+
+    // The default framebuffer's color buffer has a different name in OpenGL and OpenGL ES.
+#ifdef USE_GLES
+    const GLenum defaultColorBuffer = GL_BACK;
+#else
+    const GLenum defaultColorBuffer = GL_BACK_LEFT;
+#endif
+    const GLenum attachment = framebufferObject == 0 ? defaultColorBuffer : GL_COLOR_ATTACHMENT0;
+
+    // The size can only be queried if there is a color buffer.
+    GLint objectType{GL_NONE};
+    GLint redBits{};
+    glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER, attachment, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &objectType);
+    if (objectType != GL_NONE)
+    {
+        glGetFramebufferAttachmentParameteriv(GL_DRAW_FRAMEBUFFER, attachment, GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE, &redBits);
+    }
+
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(previousFramebuffer));
+
+    return redBits > 8 ? redBits : 8;
 }
 
 void ProjectM::Initialize()
@@ -602,6 +633,8 @@ auto ProjectM::GetRenderContext() -> Renderer::RenderContext
 
     ctx.texelOffsetX = m_texelOffsetX;
     ctx.texelOffsetY = m_texelOffsetY;
+
+    ctx.targetColorBits = m_targetColorBits;
 
     ctx.textureManager = m_textureManager.get();
     ctx.shaderCache = m_shaderCache.get();

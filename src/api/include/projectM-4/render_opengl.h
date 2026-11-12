@@ -34,6 +34,9 @@ extern "C" {
 /**
  * @brief Renders a single frame.
  *
+ * The frame is drawn to the default framebuffer. See projectm_opengl_render_frame_fbo() for how
+ * the color depth of the framebuffer is used.
+ *
  * @param instance The projectM instance handle.
  * @since 4.0.0
  */
@@ -41,6 +44,12 @@ PROJECTM_EXPORT void projectm_opengl_render_frame(projectm_handle instance);
 
 /**
  * @brief Renders a single frame into a user-defined framebuffer object.
+ *
+ * projectM renders presets into internal images before drawing the result to the framebuffer.
+ * These images have 8 bits per color channel. If the first color buffer of the framebuffer has
+ * more than 8 bits per channel, e.g. GL_RGB10_A2 or GL_RGBA16F, they are created with 10 bits per
+ * channel (GL_RGB10_A2) instead, which gives smoother gradients. The color depth is checked in
+ * every frame; if it changes, the images are created again and the current image is lost.
  *
  * @param instance The projectM instance handle.
  * @param framebuffer_object_id The OpenGL FBO ID to render to.

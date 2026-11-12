@@ -308,6 +308,13 @@ private:
 
     auto GetRenderContext() -> Renderer::RenderContext;
 
+    /**
+     * @brief Returns the bits per color channel of a framebuffer's first color buffer.
+     * @param framebufferObject The framebuffer object ID, 0 for the default framebuffer.
+     * @return The number of red bits, or 8 if it can't be determined.
+     */
+    static auto QueryColorBits(uint32_t framebufferObject) -> int;
+
     uint32_t m_meshX{32};            //!< Per-point mesh horizontal resolution.
     uint32_t m_meshY{24};            //!< Per-point mesh vertical resolution.
     uint32_t m_targetFps{35};        //!< Target frames per second.
@@ -324,6 +331,7 @@ private:
     float m_previousFrameVolume{};   //!< Volume in previous frame, used for hard cuts.
     float m_texelOffsetX{0.0};       //!< Horizontal warp shader texel offset
     float m_texelOffsetY{0.0};       //!< Vertical warp shader texel offset
+    int m_targetColorBits{8};        //!< Bits per color channel of the framebuffer drawn to in the last frame
 
     std::vector<std::string> m_textureSearchPaths;     ///!< List of paths to search for texture files
     Renderer::TextureLoadCallback m_textureLoadCallback; //!< Optional callback for loading textures from non-filesystem sources.

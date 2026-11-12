@@ -80,6 +80,11 @@ void BlurTexture::SetRequiredBlurLevel(BlurTexture::BlurLevel level)
     m_blurLevel = std::max(level, m_blurLevel);
 }
 
+void BlurTexture::SetColorFormat(const Renderer::ColorFormat& colorFormat)
+{
+    m_colorFormat = colorFormat;
+}
+
 auto BlurTexture::GetDescriptorsForBlurLevel(BlurTexture::BlurLevel blurLevel) const -> std::vector<Renderer::TextureSamplerDescriptor>
 {
     std::vector<Renderer::TextureSamplerDescriptor> descriptors;
@@ -334,11 +339,17 @@ void BlurTexture::AllocateTextures(const Renderer::Texture& sourceTexture)
         width > 0 &&
         height > 0 &&
         width == m_sourceTextureWidth &&
-        height == m_sourceTextureHeight)
+        height == m_sourceTextureHeight &&
+        m_colorFormat == m_textureColorFormat)
     {
-        // Size unchanged, return.
+        // Size and format unchanged, return.
         return;
     }
+
+    // The blur textures have no alpha channel. With the default format, they keep the 8-bit RGB
+    // format, otherwise they use the format of the main image.
+    const bool isDefaultFormat = m_colorFormat == Renderer::ColorFormat();
+    m_blurFramebuffer.SetColorAttachmentFormat(0, 0, m_colorFormat.internalFormat, m_colorFormat.format, m_colorFormat.type);
 
     for (size_t i = 0; i < m_blurTextures.size(); i++)
     {
@@ -370,11 +381,20 @@ void BlurTexture::AllocateTextures(const Renderer::Texture& sourceTexture)
         }
 
         // This will automatically replace any old texture.
-        m_blurTextures[i] = std::make_shared<Renderer::Texture>(textureName, width2, height2, false);
+        if (isDefaultFormat)
+        {
+            m_blurTextures[i] = std::make_shared<Renderer::Texture>(textureName, width2, height2, false);
+        }
+        else
+        {
+            m_blurTextures[i] = std::make_shared<Renderer::Texture>(textureName, GL_TEXTURE_2D, width2, height2, 0,
+                                                                    m_colorFormat.internalFormat, m_colorFormat.format, m_colorFormat.type, false);
+        }
     }
 
     m_sourceTextureWidth = sourceTexture.Width();
     m_sourceTextureHeight = sourceTexture.Height();
+    m_textureColorFormat = m_colorFormat;
 }
 
 } // namespace MilkdropPreset

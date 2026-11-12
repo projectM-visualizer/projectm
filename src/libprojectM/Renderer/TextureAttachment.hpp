@@ -83,13 +83,24 @@ public:
      */
     void SetSize(int width, int height);
 
+    /**
+     * @brief Sets a new texture format for a color attachment.
+     * Reallocates the texture if the format differs from the current one. The contents are lost.
+     * @param internalFormat OpenGL internal format, e.g. GL_RGBA8
+     * @param format OpenGL color format, e.g. GL_RGBA
+     * @param type OpenGL component storage type, e.g. GL_UNSIGNED_BYTE
+     * @return true if the format was changed, false if it already was the requested one.
+     */
+    auto SetFormat(GLint internalFormat, GLenum format, GLenum type) -> bool;
+
 private:
     /**
      * @brief Replaces the current texture with a new one, e.g. if the framebuffer was resized.
      * @param width The new texture width.
      * @param height The new texture height.
+     * @param force If true, also replaces the texture if the size hasn't changed.
      */
-    void ReplaceTexture(int width, int height);
+    void ReplaceTexture(int width, int height, bool force = false);
 
     AttachmentType m_attachmentType{AttachmentType::Color};                      //!< Attachment type of this texture.
     std::shared_ptr<class Texture> m_texture{std::make_shared<class Texture>()}; //!< The texture.
