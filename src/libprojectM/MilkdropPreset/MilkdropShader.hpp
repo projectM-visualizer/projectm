@@ -47,6 +47,13 @@ public:
     void LoadCode(const std::string& presetShaderCode);
 
     /**
+     * @brief Removes the sampler and texsize declarations of the preset from the preprocessed shader code.
+     * These are declared by projectM itself. Doesn't require an OpenGL context.
+     * @param program The preprocessed program code to work on.
+     */
+    static void RemoveSamplerAndTexSizeDeclarations(std::string& program);
+
+    /**
      * @brief Loads the required texture references into the shader.
      * Binds the underlying shader program.
      * @param presetState The preset state to pull the values and textures from.
@@ -66,13 +73,6 @@ public:
      * @return The shader program wrapper.
      */
     auto Shader() -> Renderer::Shader&;
-
-    /**
-     * @brief Removes the sampler and texsize declarations of the preset from the preprocessed shader code.
-     * These are declared by projectM itself. Doesn't require an OpenGL context.
-     * @param program The preprocessed program code to work on.
-     */
-    static void RemoveSamplerAndTexSizeDeclarations(std::string& program);
 
 private:
     /**
