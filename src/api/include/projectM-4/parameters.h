@@ -256,6 +256,39 @@ PROJECTM_EXPORT void projectm_set_texel_offset(projectm_handle instance, float o
 PROJECTM_EXPORT void projectm_get_texel_offset(projectm_handle instance, float* offset_X, float* offset_y);
 
 /**
+ * @brief Limits how fast the colors of the rendered image can change, to reduce flashing.
+ *
+ * Some presets flash or strobe, e.g. by inverting the image every frame, which can be a problem
+ * for people with photosensitive epilepsy. With a limit set, each color channel of each pixel can
+ * change by at most this amount per second, in units of the full range (0 = black, 1 = full
+ * intensity). Slow changes pass unchanged, while fast flashes are reduced in contrast: a channel
+ * flashing with the frequency f changes by at most max_change_per_second / (2 * f).
+ *
+ * For example, 0.6 limits any flash of 3 Hz or more to 10% of the full range. Larger values let
+ * more of the presets' movement through, smaller ones make the image more sluggish.
+ *
+ * The limit applies to everything projectM renders, including preset transitions, but not to user
+ * sprites. The rate is based on the frame times, so it doesn't depend on the frame rate. When the
+ * limit is enabled or the window size changes, the image fades in from black.
+ *
+ * This reduces the risk, but is no guarantee that the output is safe for photosensitive viewers.
+ *
+ * @param instance The projectM instance handle.
+ * @param max_change_per_second The maximum change per second of each color channel. 0 or a negative
+ *                              value disables the limit. Default: 0 (disabled)
+ * @since 4.3.0
+ */
+PROJECTM_EXPORT void projectm_set_flash_limit(projectm_handle instance, float max_change_per_second);
+
+/**
+ * @brief Returns the maximum change of each color channel per second.
+ * @param instance The projectM instance handle.
+ * @return The maximum change per second, or 0 if the limit is disabled.
+ * @since 4.3.0
+ */
+PROJECTM_EXPORT float projectm_get_flash_limit(projectm_handle instance);
+
+/**
  * @brief Sets the current/average frames per second.
  *
  * Applications running projectM should UpdateMeshSize this value regularly and set it to the calculated

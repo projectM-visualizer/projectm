@@ -359,6 +359,18 @@ void projectm_get_texel_offset(projectm_handle instance, float* offset_X, float*
     projectMInstance->TexelOffsets(*offset_X, *offset_y);
 }
 
+void projectm_set_flash_limit(projectm_handle instance, float max_change_per_second)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->SetFlashLimit(max_change_per_second);
+}
+
+float projectm_get_flash_limit(projectm_handle instance)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    return projectMInstance->FlashLimit();
+}
+
 void projectm_set_mesh_size(projectm_handle instance, size_t width, size_t height)
 {
     auto projectMInstance = handle_to_instance(instance);
