@@ -195,18 +195,6 @@ public:
 
     void SetTexelOffsets(float texelOffsetX, float texelOffsetY);
 
-    /**
-     * @brief Sets the maximum change of each color channel per second, 0 to disable the limit.
-     * @param maxChangePerSecond The maximum change per second, in units of the full 0..1 range.
-     */
-    void SetFlashLimit(float maxChangePerSecond);
-
-    /**
-     * @brief Returns the maximum change of each color channel per second, 0 if disabled.
-     * @return The maximum change per second.
-     */
-    auto FlashLimit() const -> float;
-
     void Touch(float touchX, float touchY, int pressure, int touchType);
 
     void TouchDrag(float touchX, float touchY, int pressure);
@@ -232,6 +220,18 @@ public:
      * @return True if presets start with a clean canvas.
      */
     auto PresetStartClean() const -> bool;
+
+    /**
+     * @brief Sets the maximum change of each color channel per second, 0 to disable the limit.
+     * @param maxChangePerSecond The maximum change per second, in units of the full 0..1 range.
+     */
+    void SetFlashLimit(float maxChangePerSecond);
+
+    /**
+     * @brief Returns the maximum change of each color channel per second, 0 if disabled.
+     * @return The maximum change per second.
+     */
+    auto FlashLimit() const -> float;
 
     auto PCM() -> Audio::PCM&;
 
