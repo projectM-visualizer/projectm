@@ -77,6 +77,14 @@ Store. Any bug reports in the projectM issue tracker regarding the apps will be 
 tracker regarding them will be closed. For ProjectM TV, please use the issue tracker of its own repository. For the Play
 Store app, contact its author via the Play Store.
 
+#### iOS / iPadOS
+
+- [projectM-iOS](https://apps.apple.com/us/app/projectm-ios/id6833037520) on the App Store (free, with an optional
+  in-app preset library; requires iOS/iPadOS 26) ([source code](https://github.com/Coastrnaut/projectm-ios))
+
+**Note**: This app is developed separately from libprojectM. Please report issues with it in the issue tracker of its
+own repository.
+
 #### Xbox / Windows Phone
 
 - [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN) (Old 3.1.12 release)
@@ -203,6 +211,7 @@ Report issues on GitHub in the respective repositories:
 - [Standalone SDL app](https://github.com/projectM-visualizer/frontend-sdl2/issues) (including the Steam release)
 - [Windows Store App](https://github.com/projectM-visualizer/frontend-uwp/issues)
 - [Apple Music plug-in](https://github.com/projectM-visualizer/frontend-music-plug-in/issues)
+- [projectM-iOS app](https://github.com/Coastrnaut/projectm-ios/issues)
 - Issues regarding the **projectM Android apps in the Play Store**, please contact the app author via the Play Store. We
   cannot help with any problems or requests.
 
