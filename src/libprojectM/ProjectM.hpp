@@ -37,6 +37,7 @@ namespace libprojectM {
 
 namespace Renderer {
 class CopyTexture;
+class FlashLimiter;
 class PresetTransition;
 class Renderer;
 class TextureManager;
@@ -220,6 +221,18 @@ public:
      */
     auto PresetStartClean() const -> bool;
 
+    /**
+     * @brief Sets the maximum change of each color channel per second, 0 to disable the limit.
+     * @param maxChangePerSecond The maximum change per second, in units of the full 0..1 range.
+     */
+    void SetFlashLimit(float maxChangePerSecond);
+
+    /**
+     * @brief Returns the maximum change of each color channel per second, 0 if disabled.
+     * @return The maximum change per second.
+     */
+    auto FlashLimit() const -> float;
+
     auto PCM() -> Audio::PCM&;
 
     auto WindowWidth() -> int;
@@ -341,6 +354,8 @@ private:
     std::unique_ptr<Renderer::TextureManager> m_textureManager;                   //!< The texture manager.
     std::unique_ptr<Renderer::ShaderCache> m_shaderCache;                         //!< The global shader cache.
     std::unique_ptr<Renderer::TransitionShaderManager> m_transitionShaderManager; //!< The transition shader manager.
+    std::unique_ptr<Renderer::FlashLimiter> m_flashLimiter;                       //!< Limits how fast the output colors can change, if enabled.
+    float m_flashLimit{0.0f};                                                     //!< Maximum change of each color channel per second, 0 = off.
     std::unique_ptr<Renderer::CopyTexture> m_textureCopier;                       //!< Class that copies textures 1:1 to another texture or framebuffer.
     std::unique_ptr<Preset> m_activePreset;                                       //!< Currently loaded preset.
     std::unique_ptr<Preset> m_transitioningPreset;                                //!< Destination preset when smooth preset switching.

@@ -29,6 +29,7 @@
 #include <Audio/PCM.hpp>
 
 #include <Renderer/CopyTexture.hpp>
+#include <Renderer/FlashLimiter.hpp>
 #include <Renderer/PresetTransition.hpp>
 #include <Renderer/ShaderCache.hpp>
 #include <Renderer/TextureManager.hpp>
@@ -189,7 +190,16 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
     // ToDo: Call the to-be-implemented render method in Renderer
     m_activePreset->RenderFrame(audioData, renderContext);
 
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(targetFramebufferObject));
+    // With the flash limit enabled, the frame is first drawn into the limiter's input image.
+    const bool limitFlashes = m_flashLimit > 0.0f;
+    if (limitFlashes)
+    {
+        m_flashLimiter->BindInput(renderContext.viewportSizeX, renderContext.viewportSizeY);
+    }
+    else
+    {
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(targetFramebufferObject));
+    }
     glViewport(0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY);
 
 #ifdef USE_GLES
@@ -199,7 +209,16 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
     if (targetFramebufferObject == 0)
     {
         GLenum backBuf = GL_BACK;
-        glDrawBuffers(1, &backBuf);
+        if (limitFlashes)
+        {
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+            glDrawBuffers(1, &backBuf);
+            m_flashLimiter->BindInput(renderContext.viewportSizeX, renderContext.viewportSizeY);
+        }
+        else
+        {
+            glDrawBuffers(1, &backBuf);
+        }
     }
 #endif
 
@@ -210,6 +229,13 @@ void ProjectM::RenderFrame(uint32_t targetFramebufferObject /*= 0*/)
     else
     {
         m_textureCopier->Draw(*renderContext.shaderCache, m_activePreset->OutputTexture(), false, false);
+    }
+
+    if (limitFlashes)
+    {
+        const auto maxChange = static_cast<float>(m_flashLimit * m_timeKeeper->SecondsSinceLastFrame());
+        m_flashLimiter->Draw(*renderContext.shaderCache, maxChange, targetFramebufferObject);
+        glViewport(0, 0, renderContext.viewportSizeX, renderContext.viewportSizeY);
     }
 
     // Draw user sprites
@@ -235,6 +261,8 @@ void ProjectM::Initialize()
     m_transitionShaderManager = std::make_unique<Renderer::TransitionShaderManager>();
 
     m_textureCopier = std::make_unique<Renderer::CopyTexture>();
+
+    m_flashLimiter = std::make_unique<Renderer::FlashLimiter>();
 
     m_spriteManager = std::make_unique<UserSprites::SpriteManager>();
 
@@ -550,6 +578,22 @@ void ProjectM::TexelOffsets(float& texelOffsetX, float& texelOffsetY) const
 {
     texelOffsetX = m_texelOffsetX;
     texelOffsetY = m_texelOffsetY;
+}
+
+void ProjectM::SetFlashLimit(float maxChangePerSecond)
+{
+    const float limit = maxChangePerSecond > 0.0f ? maxChangePerSecond : 0.0f;
+    if (m_flashLimit == 0.0f && limit > 0.0f && m_flashLimiter)
+    {
+        // Start from black, so enabling the limit doesn't flash the stale image of the last time it was used.
+        m_flashLimiter->Reset();
+    }
+    m_flashLimit = limit;
+}
+
+auto ProjectM::FlashLimit() const -> float
+{
+    return m_flashLimit;
 }
 
 void ProjectM::SetTexelOffsets(float texelOffsetX, float texelOffsetY)
