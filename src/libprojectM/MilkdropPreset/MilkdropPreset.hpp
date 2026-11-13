@@ -35,7 +35,6 @@
 #include "Preset.hpp"
 #include "Waveform.hpp"
 
-#include <Renderer/ColorFormat.hpp>
 #include <Renderer/CopyTexture.hpp>
 #include <Renderer/Framebuffer.hpp>
 

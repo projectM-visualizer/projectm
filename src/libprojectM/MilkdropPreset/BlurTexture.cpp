@@ -350,6 +350,7 @@ void BlurTexture::AllocateTextures(const Renderer::Texture& sourceTexture)
     // format, otherwise they use the format of the main image.
     const bool isDefaultFormat = m_colorFormat == Renderer::ColorFormat();
     m_blurFramebuffer.SetColorAttachmentFormat(0, 0, m_colorFormat.internalFormat, m_colorFormat.format, m_colorFormat.type);
+    m_textureColorFormat = m_colorFormat;
 
     for (size_t i = 0; i < m_blurTextures.size(); i++)
     {
@@ -394,7 +395,6 @@ void BlurTexture::AllocateTextures(const Renderer::Texture& sourceTexture)
 
     m_sourceTextureWidth = sourceTexture.Width();
     m_sourceTextureHeight = sourceTexture.Height();
-    m_textureColorFormat = m_colorFormat;
 }
 
 } // namespace MilkdropPreset

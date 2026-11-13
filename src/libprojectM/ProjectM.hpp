@@ -320,6 +320,7 @@ private:
     uint32_t m_targetFps{35};        //!< Target frames per second.
     uint32_t m_windowWidth{0};       //!< EvaluateFrameData window width. If 0, nothing is rendered.
     uint32_t m_windowHeight{0};      //!< EvaluateFrameData window height. If 0, nothing is rendered.
+    int m_targetColorBits{8};        //!< Bits per color channel of the framebuffer drawn to in the last frame
     double m_presetDuration{30.0};   //!< Preset duration in seconds.
     double m_softCutDuration{3.0};   //!< Soft cut transition time.
     double m_hardCutDuration{20.0};  //!< Time after which a hard cut can happen at the earliest.
@@ -331,7 +332,6 @@ private:
     float m_previousFrameVolume{};   //!< Volume in previous frame, used for hard cuts.
     float m_texelOffsetX{0.0};       //!< Horizontal warp shader texel offset
     float m_texelOffsetY{0.0};       //!< Vertical warp shader texel offset
-    int m_targetColorBits{8};        //!< Bits per color channel of the framebuffer drawn to in the last frame
 
     std::vector<std::string> m_textureSearchPaths;     ///!< List of paths to search for texture files
     Renderer::TextureLoadCallback m_textureLoadCallback; //!< Optional callback for loading textures from non-filesystem sources.
