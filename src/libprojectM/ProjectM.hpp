@@ -308,11 +308,19 @@ private:
 
     auto GetRenderContext() -> Renderer::RenderContext;
 
+    /**
+     * @brief Returns the bits per color channel of a framebuffer's first color buffer.
+     * @param framebufferObject The framebuffer object ID, 0 for the default framebuffer.
+     * @return The number of red bits, or 8 if it can't be determined.
+     */
+    static auto QueryColorBits(uint32_t framebufferObject) -> int;
+
     uint32_t m_meshX{32};            //!< Per-point mesh horizontal resolution.
     uint32_t m_meshY{24};            //!< Per-point mesh vertical resolution.
     uint32_t m_targetFps{35};        //!< Target frames per second.
     uint32_t m_windowWidth{0};       //!< EvaluateFrameData window width. If 0, nothing is rendered.
     uint32_t m_windowHeight{0};      //!< EvaluateFrameData window height. If 0, nothing is rendered.
+    int m_targetColorBits{8};        //!< Bits per color channel of the framebuffer drawn to in the last frame
     double m_presetDuration{30.0};   //!< Preset duration in seconds.
     double m_softCutDuration{3.0};   //!< Soft cut transition time.
     double m_hardCutDuration{20.0};  //!< Time after which a hard cut can happen at the earliest.

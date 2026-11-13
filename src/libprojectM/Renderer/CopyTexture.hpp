@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Renderer/ColorFormat.hpp"
 #include "Renderer/Framebuffer.hpp"
 #include "Renderer/Mesh.hpp"
 #include "Renderer/ShaderCache.hpp"
@@ -96,6 +97,13 @@ public:
      * @return The flipped texture.
      */
     auto Texture() -> std::shared_ptr<Texture>;
+
+    /**
+     * @brief Sets the format of the internal texture.
+     * Reallocates the texture if the format differs from the current one.
+     * @param colorFormat The new format of the internal texture.
+     */
+    void SetColorFormat(const ColorFormat& colorFormat);
 
 private:
     /**

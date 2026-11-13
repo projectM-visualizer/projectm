@@ -102,6 +102,13 @@ private:
      */
     void LoadShaderCode();
 
+    /**
+     * @brief Sets the texture format of the main images, the flip texture and the blur textures.
+     * Reallocates the textures if the format differs from the current one.
+     * @param colorFormat The format to use.
+     */
+    void UpdateColorFormat(const Renderer::ColorFormat& colorFormat);
+
     auto ParseFilename(const std::string& filename) -> std::string;
 
     std::string m_absoluteFilePath; //!< The absolute file path of the MilkdropPreset

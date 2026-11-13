@@ -87,6 +87,9 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
         m_isFirstFrame = true;
     }
 
+    // Use the color depth of the target framebuffer for all images of the preset.
+    UpdateColorFormat(Renderer::RenderTargetColorFormat(renderContext.targetColorBits));
+
     m_state.mainTexture = m_framebuffer.GetColorAttachmentTexture(m_previousFrameBuffer, 0);
 
     // First evaluate per-frame code
@@ -163,6 +166,24 @@ void MilkdropPreset::RenderFrame(const libprojectM::Audio::FrameAudioData& audio
     std::swap(m_currentFrameBuffer, m_previousFrameBuffer);
 
     m_isFirstFrame = false;
+}
+
+void MilkdropPreset::UpdateColorFormat(const Renderer::ColorFormat& colorFormat)
+{
+    // The flip texture swaps its attachment with those of the framebuffer, so all three are checked.
+    bool changed = false;
+    for (int framebufferIndex = 0; framebufferIndex < 2; framebufferIndex++)
+    {
+        changed |= m_framebuffer.SetColorAttachmentFormat(framebufferIndex, 0, colorFormat.internalFormat, colorFormat.format, colorFormat.type);
+    }
+    m_flipTexture.SetColorFormat(colorFormat);
+    m_state.blurTexture.SetColorFormat(colorFormat);
+
+    if (changed)
+    {
+        // The previous image is lost, like after resizing.
+        m_isFirstFrame = true;
+    }
 }
 
 auto MilkdropPreset::OutputTexture() const -> std::shared_ptr<Renderer::Texture>
