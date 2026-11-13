@@ -27,8 +27,47 @@
 
 #include <Logging.hpp>
 
+#include <cstring>
+
 namespace libprojectM {
 namespace MilkdropPreset {
+
+namespace {
+
+/**
+ * @brief Returns whether 16-bit floating-point textures can be rendered to.
+ *
+ * Always true in OpenGL 3.3 and OpenGL ES 3.2. OpenGL ES 3.0 and 3.1 can only render to them with
+ * the EXT_color_buffer_float or EXT_color_buffer_half_float extension.
+ */
+auto CanRenderToHalfFloat() -> bool
+{
+#ifdef USE_GLES
+    if (GLAD_GL_ES_VERSION_3_2)
+    {
+        return true;
+    }
+
+    GLint extensionCount{};
+    glGetIntegerv(GL_NUM_EXTENSIONS, &extensionCount);
+    for (GLint index = 0; index < extensionCount; index++)
+    {
+        const auto* extension = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, static_cast<GLuint>(index)));
+        if (extension != nullptr &&
+            (std::strcmp(extension, "GL_EXT_color_buffer_float") == 0 ||
+             std::strcmp(extension, "GL_EXT_color_buffer_half_float") == 0))
+        {
+            return true;
+        }
+    }
+
+    return false;
+#else
+    return true;
+#endif
+}
+
+} // anonymous namespace
 
 MilkdropPreset::MilkdropPreset(const std::string& absoluteFilePath)
     : m_absoluteFilePath(absoluteFilePath)
@@ -238,7 +277,16 @@ void MilkdropPreset::Load(std::istream& stream)
 void MilkdropPreset::InitializePreset(PresetFileParser& parsedFile)
 {
     // Create the offscreen rendering surfaces.
-    m_motionVectorUVMap = std::make_shared<Renderer::TextureAttachment>(GL_RG16F, GL_RG, GL_FLOAT, 0, 0);
+    // The motion vector u/v map stores texture coordinates. If half floats can't be rendered to,
+    // 10 bits per coordinate are still enough for the motion vector start points.
+    if (CanRenderToHalfFloat())
+    {
+        m_motionVectorUVMap = std::make_shared<Renderer::TextureAttachment>(GL_RG16F, GL_RG, GL_FLOAT, 0, 0);
+    }
+    else
+    {
+        m_motionVectorUVMap = std::make_shared<Renderer::TextureAttachment>(GL_RGB10_A2, GL_RGBA, GL_UNSIGNED_INT_2_10_10_10_REV, 0, 0);
+    }
     m_framebuffer.CreateColorAttachment(0, 0); // Main image 1
     m_framebuffer.CreateColorAttachment(1, 0); // Main image 2
 
