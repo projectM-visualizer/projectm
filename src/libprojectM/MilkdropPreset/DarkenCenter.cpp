@@ -9,8 +9,9 @@ DarkenCenter::DarkenCenter(PresetState& presetState)
     : m_presetState(presetState)
     , m_mesh(Renderer::VertexBufferUsage::StaticDraw, true, false)
 {
-    m_mesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::TriangleFan);
+    m_mesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::Triangles);
     m_mesh.SetVertexCount(6);
+    m_mesh.Indices().MakeTriangleFanAsTriangles(6);
     m_mesh.Colors().Set({{0.0f, 0.0f, 0.0f, 3.0f / 32.0f},
                          {0.0f, 0.0f, 0.0f, 0.0f},
                          {0.0f, 0.0f, 0.0f, 0.0f},

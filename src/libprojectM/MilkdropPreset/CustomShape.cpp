@@ -17,10 +17,10 @@ CustomShape::CustomShape(PresetState& presetState)
     , m_perFrameContext(presetState.globalMemory, &presetState.globalRegisters)
 {
     m_outlineMesh.SetVertexCount(100);
-    m_outlineMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::LineLoop);
+    m_outlineMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::LineStrip);
 
     m_fillMesh.SetVertexCount(102);
-    m_fillMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::TriangleFan);
+    m_fillMesh.SetRenderPrimitiveType(Renderer::Mesh::PrimitiveType::Triangles);
 
     m_perFrameContext.RegisterBuiltinVariables();
 }
@@ -200,8 +200,8 @@ void CustomShape::Draw()
             shader->SetUniformMat4x4("vertex_transformation", PresetState::orthogonalProjection);
         }
 
-        m_fillMesh.Indices().Resize(sides + 2);
-        m_fillMesh.Indices().MakeContinuous();
+        // Drawn as a triangle list, not a fan: see VertexIndexArray::MakeTriangleFanAsTriangles().
+        m_fillMesh.Indices().MakeTriangleFanAsTriangles(sides + 2);
         m_fillMesh.Update();
         m_fillMesh.Draw();
 
@@ -210,8 +210,7 @@ void CustomShape::Draw()
 
         if (*m_perFrameContext.border_a > 0.0001f)
         {
-            m_outlineMesh.Indices().Resize(sides);
-            m_outlineMesh.Indices().MakeContinuous();
+            m_outlineMesh.Indices().MakeLineLoopAsLineStrip(sides);
 
             auto& points = m_outlineMesh.Vertices();
 

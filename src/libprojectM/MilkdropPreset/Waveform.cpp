@@ -74,9 +74,10 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
 
         m_waveMesh.SetRenderPrimitiveType(m_presetState.waveDots
                                               ? Renderer::Mesh::PrimitiveType::Points
-                                          : m_waveformMath->IsLoop()
-                                              ? Renderer::Mesh::PrimitiveType::LineLoop
                                               : Renderer::Mesh::PrimitiveType::LineStrip);
+
+        // Loops are drawn as a closed line strip: see VertexIndexArray::MakeLineLoopAsLineStrip().
+        const bool closeLoop = !m_presetState.waveDots && m_waveformMath->IsLoop();
 
         // If thick outline is used, draw the shape four times with slight offsets
         // (top left, top right, bottom right, bottom left).
@@ -110,8 +111,15 @@ void Waveform::Draw(const PerFrameContext& presetPerFrameContext)
             }
 
             m_waveMesh.Vertices().Set(smoothedWave);
-            m_waveMesh.Indices().Resize(smoothedWave.size());
-            m_waveMesh.Indices().MakeContinuous();
+            if (closeLoop)
+            {
+                m_waveMesh.Indices().MakeLineLoopAsLineStrip(smoothedWave.size());
+            }
+            else
+            {
+                m_waveMesh.Indices().Resize(smoothedWave.size());
+                m_waveMesh.Indices().MakeContinuous();
+            }
             m_waveMesh.Update();
             m_waveMesh.Draw();
         }
