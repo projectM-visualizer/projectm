@@ -105,12 +105,25 @@ public:
      */
     void TryUpdate(TextureManager& textureManager);
 
+    /**
+     * Change the prefix behavior.
+     * @param prefix If true, sampler uniform names are automatically prefixed with "sampler_".
+     */
+    void PrefixSampler(bool prefix);
+
+    /**
+     * Return the prefix behavior.
+     * @return true if sampler uniform names are automatically prefixed with "sampler_".
+     */
+    auto PrefixSampler() const -> bool;
+
 private:
     std::shared_ptr<class Texture> m_texture; //!< A reference to the texture.
     std::shared_ptr<class Sampler> m_sampler; //!< A reference to the sampler.
-    std::string m_samplerName; //!< The name of the texture sampler as referenced in the shader.
-    std::string m_sizeName; //!< The name of the "texsize_" uniform as referenced in the shader.
-    bool m_updateFailed{false}; //!< Set to true if the update try failed, e.g. texture could not be loaded.
+    std::string m_samplerName;                //!< The name of the texture sampler as referenced in the shader.
+    std::string m_sizeName;                   //!< The name of the "texsize_" uniform as referenced in the shader.
+    bool m_updateFailed{false};               //!< Set to true if the update try failed, e.g. texture could not be loaded.
+    bool m_prefixSampler{true};               //!< If true, the sampler uniform name is automatically prefixed with "sampler_".
 };
 
 } // namespace Renderer
