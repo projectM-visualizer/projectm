@@ -276,7 +276,7 @@ PROJECTM_EXPORT void projectm_get_texel_offset(projectm_handle instance, float* 
  * @param instance The projectM instance handle.
  * @param max_change_per_second The maximum change per second of each color channel. 0 or a negative
  *                              value disables the limit. Default: 0 (disabled)
- * @since 4.3.0
+ * @since 4.2.0
  */
 PROJECTM_EXPORT void projectm_set_flash_limit(projectm_handle instance, float max_change_per_second);
 
@@ -284,7 +284,7 @@ PROJECTM_EXPORT void projectm_set_flash_limit(projectm_handle instance, float ma
  * @brief Returns the maximum change of each color channel per second.
  * @param instance The projectM instance handle.
  * @return The maximum change per second, or 0 if the limit is disabled.
- * @since 4.3.0
+ * @since 4.2.0
  */
 PROJECTM_EXPORT float projectm_get_flash_limit(projectm_handle instance);
 

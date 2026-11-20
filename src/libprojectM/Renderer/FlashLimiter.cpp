@@ -1,5 +1,7 @@
 #include "Renderer/FlashLimiter.hpp"
 
+#include "Renderer/Texture.hpp"
+
 #include <algorithm>
 
 namespace libprojectM {
@@ -113,17 +115,15 @@ void FlashLimiter::Draw(ShaderCache& shaderCache, float maxChange, uint32_t targ
     DrawLimited(*shader, clampedChange);
 
     // ...and draw the same frame to the target.
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(targetFramebufferObject));
+    Framebuffer::Unbind(static_cast<GLuint>(targetFramebufferObject));
     DrawLimited(*shader, clampedChange);
 
     m_previousBuffer = currentBuffer;
 
     Sampler::Unbind(0);
     Sampler::Unbind(1);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, 0);
+    Texture::Unbind(GL_TEXTURE_2D, 1);
+    Texture::Unbind(GL_TEXTURE_2D, 0);
     Mesh::Unbind();
     Shader::Unbind();
 }

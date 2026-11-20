@@ -78,6 +78,11 @@ void Framebuffer::Unbind()
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
+void Framebuffer::Unbind(GLuint framebufferObject)
+{
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebufferObject);
+}
+
 bool Framebuffer::SetSize(int width, int height)
 {
     if (width == 0 || height == 0 ||

@@ -82,8 +82,13 @@ void Texture::Bind(GLint slot, const Sampler::Ptr& sampler) const
 
 void Texture::Unbind(GLint slot) const
 {
+    Unbind(m_target, slot);
+}
+
+void Texture::Unbind(GLenum target, GLint slot)
+{
     glActiveTexture(GL_TEXTURE0 + slot);
-    glBindTexture(m_target, 0);
+    glBindTexture(target, 0);
 }
 
 auto Texture::TextureID() const -> GLuint

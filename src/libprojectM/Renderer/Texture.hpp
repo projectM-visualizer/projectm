@@ -102,6 +102,13 @@ public:
     void Unbind(GLint slot) const;
 
     /**
+     * Unbinds any texture of the given type from the given texture unit.
+     * @param target The texture target, e.g. GL_TEXTURE_2D.
+     * @param slot The texture unit to unbind the texture from.
+     */
+    static void Unbind(GLenum target, GLint slot);
+
+    /**
      * @brief Returns the OpenGL texture name/ID.
      * @return The OpenGL texture name/ID.
      */
