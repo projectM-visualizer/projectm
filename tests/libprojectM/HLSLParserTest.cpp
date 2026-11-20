@@ -6,6 +6,7 @@
 #include <HLSLTree.h>
 
 #include <cstring>
+#include <locale>
 #include <string>
 
 namespace {
@@ -133,4 +134,38 @@ TEST(HLSLParser, ForLoopIncrementWithCommaOperatorGeneratesGLSL)
                                    M4::GLSLGenerator::Version_330, "PS"));
     std::string glsl = generator.GetResult();
     EXPECT_NE(glsl.find("(i++), (j++), (k += 2)) {"), std::string::npos) << glsl;
+}
+
+
+namespace {
+
+// A locale with a comma as the decimal point, like German, without relying on named system locales.
+struct CommaDecimalPoint : std::numpunct<char>
+{
+    char do_decimal_point() const override
+    {
+        return ',';
+    }
+};
+
+} // namespace
+
+// Float literals in the generated GLSL must always use a decimal point, whatever the application's locale is.
+TEST(HLSLParser, FormatFloatIgnoresGlobalLocale)
+{
+    const std::locale previous = std::locale::global(std::locale(std::locale::classic(), new CommaDecimalPoint));
+
+    char buffer[64];
+    M4::String_FormatFloat(buffer, sizeof(buffer), 1234.5f);
+    const std::string formatted(buffer);
+    M4::String_FormatFloat(buffer, sizeof(buffer), -0.25f);
+    const std::string negative(buffer);
+    M4::String_FormatFloat(buffer, sizeof(buffer), 1.0e-5f);
+    const std::string small(buffer);
+
+    std::locale::global(previous);
+
+    EXPECT_EQ(formatted, "float(1234.5)");
+    EXPECT_EQ(negative, "float(-0.25)");
+    EXPECT_EQ(small, "float(1e-05)");
 }
