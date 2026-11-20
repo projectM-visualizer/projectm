@@ -82,6 +82,12 @@ public:
     static void Unbind();
 
     /**
+     * @brief Binds the given framebuffer object for writing, e.g. the application's target framebuffer.
+     * @param framebufferObject The OpenGL framebuffer object ID, 0 for the default framebuffer.
+     */
+    static void Unbind(GLuint framebufferObject);
+
+    /**
      * @brief Sets the framebuffer texture size.
      *
      * This will bind the framebuffers and reallocate all attachment textures, creating new
