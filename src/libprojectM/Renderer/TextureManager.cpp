@@ -266,16 +266,7 @@ auto TextureManager::LoadTexture(const ScannedFile& file) -> std::shared_ptr<Tex
     int width{};
     int height{};
 
-    // The file path is UTF-8, so open it with PathEncoding::OpenFile() to support any file name on Windows.
-    std::unique_ptr<FILE, decltype(&fclose)> imageFile(PathEncoding::OpenFile(file.filePath, "rb"), &fclose);
-    if (!imageFile)
-    {
-        LOG_DEBUG("[TextureManager] Failed to open image file.");
-        return {};
-    }
-
-    std::unique_ptr<stbi_uc, decltype(&free)> imageData(stbi_load_from_file(imageFile.get(), &width, &height, nullptr, 4), free);
-    imageFile.reset();
+    std::unique_ptr<stbi_uc, decltype(&free)> imageData(stbi_load(file.filePath.c_str(), &width, &height, nullptr, 4), free);
 
     if (imageData.get() == nullptr)
     {
