@@ -23,7 +23,9 @@ using libprojectM::MilkdropPreset::MilkdropStaticShaders;
 
 static auto floatRand = []() { return static_cast<float>(rand() % 7381) / 7380.0f; };
 
-static const std::regex samplerDeclaration("sampler(2D|3D|)(\\s+|\\().*");
+// Only spaces and tabs may follow the keyword: "\s" would also match a line break, so a comment ending with
+// the word "sampler" would erase the whole following line of code.
+static const std::regex samplerDeclaration("sampler(2D|3D|)([ \\t]+|\\().*");
 static const std::regex texSizeDeclaration("float4\\s+texsize_.*");
 
 MilkdropShader::MilkdropShader(ShaderType type)
@@ -512,6 +514,19 @@ void PS(float4 _vDiffuse : COLOR,
     program = fullSource;
 }
 
+void MilkdropShader::RemoveSamplerAndTexSizeDeclarations(std::string& program)
+{
+    // Remove previous shader declarations
+    // ToDo: Quite some presets declare a sampler_state{} struct to change the wrap mode.
+    //       The below code causes invalid syntax as it leaves part of the expression.
+    //       Leaving it in causes HLSLParser to add "sampler_XYZ = sampler2D( <unknown expression> );"
+    //       in the main() function, which is also bad...
+    Utils::EraseRegexMatches(program, "sampler", samplerDeclaration);
+
+    // Remove previous texsize declarations
+    Utils::EraseRegexMatches(program, "float4", texSizeDeclaration);
+}
+
 void MilkdropShader::GetReferencedSamplers(const std::string& program)
 {
     // Look up samplers referenced in the shader program
@@ -626,15 +641,7 @@ void MilkdropShader::TranspileHLSLShader(const PresetState& presetState, std::st
         throw Renderer::ShaderException("Error translating HLSL " + shaderTypeString + " shader: Preprocessing failed.");
     }
 
-    // Remove previous shader declarations
-    // ToDo: Quite some presets declare a sampler_state{} struct to change the wrap mode.
-    //       The below code causes invalid syntax as it leaves part of the expression.
-    //       Leaving it in causes HLSLParser to add "sampler_XYZ = sampler2D( <unknown expression> );"
-    //       in the main() function, which is also bad...
-    Utils::EraseRegexMatches(sourcePreprocessed, "sampler", samplerDeclaration);
-
-    // Remove previous texsize declarations
-    Utils::EraseRegexMatches(sourcePreprocessed, "float4", texSizeDeclaration);
+    RemoveSamplerAndTexSizeDeclarations(sourcePreprocessed);
 
     // Collect unique samplers and texsize uniforms
     std::set<std::string> samplerDeclarations;

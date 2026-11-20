@@ -57,6 +57,7 @@ private:
     bool AcceptAssign(HLSLBinaryOp& binaryOp);
     bool AcceptTypeModifier(int & typeFlags);
     bool AcceptInterpolationModifier(int& flags);
+    bool NextIsIdentifier();
 
     /**
      * Handles a declaration like: "float2 name[5]". If allowUnsizedArray is true, it is
