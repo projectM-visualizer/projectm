@@ -60,6 +60,23 @@ public:
      */
     virtual void BindFramebuffer() = 0;
 
+    /**
+     * Non-blocking — true once any deferred background
+     * shader compiles started during Initialize() have finished (or if the preset has
+     * none). Default: nothing deferred.
+     */
+    virtual auto PendingShaderCompileReady() const -> bool
+    {
+        return true;
+    }
+
+    /**
+     * Finalizes deferred shader compiles (status check +
+     * cleanup + per-shader failure fallback). Blocks if a compile is still running —
+     * callers should gate on PendingShaderCompileReady(). Default: no-op.
+     */
+    virtual void FinalizePendingShaderCompile() {}
+
     inline void SetFilename(const std::string& filename)
     {
         m_filename = filename;

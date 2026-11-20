@@ -94,6 +94,34 @@ void FinalComposite::CompileCompositeShader(PresetState& presetState)
     }
 }
 
+auto FinalComposite::CompositeShaderCompileReady() const -> bool
+{
+    return !m_compositeShader || m_compositeShader->Shader().PendingCompileReady();
+}
+
+void FinalComposite::FinalizeCompositeShaderCompile(PresetState& presetState)
+{
+    if (m_compositeShader && m_compositeShader->Shader().HasPendingCompile())
+    {
+        try
+        {
+            m_compositeShader->Shader().FinalizeCompile();
+            LOG_DEBUG("[FinalComposite] Successfully finalized deferred composite shader compile.");
+        }
+        catch (Renderer::ShaderException&)
+        {
+            // Same failure handling as CompileCompositeShader. Deferral is off by
+            // finalize time, so the fallback compiles synchronously (static source,
+            // rare path — only broken presets reach it).
+            LOG_WARN("[FinalComposite] Error compiling composite warp shader code (deferred) - Using fallback shader.");
+
+            m_compositeShader = std::make_unique<MilkdropShader>(MilkdropShader::ShaderType::CompositeShader);
+            m_compositeShader->LoadCode(defaultCompositeShader);
+            m_compositeShader->LoadTexturesAndCompile(presetState);
+        }
+    }
+}
+
 void FinalComposite::Draw(const PresetState& presetState, const PerFrameContext& perFrameContext)
 {
     if (m_compositeShader)
