@@ -36,6 +36,7 @@ add_executable(projectM-playlist-unittest
         PlaylistTest.cpp
         ProjectMAPIMocks.cpp
         FilterTest.cpp
+        WideCharAPITest.cpp
         )
 
 if(BUILD_SHARED_LIBS)

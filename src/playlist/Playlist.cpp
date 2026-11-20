@@ -1,5 +1,7 @@
 #include "Playlist.hpp"
 
+#include <PathEncoding.hpp>
+
 #include <algorithm>
 #include <chrono>
 
@@ -100,17 +102,9 @@ auto Playlist::AddPath(const std::string& path, uint32_t index, bool recursive, 
             return;
         }
 
-        std::string filename;
-        try
-        {
-            filename = entry.path().string();
-        }
-        catch (std::exception&)
-        {
-            // The file name can't be represented as a narrow string, e.g. on Windows if it contains
-            // characters outside the active ANSI code page. Skip it instead of aborting the whole scan.
-            return;
-        }
+        // Item file names are UTF-8, which can represent any file name, unlike path::string() on
+        // Windows, which uses the ANSI code page and throws for characters outside of it.
+        const auto filename = PathEncoding::FromPath(entry.path());
 
         uint32_t currentIndex{InsertAtEnd};
         if (index < InsertAtEnd)
@@ -123,11 +117,13 @@ auto Playlist::AddPath(const std::string& path, uint32_t index, bool recursive, 
         }
     };
 
+    const auto directory = PathEncoding::ToPath<PROJECTM_FILESYSTEM_NAMESPACE::filesystem::path>(path);
+
     if (recursive)
     {
         try
         {
-            for (const auto& entry : recursive_directory_iterator(path))
+            for (const auto& entry : recursive_directory_iterator(directory))
             {
                 addEntry(entry);
             }
@@ -139,7 +135,7 @@ auto Playlist::AddPath(const std::string& path, uint32_t index, bool recursive, 
     }
     else
     {
-        for (const auto& entry : directory_iterator(path))
+        for (const auto& entry : directory_iterator(directory))
         {
             addEntry(entry);
         }
@@ -220,8 +216,8 @@ void Playlist::Sort(uint32_t startIndex, uint32_t count,
                           break;
 
                       case SortPredicate::FilenameOnly: {
-                          leftFilename = path(left.Filename()).filename().string();
-                          rightFilename = path(right.Filename()).filename().string();
+                          leftFilename = PathEncoding::FromPath(PathEncoding::ToPath<path>(left.Filename()).filename());
+                          rightFilename = PathEncoding::FromPath(PathEncoding::ToPath<path>(right.Filename()).filename());
                           break;
                       }
                   }

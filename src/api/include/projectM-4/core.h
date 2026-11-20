@@ -100,6 +100,9 @@ PROJECTM_EXPORT void projectm_destroy(projectm_handle instance);
  * be displayed. Note that if there's a transition in progress when calling this function, the
  * transition will be finished immediately, even if the new preset can't be loaded.
  *
+ * On Windows, the file name is in the active ANSI code page. Use projectm_load_preset_fileW() for
+ * file names with other characters.
+ *
  * @param instance The projectM instance handle.
  * @param filename The preset filename or URL to load.
  * @param smooth_transition If true, the new preset is smoothly blended over.
@@ -107,6 +110,25 @@ PROJECTM_EXPORT void projectm_destroy(projectm_handle instance);
  */
 PROJECTM_EXPORT void projectm_load_preset_file(projectm_handle instance, const char* filename,
                                                bool smooth_transition);
+
+#ifdef _WIN32
+/**
+ * @brief Loads a preset from the given filename, using a wide-character file name.
+ *
+ * Same as projectm_load_preset_file(), but the file name is a UTF-16 string. On Windows, the
+ * narrow-string functions use the active ANSI code page, so this function is needed for file names
+ * with characters outside of it.
+ *
+ * Only available on Windows.
+ *
+ * @param instance The projectM instance handle.
+ * @param filename The preset filename or URL to load.
+ * @param smooth_transition If true, the new preset is smoothly blended over.
+ * @since 4.3.0
+ */
+PROJECTM_EXPORT void projectm_load_preset_fileW(projectm_handle instance, const wchar_t* filename,
+                                                bool smooth_transition);
+#endif
 
 /**
  * @brief Loads a preset from the data pointer.

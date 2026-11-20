@@ -19,6 +19,7 @@ add_library(projectM_main OBJECT
         "${PROJECTM_EXPORT_HEADER}"
         Logging.cpp
         Logging.hpp
+        PathEncoding.hpp
         Preset.hpp
         PresetFactory.cpp
         PresetFactory.hpp

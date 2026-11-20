@@ -38,6 +38,9 @@ extern "C" {
  * Calling this method will clear and reload all textures, including the main rendering texture.
  * Can cause a small delay/lag in rendering. Only use if texture paths were changed.
  *
+ * On Windows, the paths are in the active ANSI code page. Use projectm_set_texture_search_pathsW()
+ * for paths with other characters.
+ *
  * @param instance The projectM instance handle.
  * @param texture_search_paths A list of texture search paths.
  * @param count The number of paths in the list.
@@ -46,6 +49,26 @@ extern "C" {
 PROJECTM_EXPORT void projectm_set_texture_search_paths(projectm_handle instance,
                                                        const char** texture_search_paths,
                                                        size_t count);
+
+#ifdef _WIN32
+/**
+ * @brief Sets the texture search paths, using wide-character paths.
+ *
+ * Same as projectm_set_texture_search_paths(), but the paths are UTF-16 strings. On Windows, the
+ * narrow-string functions use the active ANSI code page, so this function is needed for paths with
+ * characters outside of it. Texture files with such names are found in both cases.
+ *
+ * Only available on Windows.
+ *
+ * @param instance The projectM instance handle.
+ * @param texture_search_paths A list of texture search paths.
+ * @param count The number of paths in the list.
+ * @since 4.3.0
+ */
+PROJECTM_EXPORT void projectm_set_texture_search_pathsW(projectm_handle instance,
+                                                        const wchar_t** texture_search_paths,
+                                                        size_t count);
+#endif
 
 /**
  * @brief Sets a user-specified frame time in fractional seconds.

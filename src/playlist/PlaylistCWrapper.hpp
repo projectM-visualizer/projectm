@@ -54,6 +54,17 @@ public:
     static void OnPresetSwitchFailed(const char* presetFilename, const char* message,
                                      void* userData);
 
+#ifdef _WIN32
+    /**
+     * @brief Callback method for projectM's wide-character preset switch failed event.
+     * @param presetFilename The filename of the failed preset.
+     * @param message The error message.
+     * @param userData The playlist instance.
+     */
+    static void OnPresetSwitchFailedW(const wchar_t* presetFilename, const wchar_t* message,
+                                      void* userData);
+#endif
+
     /**
      * @brief Sets the retry count for preset switches before giving up.
      * @param retryCount The number of retries.
@@ -90,6 +101,24 @@ public:
     virtual void SetPresetLoadCallback(projectm_playlist_preset_load_event callback,
                                        void* userData);
 
+#ifdef _WIN32
+    /**
+     * @brief Sets the wide-character preset switch failed callback.
+     * @param callback The callback pointer.
+     * @param userData Context data pointer passed to the callback.
+     */
+    void SetPresetSwitchFailedCallbackW(projectm_playlist_preset_switch_failed_eventW callback,
+                                        void* userData);
+
+    /**
+     * @brief Sets the wide-character preset load callback.
+     * @param callback The callback pointer.
+     * @param userData Context data pointer passed to the callback.
+     */
+    void SetPresetLoadCallbackW(projectm_playlist_preset_load_eventW callback,
+                                void* userData);
+#endif
+
     /**
      * @brief Sets the last navigation direction used to switch a preset.
      * This is used when retrying on a failed preset load, keeping the same direction/logic as in the original switch.
@@ -121,6 +150,14 @@ private:
 
     projectm_playlist_preset_load_event m_presetLoadEventCallback{nullptr}; //!< Preset load callback pointer set by the application.
     void* m_presetLoadEventUserData{nullptr};                               //!< Context data pointer set by the application.
+
+#ifdef _WIN32
+    projectm_playlist_preset_switch_failed_eventW m_presetSwitchFailedEventCallbackW{nullptr}; //!< Wide-character preset switch failed callback pointer set by the application.
+    void* m_presetSwitchFailedEventUserDataW{nullptr};                                         //!< Context data pointer set by the application.
+
+    projectm_playlist_preset_load_eventW m_presetLoadEventCallbackW{nullptr}; //!< Wide-character preset load callback pointer set by the application.
+    void* m_presetLoadEventUserDataW{nullptr};                                //!< Context data pointer set by the application.
+#endif
 
     NavigationDirection m_lastNavigationDirection{NavigationDirection::Next}; //!< Last direction used to switch a preset.
 };

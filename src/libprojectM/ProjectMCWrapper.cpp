@@ -5,6 +5,7 @@
 #include <projectM-4/projectM.h>
 
 #include <Logging.hpp>
+#include <PathEncoding.hpp>
 
 #include <Audio/AudioConstants.hpp>
 #include <Renderer/Platform/GLResolver.hpp>
@@ -30,11 +31,22 @@ void projectMWrapper::PresetSwitchRequestedEvent(bool isHardCut) const
 void projectMWrapper::PresetSwitchFailedEvent(const std::string& presetFilename,
                                               const std::string& failureMessage) const
 {
+    // File names are UTF-8 internally, the narrow-string callback gets them in the narrow API encoding.
     if (m_presetSwitchFailedEventCallback)
     {
-        m_presetSwitchFailedEventCallback(presetFilename.c_str(),
-                                          failureMessage.c_str(), m_presetSwitchFailedEventUserData);
+        m_presetSwitchFailedEventCallback(PathEncoding::ToNarrowApi(presetFilename).c_str(),
+                                          PathEncoding::ToNarrowApi(failureMessage).c_str(),
+                                          m_presetSwitchFailedEventUserData);
     }
+
+#ifdef _WIN32
+    if (m_presetSwitchFailedEventCallbackW)
+    {
+        m_presetSwitchFailedEventCallbackW(PathEncoding::Utf8ToWide(presetFilename).c_str(),
+                                           PathEncoding::Utf8ToWide(failureMessage).c_str(),
+                                           m_presetSwitchFailedEventUserDataW);
+    }
+#endif
 }
 
 } // namespace libprojectM
@@ -122,7 +134,7 @@ void projectm_load_preset_file(projectm_handle instance, const char* filename,
                                bool smooth_transition)
 {
     auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->LoadPresetFile(filename, smooth_transition);
+    projectMInstance->LoadPresetFile(libprojectM::PathEncoding::FromNarrowApi(filename), smooth_transition);
 }
 
 void projectm_load_preset_data(projectm_handle instance, const char* data,
@@ -132,6 +144,15 @@ void projectm_load_preset_data(projectm_handle instance, const char* data,
     auto projectMInstance = handle_to_instance(instance);
     projectMInstance->LoadPresetData(presetDataStream, smooth_transition);
 }
+
+#ifdef _WIN32
+void projectm_load_preset_fileW(projectm_handle instance, const wchar_t* filename,
+                                bool smooth_transition)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->LoadPresetFile(libprojectM::PathEncoding::WideToUtf8(filename), smooth_transition);
+}
+#endif
 
 void projectm_set_preset_switch_requested_event_callback(projectm_handle instance,
                                                          projectm_preset_switch_requested_event callback, void* user_data)
@@ -148,6 +169,16 @@ void projectm_set_preset_switch_failed_event_callback(projectm_handle instance,
     projectMInstance->m_presetSwitchFailedEventCallback = callback;
     projectMInstance->m_presetSwitchFailedEventUserData = user_data;
 }
+
+#ifdef _WIN32
+void projectm_set_preset_switch_failed_event_callbackW(projectm_handle instance,
+                                                       projectm_preset_switch_failed_eventW callback, void* user_data)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    projectMInstance->m_presetSwitchFailedEventCallbackW = callback;
+    projectMInstance->m_presetSwitchFailedEventUserDataW = user_data;
+}
+#endif
 
 void projectm_set_texture_load_event_callback(projectm_handle instance,
                                               projectm_texture_load_event callback, void* user_data)
@@ -192,11 +223,29 @@ void projectm_set_texture_search_paths(projectm_handle instance,
 
     for (size_t index = 0; index < count; index++)
     {
-        texturePaths.emplace_back(texture_search_paths[index]);
+        texturePaths.emplace_back(libprojectM::PathEncoding::FromNarrowApi(texture_search_paths[index]));
     }
 
     projectMInstance->SetTexturePaths(texturePaths);
 }
+
+#ifdef _WIN32
+void projectm_set_texture_search_pathsW(projectm_handle instance,
+                                        const wchar_t** texture_search_paths,
+                                        size_t count)
+{
+    auto projectMInstance = handle_to_instance(instance);
+
+    std::vector<std::string> texturePaths;
+
+    for (size_t index = 0; index < count; index++)
+    {
+        texturePaths.emplace_back(libprojectM::PathEncoding::WideToUtf8(texture_search_paths[index]));
+    }
+
+    projectMInstance->SetTexturePaths(texturePaths);
+}
+#endif
 
 void projectm_reset_textures(projectm_handle instance)
 {

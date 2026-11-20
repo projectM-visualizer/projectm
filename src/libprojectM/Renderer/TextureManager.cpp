@@ -6,6 +6,7 @@
 #include "Renderer/Texture.hpp"
 
 #include <Logging.hpp>
+#include <PathEncoding.hpp>
 #include <Utils.hpp>
 
 #include <stb_image.h>
@@ -228,9 +229,14 @@ auto TextureManager::TryLoadingTexture(const std::string& name) -> TextureSample
     // Fall back to filesystem loading
     ScanTextures();
 
+    // Scanned file names are UTF-8. Names from preset code are in the preset's encoding, which is the
+    // ANSI code page on Windows (as in Milkdrop), while random texture names come from scanned files.
+    // Match both forms. They are only different for non-ASCII names on Windows.
+    const std::string lowerCaseUtf8Name = Utils::ToLower(PathEncoding::FromNarrowApi(unqualifiedName.c_str()));
+
     for (const auto& file : m_scannedTextureFiles)
     {
-        if (file.lowerCaseBaseName != lowerCaseUnqualifiedName)
+        if (file.lowerCaseBaseName != lowerCaseUnqualifiedName && file.lowerCaseBaseName != lowerCaseUtf8Name)
         {
             continue;
         }
@@ -260,7 +266,16 @@ auto TextureManager::LoadTexture(const ScannedFile& file) -> std::shared_ptr<Tex
     int width{};
     int height{};
 
-    std::unique_ptr<stbi_uc, decltype(&free)> imageData(stbi_load(file.filePath.c_str(), &width, &height, nullptr, 4), free);
+    // The file path is UTF-8, so open it with PathEncoding::OpenFile() to support any file name on Windows.
+    std::unique_ptr<FILE, decltype(&fclose)> imageFile(PathEncoding::OpenFile(file.filePath, "rb"), &fclose);
+    if (!imageFile)
+    {
+        LOG_DEBUG("[TextureManager] Failed to open image file.");
+        return {};
+    }
+
+    std::unique_ptr<stbi_uc, decltype(&free)> imageData(stbi_load_from_file(imageFile.get(), &width, &height, nullptr, 4), free);
+    imageFile.reset();
 
     if (imageData.get() == nullptr)
     {

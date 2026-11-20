@@ -28,6 +28,8 @@
 
 #include "projectM-4/playlist_types.h"
 
+#include <stddef.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -53,6 +55,28 @@ PROJECTM_PLAYLIST_EXPORT void projectm_playlist_free_string(char* string);
  * @since 4.0.0
  */
 PROJECTM_PLAYLIST_EXPORT void projectm_playlist_free_string_array(char** array);
+
+#ifdef _WIN32
+/**
+ * @brief Frees a wide-character string returned by any of the playlist API functions.
+ *
+ * Only available on Windows.
+ *
+ * @param string A pointer to a string that should be freed.
+ * @since 4.3.0
+ */
+PROJECTM_PLAYLIST_EXPORT void projectm_playlist_free_wstring(wchar_t* string);
+
+/**
+ * @brief Frees a wide-character string array returned by any of the playlist API functions.
+ *
+ * Only available on Windows.
+ *
+ * @param array The pointer to the array of strings that should be freed.
+ * @since 4.3.0
+ */
+PROJECTM_PLAYLIST_EXPORT void projectm_playlist_free_wstring_array(wchar_t** array);
+#endif
 
 #ifdef __cplusplus
 } // extern "C"

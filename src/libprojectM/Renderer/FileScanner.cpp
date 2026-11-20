@@ -1,5 +1,6 @@
 #include "FileScanner.hpp"
 
+#include "PathEncoding.hpp"
 #include "Utils.hpp"
 
 #include <algorithm>
@@ -29,7 +30,8 @@ void FileScanner::Scan(ScanCallback callback)
     {
         try
         {
-            path basePath(currentPath);
+            // Paths are UTF-8, so file names with any characters can be found on Windows.
+            auto basePath = PathEncoding::ToPath<path>(currentPath);
 
             if (!exists(basePath))
             {
@@ -64,7 +66,7 @@ void FileScanner::Scan(ScanCallback callback)
                 auto extension = Utils::ToLower(entry.path().extension().string());
                 if (std::find(_extensions.begin(), _extensions.end(), extension) != _extensions.end())
                 {
-                    callback(entry.path().string(), entry.path().stem().string());
+                    callback(PathEncoding::FromPath(entry.path()), PathEncoding::FromPath(entry.path().stem()));
                 }
             }
         }
