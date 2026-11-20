@@ -37,6 +37,11 @@ public:
     projectm_preset_switch_failed_event m_presetSwitchFailedEventCallback{nullptr};
     void* m_presetSwitchFailedEventUserData{nullptr};
 
+#ifdef _WIN32
+    projectm_preset_switch_failed_eventW m_presetSwitchFailedEventCallbackW{nullptr};
+    void* m_presetSwitchFailedEventUserDataW{nullptr};
+#endif
+
     projectm_preset_switch_requested_event m_presetSwitchRequestedEventCallback{nullptr};
     void* m_presetSwitchRequestedEventUserData{nullptr};
 

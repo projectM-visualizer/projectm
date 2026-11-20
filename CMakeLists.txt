@@ -125,6 +125,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL Darwin)
     add_compile_definitions(GL_SILENCE_DEPRECATION)
 endif()
 
+if(WIN32)
+    # projectM passes UTF-8 file paths to stb_image (see src/libprojectM/PathEncoding.hpp), which converts
+    # them to UTF-16 on Windows if this is defined. Otherwise it would use the ANSI code page.
+    add_compile_definitions(STBI_WINDOWS_UTF8)
+endif()
+
 if(ENABLE_EMSCRIPTEN)
     message(STATUS "${CMAKE_C_COMPILER} on ${CMAKE_SYSTEM_NAME}")
     check_symbol_exists(__EMSCRIPTEN__ "" HAVE_EMSCRIPTEN)

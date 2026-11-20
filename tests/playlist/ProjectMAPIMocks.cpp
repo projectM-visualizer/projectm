@@ -22,3 +22,16 @@ PROJECTM_EXPORT void projectm_load_preset_file(projectm_handle, const char*,
                                bool)
 {
 }
+
+#ifdef _WIN32
+PROJECTM_EXPORT void projectm_set_preset_switch_failed_event_callbackW(projectm_handle,
+                                                                       projectm_preset_switch_failed_eventW,
+                                                                       void*)
+{
+}
+
+PROJECTM_EXPORT void projectm_load_preset_fileW(projectm_handle, const wchar_t*,
+                                                bool)
+{
+}
+#endif

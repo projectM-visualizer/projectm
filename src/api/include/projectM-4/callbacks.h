@@ -57,6 +57,25 @@ typedef void (*projectm_preset_switch_requested_event)(bool is_hard_cut, void* u
 typedef void (*projectm_preset_switch_failed_event)(const char* preset_filename,
                                                     const char* message, void* user_data);
 
+#ifdef _WIN32
+/**
+ * @brief Callback function that is executed if a preset change failed, with wide-character strings.
+ *
+ * Same as projectm_preset_switch_failed_event, but the file name and message are UTF-16 strings, so
+ * file names with characters outside the active ANSI code page are passed correctly.
+ *
+ * Only available on Windows.
+ *
+ * @param preset_filename The filename of the failed preset.
+ * @param message The error message.
+ * @param user_data A user-defined data pointer that was provided when registering the callback,
+ *                  e.g. context information.
+ * @since 4.3.0
+ */
+typedef void (*projectm_preset_switch_failed_eventW)(const wchar_t* preset_filename,
+                                                     const wchar_t* message, void* user_data);
+#endif
+
 
 /**
  * @brief Sets a callback function that will be called when a preset change is requested.
@@ -72,6 +91,26 @@ typedef void (*projectm_preset_switch_failed_event)(const char* preset_filename,
 PROJECTM_EXPORT void projectm_set_preset_switch_requested_event_callback(projectm_handle instance,
                                                                          projectm_preset_switch_requested_event callback,
                                                                          void* user_data);
+
+#ifdef _WIN32
+/**
+ * @brief Sets a callback function with wide-character strings that will be called when a preset change failed.
+ *
+ * This callback is independent of the one set with projectm_set_preset_switch_failed_event_callback().
+ * If both are set, both are called. To remove the callback, use NULL.
+ *
+ * Only available on Windows.
+ *
+ * @param instance The projectM instance handle.
+ * @param callback A pointer to the callback function.
+ * @param user_data A pointer to any data that will be sent back in the callback, e.g. context
+ *                  information.
+ * @since 4.3.0
+ */
+PROJECTM_EXPORT void projectm_set_preset_switch_failed_event_callbackW(projectm_handle instance,
+                                                                       projectm_preset_switch_failed_eventW callback,
+                                                                       void* user_data);
+#endif
 
 /**
  * @brief Sets a callback function that will be called when a preset change failed.

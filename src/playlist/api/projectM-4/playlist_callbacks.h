@@ -28,6 +28,8 @@
 
 #include "projectM-4/playlist_types.h"
 
+#include <stddef.h>
+
 #include <stdbool.h>
 
 #ifdef __cplusplus
@@ -105,6 +107,44 @@ typedef void (*projectm_playlist_preset_switch_failed_event)(const char* preset_
 typedef bool (*projectm_playlist_preset_load_event)(unsigned int index, const char* filename,
                                                     bool hard_cut, void* user_data);
 
+#ifdef _WIN32
+/**
+ * @brief Callback function that is executed if a preset change failed, with wide-character strings.
+ *
+ * Same as projectm_playlist_preset_switch_failed_event, but the file name and message are UTF-16
+ * strings, so file names with characters outside the active ANSI code page are passed correctly.
+ *
+ * Only available on Windows.
+ *
+ * @param preset_filename The filename of the failed preset.
+ * @param message The last error message.
+ * @param user_data A user-defined data pointer that was provided when registering the callback,
+ *                  e.g. context information.
+ * @since 4.3.0
+ */
+typedef void (*projectm_playlist_preset_switch_failed_eventW)(const wchar_t* preset_filename,
+                                                              const wchar_t* message, void* user_data);
+
+/**
+ * @brief Callback function that is executed when the playlist wants to load a preset, with a wide-character file name.
+ *
+ * Same as projectm_playlist_preset_load_event, but the file name is a UTF-16 string, so file names
+ * with characters outside the active ANSI code page are passed correctly.
+ *
+ * Only available on Windows.
+ *
+ * @param index The playlist index of the preset to be loaded.
+ * @param filename The preset filename/URL at this index.
+ * @param hard_cut True if this should be a hard cut, false for a smooth transition.
+ * @param user_data A user-defined data pointer that was provided when registering the callback,
+ *                  e.g. context information.
+ * @return True if the application handles preset loading, false to use default behavior.
+ * @since 4.3.0
+ */
+typedef bool (*projectm_playlist_preset_load_eventW)(unsigned int index, const wchar_t* filename,
+                                                     bool hard_cut, void* user_data);
+#endif
+
 
 /**
  * @brief Sets a callback function that will be called when a preset changes.
@@ -159,6 +199,46 @@ PROJECTM_PLAYLIST_EXPORT void projectm_playlist_set_preset_switch_failed_event_c
 PROJECTM_PLAYLIST_EXPORT void projectm_playlist_set_preset_load_event_callback(projectm_playlist_handle instance,
                                                                                projectm_playlist_preset_load_event callback,
                                                                                void* user_data);
+
+#ifdef _WIN32
+/**
+ * @brief Sets a callback function with wide-character strings that will be called when a preset change failed.
+ *
+ * This callback is independent of the one set with
+ * projectm_playlist_set_preset_switch_failed_event_callback(). If both are set, both are called.
+ * To remove the callback, use NULL.
+ *
+ * Only available on Windows.
+ *
+ * @param instance The playlist manager instance.
+ * @param callback A pointer to the callback function.
+ * @param user_data A pointer to any data that will be sent back in the callback, e.g. context
+ *                  information.
+ * @since 4.3.0
+ */
+PROJECTM_PLAYLIST_EXPORT void projectm_playlist_set_preset_switch_failed_event_callbackW(projectm_playlist_handle instance,
+                                                                                         projectm_playlist_preset_switch_failed_eventW callback,
+                                                                                         void* user_data);
+
+/**
+ * @brief Sets a callback function with a wide-character file name that will be called when the playlist wants to load a preset.
+ *
+ * This callback is independent of the one set with projectm_playlist_set_preset_load_event_callback().
+ * If both are set, this one is called first, and the other one only if this one returns false.
+ * To remove the callback, use NULL.
+ *
+ * Only available on Windows.
+ *
+ * @param instance The playlist manager instance.
+ * @param callback A pointer to the callback function.
+ * @param user_data A pointer to any data that will be sent back in the callback, e.g. context
+ *                  information.
+ * @since 4.3.0
+ */
+PROJECTM_PLAYLIST_EXPORT void projectm_playlist_set_preset_load_event_callbackW(projectm_playlist_handle instance,
+                                                                                projectm_playlist_preset_load_eventW callback,
+                                                                                void* user_data);
+#endif
 
 #ifdef __cplusplus
 } // extern "C"

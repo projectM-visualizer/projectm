@@ -1,7 +1,10 @@
 #include "PresetFileParser.hpp"
 
+#include <PathEncoding.hpp>
+
 #include <algorithm>
-#include <fstream>
+#include <cstdio>
+#include <memory>
 #include <sstream>
 #include <vector>
 
@@ -10,7 +13,30 @@ namespace MilkdropPreset {
 
 auto PresetFileParser::Read(const std::string& presetFile) -> bool
 {
-    std::ifstream presetStream(presetFile.c_str(), std::ios_base::in | std::ios_base::binary);
+    // The file name is UTF-8, so open it with PathEncoding::OpenFile() to support any file name on Windows.
+    std::unique_ptr<FILE, decltype(&fclose)> file(PathEncoding::OpenFile(presetFile, "rb"), &fclose);
+    if (!file)
+    {
+        return false;
+    }
+
+    if (std::fseek(file.get(), 0, SEEK_END) != 0)
+    {
+        return false;
+    }
+    const auto fileSize = std::ftell(file.get());
+    if (fileSize < 0 || static_cast<size_t>(fileSize) > maxFileSize || std::fseek(file.get(), 0, SEEK_SET) != 0)
+    {
+        return false;
+    }
+
+    std::string contents(static_cast<size_t>(fileSize), '\0');
+    if (fileSize > 0 && std::fread(&contents[0], 1, contents.size(), file.get()) != contents.size())
+    {
+        return false;
+    }
+
+    std::istringstream presetStream(contents, std::ios_base::in | std::ios_base::binary);
     return Read(presetStream);
 }
 

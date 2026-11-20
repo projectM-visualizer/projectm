@@ -3,8 +3,35 @@
 #include "projectM-4/callbacks.h"
 #include "projectM-4/core.h"
 
+#include <PathEncoding.hpp>
+
 namespace libprojectM {
 namespace Playlist {
+
+namespace {
+
+/**
+ * @brief Registers the playlist's preset switch failed callback with projectM, or removes it.
+ *
+ * On Windows, the wide-character callback is used, so file names and messages arrive unchanged.
+ * @param projectMInstance The projectM instance.
+ * @param playlist The playlist to register, or nullptr to remove the callback.
+ */
+void RegisterPresetSwitchFailedCallback(projectm_handle projectMInstance, PlaylistCWrapper* playlist)
+{
+#ifdef _WIN32
+    projectm_set_preset_switch_failed_event_callback(projectMInstance, nullptr, nullptr);
+    projectm_set_preset_switch_failed_event_callbackW(projectMInstance,
+                                                      playlist != nullptr ? &PlaylistCWrapper::OnPresetSwitchFailedW : nullptr,
+                                                      playlist);
+#else
+    projectm_set_preset_switch_failed_event_callback(projectMInstance,
+                                                     playlist != nullptr ? &PlaylistCWrapper::OnPresetSwitchFailed : nullptr,
+                                                     playlist);
+#endif
+}
+
+} // namespace
 
 PlaylistCWrapper::PlaylistCWrapper(projectm_handle projectMInstance)
     : m_projectMInstance(projectMInstance)
@@ -12,7 +39,7 @@ PlaylistCWrapper::PlaylistCWrapper(projectm_handle projectMInstance)
     if (m_projectMInstance != nullptr)
     {
         projectm_set_preset_switch_requested_event_callback(m_projectMInstance, &OnPresetSwitchRequested, this);
-        projectm_set_preset_switch_failed_event_callback(m_projectMInstance, &OnPresetSwitchFailed, this);
+        RegisterPresetSwitchFailedCallback(m_projectMInstance, this);
     }
 }
 
@@ -22,7 +49,7 @@ void PlaylistCWrapper::Connect(projectm_handle projectMInstance)
     if (m_projectMInstance != nullptr)
     {
         projectm_set_preset_switch_requested_event_callback(m_projectMInstance, nullptr, nullptr);
-        projectm_set_preset_switch_failed_event_callback(m_projectMInstance, nullptr, nullptr);
+        RegisterPresetSwitchFailedCallback(m_projectMInstance, nullptr);
     }
 
     m_projectMInstance = projectMInstance;
@@ -30,7 +57,7 @@ void PlaylistCWrapper::Connect(projectm_handle projectMInstance)
     if (m_projectMInstance != nullptr)
     {
         projectm_set_preset_switch_requested_event_callback(m_projectMInstance, &OnPresetSwitchRequested, this);
-        projectm_set_preset_switch_failed_event_callback(m_projectMInstance, &OnPresetSwitchFailed, this);
+        RegisterPresetSwitchFailedCallback(m_projectMInstance, this);
     }
 }
 
@@ -64,8 +91,8 @@ void PlaylistCWrapper::OnPresetSwitchFailed(const char* presetFilename, const ch
     auto* playlist = reinterpret_cast<PlaylistCWrapper*>(userData);
 
     playlist->m_lastPresetSwitchFailed = true;
-    playlist->m_lastFailedPresetFileName = presetFilename;
-    playlist->m_lastFailedPresetError = message;
+    playlist->m_lastFailedPresetFileName = PathEncoding::FromNarrowApi(presetFilename);
+    playlist->m_lastFailedPresetError = PathEncoding::FromNarrowApi(message);
 
     auto lastDirection = playlist->GetLastNavigationDirection();
 
@@ -75,6 +102,31 @@ void PlaylistCWrapper::OnPresetSwitchFailed(const char* presetFilename, const ch
         playlist->RemoveLastHistoryEntry();
     }
 }
+
+
+#ifdef _WIN32
+void PlaylistCWrapper::OnPresetSwitchFailedW(const wchar_t* presetFilename, const wchar_t* message, void* userData)
+{
+    if (userData == nullptr)
+    {
+        return;
+    }
+
+    auto* playlist = reinterpret_cast<PlaylistCWrapper*>(userData);
+
+    playlist->m_lastPresetSwitchFailed = true;
+    playlist->m_lastFailedPresetFileName = PathEncoding::WideToUtf8(presetFilename);
+    playlist->m_lastFailedPresetError = PathEncoding::WideToUtf8(message);
+
+    auto lastDirection = playlist->GetLastNavigationDirection();
+
+    if (lastDirection != NavigationDirection::Last)
+    {
+        // Don't let the user go back to a broken preset.
+        playlist->RemoveLastHistoryEntry();
+    }
+}
+#endif
 
 
 void PlaylistCWrapper::SetRetryCount(uint32_t retryCount)
@@ -110,6 +162,22 @@ void PlaylistCWrapper::SetPresetLoadCallback(projectm_playlist_preset_load_event
 }
 
 
+#ifdef _WIN32
+void PlaylistCWrapper::SetPresetSwitchFailedCallbackW(projectm_playlist_preset_switch_failed_eventW callback, void* userData)
+{
+    m_presetSwitchFailedEventCallbackW = callback;
+    m_presetSwitchFailedEventUserDataW = userData;
+}
+
+
+void PlaylistCWrapper::SetPresetLoadCallbackW(projectm_playlist_preset_load_eventW callback, void* userData)
+{
+    m_presetLoadEventCallbackW = callback;
+    m_presetLoadEventUserDataW = userData;
+}
+#endif
+
+
 void PlaylistCWrapper::PlayPresetIndex(uint32_t index, bool hardCut)
 {
     m_hardCutRequested = hardCut;
@@ -126,20 +194,30 @@ void PlaylistCWrapper::PlayPresetIndex(uint32_t index, bool hardCut)
 
         const auto& filename = playlistItems.at(index).Filename();
 
-        // If a preset load callback is set, give the application a chance to handle loading
-        if (m_presetLoadEventCallback != nullptr)
+        // If a preset load callback is set, give the application a chance to handle loading.
+        // Application handled the load - return without further action.
+        // The app is responsible for calling projectm_load_preset_file/data,
+        // handling errors, and firing the switched event when ready.
+#ifdef _WIN32
+        if (m_presetLoadEventCallbackW != nullptr &&
+            m_presetLoadEventCallbackW(index, PathEncoding::Utf8ToWide(filename).c_str(), hardCut, m_presetLoadEventUserDataW))
         {
-            if (m_presetLoadEventCallback(index, filename.c_str(), hardCut, m_presetLoadEventUserData))
-            {
-                // Application handled the load - return without further action.
-                // The app is responsible for calling projectm_load_preset_file/data,
-                // handling errors, and firing the switched event when ready.
-                return;
-            }
+            return;
+        }
+#endif
+        if (m_presetLoadEventCallback != nullptr &&
+            m_presetLoadEventCallback(index, PathEncoding::ToNarrowApi(filename).c_str(), hardCut, m_presetLoadEventUserData))
+        {
+            return;
         }
 
-        // Default behavior: load from filesystem
+        // Default behavior: load from filesystem. Item file names are UTF-8, so on Windows, use the
+        // wide-character function, which can load files with any name.
+#ifdef _WIN32
+        projectm_load_preset_fileW(m_projectMInstance, PathEncoding::Utf8ToWide(filename).c_str(), !hardCut);
+#else
         projectm_load_preset_file(m_projectMInstance, filename.c_str(), !hardCut);
+#endif
 
         if (!m_lastPresetSwitchFailed)
         {
@@ -152,10 +230,18 @@ void PlaylistCWrapper::PlayPresetIndex(uint32_t index, bool hardCut)
         {
             if (m_presetSwitchFailedEventCallback != nullptr)
             {
-                m_presetSwitchFailedEventCallback(m_lastFailedPresetFileName.c_str(),
-                                                  m_lastFailedPresetError.c_str(),
+                m_presetSwitchFailedEventCallback(PathEncoding::ToNarrowApi(m_lastFailedPresetFileName).c_str(),
+                                                  PathEncoding::ToNarrowApi(m_lastFailedPresetError).c_str(),
                                                   m_presetSwitchFailedEventUserData);
             }
+#ifdef _WIN32
+            if (m_presetSwitchFailedEventCallbackW != nullptr)
+            {
+                m_presetSwitchFailedEventCallbackW(PathEncoding::Utf8ToWide(m_lastFailedPresetFileName).c_str(),
+                                                   PathEncoding::Utf8ToWide(m_lastFailedPresetError).c_str(),
+                                                   m_presetSwitchFailedEventUserDataW);
+            }
+#endif
 
             return;
         }
@@ -230,6 +316,86 @@ void projectm_playlist_free_string_array(char** array)
 }
 
 
+namespace {
+
+/**
+ * @brief Copies a string into a new buffer for the API, freed with projectm_playlist_free_string().
+ * @param text The string to copy.
+ * @return A newly allocated, zero-terminated copy of the string.
+ */
+auto CopyToApi(const std::string& text) -> char*
+{
+    auto* buffer = new char[text.length() + 1]{};
+    text.copy(buffer, text.length());
+    return buffer;
+}
+
+#ifdef _WIN32
+/**
+ * @brief Copies a UTF-8 string as UTF-16 into a new buffer, freed with projectm_playlist_free_wstring().
+ * @param utf8 The UTF-8 string to copy.
+ * @return A newly allocated, zero-terminated UTF-16 copy of the string.
+ */
+auto CopyToApiW(const std::string& utf8) -> wchar_t*
+{
+    const auto wide = libprojectM::PathEncoding::Utf8ToWide(utf8);
+    auto* buffer = new wchar_t[wide.length() + 1]{};
+    wide.copy(buffer, wide.length());
+    return buffer;
+}
+#endif
+
+/**
+ * @brief Returns a newly allocated, null-terminated array of copies of the items in the given range.
+ * @tparam CharType char or wchar_t.
+ * @param items The playlist items.
+ * @param start The first item.
+ * @param count The maximum number of items.
+ * @param copy The function copying an item's UTF-8 file name into a new buffer.
+ * @return The array.
+ */
+template<typename CharType, typename CopyFunction>
+auto CopyItems(const std::vector<libprojectM::Playlist::Item>& items, uint32_t start, uint32_t count, CopyFunction copy) -> CharType**
+{
+    if (start >= items.size())
+    {
+        return new CharType*[1]{};
+    }
+
+    size_t endPos = std::min(static_cast<size_t>(start) + count, items.size());
+    auto* array = new CharType*[endPos - start + 1]{};
+
+    for (size_t index{start}; index < endPos; index++)
+    {
+        array[index - start] = copy(items[index].Filename());
+    }
+
+    return array;
+}
+
+} // namespace
+
+
+#ifdef _WIN32
+void projectm_playlist_free_wstring(wchar_t* string)
+{
+    delete[] string;
+}
+
+
+void projectm_playlist_free_wstring_array(wchar_t** array)
+{
+    int index{0};
+    while (array[index] != nullptr)
+    {
+        delete[] array[index];
+        index++;
+    }
+    delete[] array;
+}
+#endif
+
+
 auto projectm_playlist_create(projectm_handle projectm_instance) -> projectm_playlist_handle
 {
     try
@@ -270,6 +436,17 @@ void projectm_playlist_set_preset_switch_failed_event_callback(projectm_playlist
 }
 
 
+#ifdef _WIN32
+void projectm_playlist_set_preset_switch_failed_event_callbackW(projectm_playlist_handle instance,
+                                                                projectm_playlist_preset_switch_failed_eventW callback,
+                                                                void* user_data)
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+    playlist->SetPresetSwitchFailedCallbackW(callback, user_data);
+}
+#endif
+
+
 void projectm_playlist_set_preset_load_event_callback(projectm_playlist_handle instance,
                                                       projectm_playlist_preset_load_event callback,
                                                       void* user_data)
@@ -277,6 +454,17 @@ void projectm_playlist_set_preset_load_event_callback(projectm_playlist_handle i
     auto* playlist = playlist_handle_to_instance(instance);
     playlist->SetPresetLoadCallback(callback, user_data);
 }
+
+
+#ifdef _WIN32
+void projectm_playlist_set_preset_load_event_callbackW(projectm_playlist_handle instance,
+                                                       projectm_playlist_preset_load_eventW callback,
+                                                       void* user_data)
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+    playlist->SetPresetLoadCallbackW(callback, user_data);
+}
+#endif
 
 
 void projectm_playlist_connect(projectm_playlist_handle instance, projectm_handle projectm_instance)
@@ -300,29 +488,16 @@ void projectm_playlist_clear(projectm_playlist_handle instance)
 }
 
 
+// File names are stored as UTF-8. The narrow-string functions convert from and to the narrow API
+// encoding (the active ANSI code page on Windows), the "W" functions from and to UTF-16.
+
 auto projectm_playlist_items(projectm_playlist_handle instance, uint32_t start, uint32_t count) -> char**
 {
     auto* playlist = playlist_handle_to_instance(instance);
 
-    const auto& items = playlist->Items();
-
-    if (start >= items.size())
-    {
-        auto* array = new char*[1]{};
-        return array;
-    }
-
-    size_t endPos = std::min(static_cast<size_t>(start + count), items.size());
-    auto* array = new char* [endPos - start + 1] {};
-
-    for (size_t index{start}; index < endPos; index++)
-    {
-        auto filename = items[index].Filename();
-        array[index - start] = new char[filename.length() + 1]{};
-        filename.copy(array[index - start], filename.length());
-    }
-
-    return array;
+    return CopyItems<char>(playlist->Items(), start, count, [](const std::string& filename) {
+        return CopyToApi(libprojectM::PathEncoding::ToNarrowApi(filename));
+    });
 }
 
 
@@ -335,11 +510,7 @@ char* projectm_playlist_item(projectm_playlist_handle instance, uint32_t index)
         return nullptr;
     }
 
-    auto filename = playlist->Items().at(index).Filename();
-    auto buffer = new char[filename.length() + 1]{};
-    filename.copy(buffer, filename.length());
-
-    return buffer;
+    return CopyToApi(libprojectM::PathEncoding::ToNarrowApi(playlist->Items().at(index).Filename()));
 }
 
 
@@ -348,7 +519,7 @@ auto projectm_playlist_add_path(projectm_playlist_handle instance, const char* p
 {
     auto* playlist = playlist_handle_to_instance(instance);
 
-    return playlist->AddPath(path, libprojectM::Playlist::Playlist::InsertAtEnd, recurse_subdirs, allow_duplicates);
+    return playlist->AddPath(libprojectM::PathEncoding::FromNarrowApi(path), libprojectM::Playlist::Playlist::InsertAtEnd, recurse_subdirs, allow_duplicates);
 }
 
 
@@ -357,7 +528,7 @@ auto projectm_playlist_insert_path(projectm_playlist_handle instance, const char
 {
     auto* playlist = playlist_handle_to_instance(instance);
 
-    return playlist->AddPath(path, index, recurse_subdirs, allow_duplicates);
+    return playlist->AddPath(libprojectM::PathEncoding::FromNarrowApi(path), index, recurse_subdirs, allow_duplicates);
 }
 
 
@@ -366,7 +537,7 @@ auto projectm_playlist_add_preset(projectm_playlist_handle instance, const char*
 {
     auto* playlist = playlist_handle_to_instance(instance);
 
-    return playlist->AddItem(filename, libprojectM::Playlist::Playlist::InsertAtEnd, allow_duplicates);
+    return playlist->AddItem(libprojectM::PathEncoding::FromNarrowApi(filename), libprojectM::Playlist::Playlist::InsertAtEnd, allow_duplicates);
 }
 
 
@@ -375,41 +546,26 @@ auto projectm_playlist_insert_preset(projectm_playlist_handle instance, const ch
 {
     auto* playlist = playlist_handle_to_instance(instance);
 
-    return playlist->AddItem(filename, index, allow_duplicates);
+    return playlist->AddItem(libprojectM::PathEncoding::FromNarrowApi(filename), index, allow_duplicates);
 }
 
 
-uint32_t projectm_playlist_add_presets(projectm_playlist_handle instance, const char** filenames,
-                                       uint32_t count, bool allow_duplicates)
-{
-    if (filenames == nullptr)
-    {
-        return 0;
-    }
+namespace {
 
-    auto* playlist = playlist_handle_to_instance(instance);
-
-    uint32_t addCount{0};
-
-    for (uint32_t index{0}; index < count; ++index)
-    {
-        if (filenames[index] == nullptr)
-        {
-            continue;
-        }
-
-        if (playlist->AddItem(filenames[index], libprojectM::Playlist::Playlist::InsertAtEnd, allow_duplicates))
-        {
-            addCount++;
-        }
-    }
-
-    return addCount;
-}
-
-
-auto projectm_playlist_insert_presets(projectm_playlist_handle instance, const char** filenames,
-                                      uint32_t count, unsigned int index, bool allow_duplicates) -> uint32_t
+/**
+ * @brief Adds a list of presets to the playlist.
+ * @tparam CharType char or wchar_t.
+ * @param instance The playlist handle.
+ * @param filenames The file names, nullptr entries are skipped.
+ * @param count The number of file names.
+ * @param index The index to insert the first preset at, or InsertAtEnd.
+ * @param allowDuplicates If true, presets already in the playlist are added again.
+ * @param toUtf8 The function converting a file name to UTF-8.
+ * @return The number of added presets.
+ */
+template<typename CharType, typename ConvertFunction>
+auto AddPresets(projectm_playlist_handle instance, const CharType** filenames, uint32_t count,
+                uint32_t index, bool allowDuplicates, ConvertFunction toUtf8) -> uint32_t
 {
     if (filenames == nullptr)
     {
@@ -427,7 +583,13 @@ auto projectm_playlist_insert_presets(projectm_playlist_handle instance, const c
             continue;
         }
 
-        if (playlist->AddItem(filenames[filenameIndex], index + addCount, allow_duplicates))
+        uint32_t currentIndex{libprojectM::Playlist::Playlist::InsertAtEnd};
+        if (index != libprojectM::Playlist::Playlist::InsertAtEnd)
+        {
+            currentIndex = index + addCount;
+        }
+
+        if (playlist->AddItem(toUtf8(filenames[filenameIndex]), currentIndex, allowDuplicates))
         {
             addCount++;
         }
@@ -435,6 +597,99 @@ auto projectm_playlist_insert_presets(projectm_playlist_handle instance, const c
 
     return addCount;
 }
+
+} // namespace
+
+
+uint32_t projectm_playlist_add_presets(projectm_playlist_handle instance, const char** filenames,
+                                       uint32_t count, bool allow_duplicates)
+{
+    return AddPresets(instance, filenames, count, libprojectM::Playlist::Playlist::InsertAtEnd, allow_duplicates,
+                      &libprojectM::PathEncoding::FromNarrowApi);
+}
+
+
+auto projectm_playlist_insert_presets(projectm_playlist_handle instance, const char** filenames,
+                                      uint32_t count, unsigned int index, bool allow_duplicates) -> uint32_t
+{
+    return AddPresets(instance, filenames, count, index, allow_duplicates,
+                      &libprojectM::PathEncoding::FromNarrowApi);
+}
+
+
+#ifdef _WIN32
+auto projectm_playlist_itemsW(projectm_playlist_handle instance, uint32_t start, uint32_t count) -> wchar_t**
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+
+    return CopyItems<wchar_t>(playlist->Items(), start, count, &CopyToApiW);
+}
+
+
+wchar_t* projectm_playlist_itemW(projectm_playlist_handle instance, uint32_t index)
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+
+    if (playlist->Empty() || index >= playlist->Size())
+    {
+        return nullptr;
+    }
+
+    return CopyToApiW(playlist->Items().at(index).Filename());
+}
+
+
+auto projectm_playlist_add_pathW(projectm_playlist_handle instance, const wchar_t* path,
+                                 bool recurse_subdirs, bool allow_duplicates) -> uint32_t
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+
+    return playlist->AddPath(libprojectM::PathEncoding::WideToUtf8(path), libprojectM::Playlist::Playlist::InsertAtEnd, recurse_subdirs, allow_duplicates);
+}
+
+
+auto projectm_playlist_insert_pathW(projectm_playlist_handle instance, const wchar_t* path,
+                                    uint32_t index, bool recurse_subdirs, bool allow_duplicates) -> uint32_t
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+
+    return playlist->AddPath(libprojectM::PathEncoding::WideToUtf8(path), index, recurse_subdirs, allow_duplicates);
+}
+
+
+auto projectm_playlist_add_presetW(projectm_playlist_handle instance, const wchar_t* filename,
+                                   bool allow_duplicates) -> bool
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+
+    return playlist->AddItem(libprojectM::PathEncoding::WideToUtf8(filename), libprojectM::Playlist::Playlist::InsertAtEnd, allow_duplicates);
+}
+
+
+auto projectm_playlist_insert_presetW(projectm_playlist_handle instance, const wchar_t* filename,
+                                      uint32_t index, bool allow_duplicates) -> bool
+{
+    auto* playlist = playlist_handle_to_instance(instance);
+
+    return playlist->AddItem(libprojectM::PathEncoding::WideToUtf8(filename), index, allow_duplicates);
+}
+
+
+auto projectm_playlist_add_presetsW(projectm_playlist_handle instance, const wchar_t** filenames,
+                                    uint32_t count, bool allow_duplicates) -> uint32_t
+{
+    return AddPresets(instance, filenames, count, libprojectM::Playlist::Playlist::InsertAtEnd, allow_duplicates,
+                      [](const wchar_t* filename) { return libprojectM::PathEncoding::WideToUtf8(filename); });
+}
+
+
+auto projectm_playlist_insert_presetsW(projectm_playlist_handle instance, const wchar_t** filenames,
+                                       uint32_t count, unsigned int index, bool allow_duplicates) -> uint32_t
+{
+    return AddPresets(instance, filenames, count, index, allow_duplicates,
+                      [](const wchar_t* filename) { return libprojectM::PathEncoding::WideToUtf8(filename); });
+}
+#endif
 
 
 bool projectm_playlist_remove_preset(projectm_playlist_handle instance, uint32_t index)
@@ -613,7 +868,7 @@ void projectm_playlist_set_filter(projectm_playlist_handle instance, const char*
         {
             continue;
         }
-        filterList.emplace_back(filter_list[index]);
+        filterList.emplace_back(libprojectM::PathEncoding::FromNarrowApi(filter_list[index]));
     }
 
     playlist->Filter().SetList(filterList);
@@ -631,8 +886,7 @@ auto projectm_playlist_get_filter(projectm_playlist_handle instance, size_t* cou
     int index{0};
     for (const auto& filter : filterList)
     {
-        array[index] = new char[filter.length() + 1]{};
-        filter.copy(array[index], filter.length());
+        array[index] = CopyToApi(libprojectM::PathEncoding::ToNarrowApi(filter));
         index++;
     }
 

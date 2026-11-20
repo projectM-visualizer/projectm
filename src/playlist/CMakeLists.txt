@@ -35,6 +35,12 @@ target_include_directories(projectM_playlist_main
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
         )
 
+# For the header-only PathEncoding.hpp shared with the core library.
+target_include_directories(projectM_playlist_main
+        PRIVATE
+        "${PROJECTM_SOURCE_DIR}/src/libprojectM"
+        )
+
 target_link_libraries(projectM_playlist_main
         PRIVATE
         libprojectM::API

@@ -36,6 +36,7 @@ add_executable(projectM-unittest
         PCMTest.cpp
         PresetFileParserTest.cpp
         UtilsTest.cpp
+        PathEncodingTest.cpp
         WaveformAlignerTest.cpp
 
         $<TARGET_OBJECTS:Audio>

@@ -28,6 +28,8 @@
 
 #include "projectM-4/playlist_types.h"
 
+#include <stddef.h>
+
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -203,6 +205,82 @@ PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_add_presets(projectm_playlis
  */
 PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_insert_presets(projectm_playlist_handle instance, const char** filenames,
                                                                    uint32_t count, unsigned int index, bool allow_duplicates);
+
+#ifdef _WIN32
+/*
+ * Wide-character variants of the functions above, only available on Windows.
+ *
+ * The narrow-string functions use the active ANSI code page for file names and paths, which can't
+ * represent all characters. These functions take and return UTF-16 strings instead, so any file
+ * name can be used. Both variants can be mixed freely. Presets with file names that the ANSI code
+ * page can't represent are also added and played when using the narrow-string functions, but
+ * their names are returned with replacement characters ("?") by those functions.
+ */
+
+/**
+ * @brief Returns a list of preset files inside the given range of the current playlist, as wide-character strings.
+ * @note Call projectm_playlist_free_wstring_array() when you're done using the list.
+ * @see projectm_playlist_items()
+ * @since 4.3.0
+ */
+PROJECTM_PLAYLIST_EXPORT wchar_t** projectm_playlist_itemsW(projectm_playlist_handle instance, uint32_t start, uint32_t count);
+
+/**
+ * @brief Returns the name of a preset at the given index in the current playlist, as a wide-character string.
+ * @note Call projectm_playlist_free_wstring() when you're done using the return value.
+ * @see projectm_playlist_item()
+ * @since 4.3.0
+ */
+PROJECTM_PLAYLIST_EXPORT wchar_t* projectm_playlist_itemW(projectm_playlist_handle instance, uint32_t index);
+
+/**
+ * @brief Appends presets from the given wide-character path to the end of the current playlist.
+ * @see projectm_playlist_add_path()
+ * @since 4.3.0
+ */
+PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_add_pathW(projectm_playlist_handle instance, const wchar_t* path,
+                                                              bool recurse_subdirs, bool allow_duplicates);
+
+/**
+ * @brief Inserts presets from the given wide-character path into the current playlist.
+ * @see projectm_playlist_insert_path()
+ * @since 4.3.0
+ */
+PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_insert_pathW(projectm_playlist_handle instance, const wchar_t* path,
+                                                                 uint32_t index, bool recurse_subdirs, bool allow_duplicates);
+
+/**
+ * @brief Adds a single preset with a wide-character file name to the end of the playlist.
+ * @see projectm_playlist_add_preset()
+ * @since 4.3.0
+ */
+PROJECTM_PLAYLIST_EXPORT bool projectm_playlist_add_presetW(projectm_playlist_handle instance, const wchar_t* filename,
+                                                            bool allow_duplicates);
+
+/**
+ * @brief Adds a single preset with a wide-character file name to the playlist at the specified position.
+ * @see projectm_playlist_insert_preset()
+ * @since 4.3.0
+ */
+PROJECTM_PLAYLIST_EXPORT bool projectm_playlist_insert_presetW(projectm_playlist_handle instance, const wchar_t* filename,
+                                                               uint32_t index, bool allow_duplicates);
+
+/**
+ * @brief Adds a list of presets with wide-character file names to the end of the playlist.
+ * @see projectm_playlist_add_presets()
+ * @since 4.3.0
+ */
+PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_add_presetsW(projectm_playlist_handle instance, const wchar_t** filenames,
+                                                                 uint32_t count, bool allow_duplicates);
+
+/**
+ * @brief Adds a list of presets with wide-character file names to the playlist at the specified position.
+ * @see projectm_playlist_insert_presets()
+ * @since 4.3.0
+ */
+PROJECTM_PLAYLIST_EXPORT uint32_t projectm_playlist_insert_presetsW(projectm_playlist_handle instance, const wchar_t** filenames,
+                                                                    uint32_t count, unsigned int index, bool allow_duplicates);
+#endif
 
 /**
  * @brief Removes a single preset from the playlist at the specified position.
