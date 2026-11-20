@@ -29,69 +29,10 @@ source-code and binary releases of the projectM development libraries and header
 
 ### End-User Applications
 
-**Important**: projectM is currently undergoing heavy development. The available end-user frontends are
-development previews, which are not feature-complete and may have bugs.
-
-#### Windows
-
-- Standalone ([projectMSDL 2.0 pre-release](https://github.com/projectM-visualizer/frontend-sdl-cpp/releases))
-- [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/) (Same as standalone development
-  preview)
-- [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN) (Old 3.1.12 release)
-
-#### macOS
-
-- Standalone
-  - [C++ app pre-release](https://github.com/projectM-visualizer/frontend-sdl-cpp/releases)
-  - [Rust app development preview (signed)](https://github.com/projectM-visualizer/frontend-sdl-rust/releases/tag/v0.1.0)
-- [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/) (Old 3.1.12 release)
-- Music.app Plugin  (currently only available as an
-  _unsigned_ [development preview](https://github.com/kblaschke/frontend-music-plug-in/releases/tag/v3.0-pre1))
-- [Brew](https://formulae.brew.sh/formula/projectm) (Old 3.1.12 release)
-
-#### Linux
-
-- Standalone ([projectMSDL 2.0 pre-release](https://github.com/projectM-visualizer/frontend-sdl-cpp/releases), also
-  available as `.deb` and `.tar.gz`)
-- [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/) (Same as standalone development
-  preview)
-
-Or check your distribution's package manager for a binary release. If it is outdated, please contact the package
-maintainer, as the projectM development team does not maintain any of the distribution-specific packages.
-
-#### Android
-
-- [Google Play](https://play.google.com/store/apps/details?id=com.psperl.prjM)
-
-**Note**: Both the free and paid apps are _not_ created or supported by the projectM developers!
-If you have technical troubles or other inquiries, please contact the app author via the means provided in the Play
-Store. Any bug reports in the projectM issue tracker regarding the apps will be closed immediately.
-
-#### Android TV / Google TV
-
-- [ProjectM TV](https://github.com/johnneerdael/projectm-tv) (free, open source; APK download, see the repository for
-  install instructions)
-- [Google Play](https://play.google.com/store/apps/details?id=com.psperl.projectMTV) (paid)
-
-**Note**: These apps are _not_ created or supported by the projectM developers, and bug reports in the projectM issue
-tracker regarding them will be closed. For ProjectM TV, please use the issue tracker of its own repository. For the Play
-Store app, contact its author via the Play Store.
-
-#### Xbox / Windows Phone
-
-- [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN) (Old 3.1.12 release)
-
-#### Other
-
-Source code and other resources, mostly aimed at developers.
-
-- [Library source code](https://github.com/projectM-visualizer/projectm/) (this repository)
-- [GStreamer plugin](https://github.com/projectM-visualizer/gst-projectm/)
-- [Qt](https://www.qt.io/) based (Qt5/Qt6) desktop apps for Linux with
-  [PipeWire](https://pipewire.org/), [PulseAudio](https://www.freedesktop.org/wiki/Software/PulseAudio/) and JACK audio
-  backends ([source code](https://github.com/projectM-visualizer/frontend-qt), requires libprojectM 4.x).
-- [ALSA, XMMS, Winamp, JACK](https://sourceforge.net/projects/projectm/files/) (legacy 2.x sources for historic
-  purposes, unmaintained since 2012)
+The list of applications using projectM, from the projectM team and third-party developers, for desktop, mobile and TV
+platforms, is now maintained in the
+Wiki: **[projectM Applications](https://github.com/projectM-visualizer/projectm/wiki/projectM-Applications)**.
+Anyone with a GitHub account can add or update an entry there.
 
 ### Discord chat
 
