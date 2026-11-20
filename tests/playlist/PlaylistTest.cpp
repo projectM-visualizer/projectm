@@ -261,6 +261,79 @@ TEST(projectMPlaylistPlaylist, AddPathNonRecursivelyNoDuplicates)
 }
 
 
+namespace {
+
+auto HasItemEndingWith(const std::vector<Item>& items, const std::string& suffix) -> bool
+{
+    return std::find_if(items.cbegin(), items.cend(), [&suffix](const Item& item) {
+               const auto& filename = item.Filename();
+               return filename.length() >= suffix.length() &&
+                      filename.compare(filename.length() - suffix.length(), suffix.length(), suffix) == 0;
+           }) != items.cend();
+}
+
+} // namespace
+
+
+// Regression test for issue #962: a file name that can't be converted to a narrow string
+// (on Windows, characters outside the active ANSI code page, e.g. U+26A0 in "B_<U+26A0>_Warning.milk")
+// must not stop the directory scan. Files sorted after it must still be added.
+TEST(projectMPlaylistPlaylist, AddPathRecursivelyContinuesAfterUnconvertibleFilename)
+{
+    Playlist playlist;
+
+    uint32_t added{};
+    ASSERT_NO_THROW(added = playlist.AddPath(PROJECTM_PLAYLIST_TEST_DATA_DIR "/presets-unicode", 0, true, false));
+
+    EXPECT_GE(added, 2);
+    EXPECT_EQ(playlist.Size(), added);
+    EXPECT_TRUE(HasItemEndingWith(playlist.Items(), "A_Before.milk"));
+    EXPECT_TRUE(HasItemEndingWith(playlist.Items(), "C_After.milk"));
+}
+
+
+TEST(projectMPlaylistPlaylist, AddPathNonRecursivelyContinuesAfterUnconvertibleFilename)
+{
+    Playlist playlist;
+
+    uint32_t added{};
+    ASSERT_NO_THROW(added = playlist.AddPath(PROJECTM_PLAYLIST_TEST_DATA_DIR "/presets-unicode", 0, false, false));
+
+    EXPECT_GE(added, 2);
+    EXPECT_EQ(playlist.Size(), added);
+    EXPECT_TRUE(HasItemEndingWith(playlist.Items(), "A_Before.milk"));
+    EXPECT_TRUE(HasItemEndingWith(playlist.Items(), "C_After.milk"));
+}
+
+
+// Inserting a path must shift the playback history indices by exactly the number of added presets.
+// AddItem() already shifts them for each inserted item, so AddPath() must not shift them a second time.
+TEST(projectMPlaylistPlaylist, AddPathShiftsHistoryOnce)
+{
+    for (bool recursive : {false, true})
+    {
+        Playlist playlist;
+
+        ASSERT_EQ(playlist.AddPath(PROJECTM_PLAYLIST_TEST_DATA_DIR "/presets", 0, false, false), 3);
+        playlist.SetPresetIndex(1);
+        playlist.SetPresetIndex(2);
+
+        auto historyItemsBefore = playlist.HistoryItems();
+        ASSERT_EQ(historyItemsBefore.size(), 2);
+        EXPECT_EQ(historyItemsBefore.at(0), 0);
+        EXPECT_EQ(historyItemsBefore.at(1), 1);
+
+        uint32_t added = playlist.AddPath(PROJECTM_PLAYLIST_TEST_DATA_DIR "/presets-unicode", 0, recursive, false);
+        ASSERT_GE(added, 2);
+
+        auto historyItemsAfter = playlist.HistoryItems();
+        ASSERT_EQ(historyItemsAfter.size(), 2);
+        EXPECT_EQ(historyItemsAfter.at(0), 0 + added) << "recursive = " << recursive;
+        EXPECT_EQ(historyItemsAfter.at(1), 1 + added) << "recursive = " << recursive;
+    }
+}
+
+
 TEST(projectMPlaylistPlaylist, RemoveItemFromEnd)
 {
     Playlist playlist;
