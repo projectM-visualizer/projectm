@@ -8,6 +8,61 @@
 namespace libprojectM {
 namespace Renderer {
 
+namespace {
+
+/**
+ * @brief Owns an OpenGL shader object and deletes it when going out of scope.
+ *
+ * Shader objects are only needed until the program is linked. Holding them in this class makes sure
+ * they are deleted on every path, including when compiling or linking throws.
+ */
+class ShaderObject
+{
+public:
+    explicit ShaderObject(GLuint shader)
+        : m_shader(shader)
+    {
+    }
+
+    ~ShaderObject()
+    {
+        if (m_shader != 0)
+        {
+            glDeleteShader(m_shader);
+        }
+    }
+
+    ShaderObject(const ShaderObject&) = delete;
+    auto operator=(const ShaderObject&) -> ShaderObject& = delete;
+    ShaderObject(ShaderObject&&) = delete;
+    auto operator=(ShaderObject&&) -> ShaderObject& = delete;
+
+    /**
+     * @brief Returns the shader object's name.
+     * @return The OpenGL shader object.
+     */
+    auto Get() const -> GLuint
+    {
+        return m_shader;
+    }
+
+    /**
+     * @brief Gives up ownership of the shader object without deleting it.
+     * @return The OpenGL shader object, which the caller must delete.
+     */
+    auto Release() -> GLuint
+    {
+        const GLuint shader = m_shader;
+        m_shader = 0;
+        return shader;
+    }
+
+private:
+    GLuint m_shader{}; //!< The owned shader object, or 0.
+};
+
+} // namespace
+
 Shader::Shader()
     : m_shaderProgram(glCreateProgram())
 {
@@ -24,30 +79,18 @@ Shader::~Shader()
 void Shader::CompileProgram(const std::string& vertexShaderSource,
                             const std::string& fragmentShaderSource)
 {
-    auto vertexShader = CompileShader(vertexShaderSource, GL_VERTEX_SHADER);
+    // The shader objects are deleted when leaving this function, also if the fragment shader
+    // fails to compile or linking fails, as they are no longer needed after linking.
+    const ShaderObject vertexShader(CompileShader(vertexShaderSource, GL_VERTEX_SHADER));
+    const ShaderObject fragmentShader(CompileShader(fragmentShaderSource, GL_FRAGMENT_SHADER));
 
-    GLuint fragmentShader{};
-    try
-    {
-        fragmentShader = CompileShader(fragmentShaderSource, GL_FRAGMENT_SHADER);
-    }
-    catch (...)
-    {
-        // Don't leak the already compiled vertex shader if the fragment shader fails to compile.
-        glDeleteShader(vertexShader);
-        throw;
-    }
-
-    glAttachShader(m_shaderProgram, vertexShader);
-    glAttachShader(m_shaderProgram, fragmentShader);
+    glAttachShader(m_shaderProgram, vertexShader.Get());
+    glAttachShader(m_shaderProgram, fragmentShader.Get());
 
     glLinkProgram(m_shaderProgram);
 
-    // Shader objects are no longer needed after linking, free the memory.
-    glDetachShader(m_shaderProgram, vertexShader);
-    glDetachShader(m_shaderProgram, fragmentShader);
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+    glDetachShader(m_shaderProgram, vertexShader.Get());
+    glDetachShader(m_shaderProgram, fragmentShader.Get());
 
     GLint programLinked;
     glGetProgramiv(m_shaderProgram, GL_LINK_STATUS, &programLinked);
@@ -204,23 +247,22 @@ GLuint Shader::CompileShader(const std::string& source, GLenum type)
 {
     GLint shaderCompiled{};
 
-    auto shader = glCreateShader(type);
+    ShaderObject shader(glCreateShader(type));
     const auto* shaderSourceCStr = source.c_str();
-    glShaderSource(shader, 1, &shaderSourceCStr, nullptr);
+    glShaderSource(shader.Get(), 1, &shaderSourceCStr, nullptr);
 
-    glCompileShader(shader);
+    glCompileShader(shader.Get());
 
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &shaderCompiled);
+    glGetShaderiv(shader.Get(), GL_COMPILE_STATUS, &shaderCompiled);
     if (shaderCompiled == GL_TRUE)
     {
-        return shader;
+        return shader.Release();
     }
 
     GLint infoLogLength{};
-    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
+    glGetShaderiv(shader.Get(), GL_INFO_LOG_LENGTH, &infoLogLength);
     std::vector<char> message(infoLogLength + 1);
-    glGetShaderInfoLog(shader, infoLogLength, nullptr, message.data());
-    glDeleteShader(shader);
+    glGetShaderInfoLog(shader.Get(), infoLogLength, nullptr, message.data());
 
     std::string compileError = "[Shader] Error compiling " + std::string(type == GL_VERTEX_SHADER ? "vertex" : "fragment") + " shader: " + std::string(message.data());
     LOG_ERROR(compileError);
