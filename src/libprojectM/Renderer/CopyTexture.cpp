@@ -3,12 +3,6 @@
 namespace libprojectM {
 namespace Renderer {
 
-#ifdef USE_GLES
-static constexpr char ShaderVersion[] = "#version 300 es\n\n";
-#else
-static constexpr char ShaderVersion[] = "#version 330\n\n";
-#endif
-
 static constexpr char CopyTextureVertexShader[] = R"(
 precision mediump float;
 
@@ -315,8 +309,8 @@ std::shared_ptr<Shader> CopyTexture::BindShader(ShaderCache& shaderCache)
 
     if (!shader)
     {
-        std::string vertexShader(ShaderVersion);
-        std::string fragmentShader(ShaderVersion);
+        std::string vertexShader(Shader::VersionHeader());
+        std::string fragmentShader(Shader::VersionHeader());
         vertexShader.append(CopyTextureVertexShader);
         fragmentShader.append(CopyTextureFragmentShader);
 

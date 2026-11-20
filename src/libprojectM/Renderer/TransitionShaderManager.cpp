@@ -28,14 +28,7 @@ auto TransitionShaderManager::RandomTransition() -> std::shared_ptr<Shader>
 
 auto TransitionShaderManager::CompileTransitionShader(const std::string& shaderBodyCode) -> std::shared_ptr<Shader>
 {
-#ifdef USE_GLES
-    // GLES also requires a precision specifier for variables and 3D samplers
-    constexpr char versionHeader[] = "#version 300 es\n\nprecision mediump float;\nprecision mediump sampler3D;\n";
-#else
-    constexpr char versionHeader[] = "#version 330\n\n";
-#endif
-
-    std::string fragmentShaderSource(static_cast<const char*>(versionHeader));
+    std::string fragmentShaderSource(Shader::VersionHeaderWithDefaultPrecision());
     fragmentShaderSource.append(kTransitionShaderHeaderGlsl330);
     fragmentShaderSource.append("\n");
     fragmentShaderSource.append(shaderBodyCode);
@@ -45,7 +38,7 @@ auto TransitionShaderManager::CompileTransitionShader(const std::string& shaderB
     try
     {
         auto transitionShader = std::make_shared<Shader>();
-        transitionShader->CompileProgram(static_cast<const char*>(versionHeader) + kTransitionVertexShaderGlsl330, fragmentShaderSource);
+        transitionShader->CompileProgram(Shader::VersionHeaderWithDefaultPrecision() + kTransitionVertexShaderGlsl330, fragmentShaderSource);
         return transitionShader;
     }
     catch (const ShaderException&)

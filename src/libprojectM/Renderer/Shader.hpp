@@ -61,6 +61,38 @@ public:
     };
 
     /**
+     * @brief Returns the GLSL version line for the OpenGL API projectM is built for.
+     *
+     * "#version 330" for OpenGL, "#version 300 es" for OpenGL ES, each followed by an empty line.
+     * @return The version header to put in front of a shader's source code.
+     */
+    static constexpr auto VersionHeader() -> const char*
+    {
+#ifdef USE_GLES
+        return "#version 300 es\n\n";
+#else
+        return "#version 330\n\n";
+#endif
+    }
+
+    /**
+     * @brief Returns the GLSL version line plus the default precisions OpenGL ES needs.
+     *
+     * OpenGL ES fragment shaders have no default precision for floats and 3D samplers, so this
+     * adds "precision mediump float;" and "precision mediump sampler3D;" after the version line.
+     * For OpenGL, it is the same as VersionHeader().
+     * @return The version header to put in front of a shader's source code.
+     */
+    static constexpr auto VersionHeaderWithDefaultPrecision() -> const char*
+    {
+#ifdef USE_GLES
+        return "#version 300 es\n\nprecision mediump float;\nprecision mediump sampler3D;\n";
+#else
+        return "#version 330\n\n";
+#endif
+    }
+
+    /**
      * Creates a new shader.
      */
     Shader();

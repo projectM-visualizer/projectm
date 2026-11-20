@@ -47,17 +47,11 @@ void MilkdropSprite::Init(const std::string& spriteData, const Renderer::RenderC
     auto spriteShader = renderContext.shaderCache->Get("milkdrop_user_sprite");
     if (!spriteShader)
     {
-        // ToDo: Better handle this in the shader class to reduce duplicate code.
-#ifdef USE_GLES
-        // GLES also requires a precision specifier for variables and 3D samplers
-        constexpr char versionHeader[] = "#version 300 es\n\nprecision mediump float;\nprecision mediump sampler3D;\n";
-#else
-        constexpr char versionHeader[] = "#version 330\n\n";
-#endif
+        constexpr auto versionHeader = Renderer::Shader::VersionHeaderWithDefaultPrecision();
 
         spriteShader = std::make_shared<Renderer::Shader>();
-        spriteShader->CompileProgram(static_cast<const char*>(versionHeader) + kMilkdropSpriteVertexGlsl330,
-                                     static_cast<const char*>(versionHeader) + kMilkdropSpriteFragmentGlsl330);
+        spriteShader->CompileProgram(versionHeader + kMilkdropSpriteVertexGlsl330,
+                                     versionHeader + kMilkdropSpriteFragmentGlsl330);
         renderContext.shaderCache->Insert("milkdrop_user_sprite", spriteShader);
     }
 
