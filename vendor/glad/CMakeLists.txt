@@ -30,10 +30,29 @@ else()
     endif()
 endif()
 
+# Give all global glad symbols a projectM-specific prefix, see cmake/VendoredSymbols.cmake. The names
+# are read from the GLAD_API_CALL declarations of the generated headers.
+include(VendoredSymbols)
+file(GLOB _glad_headers "${CMAKE_CURRENT_SOURCE_DIR}/include/glad/*.h")
+projectm_vendored_symbols_from_declarations(_glad_symbols "^GLAD_API_CALL " ${_glad_headers})
+projectm_write_vendored_symbol_header(_glad_force_include
+        "${CMAKE_CURRENT_BINARY_DIR}/glad_symbol_prefix.h"
+        glad
+        ${_glad_symbols}
+        )
+
+# The option force-including the header, for all targets using the glad headers.
+set(PROJECTM_GLAD_FORCE_INCLUDE "${_glad_force_include}" CACHE INTERNAL "Compile option force-including the glad symbol prefix header")
+
 # build glad objects
 add_library(glad_obj
         OBJECT
         ${SOURCES}
+        )
+
+target_compile_options(glad_obj
+        PRIVATE
+        ${PROJECTM_GLAD_FORCE_INCLUDE}
         )
 
 target_include_directories(glad_obj
@@ -52,6 +71,12 @@ add_library(glad STATIC $<TARGET_OBJECTS:glad_obj>)
 target_include_directories(glad
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+        )
+
+# Targets linking glad need the same prefixed symbol names.
+target_compile_options(glad
+        PUBLIC
+        ${PROJECTM_GLAD_FORCE_INCLUDE}
         )
 
 target_compile_definitions(glad_obj

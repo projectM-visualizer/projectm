@@ -10,6 +10,9 @@ include_directories(
         "${PROJECTM_SOURCE_DIR}/vendor/glad/include"
         )
 
+# All code using the glad headers needs the prefixed glad symbol names, see cmake/VendoredSymbols.cmake.
+add_compile_options(${PROJECTM_GLAD_FORCE_INCLUDE})
+
 add_subdirectory(Audio)
 add_subdirectory(MilkdropPreset)
 add_subdirectory(Renderer)
