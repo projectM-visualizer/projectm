@@ -260,7 +260,9 @@ auto TextureManager::LoadTexture(const ScannedFile& file) -> std::shared_ptr<Tex
     int width{};
     int height{};
 
-    std::unique_ptr<stbi_uc, decltype(&free)> imageData(stbi_load(file.filePath.c_str(), &width, &height, nullptr, 4), free);
+    // Some stb_image decoders don't check the channel count pointer for NULL, so always pass one.
+    int channelsInFile{};
+    std::unique_ptr<stbi_uc, decltype(&free)> imageData(stbi_load(file.filePath.c_str(), &width, &height, &channelsInFile, 4), free);
 
     if (imageData.get() == nullptr)
     {

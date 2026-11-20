@@ -1,5 +1,8 @@
 find_package(GTest 1.10 REQUIRED NO_MODULE)
 
+# The tests use libprojectM's headers, which include glad, see cmake/VendoredSymbols.cmake.
+add_compile_options(${PROJECTM_GLAD_FORCE_INCLUDE})
+
 # Compile-test C API headers
 set(INCLUDE_FILES
         ${CMAKE_SOURCE_DIR}/src/api/include/projectM-4/types.h
