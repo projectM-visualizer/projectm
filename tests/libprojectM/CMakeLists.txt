@@ -32,9 +32,11 @@ add_executable(projectM-unittest
         HLSLModuloTest.cpp
         LoggingTest.cpp
         EquationCompileErrorTest.cpp
+        MilkdropShaderSamplerTest.cpp
         MilkdropShaderCommentParsingTest.cpp
         PCMTest.cpp
         PresetFileParserTest.cpp
+        HLSLPreprocessorTest.cpp
         UtilsTest.cpp
         WaveformAlignerTest.cpp
 

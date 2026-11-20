@@ -30,7 +30,7 @@ void TextureSamplerDescriptor::Bind(GLint unit, const Shader& shader) const
     {
         m_texture->Bind(unit, m_sampler);
 
-        shader.SetUniformInt(std::string("sampler_" + m_samplerName).c_str(), unit);
+        shader.SetUniformInt((SamplerPrefix() + m_samplerName).c_str(), unit);
         // Might be setting this more than once if the texture is used with different wrap/filter modes, but this rarely happens.
         shader.SetUniformFloat4(std::string("texsize_" + m_sizeName).c_str(), {m_texture->Width(),
                                                                                m_texture->Height(),
@@ -86,12 +86,13 @@ auto TextureSamplerDescriptor::SamplerDeclaration() const -> std::string
     std::string declaration = "uniform ";
     if (m_texture->Type() == GL_TEXTURE_3D)
     {
-        declaration.append("sampler3D sampler_");
+        declaration.append("sampler3D ");
     }
     else
     {
-        declaration.append("sampler2D sampler_");
+        declaration.append("sampler2D ");
     }
+    declaration.append(SamplerPrefix());
     declaration.append(m_samplerName);
     declaration.append(";\n");
 
@@ -99,7 +100,8 @@ auto TextureSamplerDescriptor::SamplerDeclaration() const -> std::string
     // E.g. "sampler_rand00" if a sampler "sampler_rand00_smalltiled" was declared
     if (m_samplerName.substr(0, 4) == "rand" && m_samplerName.length() > 7 && m_samplerName.at(6) == '_')
     {
-        declaration.append("uniform sampler2D sampler_");
+        declaration.append("uniform sampler2D ");
+        declaration.append(SamplerPrefix());
         declaration.append(m_samplerName.substr(0, 6));
         declaration.append(";\n");
     }
@@ -151,6 +153,16 @@ void TextureSamplerDescriptor::TryUpdate(TextureManager& textureManager)
 
     m_texture = desc.m_texture;
     m_sampler = desc.m_sampler;
+}
+
+void TextureSamplerDescriptor::PrefixSampler(bool prefix)
+{
+    m_prefixSampler = prefix;
+}
+
+auto TextureSamplerDescriptor::SamplerPrefix() const -> std::string
+{
+    return m_prefixSampler ? "sampler_" : "";
 }
 
 } // namespace Renderer

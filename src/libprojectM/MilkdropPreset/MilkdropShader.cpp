@@ -64,9 +64,21 @@ void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
 {
     std::locale loc;
 
+    // Samplers declared without the "sampler_" prefix (see FindUnprefixedSamplers()) are requested the
+    // same way, after the prefixed ones. Their descriptors are marked below.
+    std::vector<std::string> samplerNames(m_samplerNames.begin(), m_samplerNames.end());
+    samplerNames.insert(samplerNames.end(), m_unprefixedSamplerNames.begin(), m_unprefixedSamplerNames.end());
+    size_t firstUnprefixedDescriptor{0};
+
     // Now request the textures and descriptors from the texture manager.
-    for (const auto& name : m_samplerNames)
+    for (size_t samplerIndex = 0; samplerIndex < samplerNames.size(); samplerIndex++)
     {
+        const auto& name = samplerNames.at(samplerIndex);
+        if (samplerIndex == m_samplerNames.size())
+        {
+            firstUnprefixedDescriptor = m_textureSamplerDescriptors.size();
+        }
+
         std::string baseName = name;
         if (name.length() > 3 && name.at(2) == '_')
         {
@@ -141,6 +153,14 @@ void MilkdropShader::LoadTexturesAndCompile(PresetState& presetState)
 
         auto desc = presetState.renderContext.textureManager->GetTexture(name);
         m_textureSamplerDescriptors.push_back(std::move(desc));
+    }
+
+    if (!m_unprefixedSamplerNames.empty())
+    {
+        for (size_t index = firstUnprefixedDescriptor; index < m_textureSamplerDescriptors.size(); index++)
+        {
+            m_textureSamplerDescriptors.at(index).PrefixSampler(false);
+        }
     }
 
     // Now that we have the textures, transpile the code.
@@ -520,8 +540,22 @@ void MilkdropShader::GetReferencedSamplers(const std::string& program)
     // "main" should always be present.
     m_samplerNames.insert("main");
 
+    // Samplers can also be named via macros, e.g. "#define base main" and "tex2D(base, uv)", which the HLSL
+    // preprocessor turns into "sampler_fw_main". Search the macro-expanded code as well, so these are declared.
+    std::string searchCode = program;
+    {
+        M4::Allocator allocator;
+        M4::HLSLTree tree(&allocator);
+        M4::HLSLParser parser(&allocator, &tree);
+        std::string expandedCode;
+        if (parser.ApplyPreprocessor("", program.c_str(), program.size(), expandedCode))
+        {
+            searchCode.append("\n").append(expandedCode);
+        }
+    }
+
     // Strip comments so that commented-out sampler/texsize declarations are not matched.
-    std::string const stripped = Utils::StripComments(program);
+    std::string const stripped = Utils::StripComments(searchCode);
 
     // Search for sampler usage
     auto found = stripped.find("sampler_", 0);
@@ -541,6 +575,18 @@ void MilkdropShader::GetReferencedSamplers(const std::string& program)
         }
 
         found = stripped.find("sampler_", found);
+    }
+
+    // Samplers declared without the prefix, e.g. "sampler mytexture;", use the texture of the same name.
+    // The main and blur textures only exist under their prefixed names, so these are ignored.
+    m_unprefixedSamplerNames.clear();
+    for (const auto& name : FindUnprefixedSamplers(stripped))
+    {
+        const auto baseName = Utils::ToLower(name.length() > 3 && name.at(2) == '_' ? name.substr(3) : name);
+        if (baseName != "main" && baseName != "blur1" && baseName != "blur2" && baseName != "blur3")
+        {
+            m_unprefixedSamplerNames.insert(name);
+        }
     }
 
     // Also search for texsize usage, some presets don't reference the sampler.
@@ -722,6 +768,25 @@ void MilkdropShader::UpdateMaxBlurLevel(BlurTexture::BlurLevel requestedLevel)
     {
         m_samplerNames.insert("blur1");
     }
+}
+
+auto MilkdropShader::FindUnprefixedSamplers(const std::string& code) -> std::set<std::string>
+{
+    static const std::regex unprefixedSamplerDeclaration(R"(\bsampler(?:2D|3D)?\s+([A-Za-z_][A-Za-z0-9_]*)\s*;)");
+
+    std::set<std::string> names;
+    for (auto match = std::sregex_iterator(code.begin(), code.end(), unprefixedSamplerDeclaration);
+         match != std::sregex_iterator();
+         ++match)
+    {
+        std::string name = (*match)[1].str();
+        if (name.compare(0, 8, "sampler_") != 0)
+        {
+            names.insert(std::move(name));
+        }
+    }
+
+    return names;
 }
 
 } // namespace MilkdropPreset
