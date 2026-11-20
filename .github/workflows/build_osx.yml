@@ -231,6 +231,10 @@ jobs:
             test -f "$dir/Info.plist" || { echo "FAIL: missing Info.plist"; exit 1; }
             test -d "$dir/Headers" || { echo "FAIL: missing Headers"; exit 1; }
             test ! -e "$dir/Versions" || { echo "FAIL: unexpected Versions directory"; exit 1; }
+            # Headers in Headers/projectM-4/, like in the macOS framework, plus proxy headers in Headers/.
+            main_header=$([ "$fw" = projectM-4 ] && echo projectM.h || echo playlist.h)
+            test -f "$dir/Headers/projectM-4/$main_header" || { echo "FAIL: missing Headers/projectM-4/$main_header"; exit 1; }
+            test -f "$dir/Headers/$main_header" || { echo "FAIL: missing proxy header Headers/$main_header"; exit 1; }
             plutil -lint "$dir/Info.plist"
             test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$dir/Info.plist")" = "$fw"
             test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleSupportedPlatforms:0' "$dir/Info.plist")" = "${{ matrix.plist_platform }}"
@@ -246,6 +250,8 @@ jobs:
       - name: Compile and Link Against Frameworks
         run: |
           set -e
+          # The core headers are found through the framework search path alone (proxy headers),
+          # the playlist headers through the framework's Headers directory, as with the macOS frameworks.
           cat > test.c <<'SRC'
           #include <projectM-4/projectM.h>
           #include <projectM-4/playlist.h>
@@ -261,6 +267,7 @@ jobs:
           SRC
           xcrun --sdk "${{ matrix.sdk }}" clang -target "${{ matrix.target }}" -Wall -Werror \
             -F "${{ github.workspace }}/install/lib" \
+            -I "${{ github.workspace }}/install/lib/projectM-4-playlist.framework/Headers" \
             -framework projectM-4 -framework projectM-4-playlist \
             -Wl,-rpath,@executable_path/Frameworks \
             test.c -o test-app

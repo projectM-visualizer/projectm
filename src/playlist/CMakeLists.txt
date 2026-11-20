@@ -33,9 +33,6 @@ target_include_directories(projectM_playlist_main
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/api>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-        # The public headers include the generated projectM_playlist_export.h by file name, so they
-        # also resolve inside a framework's flat Headers directory.
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4>
         )
 
 target_link_libraries(projectM_playlist_main
@@ -62,9 +59,6 @@ target_include_directories(projectM_playlist
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/api>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
-        # The public headers include the generated projectM_playlist_export.h by file name, so they
-        # also resolve inside a framework's flat Headers directory.
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/projectM-4>
         "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}>"
         )
 
@@ -94,7 +88,7 @@ if(BUILD_SHARED_LIBS)
                 IDENTIFIER com.github.projectm-visualizer.projectM-playlist
                 VERSION "${PROJECT_VERSION}"
                 C_HEADERS ${PROJECTM_PLAYLIST_PUBLIC_HEADERS}
-                # Versioned macOS bundle: Headers/projectM-4/, matching the installed include tree
+                # Headers use #include "projectM-4/..." so we need to match that path
                 HEADER_SUBDIR "projectM-4"
         )
     endif()

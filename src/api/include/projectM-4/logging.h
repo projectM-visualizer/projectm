@@ -26,7 +26,7 @@
 
 #pragma once
 
-#include "types.h"
+#include "projectM-4/types.h"
 
 
 #ifdef __cplusplus
