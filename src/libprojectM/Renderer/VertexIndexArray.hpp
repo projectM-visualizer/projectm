@@ -119,6 +119,27 @@ public:
     void MakeContinuous();
 
     /**
+     * @brief Fills the buffer with a triangle list equivalent to a triangle fan over the first vertexCount vertices.
+     * The buffer is resized to 3 * (vertexCount - 2) elements, one triangle (0, i, i + 1) per fan
+     * triangle, in fan order. Draw it with Mesh::PrimitiveType::Triangles.
+     *
+     * Some OpenGL implementations have no native triangle fans and emulate GL_TRIANGLE_FAN by
+     * rewriting the index buffer on every draw. ANGLE's Metal backend does this on the CPU and
+     * waits for the GPU to finish with its scratch buffer first, stalling the render thread.
+     * @param vertexCount The number of fan vertices, including the center. Fewer than 3 empties the buffer.
+     */
+    void MakeTriangleFanAsTriangles(size_t vertexCount);
+
+    /**
+     * @brief Fills the buffer with a line strip equivalent to a line loop over the first vertexCount vertices.
+     * The buffer contains 0 to vertexCount - 1, followed by 0 to close the loop. Draw it with
+     * Mesh::PrimitiveType::LineStrip. See MakeTriangleFanAsTriangles() for why: GL_LINE_LOOP is
+     * emulated the same way.
+     * @param vertexCount The number of loop vertices. Fewer than 2 yields a plain continuous buffer.
+     */
+    void MakeLineLoopAsLineStrip(size_t vertexCount);
+
+    /**
      * Uploads the current index buffer contents to the GPU.
      * @note this functions binds the index buffer object and leaves it bound.
      */

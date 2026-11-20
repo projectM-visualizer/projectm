@@ -87,6 +87,40 @@ void VertexIndexArray::MakeContinuous()
     }
 }
 
+void VertexIndexArray::MakeTriangleFanAsTriangles(size_t vertexCount)
+{
+    if (vertexCount < 3)
+    {
+        m_indices.clear();
+        return;
+    }
+
+    m_indices.resize(3 * (vertexCount - 2));
+    for (size_t triangle = 0; triangle < vertexCount - 2; triangle++)
+    {
+        m_indices[3 * triangle] = 0;
+        m_indices[3 * triangle + 1] = static_cast<uint32_t>(triangle + 1);
+        m_indices[3 * triangle + 2] = static_cast<uint32_t>(triangle + 2);
+    }
+}
+
+void VertexIndexArray::MakeLineLoopAsLineStrip(size_t vertexCount)
+{
+    if (vertexCount < 2)
+    {
+        m_indices.resize(vertexCount);
+        MakeContinuous();
+        return;
+    }
+
+    m_indices.resize(vertexCount + 1);
+    for (size_t index = 0; index < vertexCount; index++)
+    {
+        m_indices[index] = static_cast<uint32_t>(index);
+    }
+    m_indices[vertexCount] = 0;
+}
+
 void VertexIndexArray::Update()
 {
     Bind();
