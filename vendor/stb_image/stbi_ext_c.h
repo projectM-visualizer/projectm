@@ -25,12 +25,6 @@ static int stbi_test_main(stbi__context *s)
    #ifndef STBI_NO_DDS
    if (stbi__dds_test(s))  return STBI_dds;
    #endif
-   #ifndef STBI_NO_PVR
-   if (stbi__pvr_test(s))  return STBI_pvr;
-   #endif
-   #ifndef STBI_NO_PKM
-   if (stbi__pkm_test(s))  return STBI_pkm;
-   #endif
    #ifndef STBI_NO_QOI
    if (stbi__qoi_test(s))  return STBI_qoi;
    #endif
