@@ -69,20 +69,21 @@ void MilkdropSprite::Init(const std::string& spriteData, const Renderer::RenderC
     // which gives way better results and users can easily convert any image to PNG.
 
     // Load and compile code
-    auto initCode = parser.GetCode("init_");
+    auto initCode = parser.GetEquationCode("init_");
     m_codeContext.RunInitCode(initCode, renderContext);
 
-    auto perFrameCode = parser.GetCode("code_");
-    if (!perFrameCode.empty())
+    auto perFrameCode = parser.GetEquationCode("code_");
+    if (!perFrameCode.Empty())
     {
-        m_codeContext.perFrameCodeHandle = projectm_eval_code_compile(m_codeContext.spriteCodeContext, perFrameCode.c_str());
+        m_codeContext.perFrameCodeHandle = projectm_eval_code_compile(m_codeContext.spriteCodeContext, perFrameCode.Code().c_str());
         if (!m_codeContext.perFrameCodeHandle)
         {
             int errorLine{};
             int errorColumn{};
             auto* errorMessage = projectm_eval_get_error(m_codeContext.spriteCodeContext, &errorLine, &errorColumn);
 
-            throw SpriteException("Error compiling sprite per-frame code:" + std::string(errorMessage) + " (Line " + std::to_string(errorLine) + ", column " + std::to_string(errorColumn) + ")");
+            const auto location = perFrameCode.PresetLocation(errorLine, errorColumn);
+            throw SpriteException("Error compiling sprite per-frame code:" + std::string(errorMessage) + " (Line " + std::to_string(location.line) + ", column " + std::to_string(location.column) + ")");
         }
     }
 
@@ -358,7 +359,7 @@ void MilkdropSprite::CodeContext::RegisterBuiltinVariables()
     REG_VAR(a);
 }
 
-void MilkdropSprite::CodeContext::RunInitCode(const std::string& initCode, const Renderer::RenderContext& renderContext)
+void MilkdropSprite::CodeContext::RunInitCode(const MilkdropPreset::EquationCode& initCode, const Renderer::RenderContext& renderContext)
 {
     RegisterBuiltinVariables();
 
@@ -381,7 +382,7 @@ void MilkdropSprite::CodeContext::RunInitCode(const std::string& initCode, const
     *done = 0.0;
     *burn = 1.0;
 
-    if (initCode.empty())
+    if (initCode.Empty())
     {
         return;
     }
@@ -390,14 +391,15 @@ void MilkdropSprite::CodeContext::RunInitCode(const std::string& initCode, const
     *time = renderContext.time;
     *frame = renderContext.frame;
 
-    auto* initCodeHandle = projectm_eval_code_compile(spriteCodeContext, initCode.c_str());
+    auto* initCodeHandle = projectm_eval_code_compile(spriteCodeContext, initCode.Code().c_str());
     if (initCodeHandle == nullptr)
     {
         int errorLine{};
         int errorColumn{};
         const auto* errorMessage = projectm_eval_get_error(spriteCodeContext, &errorLine, &errorColumn);
 
-        throw SpriteException("Error compiling sprite init code:" + std::string(errorMessage) + " (Line " + std::to_string(errorLine) + ", column " + std::to_string(errorColumn) + ")");
+        const auto location = initCode.PresetLocation(errorLine, errorColumn);
+        throw SpriteException("Error compiling sprite init code:" + std::string(errorMessage) + " (Line " + std::to_string(location.line) + ", column " + std::to_string(location.column) + ")");
     }
 
     projectm_eval_code_execute(initCodeHandle);

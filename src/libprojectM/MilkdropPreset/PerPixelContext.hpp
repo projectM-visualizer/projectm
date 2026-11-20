@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EquationCode.hpp"
+
 #include "PresetState.hpp"
 
 #include <projectm-eval.h>
@@ -51,7 +53,7 @@ public:
      * If the per-pixel code can't be compiled, a warning is logged and the code is skipped, like in Milkdrop.
      * @param perPixelCode The code to compile.
      */
-    void CompilePerPixelCode(const std::string& perPixelCode);
+    void CompilePerPixelCode(const EquationCode& perPixelCode);
 
     /**
      * @brief Executes the per-pixel code with the current state.

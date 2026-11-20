@@ -82,15 +82,15 @@ void WaveformPerPointContext::LoadReadOnlyStateVariables(const PerFrameContext& 
     *treb_att = *presetPerFrameContext.treb_att;
 }
 
-void WaveformPerPointContext::CompilePerPointCode(const std::string& perPointCode,
+void WaveformPerPointContext::CompilePerPointCode(const EquationCode& perPointCode,
                                                   const CustomWaveform& waveform)
 {
-    if (perPointCode.empty())
+    if (perPointCode.Empty())
     {
         return;
     }
 
-    perPointCodeHandle = projectm_eval_code_compile(perPointCodeContext, perPointCode.c_str());
+    perPointCodeHandle = projectm_eval_code_compile(perPointCodeContext, perPointCode.Code().c_str());
     if (perPointCodeHandle == nullptr)
     {
         std::string error;
@@ -103,7 +103,7 @@ void WaveformPerPointContext::CompilePerPointCode(const std::string& perPointCod
             error += std::to_string(waveform.m_index);
             error += " per-point code: ";
             error += errmsg;
-            error += "(L" + std::to_string(line) + " C" + std::to_string(col) + ")";
+            error += perPointCode.FormatPresetLocation(line, col);
         }
         else
         {

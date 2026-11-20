@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EquationCode.hpp"
+
 #include <map>
 #include <string>
 
@@ -35,20 +37,36 @@ public:
     [[nodiscard]] auto Read(std::istream& presetStream) -> bool;
 
     /**
-     * @brief Returns a block of code, ready for parsing or use in shader compilation.
+     * @brief Returns a block of shader code, with each line terminated by a newline character.
      *
-     * Shaders have a "`" prepended on each line. If a line starts with this character, it's stripped and a newline
-     * character is added at the end of each line. Equations are returned as a single, long line.
+     * Shaders have a "`" prepended on each line. If a line starts with this character, it's stripped.
      *
      * The function appends numbers to the prefix, starting with 1, and stops when a key is missing. This is following
      * Milkdrop's behaviour, so any gap in numbers will essentially cut off all code after the gap.
-     *
-     * Comments starting with // or \\\\ will be stripped until the end of each line in both equations and shader code.
      *
      * @param keyPrefix The key prefix for the code block to be returned.
      * @return The code that was parsed from the given prefix. Empty if no code was found.
      */
     [[nodiscard]] auto GetCode(const std::string& keyPrefix) const -> std::string;
+
+    /**
+     * @brief Returns a block of expression code (equations), ready for compilation.
+     *
+     * Like Milkdrop, comments starting with // or \\\\ are stripped until the end of each line, and the lines are then
+     * joined without any separator. Milkdrop's editor wrapped long lines when saving presets, often in the middle of a
+     * variable name or number, so these lines must not be separated.
+     *
+     * Where a line break doesn't change the meaning, because a line ends or the next one starts with whitespace or a
+     * character like ";", "," or a parenthesis, the lines are kept separate instead. That way, compiler errors in
+     * presets that don't depend on the joining keep their line numbers. The returned object also maps each part of
+     * the code to its preset line and column.
+     *
+     * Lines are read the same way as in GetCode().
+     *
+     * @param keyPrefix The key prefix for the code block to be returned.
+     * @return The code that was parsed from the given prefix. Empty if no code was found.
+     */
+    [[nodiscard]] auto GetEquationCode(const std::string& keyPrefix) const -> EquationCode;
 
     /**
      * @brief Returns the given key value as an integer.

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EquationCode.hpp"
+
 #include "PresetState.hpp"
 
 #include <projectm-eval.h>
@@ -56,7 +58,7 @@ public:
      * If the per-frame code can't be compiled, a warning is logged and the code is skipped, like in Milkdrop.
      * @param perFrameCode The code to compile.
      */
-    void CompilePerFrameCode(const std::string& perFrameCode);
+    void CompilePerFrameCode(const EquationCode& perFrameCode);
 
     /**
      * @brief Executes the per-frame code with the current state.
