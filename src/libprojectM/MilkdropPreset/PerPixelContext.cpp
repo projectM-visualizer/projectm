@@ -99,14 +99,14 @@ void PerPixelContext::LoadPerFrameQVariables(PresetState& state, PerFrameContext
     }
 }
 
-void PerPixelContext::CompilePerPixelCode(const std::string& perPixelCode)
+void PerPixelContext::CompilePerPixelCode(const EquationCode& perPixelCode)
 {
-    if (perPixelCode.empty())
+    if (perPixelCode.Empty())
     {
         return;
     }
 
-    perPixelCodeHandle = projectm_eval_code_compile(perPixelCodeContext, perPixelCode.c_str());
+    perPixelCodeHandle = projectm_eval_code_compile(perPixelCodeContext, perPixelCode.Code().c_str());
     if (perPixelCodeHandle == nullptr)
     {
         std::string error;
@@ -117,13 +117,13 @@ void PerPixelContext::CompilePerPixelCode(const std::string& perPixelCode)
         {
             error = "[PerPixelContext] Could not compile per-pixel code: ";
             error += errmsg;
-            error += "(L" + std::to_string(line) + " C" + std::to_string(col) + ")";
+            error += perPixelCode.FormatPresetLocation(line, col);
         }
         else
         {
             error = "[PerPixelContext] Could not compile per-pixel code.";
         }
-        LOG_DEBUG("[PerPixelContext] Failed per-pixel code:\n" + perPixelCode);
+        LOG_DEBUG("[PerPixelContext] Failed per-pixel code:\n" + perPixelCode.Code());
         // Like Milkdrop, only this code block is disabled, the preset is still used.
         LOG_WARN(error);
         return;

@@ -116,12 +116,12 @@ void PerFrameContext::RegisterBuiltinVariables()
 
 void PerFrameContext::EvaluateInitCode(PresetState& state)
 {
-    if (state.perFrameInitCode.empty())
+    if (state.perFrameInitCode.Empty())
     {
         return;
     }
 
-    auto* initCode = projectm_eval_code_compile(perFrameCodeContext, state.perFrameInitCode.c_str());
+    auto* initCode = projectm_eval_code_compile(perFrameCodeContext, state.perFrameInitCode.Code().c_str());
     if (initCode == nullptr)
     {
         std::string error;
@@ -132,13 +132,13 @@ void PerFrameContext::EvaluateInitCode(PresetState& state)
         {
             error = "[PerFrameContext] Could not compile per-frame INIT code: ";
             error += errmsg;
-            error += "(L" + std::to_string(line) + " C" + std::to_string(col) + ")";
+            error += state.perFrameInitCode.FormatPresetLocation(line, col);
         }
         else
         {
             error = "[PerFrameContext] Could not compile per-frame init code.";
         }
-        LOG_DEBUG("[PerFrameContext] Failed per-frame INIT code:\n" + state.perFrameInitCode);
+        LOG_DEBUG("[PerFrameContext] Failed per-frame INIT code:\n" + state.perFrameInitCode.Code());
         // Like Milkdrop, only this code block is disabled, the preset is still used.
         LOG_WARN(error);
         for (int q = 0; q < QVarCount; q++)
@@ -242,14 +242,14 @@ void PerFrameContext::LoadStateVariables(PresetState& state)
     *blur1_edge_darken = static_cast<PRJM_EVAL_F>(state.blur1EdgeDarken);
 }
 
-void PerFrameContext::CompilePerFrameCode(const std::string& perFrameCode)
+void PerFrameContext::CompilePerFrameCode(const EquationCode& perFrameCode)
 {
-    if (perFrameCode.empty())
+    if (perFrameCode.Empty())
     {
         return;
     }
 
-    perFrameCodeHandle = projectm_eval_code_compile(perFrameCodeContext, perFrameCode.c_str());
+    perFrameCodeHandle = projectm_eval_code_compile(perFrameCodeContext, perFrameCode.Code().c_str());
     if (perFrameCodeHandle == nullptr)
     {
         std::string error;
@@ -260,13 +260,13 @@ void PerFrameContext::CompilePerFrameCode(const std::string& perFrameCode)
         {
             error = "[PerFrameContext] Could not compile per-frame code: ";
             error += errmsg;
-            error += "(L" + std::to_string(line) + " C" + std::to_string(col) + ")";
+            error += perFrameCode.FormatPresetLocation(line, col);
         }
         else
         {
             error = "[PerFrameContext] Could not compile per-frame code.";
         }
-        LOG_DEBUG("[PerFrameContext] Failed per-frame code:\n" + perFrameCode);
+        LOG_DEBUG("[PerFrameContext] Failed per-frame code:\n" + perFrameCode.Code());
         // Like Milkdrop, only this code block is disabled, the preset is still used.
         LOG_WARN(error);
         return;

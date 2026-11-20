@@ -48,6 +48,8 @@ add_library(MilkdropPreset OBJECT
         CustomWaveform.hpp
         DarkenCenter.cpp
         DarkenCenter.hpp
+        EquationCode.cpp
+        EquationCode.hpp
         EvalLibMutex.cpp
         Factory.cpp
         Factory.hpp

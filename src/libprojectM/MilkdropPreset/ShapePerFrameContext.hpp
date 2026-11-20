@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EquationCode.hpp"
+
 #include "PresetState.hpp"
 
 namespace libprojectM {
@@ -45,7 +47,7 @@ public:
      * @param perFrameInitCode The init code.
      * @param shape The shape this context belongs to.
      */
-    void EvaluateInitCode(const std::string& perFrameInitCode, const CustomShape& shape);
+    void EvaluateInitCode(const EquationCode& perFrameInitCode, const CustomShape& shape);
 
     /**
      * @brief Compiles the per-frame code and stores the code handle in the class.
@@ -53,7 +55,7 @@ public:
      * @param perFrameCode The code to compile.
      * @param shape The shape this context belongs to.
      */
-    void CompilePerFrameCode(const std::string& perFrameCode, const CustomShape& shape);
+    void CompilePerFrameCode(const EquationCode& perFrameCode, const CustomShape& shape);
 
     /**
      * @brief Executes the per-frame code with the current state.

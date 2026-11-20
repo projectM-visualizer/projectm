@@ -43,3 +43,8 @@ per_frame_split_3=5;
 per_frame_part_1=k1 = is_
 per_frame_part_2=
 per_frame_part_3=beat*2;
+
+// An operator split over two lines
+per_frame_operator_1=x=1;
+per_frame_operator_2=x+
+per_frame_operator_3==2;

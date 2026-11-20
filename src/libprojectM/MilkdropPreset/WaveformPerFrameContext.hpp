@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EquationCode.hpp"
+
 #include "PresetState.hpp"
 
 namespace libprojectM {
@@ -39,7 +41,7 @@ public:
      * @param perFrameInitCode The init code.
      * @param waveform The waveform this context belongs to.
      */
-    void EvaluateInitCode(const std::string& perFrameInitCode, CustomWaveform& waveform);
+    void EvaluateInitCode(const EquationCode& perFrameInitCode, CustomWaveform& waveform);
 
     /**
      * @brief Compiles the per-frame code and stores the code handle in the class.
@@ -47,7 +49,7 @@ public:
      * @param perFrameCode The code to compile.
      * @param waveform The waveform this context belongs to.
      */
-    void CompilePerFrameCode(const std::string& perFrameCode, const CustomWaveform& waveform);
+    void CompilePerFrameCode(const EquationCode& perFrameCode, const CustomWaveform& waveform);
 
     /**
      * @brief Executes the per-frame code with the current state.

@@ -132,15 +132,15 @@ void ShapePerFrameContext::LoadStateVariables(const PresetState& state,
     *border_a = static_cast<double>(shape.m_border_a);
 }
 
-void ShapePerFrameContext::EvaluateInitCode(const std::string& perFrameInitCode,
+void ShapePerFrameContext::EvaluateInitCode(const EquationCode& perFrameInitCode,
                                             const CustomShape& shape)
 {
-    if (perFrameInitCode.empty())
+    if (perFrameInitCode.Empty())
     {
         return;
     }
 
-    auto* initCode = projectm_eval_code_compile(perFrameCodeContext, perFrameInitCode.c_str());
+    auto* initCode = projectm_eval_code_compile(perFrameCodeContext, perFrameInitCode.Code().c_str());
     if (initCode == nullptr)
     {
         std::string error;
@@ -153,13 +153,13 @@ void ShapePerFrameContext::EvaluateInitCode(const std::string& perFrameInitCode,
             error += std::to_string(shape.m_index);
             error += " per-frame INIT code: ";
             error += std::string(errmsg);
-            error += "(L" + std::to_string(line) + " C" + std::to_string(col) + ")";
+            error += perFrameInitCode.FormatPresetLocation(line, col);
         }
         else
         {
             error = "[ShapePerFrameContext] Could not compile custom shape " + std::to_string(shape.m_index) + " per-frame init code.";
         }
-        LOG_DEBUG("[ShapePerFrameContext] Failed custom shape per-frame INIT code:\n" + perFrameInitCode);
+        LOG_DEBUG("[ShapePerFrameContext] Failed custom shape per-frame INIT code:\n" + perFrameInitCode.Code());
         // Like Milkdrop, only this code block is disabled, the preset is still used.
         LOG_WARN(error);
         for (auto* tVar : t_vars)
@@ -173,15 +173,15 @@ void ShapePerFrameContext::EvaluateInitCode(const std::string& perFrameInitCode,
     projectm_eval_code_destroy(initCode);
 }
 
-void ShapePerFrameContext::CompilePerFrameCode(const std::string& perFrameCode,
+void ShapePerFrameContext::CompilePerFrameCode(const EquationCode& perFrameCode,
                                                const CustomShape& shape)
 {
-    if (perFrameCode.empty())
+    if (perFrameCode.Empty())
     {
         return;
     }
 
-    perFrameCodeHandle = projectm_eval_code_compile(perFrameCodeContext, perFrameCode.c_str());
+    perFrameCodeHandle = projectm_eval_code_compile(perFrameCodeContext, perFrameCode.Code().c_str());
     if (perFrameCodeHandle == nullptr)
     {
         std::string error;
@@ -194,13 +194,13 @@ void ShapePerFrameContext::CompilePerFrameCode(const std::string& perFrameCode,
             error += std::to_string(shape.m_index);
             error +=  " per-frame code: ";
             error += errmsg;
-            error += "(L" + std::to_string(line) + " C" + std::to_string(col) + ")";
+            error += perFrameCode.FormatPresetLocation(line, col);
         }
         else
         {
             error = "[ShapePerFrameContext] Could not compile custom shape " + std::to_string(shape.m_index) + " per-frame code.";
         }
-        LOG_DEBUG("[ShapePerFrameContext] Failed custom shape per-frame code:\n" + perFrameCode);
+        LOG_DEBUG("[ShapePerFrameContext] Failed custom shape per-frame code:\n" + perFrameCode.Code());
         // Like Milkdrop, only this code block is disabled, the preset is still used.
         LOG_WARN(error);
         return;

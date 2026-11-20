@@ -2,6 +2,8 @@
 
 #include "UserSprites/Sprite.hpp"
 
+#include <MilkdropPreset/EquationCode.hpp>
+
 #include <Renderer/Mesh.hpp>
 #include <Renderer/Texture.hpp>
 #include <Renderer/TextureSamplerDescriptor.hpp>
@@ -50,7 +52,7 @@ private:
          * Also sets up the default values of the output variables.
          * @param initCode The initialization code.
          */
-        void RunInitCode(const std::string& initCode, const Renderer::RenderContext& renderContext);
+        void RunInitCode(const MilkdropPreset::EquationCode& initCode, const Renderer::RenderContext& renderContext);
 
         /**
          * @brief Runs the per-frame update code for the sprite.

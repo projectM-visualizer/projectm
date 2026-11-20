@@ -94,15 +94,15 @@ void WaveformPerFrameContext::LoadStateVariables(PresetState& state, const PerFr
     *samples = static_cast<double>(waveform.m_samples);
 }
 
-void WaveformPerFrameContext::EvaluateInitCode(const std::string& perFrameInitCode,
+void WaveformPerFrameContext::EvaluateInitCode(const EquationCode& perFrameInitCode,
                                                CustomWaveform& waveform)
 {
-    if (perFrameInitCode.empty())
+    if (perFrameInitCode.Empty())
     {
         return;
     }
 
-    auto* initCode = projectm_eval_code_compile(perFrameCodeContext, perFrameInitCode.c_str());
+    auto* initCode = projectm_eval_code_compile(perFrameCodeContext, perFrameInitCode.Code().c_str());
     if (initCode == nullptr)
     {
         std::string error;
@@ -115,13 +115,13 @@ void WaveformPerFrameContext::EvaluateInitCode(const std::string& perFrameInitCo
             error += std::to_string(waveform.m_index);
             error += " per-frame INIT code: ";
             error += errmsg;
-            error += "(L" + std::to_string(line) + " C" + std::to_string(col) + ")";
+            error += perFrameInitCode.FormatPresetLocation(line, col);
         }
         else
         {
             error = "[WaveformPerFrameContext] Could not compile custom wave " + std::to_string(waveform.m_index) + " per-frame init code.";
         }
-        LOG_DEBUG("[WaveformPerFrameContext] Failed custom wave per-frame INIT code:\n" + perFrameInitCode);
+        LOG_DEBUG("[WaveformPerFrameContext] Failed custom wave per-frame INIT code:\n" + perFrameInitCode.Code());
         // Like Milkdrop, only this code block is disabled, the preset is still used.
         LOG_WARN(error);
         for (auto* tVar : t_vars)
@@ -135,15 +135,15 @@ void WaveformPerFrameContext::EvaluateInitCode(const std::string& perFrameInitCo
     projectm_eval_code_destroy(initCode);
 }
 
-void WaveformPerFrameContext::CompilePerFrameCode(const std::string& perFrameCode,
+void WaveformPerFrameContext::CompilePerFrameCode(const EquationCode& perFrameCode,
                                                   const CustomWaveform& waveform)
 {
-    if (perFrameCode.empty())
+    if (perFrameCode.Empty())
     {
         return;
     }
 
-    perFrameCodeHandle = projectm_eval_code_compile(perFrameCodeContext, perFrameCode.c_str());
+    perFrameCodeHandle = projectm_eval_code_compile(perFrameCodeContext, perFrameCode.Code().c_str());
     if (perFrameCodeHandle == nullptr)
     {
         std::string error;
@@ -156,13 +156,13 @@ void WaveformPerFrameContext::CompilePerFrameCode(const std::string& perFrameCod
             error += waveform.m_index;
             error += " per-frame code: ";
             error += errmsg;
-            error += "(L" + std::to_string(line) + " C" + std::to_string(col) + ")";
+            error += perFrameCode.FormatPresetLocation(line, col);
         }
         else
         {
             error = "[WaveformPerFrameContext] Could not compile custom wave " + std::to_string(waveform.m_index) + " per-frame code.";
         }
-        LOG_DEBUG("[WaveformPerFrameContext] Failed custom wave per-frame code:\n" + perFrameCode);
+        LOG_DEBUG("[WaveformPerFrameContext] Failed custom wave per-frame code:\n" + perFrameCode.Code());
         // Like Milkdrop, only this code block is disabled, the preset is still used.
         LOG_WARN(error);
         return;

@@ -8,6 +8,7 @@
 #include "Constants.hpp"
 
 #include "BlurTexture.hpp"
+#include "EquationCode.hpp"
 
 #include <Audio/FrameAudioData.hpp>
 
@@ -139,16 +140,16 @@ public:
     libprojectM::Audio::FrameAudioData audioData; //!< Holds audio/spectrum data and values for beat detection.
     Renderer::RenderContext renderContext;        //!< Current renderer state data like viewport size and generic shaders.
 
-    std::string perFrameInitCode; //!< Preset init code, run once on load.
-    std::string perFrameCode;     //!< Preset per-frame code, run once at the start of each frame.
-    std::string perPixelCode;     //!< Preset per-pixel/per-vertex code, run once per warp mesh vertex.
+    EquationCode perFrameInitCode; //!< Preset init code, run once on load.
+    EquationCode perFrameCode;    //!< Preset per-frame code, run once at the start of each frame.
+    EquationCode perPixelCode;    //!< Preset per-pixel/per-vertex code, run once per warp mesh vertex.
 
-    std::array<std::string, CustomWaveformCount> customWaveInitCode;     //!< Custom wave init code, run once on load.
-    std::array<std::string, CustomWaveformCount> customWavePerFrameCode; //!< Custom wave per-frame code, run once after the per-frame code.
-    std::array<std::string, CustomWaveformCount> customWavePerPointCode; //!< Custom wave per-point code, run once per waveform vertex.
+    std::array<EquationCode, CustomWaveformCount> customWaveInitCode;    //!< Custom wave init code, run once on load.
+    std::array<EquationCode, CustomWaveformCount> customWavePerFrameCode; //!< Custom wave per-frame code, run once after the per-frame code.
+    std::array<EquationCode, CustomWaveformCount> customWavePerPointCode; //!< Custom wave per-point code, run once per waveform vertex.
 
-    std::array<std::string, CustomShapeCount> customShapeInitCode;     //!< Custom shape init code, run once on load.
-    std::array<std::string, CustomShapeCount> customShapePerFrameCode; //!< Custom shape per-frame code, run once per shape instance.
+    std::array<EquationCode, CustomShapeCount> customShapeInitCode;    //!< Custom shape init code, run once on load.
+    std::array<EquationCode, CustomShapeCount> customShapePerFrameCode; //!< Custom shape per-frame code, run once per shape instance.
 
     std::string warpShader;      //!< Warp shader code.
     std::string compositeShader; //!< Composite shader code.

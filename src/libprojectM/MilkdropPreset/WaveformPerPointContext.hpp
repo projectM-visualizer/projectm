@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EquationCode.hpp"
+
 #include "PresetState.hpp"
 
 namespace libprojectM {
@@ -38,7 +40,7 @@ public:
      * @param perPointCode The code to compile.
      * @param waveform The waveform this context belongs to.
      */
-    void CompilePerPointCode(const std::string& perPointCode, const CustomWaveform& waveform);
+    void CompilePerPointCode(const EquationCode& perPointCode, const CustomWaveform& waveform);
 
     /**
      * @brief Executes the per-point code with the current state.

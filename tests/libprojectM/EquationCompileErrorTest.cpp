@@ -1,10 +1,15 @@
 #include <gtest/gtest.h>
 
 #include <MilkdropPreset/PerFrameContext.hpp>
+#include <MilkdropPreset/PresetFileParser.hpp>
 
 #include <projectm-eval.h>
 
+#include <sstream>
+#include <utility>
+
 using libprojectM::MilkdropPreset::PerFrameContext;
+using libprojectM::MilkdropPreset::PresetFileParser;
 
 namespace {
 
@@ -55,3 +60,58 @@ TEST_F(EquationCompileErrorTest, ValidPerFrameCodeIsCompiledAndExecuted)
     context->ExecutePerFrameCode();
     EXPECT_EQ(*context->zoom, 1.25);
 }
+
+namespace {
+
+/**
+ * Compiles the per-frame code of the given preset text and returns the preset location of the compiler error.
+ */
+auto CompileErrorLocation(const std::string& presetText) -> std::pair<int, int>
+{
+    PresetFileParser parser;
+    std::istringstream stream("[preset00]\n" + presetText);
+    EXPECT_TRUE(parser.Read(stream));
+    auto code = parser.GetEquationCode("per_frame_");
+
+    auto* memory = projectm_eval_memory_buffer_create();
+    auto* evalContext = projectm_eval_context_create(memory, nullptr);
+    EXPECT_EQ(projectm_eval_code_compile(evalContext, code.Code().c_str()), nullptr);
+    int line{};
+    int column{};
+    projectm_eval_get_error(evalContext, &line, &column);
+    projectm_eval_context_destroy(evalContext);
+    projectm_eval_memory_buffer_destroy(memory);
+
+    auto location = code.PresetLocation(line, column);
+    return {location.line, location.column};
+}
+
+} // namespace
+
+/**
+ * Compiler errors are reported at the preset line and column, also if lines were joined.
+ */
+TEST(EquationCompileErrorLocation, SeparateLines)
+{
+    // Unexpected ";" in "y=y+;"
+    EXPECT_EQ(CompileErrorLocation("per_frame_1=x = 1;\nper_frame_2=\nper_frame_3=y=y+;\n"), std::make_pair(3, 5));
+}
+
+TEST(EquationCompileErrorLocation, FirstLine)
+{
+    // Unexpected "*" in the first line
+    EXPECT_EQ(CompileErrorLocation("per_frame_1=abc = 1; def = 2 +* 3;\n"), std::make_pair(1, 19));
+}
+
+TEST(EquationCompileErrorLocation, JoinedLines)
+{
+    // The second line continues the name "t", and the error is the "*" after it.
+    EXPECT_EQ(CompileErrorLocation("per_frame_1=x=above(treb,t\nper_frame_2=reb_att)+*0.25;\n"), std::make_pair(2, 10));
+}
+
+TEST(EquationCompileErrorLocation, AfterComment)
+{
+    // The comment is removed, the location is still the one in the preset.
+    EXPECT_EQ(CompileErrorLocation("per_frame_1=q=1; // comment\nper_frame_2=r=2 r;\n"), std::make_pair(2, 5));
+}
+

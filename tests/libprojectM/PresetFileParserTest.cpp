@@ -132,12 +132,13 @@ TEST(PresetFileParser, GetCodeShaderSyntax)
     EXPECT_EQ(code, "r=1.0;\ng=1.0;\nb=1.0;\n");
 }
 
-TEST(PresetFileParser, GetEquationCodeJoinsLinesWithoutSeparator)
+TEST(PresetFileParser, GetEquationCodeKeepsLinesThatEndWithSeparators)
 {
     PresetFileParser parser;
     ASSERT_TRUE(parser.Read(std::string(fileParserTestDataPath) + "parser-code.milk"));
 
-    EXPECT_EQ(parser.GetEquationCode("per_frame_"), "r=1.0;g=1.0;b=1.0;");
+    // Joining after a ";" gives the same tokens as a line break, so the line numbers are kept.
+    EXPECT_EQ(parser.GetEquationCode("per_frame_").Code(), "r=1.0;\ng=1.0;\n\nb=1.0;");
 }
 
 TEST(PresetFileParser, GetEquationCodeWithGap)
@@ -145,7 +146,7 @@ TEST(PresetFileParser, GetEquationCodeWithGap)
     PresetFileParser parser;
     ASSERT_TRUE(parser.Read(std::string(fileParserTestDataPath) + "parser-code.milk"));
 
-    EXPECT_EQ(parser.GetEquationCode("per_frame_gap_"), "r=1.0;g=1.0;");
+    EXPECT_EQ(parser.GetEquationCode("per_frame_gap_").Code(), "r=1.0;\ng=1.0;");
 }
 
 TEST(PresetFileParser, GetEquationCodeStripsComments)
@@ -153,7 +154,7 @@ TEST(PresetFileParser, GetEquationCodeStripsComments)
     PresetFileParser parser;
     ASSERT_TRUE(parser.Read(std::string(fileParserTestDataPath) + "parser-code.milk"));
 
-    EXPECT_EQ(parser.GetEquationCode("per_frame_trim_"), "  r = 1.0; g = 1.0;                   b =           1.0;");
+    EXPECT_EQ(parser.GetEquationCode("per_frame_trim_").Code(), "  r = 1.0;\n g = 1.0;\n\n               \n    b = \n          1.0;");
 }
 
 TEST(PresetFileParser, GetEquationCodeKeepsMultilineComment)
@@ -161,7 +162,7 @@ TEST(PresetFileParser, GetEquationCodeKeepsMultilineComment)
     PresetFileParser parser;
     ASSERT_TRUE(parser.Read(std::string(fileParserTestDataPath) + "parser-code.milk"));
 
-    EXPECT_EQ(parser.GetEquationCode("multiline_comment_"), "r = 1.0; /* Comment...g = 1.0;... ends here */b = 1.0;");
+    EXPECT_EQ(parser.GetEquationCode("multiline_comment_").Code(), "r = 1.0; /* Comment...g = 1.0;\n... ends here */b = 1.0;");
 }
 
 TEST(PresetFileParser, GetEquationCodeRejoinsWrappedNamesAndNumbers)
@@ -169,8 +170,17 @@ TEST(PresetFileParser, GetEquationCodeRejoinsWrappedNamesAndNumbers)
     PresetFileParser parser;
     ASSERT_TRUE(parser.Read(std::string(fileParserTestDataPath) + "parser-code.milk"));
 
-    EXPECT_EQ(parser.GetEquationCode("per_frame_split_"), "x=above(treb,treb_att)+0.25;");
-    EXPECT_EQ(parser.GetEquationCode("per_frame_part_"), "k1 = is_beat*2;");
+    EXPECT_EQ(parser.GetEquationCode("per_frame_split_").Code(), "x=above(treb,treb_att)+0.25;");
+    EXPECT_EQ(parser.GetEquationCode("per_frame_part_").Code(), "k1 = is_beat*2;");
+}
+
+TEST(PresetFileParser, GetEquationCodeJoinsOperators)
+{
+    PresetFileParser parser;
+    ASSERT_TRUE(parser.Read(std::string(fileParserTestDataPath) + "parser-code.milk"));
+
+    // "+" and "=" must become "+=", as in Milkdrop.
+    EXPECT_EQ(parser.GetEquationCode("per_frame_operator_").Code(), "x=1;\nx+=2;");
 }
 
 TEST(PresetFileParser, GetEquationCodeStripsBacktick)
@@ -178,7 +188,46 @@ TEST(PresetFileParser, GetEquationCodeStripsBacktick)
     PresetFileParser parser;
     ASSERT_TRUE(parser.Read(std::string(fileParserTestDataPath) + "parser-code.milk"));
 
-    EXPECT_EQ(parser.GetEquationCode("warp_"), "r=1.0;g=1.0;b=1.0;");
+    EXPECT_EQ(parser.GetEquationCode("warp_").Code(), "r=1.0;\ng=1.0;\nb=1.0;");
+}
+
+TEST(PresetFileParser, GetEquationCodeMapsLocationsOfJoinedLines)
+{
+    PresetFileParser parser;
+    ASSERT_TRUE(parser.Read(std::string(fileParserTestDataPath) + "parser-code.milk"));
+
+    // "x=above(treb,t" + "reb_att)+0.2" + "5;" is one code line. The compiler counts columns from 0 in the first line.
+    auto code = parser.GetEquationCode("per_frame_split_");
+    auto location = code.PresetLocation(1, 0); // "x"
+    EXPECT_EQ(location.line, 1);
+    EXPECT_EQ(location.column, 1);
+    location = code.PresetLocation(1, 15); // "e" of "reb_att", in the second line
+    EXPECT_EQ(location.line, 2);
+    EXPECT_EQ(location.column, 2);
+    location = code.PresetLocation(1, 27); // ";" in the third line
+    EXPECT_EQ(location.line, 3);
+    EXPECT_EQ(location.column, 2);
+}
+
+TEST(PresetFileParser, GetEquationCodeMapsLocationsOfSeparateLines)
+{
+    PresetFileParser parser;
+    ASSERT_TRUE(parser.Read(std::string(fileParserTestDataPath) + "parser-code.milk"));
+
+    // Later lines count the line break as column 1, so the first character is in column 2.
+    auto code = parser.GetEquationCode("per_frame_");
+    auto location = code.PresetLocation(4, 2); // "=" of "b=1.0;"
+    EXPECT_EQ(location.line, 4);
+    EXPECT_EQ(location.column, 2);
+    location = code.PresetLocation(3, 1); // the empty line
+    EXPECT_EQ(location.line, 3);
+    EXPECT_EQ(location.column, 1);
+
+    // The backtick isn't part of the code, but counts as a preset column.
+    code = parser.GetEquationCode("warp_");
+    location = code.PresetLocation(2, 1);
+    EXPECT_EQ(location.line, 2);
+    EXPECT_EQ(location.column, 2);
 }
 
 TEST(PresetFileParser, GetIntValid)
