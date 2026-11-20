@@ -1,6 +1,7 @@
 #include "WaveformPerPointContext.hpp"
 
 #include "CustomWaveform.hpp"
+#include "EquationCode.hpp"
 #include "MilkdropPresetExceptions.hpp"
 #include "PerFrameContext.hpp"
 
@@ -90,7 +91,8 @@ void WaveformPerPointContext::CompilePerPointCode(const std::string& perPointCod
         return;
     }
 
-    perPointCodeHandle = projectm_eval_code_compile(perPointCodeContext, perPointCode.c_str());
+    EquationCode const equations(perPointCode);
+    perPointCodeHandle = projectm_eval_code_compile(perPointCodeContext, equations.Code().c_str());
     if (perPointCodeHandle == nullptr)
     {
         std::string error;
@@ -103,7 +105,8 @@ void WaveformPerPointContext::CompilePerPointCode(const std::string& perPointCod
             error += std::to_string(waveform.m_index);
             error += " per-point code: ";
             error += errmsg;
-            error += "(L" + std::to_string(line) + " C" + std::to_string(col) + ")";
+            auto const position = equations.OriginalPosition(col);
+            error += "(L" + std::to_string(position.line) + " C" + std::to_string(position.column) + ")";
         }
         else
         {

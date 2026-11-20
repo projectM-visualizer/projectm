@@ -1,6 +1,7 @@
 #include "WaveformPerFrameContext.hpp"
 
 #include "CustomWaveform.hpp"
+#include "EquationCode.hpp"
 #include "MilkdropPresetExceptions.hpp"
 #include "PerFrameContext.hpp"
 
@@ -102,7 +103,8 @@ void WaveformPerFrameContext::EvaluateInitCode(const std::string& perFrameInitCo
         return;
     }
 
-    auto* initCode = projectm_eval_code_compile(perFrameCodeContext, perFrameInitCode.c_str());
+    EquationCode const equations(perFrameInitCode);
+    auto* initCode = projectm_eval_code_compile(perFrameCodeContext, equations.Code().c_str());
     if (initCode == nullptr)
     {
         std::string error;
@@ -115,7 +117,8 @@ void WaveformPerFrameContext::EvaluateInitCode(const std::string& perFrameInitCo
             error += std::to_string(waveform.m_index);
             error += " per-frame INIT code: ";
             error += errmsg;
-            error += "(L" + std::to_string(line) + " C" + std::to_string(col) + ")";
+            auto const position = equations.OriginalPosition(col);
+            error += "(L" + std::to_string(position.line) + " C" + std::to_string(position.column) + ")";
         }
         else
         {
@@ -143,7 +146,8 @@ void WaveformPerFrameContext::CompilePerFrameCode(const std::string& perFrameCod
         return;
     }
 
-    perFrameCodeHandle = projectm_eval_code_compile(perFrameCodeContext, perFrameCode.c_str());
+    EquationCode const equations(perFrameCode);
+    perFrameCodeHandle = projectm_eval_code_compile(perFrameCodeContext, equations.Code().c_str());
     if (perFrameCodeHandle == nullptr)
     {
         std::string error;
@@ -156,7 +160,8 @@ void WaveformPerFrameContext::CompilePerFrameCode(const std::string& perFrameCod
             error += waveform.m_index;
             error += " per-frame code: ";
             error += errmsg;
-            error += "(L" + std::to_string(line) + " C" + std::to_string(col) + ")";
+            auto const position = equations.OriginalPosition(col);
+            error += "(L" + std::to_string(position.line) + " C" + std::to_string(position.column) + ")";
         }
         else
         {

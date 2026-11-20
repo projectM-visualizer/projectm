@@ -1,5 +1,6 @@
 #include "PerPixelContext.hpp"
 
+#include "EquationCode.hpp"
 #include "MilkdropPresetExceptions.hpp"
 #include "PerFrameContext.hpp"
 
@@ -106,7 +107,8 @@ void PerPixelContext::CompilePerPixelCode(const std::string& perPixelCode)
         return;
     }
 
-    perPixelCodeHandle = projectm_eval_code_compile(perPixelCodeContext, perPixelCode.c_str());
+    EquationCode const equations(perPixelCode);
+    perPixelCodeHandle = projectm_eval_code_compile(perPixelCodeContext, equations.Code().c_str());
     if (perPixelCodeHandle == nullptr)
     {
         std::string error;
@@ -117,7 +119,8 @@ void PerPixelContext::CompilePerPixelCode(const std::string& perPixelCode)
         {
             error = "[PerPixelContext] Could not compile per-pixel code: ";
             error += errmsg;
-            error += "(L" + std::to_string(line) + " C" + std::to_string(col) + ")";
+            auto const position = equations.OriginalPosition(col);
+            error += "(L" + std::to_string(position.line) + " C" + std::to_string(position.column) + ")";
         }
         else
         {

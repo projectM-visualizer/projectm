@@ -1,5 +1,6 @@
 #include "PerFrameContext.hpp"
 
+#include "EquationCode.hpp"
 #include "MilkdropPresetExceptions.hpp"
 
 #include <Logging.hpp>
@@ -121,7 +122,8 @@ void PerFrameContext::EvaluateInitCode(PresetState& state)
         return;
     }
 
-    auto* initCode = projectm_eval_code_compile(perFrameCodeContext, state.perFrameInitCode.c_str());
+    EquationCode const equations(state.perFrameInitCode);
+    auto* initCode = projectm_eval_code_compile(perFrameCodeContext, equations.Code().c_str());
     if (initCode == nullptr)
     {
         std::string error;
@@ -132,7 +134,8 @@ void PerFrameContext::EvaluateInitCode(PresetState& state)
         {
             error = "[PerFrameContext] Could not compile per-frame INIT code: ";
             error += errmsg;
-            error += "(L" + std::to_string(line) + " C" + std::to_string(col) + ")";
+            auto const position = equations.OriginalPosition(col);
+            error += "(L" + std::to_string(position.line) + " C" + std::to_string(position.column) + ")";
         }
         else
         {
@@ -249,7 +252,8 @@ void PerFrameContext::CompilePerFrameCode(const std::string& perFrameCode)
         return;
     }
 
-    perFrameCodeHandle = projectm_eval_code_compile(perFrameCodeContext, perFrameCode.c_str());
+    EquationCode const equations(perFrameCode);
+    perFrameCodeHandle = projectm_eval_code_compile(perFrameCodeContext, equations.Code().c_str());
     if (perFrameCodeHandle == nullptr)
     {
         std::string error;
@@ -260,7 +264,8 @@ void PerFrameContext::CompilePerFrameCode(const std::string& perFrameCode)
         {
             error = "[PerFrameContext] Could not compile per-frame code: ";
             error += errmsg;
-            error += "(L" + std::to_string(line) + " C" + std::to_string(col) + ")";
+            auto const position = equations.OriginalPosition(col);
+            error += "(L" + std::to_string(position.line) + " C" + std::to_string(position.column) + ")";
         }
         else
         {

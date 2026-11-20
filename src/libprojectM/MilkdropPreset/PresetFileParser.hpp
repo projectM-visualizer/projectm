@@ -37,13 +37,14 @@ public:
     /**
      * @brief Returns a block of code, ready for parsing or use in shader compilation.
      *
-     * Shaders have a "`" prepended on each line. If a line starts with this character, it's stripped and a newline
-     * character is added at the end of each line. Equations are returned as a single, long line.
+     * Shaders have a "`" prepended on each line. If a line starts with this character, it's stripped. A newline
+     * character is added at the end of each line.
      *
      * The function appends numbers to the prefix, starting with 1, and stops when a key is missing. This is following
      * Milkdrop's behaviour, so any gap in numbers will essentially cut off all code after the gap.
      *
-     * Comments starting with // or \\\\ will be stripped until the end of each line in both equations and shader code.
+     * Equations are joined into a single line by EquationCode before they are compiled, as Milkdrop does, which also
+     * strips their comments.
      *
      * @param keyPrefix The key prefix for the code block to be returned.
      * @return The code that was parsed from the given prefix. Empty if no code was found.

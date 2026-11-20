@@ -4,6 +4,7 @@
 
 #include "SpriteShaders.hpp"
 
+#include <MilkdropPreset/EquationCode.hpp>
 #include <MilkdropPreset/PresetFileParser.hpp>
 
 #include <Preset.hpp>
@@ -75,14 +76,16 @@ void MilkdropSprite::Init(const std::string& spriteData, const Renderer::RenderC
     auto perFrameCode = parser.GetCode("code_");
     if (!perFrameCode.empty())
     {
-        m_codeContext.perFrameCodeHandle = projectm_eval_code_compile(m_codeContext.spriteCodeContext, perFrameCode.c_str());
+        MilkdropPreset::EquationCode const equations(perFrameCode);
+        m_codeContext.perFrameCodeHandle = projectm_eval_code_compile(m_codeContext.spriteCodeContext, equations.Code().c_str());
         if (!m_codeContext.perFrameCodeHandle)
         {
             int errorLine{};
             int errorColumn{};
             auto* errorMessage = projectm_eval_get_error(m_codeContext.spriteCodeContext, &errorLine, &errorColumn);
 
-            throw SpriteException("Error compiling sprite per-frame code:" + std::string(errorMessage) + " (Line " + std::to_string(errorLine) + ", column " + std::to_string(errorColumn) + ")");
+            auto const position = equations.OriginalPosition(errorColumn);
+            throw SpriteException("Error compiling sprite per-frame code:" + std::string(errorMessage) + " (Line " + std::to_string(position.line) + ", column " + std::to_string(position.column) + ")");
         }
     }
 
@@ -390,14 +393,16 @@ void MilkdropSprite::CodeContext::RunInitCode(const std::string& initCode, const
     *time = renderContext.time;
     *frame = renderContext.frame;
 
-    auto* initCodeHandle = projectm_eval_code_compile(spriteCodeContext, initCode.c_str());
+    MilkdropPreset::EquationCode const equations(initCode);
+    auto* initCodeHandle = projectm_eval_code_compile(spriteCodeContext, equations.Code().c_str());
     if (initCodeHandle == nullptr)
     {
         int errorLine{};
         int errorColumn{};
         const auto* errorMessage = projectm_eval_get_error(spriteCodeContext, &errorLine, &errorColumn);
 
-        throw SpriteException("Error compiling sprite init code:" + std::string(errorMessage) + " (Line " + std::to_string(errorLine) + ", column " + std::to_string(errorColumn) + ")");
+        auto const position = equations.OriginalPosition(errorColumn);
+        throw SpriteException("Error compiling sprite init code:" + std::string(errorMessage) + " (Line " + std::to_string(position.line) + ", column " + std::to_string(position.column) + ")");
     }
 
     projectm_eval_code_execute(initCodeHandle);
