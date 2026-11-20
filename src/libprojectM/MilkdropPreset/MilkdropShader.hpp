@@ -54,6 +54,18 @@ public:
     void LoadTexturesAndCompile(PresetState& presetState);
 
     /**
+     * @brief Returns the names of samplers declared without the "sampler_" prefix.
+     *
+     * Milkdrop loads a texture for every sampler a shader uses, whatever its name, so a declaration
+     * like "sampler mytexture;" uses the texture "mytexture". This finds such declarations
+     * ("sampler", "sampler2D" or "sampler3D", followed by a name and a semicolon).
+     * Doesn't require an OpenGL context.
+     * @param code The shader code, with comments already removed.
+     * @return The names of the samplers declared without the prefix.
+     */
+    static auto FindUnprefixedSamplers(const std::string& code) -> std::set<std::string>;
+
+    /**
      * @brief Loads all required shader variables into the uniforms.
      * Binds the underlying shader program.
      * @param presetState The preset state to pull the values from.
@@ -99,6 +111,7 @@ private:
     std::string m_preprocessedCode;            //!< The preprocessed preset shader code.
 
     std::set<std::string> m_samplerNames;                                        //!< All sampler names referenced in the shader code.
+    std::set<std::string> m_unprefixedSamplerNames;                              //!< Samplers declared without the "sampler_" prefix, e.g. "sampler mytexture;".
     std::vector<Renderer::TextureSamplerDescriptor> m_mainTextureDescriptors;              //!< Descriptors for all main texture references.
     std::vector<Renderer::TextureSamplerDescriptor> m_textureSamplerDescriptors;           //!< Descriptors of all referenced samplers in the shader code.
     BlurTexture::BlurLevel m_maxBlurLevelRequired{BlurTexture::BlurLevel::None}; //!< Max blur level of main texture required by this shader.
