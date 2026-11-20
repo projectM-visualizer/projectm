@@ -194,10 +194,10 @@ jobs:
             -T v142 `
             -S "${{ github.workspace }}" `
             -B "${{ github.workspace }}/cmake-build" `
-            -DCMAKE_SYSTEM_NAME=WindowsStore `
-            -DCMAKE_SYSTEM_VERSION=10.0 `
-            -DENABLE_PLAYLIST=YES `
-            -DBUILD_TESTING=NO
+            "-DCMAKE_SYSTEM_NAME=WindowsStore" `
+            "-DCMAKE_SYSTEM_VERSION=10.0" `
+            "-DENABLE_PLAYLIST=YES" `
+            "-DBUILD_TESTING=NO"
 
       - name: Build Debug
         run: cmake --build "${{ github.workspace }}/cmake-build" --config "Debug" --parallel
