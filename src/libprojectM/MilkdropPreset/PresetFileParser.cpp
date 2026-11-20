@@ -78,7 +78,7 @@ auto PresetFileParser::GetCode(const std::string& keyPrefix) const -> std::strin
 {
     auto lowerKey = ToLower(keyPrefix);
 
-    std::stringstream code;                        //!< The parsed code
+    std::stringstream code;                       //!< The parsed code
     std::string key(lowerKey.length() + 5, '\0'); //!< Allocate a string that can hold up to 5 digits.
 
     key.replace(0, lowerKey.length(), lowerKey);
@@ -128,13 +128,15 @@ auto PresetFileParser::GetFloat(const std::string& key, float defaultValue) -> f
     auto lowerKey = ToLower(key);
     if (m_presetValues.find(lowerKey) != m_presetValues.end())
     {
-        try
+        std::istringstream iss(m_presetValues.at(lowerKey));
+        iss.imbue(std::locale("C"));
+        float f;
+        iss >> f;
+        if (iss.fail())
         {
-            return std::stof(m_presetValues.at(lowerKey));
+            return defaultValue;
         }
-        catch (std::logic_error&)
-        {
-        }
+        return f;
     }
 
     return defaultValue;
